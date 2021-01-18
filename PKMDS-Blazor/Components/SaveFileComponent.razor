@@ -1,0 +1,14 @@
+﻿<form @onsubmit="OnSubmit">
+    <InputFile OnChange="OnInputFileChange" />
+    <br /><br />
+    <button type="submit">Upload Selected File(s)</button>
+    <label>Save File Name = "@SaveFileName"</label>
+    <label>PartySize = "@PartySize"</label>
+</form>
+
+<button @onclick="Refresh">Refresh</button>
+
+@if (Pokemon != null)
+{
+    <PokemonComponent @ref="PokemonComponent" Pokemon="@Pokemon"></PokemonComponent>
+}
