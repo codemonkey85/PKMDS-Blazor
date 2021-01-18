@@ -32,9 +32,6 @@ namespace PKMDSBlazor.Components
 
         public async Task GetPokemonSprite()
         {
-            Pokemon.NationalId = 201;
-            Pokemon.FormeIndex = 5;
-
             Pokemon pokeApiResult = await PokeApiClient.GetResourceAsync<Pokemon>(Pokemon.NationalId);
             PokemonSprites sprites = pokeApiResult.Sprites;
 

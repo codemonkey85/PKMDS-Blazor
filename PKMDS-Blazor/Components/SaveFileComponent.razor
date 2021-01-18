@@ -8,7 +8,11 @@
 
 <button @onclick="Refresh">Refresh</button>
 
-@if (Pokemon != null)
+@if (PartyPokemon != null)
 {
-    <PokemonComponent @ref="PokemonComponent" Pokemon="@Pokemon"></PokemonComponent>
+    foreach (PKMDSData.PokemonData pkm in PartyPokemon)
+    {
+        <br />
+        <PokemonComponent @ref="PokemonComponent" Pokemon="@pkm"></PokemonComponent>
+    }
 }

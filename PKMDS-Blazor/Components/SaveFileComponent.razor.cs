@@ -15,9 +15,7 @@ namespace PKMDSBlazor.Components
 
         public byte PartySize { get; set; }
 
-        public List<ushort> PartyPokemon { get; set; } = new List<ushort>();
-
-        public PokemonData Pokemon { get; set; } = null;
+        public List<PokemonData> PartyPokemon { get; set; } = new List<PokemonData>();
 
         protected PokemonComponent PokemonComponent;
 
@@ -31,7 +29,7 @@ namespace PKMDSBlazor.Components
                 return;
             }
 
-            Pokemon = null;
+            PartyPokemon.Clear();
 
             using FileStream fileStream = new FileStream(saveFile.FullName, FileMode.Open, FileAccess.Read);
             using BinaryReader binaryReader = new BinaryReader(fileStream);
@@ -39,7 +37,12 @@ namespace PKMDSBlazor.Components
             binaryReader.Close();
             fileStream.Close();
 
-            Pokemon = new PokemonData(fileBytes.ToArray());
+            for (ushort i = 0; i < 6; i++)
+            {
+                PokemonData pkm = new PokemonData(fileBytes.ToArray());
+                pkm.NationalId += i;
+                PartyPokemon.Add(pkm);
+            }
 
             //SaveFileName = ConvertDsToUnicode(fileBytes.Slice(0x64, 16));
 
