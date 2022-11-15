@@ -1,4 +1,4 @@
-﻿@if (AppState.SaveFile is not null)
+﻿@if (AppState.SaveFile is { OT.Length: > 0 })
 {
     <PageTitle>@AppState.SaveFile.OT</PageTitle>
     <h3>@AppState.SaveFile.OT</h3>
