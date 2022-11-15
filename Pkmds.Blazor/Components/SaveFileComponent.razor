@@ -1,4 +1,13 @@
-﻿<span>@OtName</span>
+﻿@if (AppState.SaveFile is not null)
+{
+    <PageTitle>@AppState.SaveFile.OT</PageTitle>
+    <h3>@AppState.SaveFile.OT</h3>
+}
+else
+{
+    <PageTitle>Load a Save File</PageTitle>
+    <h3>Load a Save File</h3>
+}
 <div>
     <label for="file">File</label>
     <InputFile id="file" OnChange="@HandleFile" />

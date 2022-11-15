@@ -4,8 +4,6 @@ public partial class SaveFileComponent
 {
     private IBrowserFile? browserFile;
 
-    private string OtName { get; set; } = string.Empty;
-
     private void HandleFile(InputFileChangeEventArgs e) => browserFile = e.File;
 
     private async Task LoadSaveFileAsync()
@@ -24,8 +22,5 @@ public partial class SaveFileComponent
         {
             return;
         }
-
-        OtName = AppState.SaveFile.OT;
-        StateHasChanged();
     }
 }
