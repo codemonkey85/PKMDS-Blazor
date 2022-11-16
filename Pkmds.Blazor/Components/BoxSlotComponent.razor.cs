@@ -235,8 +235,8 @@ public partial class BoxSlotComponent
         {
             sb.Append(Pokemon.Form switch
             {
-                1 => "-ordinary",
-                2 => "-resolute",
+                0 => "-ordinary",
+                1 => "-resolute",
                 _ => string.Empty,
             });
         }
@@ -245,21 +245,21 @@ public partial class BoxSlotComponent
         {
             sb.Append(Pokemon.Form switch
             {
-                1 => "-aria",
-                2 => "-pirouette",
+                0 => "-aria",
+                1 => "-pirouette",
                 _ => string.Empty,
             });
         }
 
-        if ((Species)Pokemon.Species is Species.Meloetta)
+        if ((Species)Pokemon.Species is Species.Genesect)
         {
             sb.Append(Pokemon.Form switch
             {
+                0 => "-standard",
                 1 => "-burn",
                 2 => "-chill",
                 3 => "-douse",
                 4 => "-shock",
-                5 => "-standard",
                 _ => string.Empty,
             });
         }
@@ -270,7 +270,7 @@ public partial class BoxSlotComponent
         {
             sb.Append(Pokemon.Form switch
             {
-                1 => "",
+                0 => "",
                 _ => string.Empty,
             });
         }
@@ -282,11 +282,12 @@ public partial class BoxSlotComponent
         {
             sb.Append(Pokemon.Form switch
             {
-                1 => "-red",
-                2 => "-blue",
-                3 => "-orange",
-                4 => "-white",
-                5 => "-yellow",
+                0 => "-red",
+                1 => "-blue",
+                2 => "-orange",
+                3 => "-white",
+                4 => "-yellow",
+                5 => "-eternal",
                 _ => string.Empty,
             });
         }
