@@ -5,20 +5,44 @@
             @BoxEdit.BoxName
         </h3>
     </div>
-    @for (int rowNum = 0; rowNum < 5; rowNum++)
+
+    <table class="table">
+        <tbody>
+            @for (var rowNum = 0; rowNum < 5; rowNum++)
+            {
+                <tr>
+                    @for (var colNum = 0; colNum < 6; colNum++)
+                    {
+                        var pkm = BoxEdit[rowNum * 6 + colNum];
+                        <td>
+                            <div class="box-slot">
+                                @(pkm is { Species: > 0 }
+                                    ? SpeciesName.GetSpeciesName(pkm.Species, (int)LanguageID.English)
+                                    : string.Empty)
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @*
+    @for (var rowNum = 0; rowNum < 5; rowNum++)
     {
-        <div class="row">
-            @for (int colNum = 0; colNum < 6; colNum++)
+        <div class="row box-slot">
+            @for (var colNum = 0; colNum < 6; colNum++)
             {
                 var pkm = BoxEdit[(rowNum * 6) + colNum];
-                <div class="col">
+                <div class="col box-slot">
                     <span>
                         @(pkm is { Species: > 0 }
-                            ? PKHeX.Core.SpeciesName.GetSpeciesName(pkm.Species, (int)LanguageID.English)
+                            ? SpeciesName.GetSpeciesName(pkm.Species, (int)LanguageID.English)
                             : string.Empty)
                     </span>
                 </div>
             }
         </div>
     }
+*@
 }

@@ -1,8 +1,19 @@
-﻿.row {
-    display: flex;
-    padding: 6px;
+﻿table, th, td {
+    border: 1px solid;
 }
 
-.col {
-    flex: 1;
+table {
+    border-collapse: collapse;
 }
+
+.box-slot {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .box-slot:hover {
+        background-color: orange;
+    }

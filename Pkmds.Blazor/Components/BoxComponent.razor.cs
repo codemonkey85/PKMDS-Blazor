@@ -14,7 +14,7 @@ public partial class BoxComponent
             return;
         }
 
-        BoxEdit = new(AppState.SaveFile);
+        BoxEdit = new BoxEdit(AppState.SaveFile);
         BoxEdit.LoadBox(BoxId);
         StateHasChanged();
     }
