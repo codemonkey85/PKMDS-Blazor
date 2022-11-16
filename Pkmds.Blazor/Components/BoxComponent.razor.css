@@ -5,3 +5,33 @@
 table {
     border-collapse: collapse;
 }
+
+.container {
+    display: flex;
+    /*float: left;*/
+}
+
+.column-1 {
+    flex-shrink: 0; /* shrinks to 0 to apply 70% width*/
+    flex-basis: 70%; /* sets initial width to 70% */
+}
+
+.column-2 {
+    float: left;
+}
+
+.box {
+    padding: 10px;
+    margin: 1rem;
+}
+
+@media only screen and (max-width: 900px) {
+    .container {
+        /* it place the items in vertical direction */
+        flex-direction: column;
+    }
+
+    .box {
+        margin: 0 0 1rem;
+    }
+}
