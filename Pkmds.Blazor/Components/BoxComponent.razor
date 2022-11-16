@@ -14,35 +14,10 @@
                     @for (var colNum = 0; colNum < 6; colNum++)
                     {
                         var pkm = BoxEdit[rowNum * 6 + colNum];
-                        <td>
-                            <div class="box-slot">
-                                @(pkm is { Species: > 0 }
-                                    ? SpeciesName.GetSpeciesName(pkm.Species, (int)LanguageID.English)
-                                    : string.Empty)
-                            </div>
-                        </td>
+                        <BoxSlotComponent Pokemon="pkm" />
                     }
                 </tr>
             }
         </tbody>
     </table>
-
-    @*
-    @for (var rowNum = 0; rowNum < 5; rowNum++)
-    {
-        <div class="row box-slot">
-            @for (var colNum = 0; colNum < 6; colNum++)
-            {
-                var pkm = BoxEdit[(rowNum * 6) + colNum];
-                <div class="col box-slot">
-                    <span>
-                        @(pkm is { Species: > 0 }
-                            ? SpeciesName.GetSpeciesName(pkm.Species, (int)LanguageID.English)
-                            : string.Empty)
-                    </span>
-                </div>
-            }
-        </div>
-    }
-*@
 }
