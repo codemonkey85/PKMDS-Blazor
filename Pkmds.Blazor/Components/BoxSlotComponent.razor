@@ -2,8 +2,7 @@
     <div class="box-slot">
         @if (Pokemon is { Species: > 0 })
         {
-            @*<img class="box-sprite" src="@spriteImageUrl" alt="@SpeciesName.GetSpeciesName(Pokemon.Species, (int)LanguageID.English)" />*@
-            <span class="pokesprite pokemon @SpeciesName.GetSpeciesName(Pokemon.Species, (int)LanguageID.English).ToLower().Replace(" ", "").Replace(".", "-")"></span>
+            <span class="box-sprite pokesprite pokemon @GetPokemonSpriteCssClass()"></span>
         }
     </div>
 </td>
