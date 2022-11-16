@@ -2,7 +2,7 @@
     <div class="box-slot">
         @if (Pokemon is { Species: > 0 })
         {
-            <span class="box-sprite pokesprite pokemon @GetPokemonSpriteCssClass()"></span>
+            <span class="box-sprite pokesprite pokemon @(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))"></span>
         }
     </div>
 </td>
