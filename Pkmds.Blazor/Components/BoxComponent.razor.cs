@@ -14,8 +14,10 @@ public partial class BoxComponent
             return;
         }
 
+        AppState.SelectedPokemon = null;
+
         BoxEdit = new BoxEdit(AppState.SaveFile);
         BoxEdit.LoadBox(BoxId);
-        StateHasChanged();
+        AppState.OnAppStateChanged?.Invoke();
     }
 }

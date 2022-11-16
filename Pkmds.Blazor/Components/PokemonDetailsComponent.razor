@@ -1,0 +1,9 @@
+﻿@if (AppState.SelectedPokemon is { Species: > 0 })
+{
+    <h3>Pokémon Details</h3>
+    <div>
+        <span>@AppState.SelectedPokemon.Nickname</span>
+        <span>@SpeciesName.GetSpeciesName(AppState.SelectedPokemon.Species, (int)LanguageID.English)</span>
+        <span class="box-sprite pokesprite pokemon @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))"></span>
+    </div>
+}

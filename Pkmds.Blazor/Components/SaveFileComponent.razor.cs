@@ -1,8 +1,10 @@
 namespace Pkmds.Blazor.Components;
 
-public partial class SaveFileComponent
+public partial class SaveFileComponent : IDisposable
 {
     private IBrowserFile? browserFile;
+
+    protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
 
     private void HandleFile(InputFileChangeEventArgs e) => browserFile = e.File;
 
@@ -23,4 +25,6 @@ public partial class SaveFileComponent
             return;
         }
     }
+
+    public void Dispose() => AppState.OnAppStateChanged -= StateHasChanged;
 }

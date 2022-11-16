@@ -1,5 +1,5 @@
 ﻿<td>
-    <div class="box-slot">
+    <div class="box-slot @(Pokemon is not { Species: > 0 } ? "empty" : string.Empty)" @onclick="SetSelectedPokemon">
         @if (Pokemon is { Species: > 0 })
         {
             <span class="box-sprite pokesprite pokemon @(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))"></span>
