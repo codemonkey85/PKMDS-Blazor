@@ -1,0 +1,26 @@
+﻿<div>
+    <label for="file">Choose a save file:</label>
+    <br />
+    <InputFile id="file" OnChange="@HandleFile" />
+</div>
+
+<div class="button-container">
+    <button @onclick="LoadSaveFileAsync" type="submit" class="btn btn-primary">
+        Load
+    </button>
+</div>
+
+@if (AppState.SaveFile is not null)
+{
+    <PageTitle>
+        @($"PKMDS - {AppState.SaveFile.OT} ({AppState.SaveFile.Version.ToString()})")
+    </PageTitle>
+    <h3>@AppState.SaveFile.OT</h3>
+    <select @bind="AppState.SaveFile.CurrentBox">
+        @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
+        {
+            <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
+        }
+    </select>
+    <BoxComponent BoxId="@AppState.SaveFile.CurrentBox" />
+}
