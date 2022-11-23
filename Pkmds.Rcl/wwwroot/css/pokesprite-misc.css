@@ -1,8 +1,8 @@
 .pokesprite { display: inline-block }
-.pokesprite.ribbon { background: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
-.pokesprite.body-style { background: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
-.pokesprite.special-attribute { background: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
-.pokesprite.seals { background: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
+.pokesprite.ribbon { background-image: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
+.pokesprite.body-style { background-image: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
+.pokesprite.special-attribute { background-image: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
+.pokesprite.seals { background-image: url('pokesprite-misc.png'); image-rendering: pixelated; image-rendering: -moz-crisp-edges }
 .pokesprite.ribbon.ability-ribbon { width: 40px; height: 40px; background-position: -0px -0px }
 .pokesprite.ribbon.alert-ribbon { width: 40px; height: 40px; background-position: -42px -0px }
 .pokesprite.ribbon.alola-champion-ribbon { width: 40px; height: 40px; background-position: -84px -0px }

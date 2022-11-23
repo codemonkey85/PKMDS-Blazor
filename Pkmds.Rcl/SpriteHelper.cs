@@ -4,6 +4,7 @@ public static class SpriteHelper
 {
     private const string Alola = "-alola";
     private const string Galar = "-galar";
+    private const string Hisui = "-hisui";
 
     public static string GetPokemonSpriteCssClass(PKM? pokemon)
     {
@@ -32,7 +33,7 @@ public static class SpriteHelper
             Species.Geodude or Species.Graveler or Species.Golem or
             Species.Grimer or Species.Muk or
             Species.Exeggutor or
-            Species.Marowak => pokemon.Form == 1 ? Alola : string.Empty,
+            Species.Marowak when pokemon.Form == 1 => Alola,
 
             Species.Ponyta or Species.Rapidash or
             Species.Slowpoke or Species.Slowking or
@@ -44,7 +45,7 @@ public static class SpriteHelper
             Species.Zigzagoon or Species.Linoone or
             Species.Darumaka or Species.Darmanitan or
             Species.Yamask or
-            Species.Stunfisk => pokemon.Form == 1 ? Galar : string.Empty,
+            Species.Stunfisk when pokemon.Form == 1 => Galar,
 
             Species.Meowth => pokemon.Form switch
             {
@@ -54,6 +55,19 @@ public static class SpriteHelper
             },
 
             Species.Slowbro when pokemon.Form == 2 => Galar,
+
+            Species.Growlithe or Species.Arcanine or
+            Species.Voltorb or Species.Electrode or
+            Species.Typhlosion or
+            Species.Qwilfish or
+            Species.Sneasel or
+            Species.Samurott or
+            Species.Lilligant or
+            Species.Zorua or Species.Zoroark or
+            Species.Braviary or
+            Species.Sliggoo or Species.Goodra or
+            Species.Avalugg or
+            Species.Decidueye when pokemon.Form == 1 => Hisui,
 
             Species.Tornadus or
             Species.Thundurus or
@@ -360,6 +374,13 @@ public static class SpriteHelper
             Species.Zarude => pokemon.Form switch
             {
                 1 => "-dada",
+                _ => string.Empty,
+            },
+
+            Species.Calyrex => pokemon.Form switch
+            {
+                1 => "-ice-rider",
+                2 => "-shadow-rider",
                 _ => string.Empty,
             },
 
