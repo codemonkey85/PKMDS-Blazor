@@ -2,6 +2,8 @@ namespace Pkmds.Rcl.Components;
 
 public partial class SaveFileComponent : IDisposable
 {
+    private const long MaxFileSize = 2000000L;
+
     private IBrowserFile? browserFile;
 
     protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
@@ -15,7 +17,7 @@ public partial class SaveFileComponent : IDisposable
             return;
         }
 
-        await using var fileStream = browserFile.OpenReadStream(1000000L);
+        await using var fileStream = browserFile.OpenReadStream(MaxFileSize);
         using var memoryStream = new MemoryStream();
         await fileStream.CopyToAsync(memoryStream);
         var data = memoryStream.ToArray();

@@ -299,8 +299,8 @@ public static class SpriteHelper
 
             Species.Toxtricity => pokemon.Form switch
             {
-                1 => "-amped",
-                2 => "-low-key",
+                0 => "-amped",
+                1 => "-low-key",
                 _ => string.Empty,
             },
 
@@ -325,13 +325,15 @@ public static class SpriteHelper
         }
 
         return sb.ToString();
-    }
 
-    private static string GetPokemonSpriteCssClassFromId(ushort id) =>
-        SpeciesName.GetSpeciesName(id, (int)LanguageID.English)
+        static string GetPokemonSpriteCssClassFromId(ushort id) =>
+            SpeciesName.GetSpeciesName(id, (int)LanguageID.English)
             .ToLower()
-            .Replace(" ", string.Empty)
+            .Replace(":", string.Empty)
             .Replace("'", string.Empty)
+            .Replace("’", string.Empty)
+            .Replace(" ", "-")
             .Replace("é", "e")
             .Replace(".", "-");
+    }
 }
