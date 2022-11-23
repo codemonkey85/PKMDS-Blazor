@@ -1,4 +1,4 @@
-namespace Pkmds.Blazor.Components;
+namespace Pkmds.Rcl.Components;
 
 public partial class SaveFileComponent : IDisposable
 {

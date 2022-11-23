@@ -3,5 +3,5 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services
     .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
-    .AddScoped<AppState>();
+    .AddScoped<IAppState, AppState>();
 await builder.Build().RunAsync();

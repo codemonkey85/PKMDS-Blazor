@@ -1,4 +1,6 @@
-﻿namespace Pkmds.Blazor;
+﻿#nullable enable
+
+namespace Pkmds.Maui;
 
 public class AppState : IAppState
 {

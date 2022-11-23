@@ -1,4 +1,4 @@
-namespace Pkmds.Blazor.Components;
+namespace Pkmds.Rcl.Components;
 
 public partial class BoxSlotComponent
 {
@@ -8,6 +8,6 @@ public partial class BoxSlotComponent
     private void SetSelectedPokemon()
     {
         AppState.SelectedPokemon = Pokemon;
-        AppState.OnAppStateChanged?.Invoke();
+        AppState.Refresh();
     }
 }

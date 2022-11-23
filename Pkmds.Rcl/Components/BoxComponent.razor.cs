@@ -1,4 +1,4 @@
-namespace Pkmds.Blazor.Components;
+namespace Pkmds.Rcl.Components;
 
 public partial class BoxComponent
 {
@@ -15,9 +15,9 @@ public partial class BoxComponent
         }
 
         AppState.SelectedPokemon = null;
+        AppState.Refresh();
 
         BoxEdit = new BoxEdit(AppState.SaveFile);
         BoxEdit.LoadBox(BoxId);
-        AppState.OnAppStateChanged?.Invoke();
     }
 }
