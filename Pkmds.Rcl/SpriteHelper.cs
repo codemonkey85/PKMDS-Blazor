@@ -2,6 +2,9 @@
 
 public static class SpriteHelper
 {
+    private const string Alola = "-alola";
+    private const string Galar = "-galar";
+
     public static string GetPokemonSpriteCssClass(PKM? pokemon)
     {
         if (pokemon is null or { Species: (ushort)Species.None })
@@ -29,25 +32,28 @@ public static class SpriteHelper
             Species.Geodude or Species.Graveler or Species.Golem or
             Species.Grimer or Species.Muk or
             Species.Exeggutor or
-            Species.Marowak => pokemon.Form == 1 ? "-alola" : string.Empty,
+            Species.Marowak => pokemon.Form == 1 ? Alola : string.Empty,
 
             Species.Ponyta or Species.Rapidash or
-            Species.Slowpoke or Species.Slowbro or Species.Slowking or
+            Species.Slowpoke or Species.Slowking or
             Species.Farfetchd or
             Species.Weezing or
             Species.MrMime or
+            Species.Articuno or Species.Zapdos or Species.Moltres or
             Species.Corsola or
             Species.Zigzagoon or Species.Linoone or
             Species.Darumaka or Species.Darmanitan or
             Species.Yamask or
-            Species.Stunfisk => pokemon.Form == 1 ? "-galar" : string.Empty,
+            Species.Stunfisk => pokemon.Form == 1 ? Galar : string.Empty,
 
             Species.Meowth => pokemon.Form switch
             {
-                1 => "-alola",
-                2 => "-galar",
+                1 => Alola,
+                2 => Galar,
                 _ => string.Empty,
             },
+
+            Species.Slowbro when pokemon.Form == 2 => Galar,
 
             Species.Tornadus or
             Species.Thundurus or
