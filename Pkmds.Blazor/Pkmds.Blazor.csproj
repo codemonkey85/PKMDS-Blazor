@@ -8,10 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="TestFiles\**" />
-	  <Content Remove="TestFiles\**" />
-	  <EmbeddedResource Remove="TestFiles\**" />
-	  <None Remove="TestFiles\**" />
+		<Compile Remove="TestFiles\**" />
+		<Content Remove="TestFiles\**" />
+		<EmbeddedResource Remove="TestFiles\**" />
+		<None Remove="TestFiles\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -24,7 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
+		<ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
 	</ItemGroup>
 
 </Project>
