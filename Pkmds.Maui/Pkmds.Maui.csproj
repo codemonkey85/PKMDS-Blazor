@@ -57,4 +57,10 @@
       <ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <MauiXaml Update="AppShell.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
 </Project>

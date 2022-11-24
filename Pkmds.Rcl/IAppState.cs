@@ -7,5 +7,6 @@ public interface IAppState
     SaveFile? SaveFile { get; set; }
 
     PKM? SelectedPokemon { get; set; }
+
     void Refresh();
 }

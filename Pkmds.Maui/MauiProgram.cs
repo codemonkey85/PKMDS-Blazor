@@ -9,11 +9,16 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
-        builder.Services.AddMauiBlazorWebView();
-        builder.Services.AddScoped<IAppState, AppState>();
+        var services = builder.Services;
+        services.AddMauiBlazorWebView();
+
+        services
+            .AddSingleton<HttpClient>()
+            .AddScoped<IAppState, AppState>()
+            .AddSingleton<MainPage>();
 
 #if DEBUG
-        builder.Services.AddBlazorWebViewDeveloperTools();
+        services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
 
