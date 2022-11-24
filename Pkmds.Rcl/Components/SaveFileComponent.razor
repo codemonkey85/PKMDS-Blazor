@@ -16,11 +16,19 @@
         @($"PKMDS - {AppState.SaveFile.OT} ({AppState.SaveFile.Version.ToString()})")
     </PageTitle>
     <h3>@AppState.SaveFile.OT</h3>
-    <select @bind="AppState.SaveFile.CurrentBox">
-        @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
-        {
-            <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
-        }
-    </select>
+    <div>
+        <button class="btn">
+            <i class="oi oi-arrow-left" />
+        </button>
+        <select @bind="AppState.SaveFile.CurrentBox">
+            @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
+            {
+                <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
+            }
+        </select>
+        <button class="btn">
+            <i class="oi oi-arrow-right" />
+        </button>
+    </div>
     <BoxComponent BoxId="@AppState.SaveFile.CurrentBox" />
 }

@@ -1,18 +1,11 @@
-﻿.box-sprite {
-    width: 80px;
-    height: 80px;
+﻿.col {
+    min-width: 80px;
+    max-width: 80px;
+    min-height: 400px;
+    max-height: 400px;
 }
 
-.box-slot {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+.box-slot:not(.empty) :hover {
+    background-color: orange;
+    border-radius: 6px;
 }
-
-    .box-slot:not(.empty) :hover {
-        background-color: orange;
-        border-radius: 6px;
-    }
