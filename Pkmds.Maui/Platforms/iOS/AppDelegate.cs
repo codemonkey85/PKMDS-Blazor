@@ -1,6 +1,7 @@
 ﻿using Foundation;
 
 namespace Pkmds.Maui;
+
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {

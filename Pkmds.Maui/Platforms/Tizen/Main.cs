@@ -1,7 +1,3 @@
-using System;
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
-
 namespace Pkmds.Maui;
 
 internal class Program : MauiApplication

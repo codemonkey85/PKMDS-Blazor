@@ -2,6 +2,7 @@
 using Android.Runtime;
 
 namespace Pkmds.Maui;
+
 [Application]
 public class MainApplication : MauiApplication
 {
