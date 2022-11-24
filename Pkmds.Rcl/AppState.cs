@@ -1,4 +1,4 @@
-﻿namespace Pkmds.Blazor;
+﻿namespace Pkmds.Rcl;
 
 public class AppState : IAppState
 {
