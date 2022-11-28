@@ -17,8 +17,8 @@
     </PageTitle>
     <h3>@AppState.SaveFile.OT</h3>
     <div>
-        <button class="btn">
-            <i class="oi oi-arrow-left" />
+        <button type="button" @onclick=NavigateLeft class="btn">
+            <i class="oi oi-arrow-left"></i>
         </button>
         <select @bind="AppState.SaveFile.CurrentBox">
             @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
@@ -26,8 +26,8 @@
                 <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
             }
         </select>
-        <button class="btn">
-            <i class="oi oi-arrow-right" />
+        <button type="button" @onclick=NavigateRight class="btn">
+            <i class="oi oi-arrow-right"></i>
         </button>
     </div>
     <BoxComponent BoxId="@AppState.SaveFile.CurrentBox" />
