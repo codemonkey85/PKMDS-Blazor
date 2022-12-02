@@ -5,15 +5,22 @@ public static class SpriteHelper
     private const string Alola = "-alola";
     private const string Galar = "-galar";
     private const string Hisui = "-hisui";
+    private const string Unknown = "unknown";
 
     public static string GetPokemonSpriteCssClass(PKM? pokemon)
     {
-        if (pokemon is null or { Species: (ushort)Species.None })
+        if (pokemon is null or { Species: <= (ushort)Species.None or > (ushort)Species.MAX_COUNT })
         {
-            return string.Empty;
+            return Unknown;
         }
 
         var sb = new StringBuilder();
+
+        // Temp workaround until we have Gen IX Sprites
+        if (pokemon is { Species: > (ushort)Species.Enamorus })
+        {
+            sb.Append($"{Unknown} ");
+        }
 
         sb.Append((Species)pokemon.Species switch
         {
@@ -461,7 +468,7 @@ public static class SpriteHelper
                 _ => "-plain",
             });
 
-            return sbForm.ToString();
+            return sbForm.ToString().Trim();
         }
     }
 }
