@@ -2,7 +2,7 @@ namespace Pkmds.Rcl.Components;
 
 public partial class SaveFileComponent : IDisposable
 {
-    private const long MaxFileSize = 2000000L;
+    private const long MaxFileSize = 4000000L;
 
     private IBrowserFile? browserFile;
 
