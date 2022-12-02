@@ -6,7 +6,7 @@ public static class SpriteHelper
     private const string Galar = "-galar";
     private const string Hisui = "-hisui";
     private const string Paldea = "-paldea";
-    private const string Unknown = "unknown";
+    private const string Unknown = " unknown ";
 
     public static string GetPokemonSpriteCssClass(PKM? pokemon)
     {
@@ -20,7 +20,7 @@ public static class SpriteHelper
         // Temp workaround until we have Gen IX Sprites
         if (pokemon is { Species: > (ushort)Species.Enamorus })
         {
-            sb.Append($"{Unknown} ");
+            sb.Append(Unknown);
         }
 
         sb.Append((Species)pokemon.Species switch
@@ -77,13 +77,13 @@ public static class SpriteHelper
             Species.Avalugg or
             Species.Decidueye when pokemon.Form == 1 => Hisui,
 
-            Species.Wooper when pokemon.Form == 1 => Paldea,
+            Species.Wooper when pokemon.Form == 1 => Unknown, // Paldea,
 
             Species.Tauros => pokemon.Form switch
             {
-                1 => Paldea,
-                2 => "blaze-breed",
-                3 => "aqua-breed",
+                1 => Unknown, // Paldea,
+                2 => Unknown, // "-blaze-breed",
+                3 => Unknown, // "-aqua-breed",
                 _ => string.Empty,
             },
 
