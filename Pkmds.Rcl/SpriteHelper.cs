@@ -17,7 +17,7 @@ public static class SpriteHelper
 
         var sb = new StringBuilder();
 
-        // Temp workaround until we have Gen IX Sprites
+        // TODO: Temp workaround until we have Gen IX Sprites
         if (pokemon is { Species: > (ushort)Species.Enamorus })
         {
             sb.Append(Unknown);
@@ -77,8 +77,10 @@ public static class SpriteHelper
             Species.Avalugg or
             Species.Decidueye when pokemon.Form == 1 => Hisui,
 
+            // TODO: Temp workaround until we have Gen IX Sprites
             Species.Wooper when pokemon.Form == 1 => Unknown, // Paldea,
 
+            // TODO: Temp workaround until we have Gen IX Sprites
             Species.Tauros => pokemon.Form switch
             {
                 1 => Unknown, // Paldea,
