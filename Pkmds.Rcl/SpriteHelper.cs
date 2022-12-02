@@ -5,6 +5,7 @@ public static class SpriteHelper
     private const string Alola = "-alola";
     private const string Galar = "-galar";
     private const string Hisui = "-hisui";
+    private const string Paldea = "-paldea";
     private const string Unknown = "unknown";
 
     public static string GetPokemonSpriteCssClass(PKM? pokemon)
@@ -75,6 +76,16 @@ public static class SpriteHelper
             Species.Sliggoo or Species.Goodra or
             Species.Avalugg or
             Species.Decidueye when pokemon.Form == 1 => Hisui,
+
+            Species.Wooper when pokemon.Form == 1 => Paldea,
+
+            Species.Tauros => pokemon.Form switch
+            {
+                1 => Paldea,
+                2 => "blaze-breed",
+                3 => "aqua-breed",
+                _ => string.Empty,
+            },
 
             Species.Tornadus or
             Species.Thundurus or
