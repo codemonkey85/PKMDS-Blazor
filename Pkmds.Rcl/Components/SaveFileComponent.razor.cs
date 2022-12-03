@@ -19,6 +19,8 @@ public partial class SaveFileComponent : IDisposable
             return;
         }
 
+        AppState.SaveFile = null;
+
         await using var fileStream = browserFile.OpenReadStream(MaxFileSize);
         using var memoryStream = new MemoryStream();
         await fileStream.CopyToAsync(memoryStream);
