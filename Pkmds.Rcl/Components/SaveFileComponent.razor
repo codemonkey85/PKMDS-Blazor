@@ -15,7 +15,7 @@
     <PageTitle>PKMDS - @FileDisplayName</PageTitle>
     <h3>@FileDisplayName</h3>
     <div>
-        <button type="button" @onclick=NavigateLeft class="btn">
+        <button type="button" @onclick=NavigateLeft class="btn btn-secondary">
             <i class="oi oi-arrow-left"></i>
         </button>
         <select @bind="AppState.SaveFile.CurrentBox">
@@ -24,7 +24,7 @@
                 <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
             }
         </select>
-        <button type="button" @onclick=NavigateRight class="btn">
+        <button type="button" @onclick=NavigateRight class="btn btn-secondary">
             <i class="oi oi-arrow-right"></i>
         </button>
     </div>

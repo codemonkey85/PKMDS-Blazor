@@ -1,17 +1,17 @@
 ﻿@if (BoxEdit is not null)
 {
-    <div class="container">
+    <div>
         <div class="column-1 box">
             <h3>
                 @BoxEdit.BoxName
             </h3>
 
-            <div class="table-container">
+            <div class="container table-container">
                 <table class="table table-bordered">
                     <tbody>
                         @for (var rowNum = 0; rowNum < 5; rowNum++)
                         {
-                            <tr class="row">
+                            <tr class="">
                                 @for (var colNum = 0; colNum < 6; colNum++)
                                 {
                                     var pkm = BoxEdit[rowNum * 6 + colNum];

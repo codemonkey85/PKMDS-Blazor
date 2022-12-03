@@ -1,13 +1,24 @@
-﻿.table-container {
+﻿table,
+th,
+td {
+    border: 1px solid black;
+    border-collapse: collapse;
 }
 
 table {
-    overflow: hidden;
+    width: 50%;
 }
 
-.row {
-    min-height: 80px;
-    max-height: 80px;
-    min-width: 480px;
-    max-width: 480px;
+    table.fixed {
+        table-layout: fixed;
+    }
+
+        table.fixed td {
+            overflow: hidden;
+            max-width: 80px;
+        }
+
+.box-slot:not(.empty) :hover {
+    background-color: orange;
+    border-radius: 6px;
 }

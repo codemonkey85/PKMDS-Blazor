@@ -2,8 +2,12 @@
 {
     <h3>Pokémon Details</h3>
     <div>
-        <span>@AppState.SelectedPokemon.Nickname</span>
-        <span>@SpeciesName.GetSpeciesName(AppState.SelectedPokemon.Species, (int)LanguageID.English)</span>
-        <span class="box-sprite pokesprite pokemon @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))"></span>
+        <span>
+            @AppState.SelectedPokemon.Nickname
+        </span>
+        <span>
+            @SpeciesName.GetSpeciesName(AppState.SelectedPokemon.Species, (int)LanguageID.English)
+        </span>
+        <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))"></span>
     </div>
 }

@@ -1,9 +1,22 @@
-﻿.col {
-    min-width: 80px;
-    max-width: 80px;
-    min-height: 400px;
-    max-height: 400px;
+﻿table,
+th,
+td {
+    border: 1px solid black;
+    border-collapse: collapse;
 }
+
+table {
+    width: 50%;
+}
+
+    table.fixed {
+        table-layout: fixed;
+    }
+
+        table.fixed td {
+            overflow: hidden;
+            max-width: 80px;
+        }
 
 .box-slot:not(.empty) :hover {
     background-color: orange;

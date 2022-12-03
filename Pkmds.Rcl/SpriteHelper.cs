@@ -22,7 +22,7 @@ public static class SpriteHelper
                 };
         }
 
-        var sb = new StringBuilder();
+        var sb = new StringBuilder("pokesprite pokemon ");
 
         // TODO: Temp workaround until we have Gen IX Sprites
         if (pokemon is { Species: > (ushort)Species.Enamorus })
