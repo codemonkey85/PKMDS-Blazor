@@ -2,6 +2,8 @@ namespace Pkmds.Rcl.Components;
 
 public partial class SaveFileComponent : IDisposable
 {
+    private string FileDisplayName { get; set; }
+
     private const long MaxFileSize = 4000000L;
 
     private IBrowserFile? browserFile;
@@ -26,6 +28,8 @@ public partial class SaveFileComponent : IDisposable
         {
             return;
         }
+
+        FileDisplayName = $"{AppState.SaveFile.OT} ({AppState.SaveFile.DisplayTID}, {AppState.SaveFile.Version})";
     }
 
     public void Dispose() => AppState.OnAppStateChanged -= StateHasChanged;

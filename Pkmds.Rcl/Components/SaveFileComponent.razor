@@ -12,10 +12,8 @@
 
 @if (AppState.SaveFile is not null)
 {
-    <PageTitle>
-        @($"PKMDS - {AppState.SaveFile.OT} ({AppState.SaveFile.Version.ToString()})")
-    </PageTitle>
-    <h3>@AppState.SaveFile.OT</h3>
+    <PageTitle>PKMDS - @FileDisplayName</PageTitle>
+    <h3>@FileDisplayName</h3>
     <div>
         <button type="button" @onclick=NavigateLeft class="btn">
             <i class="oi oi-arrow-left"></i>
