@@ -4,7 +4,7 @@ public partial class SaveFileComponent : IDisposable
 {
     private string FileDisplayName { get; set; }
 
-    private const long MaxFileSize = 4000000L;
+    private const long MaxFileSize = 4_000_000L; // bytes
 
     private IBrowserFile? browserFile;
 
