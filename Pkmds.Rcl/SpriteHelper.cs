@@ -10,9 +10,16 @@ public static class SpriteHelper
 
     public static string GetPokemonSpriteCssClass(PKM? pokemon)
     {
-        if (pokemon is null or { Species: <= (ushort)Species.None or > (ushort)Species.MAX_COUNT })
+        switch (pokemon)
         {
-            return Unknown;
+            case null or { Species: <= (ushort)Species.None or > (ushort)Species.MAX_COUNT }:
+                return Unknown;
+            case { IsEgg: true }:
+                return pokemon switch
+                {
+                    { Species: (ushort)Species.Manaphy } => " manaphy-egg ",
+                    _ => "egg",
+                };
         }
 
         var sb = new StringBuilder();
@@ -426,7 +433,7 @@ public static class SpriteHelper
             sb.Append(" female");
         }
 
-        return sb.ToString();
+        return sb.ToString().Trim();
 
         static string GetPokemonSpriteCssClassFromId(ushort id)
         {
@@ -481,7 +488,7 @@ public static class SpriteHelper
                 _ => "-plain",
             });
 
-            return sbForm.ToString().Trim();
+            return sbForm.ToString();
         }
     }
 }
