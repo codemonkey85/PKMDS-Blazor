@@ -2,7 +2,7 @@ namespace Pkmds.Rcl.Components;
 
 public partial class SaveFileComponent : IDisposable
 {
-    private string FileDisplayName { get; set; }
+    private string FileDisplayName { get; set; } = string.Empty;
 
     private const long MaxFileSize = 4_000_000L; // bytes
 
