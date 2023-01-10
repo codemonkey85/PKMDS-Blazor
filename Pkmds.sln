@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42249927-F096-41EE-9C58-D781063C293B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		global.json = global.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pkmds.Rcl", "Pkmds.Rcl\Pkmds.Rcl.csproj", "{2CE10D3D-6A1C-411A-A875-F16C00054C9A}"
@@ -29,8 +30,6 @@ Global
 		{2CE10D3D-6A1C-411A-A875-F16C00054C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CE10D3D-6A1C-411A-A875-F16C00054C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B067848-CA44-49D3-8E94-3DED0814B530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B067848-CA44-49D3-8E94-3DED0814B530}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B067848-CA44-49D3-8E94-3DED0814B530}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{8B067848-CA44-49D3-8E94-3DED0814B530}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B067848-CA44-49D3-8E94-3DED0814B530}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
