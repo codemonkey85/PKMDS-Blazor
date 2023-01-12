@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pkmds.Rcl", "Pkmds.Rcl\Pkmds.Rcl.csproj", "{2CE10D3D-6A1C-411A-A875-F16C00054C9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pkmds.Maui", "Pkmds.Maui\Pkmds.Maui.csproj", "{8B067848-CA44-49D3-8E94-3DED0814B530}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
