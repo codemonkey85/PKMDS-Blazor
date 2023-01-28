@@ -2,12 +2,50 @@
 {
     <h3>Pokémon Details</h3>
     <div>
-        <span>
-            @AppState.SelectedPokemon.Nickname
-        </span>
-        <span>
-            @SpeciesName.GetSpeciesName(AppState.SelectedPokemon.Species, (int)LanguageID.English)
-        </span>
-        <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))"></span>
+        <div>
+            <label for="nickname">Nickname:</label>
+            <span id="nickname">
+                @AppState.SelectedPokemon.Nickname
+            </span>
+        </div>
+        <div>
+            <label for="speciesName">Species:</label>
+            <span id="speciesName">
+                @SpeciesName.GetSpeciesName(AppState.SelectedPokemon.Species, (int)LanguageID.English)
+            </span>
+        </div>
+        <div>
+            <label for="level">Level:</label>
+            <span id="level">
+                @AppState.SelectedPokemon.CurrentLevel
+            </span>
+        </div>
+        <div>
+            <label for="isShiny">Shiny:</label>
+            <span id="isShiny">
+                @(AppState.SelectedPokemon.IsShiny ? "Yes" : "No")
+            </span>
+        </div>
+        <div>
+            <label for="nature">Nature:</label>
+            <span id="nature">
+                @((Nature)AppState.SelectedPokemon.Nature)
+            </span>
+        </div>
+        <div>
+            <label for="moves">Moves:</label>
+            <ul id="moves">
+                @foreach (var move in AppState.SelectedPokemon.Moves.Select(m => (Move)m)
+               .Where(m => m is not Move.None or Move.MAX_COUNT))
+                {
+                    <li>
+                        @((Move)move)
+                    </li>
+                }
+            </ul>
+        </div>
+        <div>
+            <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))"></span>
+        </div>
     </div>
 }
