@@ -17,7 +17,7 @@ public static class SpriteHelper
             case { IsEgg: true }:
                 return pokemon switch
                 {
-                    { Species: (ushort)Species.Manaphy } => " manaphy-egg ",
+                    { Species: (ushort)Species.Manaphy } => "manaphy-egg",
                     _ => "egg",
                 };
         }
