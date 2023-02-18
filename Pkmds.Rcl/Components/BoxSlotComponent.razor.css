@@ -1,24 +1,23 @@
-﻿table,
-th,
-td {
+﻿td {
+    width: 16.66%;
+    position: relative;
     border: 1px solid black;
-    border-collapse: collapse;
 }
 
-table {
-    width: 50%;
-}
-
-    table.fixed {
-        table-layout: fixed;
+    td:after {
+        content: '';
+        display: block;
+        margin-top: 100%;
     }
 
-        table.fixed td {
-            overflow: hidden;
-            max-width: 80px;
-        }
+    td .box-slot {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
 
-.box-slot:not(.empty) :hover {
+td:not(.empty) :hover {
     background-color: orange;
-    border-radius: 6px;
 }

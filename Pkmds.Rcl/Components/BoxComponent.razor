@@ -6,22 +6,18 @@
                 @BoxEdit.BoxName
             </h3>
 
-            <div class="container table-container">
-                <table class="table table-bordered">
-                    <tbody>
-                        @for (var rowNum = 0; rowNum < 5; rowNum++)
+            <table>
+                @for (var rowNum = 0; rowNum < 5; rowNum++)
+                {
+                    <tr>
+                        @for (var colNum = 0; colNum < 6; colNum++)
                         {
-                            <tr class="">
-                                @for (var colNum = 0; colNum < 6; colNum++)
-                                {
-                                    var pkm = BoxEdit[rowNum * 6 + colNum];
-                                    <BoxSlotComponent Pokemon="pkm" />
-                                }
-                            </tr>
+                            var pkm = BoxEdit[rowNum * 6 + colNum];
+                            <BoxSlotComponent Pokemon="pkm" />
                         }
-                    </tbody>
-                </table>
-            </div>
+                    </tr>
+                }
+            </table>
 
         </div>
 

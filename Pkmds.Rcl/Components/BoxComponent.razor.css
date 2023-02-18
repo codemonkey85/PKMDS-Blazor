@@ -1,24 +1,5 @@
-﻿table,
-th,
-td {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-
-table {
-    width: 50%;
-}
-
-    table.fixed {
-        table-layout: fixed;
-    }
-
-        table.fixed td {
-            overflow: hidden;
-            max-width: 80px;
-        }
-
-.box-slot:not(.empty) :hover {
-    background-color: orange;
-    border-radius: 6px;
+﻿table {
+    width: 420px;
+    margin: 5px;
+    padding: 5px;
 }

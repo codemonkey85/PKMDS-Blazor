@@ -1,6 +1,6 @@
-﻿<td class="">
-    <div class="box-slot @(Pokemon is not { Species: > 0 } ? "empty" : string.Empty)"
-         @onclick="SetPreviewPokemon">
+﻿<td class="@(Pokemon is not { Species: > 0 } ? "empty" : string.Empty)"
+    @onclick="SetPreviewPokemon">
+    <div class="box-slot">
         @if (Pokemon is { Species: > 0 })
         {
             <span class="@(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))"></span>
