@@ -30,12 +30,7 @@ public static class SpriteHelper
             sb.Append(Unknown);
         }
 
-        sb.Append((Species)pokemon.Species switch
-        {
-            Species.NidoranF => "nidoran-f",
-            Species.NidoranM => "nidoran-m",
-            _ => GetPokemonSpriteCssClassFromId(pokemon.Species),
-        });
+        sb.Append(GetPokemonSpriteCssClassFromId(pokemon.Species));
 
         sb.Append((Species)pokemon.Species switch
         {
@@ -442,8 +437,8 @@ public static class SpriteHelper
             .Replace(":", string.Empty)
             .Replace("'", string.Empty)
             .Replace("’", string.Empty)
-            .Replace("♀", string.Empty)
-            .Replace("♂", string.Empty)
+            .Replace("♀", "-f")
+            .Replace("♂", "-m")
             .Replace(" ", "-")
             .Replace("é", "e")
             .Replace(".", "-")
