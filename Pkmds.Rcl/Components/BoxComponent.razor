@@ -12,8 +12,9 @@
                     <tr>
                         @for (var colNum = 0; colNum < 6; colNum++)
                         {
-                            var pkm = BoxEdit[rowNum * 6 + colNum];
-                            <BoxSlotComponent Pokemon="pkm" />
+                            var boxSlot = rowNum * 6 + colNum;
+                            var pkm = BoxEdit[boxSlot];
+                            <BoxSlotComponent BoxSlot="boxSlot" Pokemon="pkm" />
                         }
                     </tr>
                 }

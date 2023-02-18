@@ -51,6 +51,9 @@ public partial class SaveFileComponent : IDisposable
         {
             AppState.SaveFile.CurrentBox++;
         }
+
+        AppState.SelectedBoxSlot = null;
+        AppState.SelectedPokemon = null;
     }
 
     private void NavigateLeft()
@@ -68,5 +71,8 @@ public partial class SaveFileComponent : IDisposable
         {
             AppState.SaveFile.CurrentBox--;
         }
+
+        AppState.SelectedBoxSlot = null;
+        AppState.SelectedPokemon = null;
     }
 }

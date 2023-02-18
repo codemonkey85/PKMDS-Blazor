@@ -1,6 +1,6 @@
 namespace Pkmds.Rcl.Components;
 
-public partial class BoxComponent
+public partial class BoxComponent : IDisposable
 {
     [Parameter]
     public int BoxId { get; set; }
@@ -20,4 +20,8 @@ public partial class BoxComponent
         BoxEdit = new BoxEdit(AppState.SaveFile);
         BoxEdit.LoadBox(BoxId);
     }
+
+    protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
+
+    public void Dispose() => AppState.OnAppStateChanged -= StateHasChanged;
 }

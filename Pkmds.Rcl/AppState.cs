@@ -8,5 +8,7 @@ public record AppState : IAppState
 
     public PKM? SelectedPokemon { get; set; }
 
+    public int? SelectedBoxSlot { get; set; }
+
     public void Refresh() => OnAppStateChanged?.Invoke();
 }

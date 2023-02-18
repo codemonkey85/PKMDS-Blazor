@@ -8,5 +8,7 @@ public interface IAppState
 
     PKM? SelectedPokemon { get; set; }
 
+    int? SelectedBoxSlot { get; set; }
+
     void Refresh();
 }

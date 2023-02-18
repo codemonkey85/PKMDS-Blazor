@@ -1,32 +1,34 @@
-﻿<div>
-    <label for="file">Choose a save file:</label>
-    <br />
-    <InputFile id="file" OnChange="@HandleFile" />
-</div>
-
-<div class="button-container">
-    <button @onclick="LoadSaveFileAsync" type="submit" class="btn btn-primary">
-        Load
-    </button>
-</div>
-
-@if (AppState.SaveFile is not null)
-{
-    <PageTitle>PKMDS - @FileDisplayName</PageTitle>
-    <h3>@FileDisplayName</h3>
+﻿<main>
     <div>
-        <button type="button" @onclick=NavigateLeft class="btn btn-secondary">
-            <i class="oi oi-arrow-left"></i>
-        </button>
-        <select @bind="AppState.SaveFile.CurrentBox">
-            @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
-            {
-                <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
-            }
-        </select>
-        <button type="button" @onclick=NavigateRight class="btn btn-secondary">
-            <i class="oi oi-arrow-right"></i>
+        <label for="file">Choose a save file:</label>
+        <br />
+        <InputFile id="file" OnChange="@HandleFile" />
+    </div>
+
+    <div class="button-container">
+        <button @onclick="LoadSaveFileAsync" type="submit" class="btn btn-primary">
+            Load
         </button>
     </div>
-    <BoxComponent BoxId="@AppState.SaveFile.CurrentBox" />
-}
+
+    @if (AppState.SaveFile is not null)
+    {
+        <PageTitle>PKMDS - @FileDisplayName</PageTitle>
+        <h3>@FileDisplayName</h3>
+        <div>
+            <button type="button" @onclick=NavigateLeft class="btn btn-secondary">
+                <i class="oi oi-arrow-left"></i>
+            </button>
+            <select @bind="AppState.SaveFile.CurrentBox">
+                @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
+                {
+                    <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
+                }
+            </select>
+            <button type="button" @onclick=NavigateRight class="btn btn-secondary">
+                <i class="oi oi-arrow-right"></i>
+            </button>
+        </div>
+        <BoxComponent BoxId="@AppState.SaveFile.CurrentBox" />
+    }
+</main>

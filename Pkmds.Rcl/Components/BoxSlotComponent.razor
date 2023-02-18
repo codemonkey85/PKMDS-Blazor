@@ -1,4 +1,4 @@
-﻿<td class="@(Pokemon is not { Species: > 0 } ? "empty" : string.Empty)"
+﻿<td class="@GetCssClass()"
     @onclick="SetPreviewPokemon">
     <div class="box-slot">
         @if (Pokemon is { Species: > 0 })
