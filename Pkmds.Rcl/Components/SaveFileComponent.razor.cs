@@ -20,6 +20,8 @@ public partial class SaveFileComponent : IDisposable
         }
 
         AppState.SaveFile = null;
+        AppState.SelectedBoxSlot = null;
+        AppState.SelectedPokemon = null;
 
         await using var fileStream = browserFile.OpenReadStream(MaxFileSize);
         using var memoryStream = new MemoryStream();
