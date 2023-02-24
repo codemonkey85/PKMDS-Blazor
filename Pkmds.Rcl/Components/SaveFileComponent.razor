@@ -5,9 +5,18 @@
 </div>
 
 <div class="button-container">
-    <button @onclick="LoadSaveFileAsync" type="submit" class="btn btn-primary">
-        Load
-    </button>
+    @if (browserFile is null)
+    {
+        <button @onclick="LoadSaveFileAsync" disabled="true" type="submit" class="btn btn-primary">
+            Load
+        </button>
+    }
+    else
+    {
+        <button @onclick="LoadSaveFileAsync" type="submit" class="btn btn-primary">
+            Load
+        </button>
+    }
 </div>
 
 @if (AppState.SaveFile is not null)
