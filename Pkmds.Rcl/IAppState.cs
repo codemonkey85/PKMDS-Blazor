@@ -11,4 +11,6 @@ public interface IAppState
     int? SelectedBoxSlot { get; set; }
 
     void Refresh();
+
+    void ClearSelection();
 }

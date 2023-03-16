@@ -11,4 +11,11 @@ public record AppState : IAppState
     public int? SelectedBoxSlot { get; set; }
 
     public void Refresh() => OnAppStateChanged?.Invoke();
+
+    public void ClearSelection()
+    {
+        SelectedPokemon = null;
+        SelectedBoxSlot = null;
+        Refresh();
+    }
 }
