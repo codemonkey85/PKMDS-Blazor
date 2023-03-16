@@ -1,6 +1,6 @@
 {
-  "name": "Pkmds.Blazor",
-  "short_name": "Pkmds.Blazor",
+  "name": "PKMDS Save Editor",
+  "short_name": "PKMDS Save Editor",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

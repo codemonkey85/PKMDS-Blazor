@@ -13,6 +13,7 @@ public static class MauiProgram
         services.AddMauiBlazorWebView();
 
         services
+            .AddMudServices()
             .AddSingleton<HttpClient>()
             .AddScoped<IAppState, AppState>()
             .AddSingleton<MainPage>();

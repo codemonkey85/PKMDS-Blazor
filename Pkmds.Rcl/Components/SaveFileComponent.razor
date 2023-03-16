@@ -1,41 +1,85 @@
 ﻿<div>
-    <label for="file">Choose a save file:</label>
-    <br />
-    <InputFile id="file" OnChange="@HandleFile" />
+    <MudFileUpload T="IBrowserFile"
+                   FilesChanged="HandleFile"
+                   Accept=".sav,.bin">
+
+        <ButtonTemplate>
+            <MudButton HtmlTag="label"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       for="@context">
+                Choose a save file
+            </MudButton>
+        </ButtonTemplate>
+
+        <SelectedTemplate>
+            @if (context != null)
+            {
+                <MudText>
+                    @context.Name
+                </MudText>
+            }
+            else
+            {
+                <MudText>
+                    No File
+                </MudText>
+            }
+        </SelectedTemplate>
+
+    </MudFileUpload>
 </div>
 
 <div class="button-container">
-    @if (browserFile is null)
-    {
-        <button @onclick="LoadSaveFileAsync" disabled="true" type="submit" class="btn btn-primary">
-            Load
-        </button>
-    }
-    else
-    {
-        <button @onclick="LoadSaveFileAsync" type="submit" class="btn btn-primary">
-            Load
-        </button>
-    }
+    <MudButton OnClick="@LoadSaveFileAsync"
+               ButtonType="@ButtonType.Submit"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled="@(browserFile is null)">
+        Load
+    </MudButton>
 </div>
 
 @if (AppState.SaveFile is not null)
 {
-    <PageTitle>PKMDS - @FileDisplayName</PageTitle>
-    <h3>@FileDisplayName</h3>
-    <div>
-        <button type="button" @onclick=NavigateLeft class="btn btn-secondary">
-            <i class="oi oi-arrow-left"></i>
-        </button>
-        <select @bind="AppState.SaveFile.CurrentBox" @bind:after="@AppState.ClearSelection">
-            @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
-            {
-                <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
-            }
-        </select>
-        <button type="button" @onclick=NavigateRight class="btn btn-secondary">
-            <i class="oi oi-arrow-right"></i>
-        </button>
+    <PageTitle>
+        PKMDS Save Editor - @FileDisplayName
+    </PageTitle>
+
+    <MudText Typo="Typo.h5">
+        @FileDisplayName
+    </MudText>
+
+    <div class="controls-container">
+        <MudIconButton OnClick="@NavigateLeft"
+                       ButtonType="@ButtonType.Button"
+                       Icon="@Icons.Material.Filled.ArrowLeft"
+                       Variant="@Variant.Filled"
+                       Class="navigate-button">
+        </MudIconButton>
+
+        <div class="select-container">
+            <MudSelect T="@int"
+                       @bind-Value="@AppState.SaveFile.CurrentBox"
+                       @bind-Value:after="@AppState.ClearSelection"
+                       Class="box-select">
+                @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
+                {
+                    var boxName = AppState.SaveFile.GetBoxName(boxId);
+                    <MudSelectItem Value="@boxId">
+                        @boxName
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+
+        <MudIconButton OnClick="@NavigateRight"
+                       ButtonType="@ButtonType.Button"
+                       Icon="@Icons.Material.Filled.ArrowRight"
+                       Variant="@Variant.Filled"
+                       Class="navigate-button">
+        </MudIconButton>
     </div>
+
     <BoxComponent BoxId="@AppState.SaveFile.CurrentBox" />
 }

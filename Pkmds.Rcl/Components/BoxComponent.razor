@@ -1,10 +1,20 @@
 ﻿@if (BoxEdit is not null)
 {
     <div>
-        <div class="column-1 box">
-            <h3>
+        <MudText Typo="Typo.h4">
+            New Component
+        </MudText>
+    </div>
+
+    <div class="box-component-container">
+        <MudText Typo="Typo.h4">
+            Old Component
+        </MudText>
+
+        <div class="column-1 box box-container">
+            <MudText Typo="Typo.h5">
                 @BoxEdit.BoxName
-            </h3>
+            </MudText>
 
             <table>
                 @for (var rowNum = 0; rowNum < 5; rowNum++)
@@ -14,15 +24,15 @@
                         {
                             var boxSlot = rowNum * 6 + colNum;
                             var pkm = BoxEdit[boxSlot];
-                            <BoxSlotComponent BoxSlot="boxSlot" Pokemon="pkm" />
+                            <BoxSlotComponent BoxSlot="boxSlot"
+                                              Pokemon="pkm" />
                         }
                     </tr>
                 }
             </table>
-
         </div>
 
-        <div class="column-2 box">
+        <div class="column-2 box details-container">
             <PokemonDetailsComponent />
         </div>
     </div>

@@ -1,9 +1,12 @@
 ﻿<td class="@GetCssClass()"
     @onclick="SetPreviewPokemon">
+
     <div class="box-slot">
         @if (Pokemon is { Species: > 0 })
         {
-            <span class="@(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))"></span>
+            <span class="@(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))">
+            </span>
         }
     </div>
+
 </td>
