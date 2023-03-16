@@ -27,7 +27,7 @@
         <button type="button" @onclick=NavigateLeft class="btn btn-secondary">
             <i class="oi oi-arrow-left"></i>
         </button>
-        <select @bind="AppState.SaveFile.CurrentBox">
+        <select @bind="AppState.SaveFile.CurrentBox" @bind:after="@AppState.ClearSelection">
             @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
             {
                 <option value="@boxId">@AppState.SaveFile.GetBoxName(boxId)</option>
