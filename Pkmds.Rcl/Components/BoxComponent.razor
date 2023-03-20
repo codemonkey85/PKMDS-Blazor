@@ -1,39 +1,14 @@
 ﻿@if (BoxEdit is not null)
 {
-    <div>
-        <MudText Typo="Typo.h4">
-            New Component
-        </MudText>
-    </div>
-
-    <div class="box-component-container">
-        <MudText Typo="Typo.h4">
-            Old Component
-        </MudText>
-
+    <MudStack Row="@previewRow">
         <div class="column-1 box box-container">
             <MudText Typo="Typo.h5">
                 @BoxEdit.BoxName
             </MudText>
-
-            <table>
-                @for (var rowNum = 0; rowNum < 5; rowNum++)
-                {
-                    <tr>
-                        @for (var colNum = 0; colNum < 6; colNum++)
-                        {
-                            var boxSlot = rowNum * 6 + colNum;
-                            var pkm = BoxEdit[boxSlot];
-                            <BoxSlotComponent BoxSlot="boxSlot"
-                                              Pokemon="pkm" />
-                        }
-                    </tr>
-                }
-            </table>
+            <BoxGrid BoxEdit="@BoxEdit" />
         </div>
-
         <div class="column-2 box details-container">
             <PokemonDetailsComponent />
         </div>
-    </div>
+    </MudStack>
 }
