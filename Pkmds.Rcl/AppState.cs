@@ -2,6 +2,15 @@
 
 public record AppState : IAppState
 {
+    public AppState()
+    {
+        GameStrings = GameInfo.GetStrings("en-US");
+    }
+
+    public GameStrings? GameStrings { get; set; }
+
+    public string[] GenderForms => new[] { "", "F", "" };
+
     public event Action? OnAppStateChanged;
 
     public SaveFile? SaveFile { get; set; }

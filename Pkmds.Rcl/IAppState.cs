@@ -4,6 +4,10 @@ public interface IAppState
 {
     public event Action? OnAppStateChanged;
 
+    GameStrings? GameStrings { get; set; }
+
+    string[] GenderForms { get; }
+
     SaveFile? SaveFile { get; set; }
 
     PKM? SelectedPokemon { get; set; }

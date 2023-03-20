@@ -1,4 +1,4 @@
-﻿@if (AppState.SaveFile is not null && AppState.SelectedPokemon is { Species: > 0 })
+﻿@if (AppState is { SaveFile: not null, GameStrings: not null, SelectedPokemon.Species: > 0 })
 {
     <h3>Pokémon Details</h3>
 
@@ -34,13 +34,14 @@
             </label>
             <span id="formName">
                 @{
-                    var formId = AppState.SelectedPokemon.Form;
-                    var strings = GameInfo.GetStrings("en-US");
-                    var context = AppState.SaveFile.Context;
-                    var forms = FormConverter.GetFormList(AppState.SelectedPokemon.Species, strings.Types, strings.forms, genderForms, context);
-                    var formName = forms[formId];
+                    var forms = FormConverter.GetFormList(
+                        AppState.SelectedPokemon.Species,
+                        AppState.GameStrings.Types,
+                        AppState.GameStrings.forms,
+                        AppState.GenderForms,
+                        AppState.SaveFile.Context);
                 }
-                @formName (@formId)
+                @forms[AppState.SelectedPokemon.Form] (@AppState.SelectedPokemon.Form)
             </span>
         </div>
 
@@ -90,11 +91,11 @@
                 Moves:
             </label>
             <ul id="moves">
-                @foreach (var move in AppState.SelectedPokemon.Moves.Select(m => (Move)m)
-               .Where(MoveExtension.IsValidMove))
+                @foreach (var move in AppState.SelectedPokemon.Moves
+                .Where(MoveExtension.IsValidMove))
                 {
                     <li>
-                        @move
+                        @AppState.GameStrings.Move[move]
                     </li>
                 }
             </ul>
