@@ -10,7 +10,7 @@ public partial class SaveFileComponent : IDisposable
 
     protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
 
-    private void HandleFile(InputFileChangeEventArgs e) => browserFile = e.File;
+    private void HandleFile(IBrowserFile file) => browserFile = file;
 
     private async Task LoadSaveFileAsync()
     {

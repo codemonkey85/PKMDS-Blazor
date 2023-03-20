@@ -1,16 +1,28 @@
 ﻿@if (AppState.SaveFile is not null && AppState.SelectedPokemon is { Species: > 0 })
 {
     <h3>Pokémon Details</h3>
+
     <div>
-        <button type="button" class="btn btn-secondary" @onclick=@AppState.ClearSelection>Clear Selection</button>
+        <MudButton OnClick="@AppState.ClearSelection"
+                   ButtonType="@ButtonType.Button"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Primary">
+            Clear Selection
+        </MudButton>
+
         <div>
-            <label for="nickname">Nickname:</label>
+            <label for="nickname">
+                Nickname:
+            </label>
             <span id="nickname">
                 @AppState.SelectedPokemon.Nickname
             </span>
         </div>
+
         <div>
-            <label for="speciesName">Species:</label>
+            <label for="speciesName">
+                Species:
+            </label>
             <span id="speciesName">
                 @SpeciesName.GetSpeciesName(AppState.SelectedPokemon.Species, (int)LanguageID.English)
             </span>
@@ -47,25 +59,36 @@
         </div>
 
         <div>
-            <label for="level">Level:</label>
+            <label for="level">
+                Level:
+            </label>
             <span id="level">
                 @AppState.SelectedPokemon.CurrentLevel
             </span>
         </div>
+
         <div>
-            <label for="isShiny">Shiny:</label>
+            <label for="isShiny">
+                Shiny:
+            </label>
             <span id="isShiny">
                 @(AppState.SelectedPokemon.IsShiny ? "Yes" : "No")
             </span>
         </div>
+
         <div>
-            <label for="nature">Nature:</label>
+            <label for="nature">
+                Nature:
+            </label>
             <span id="nature">
                 @((Nature)AppState.SelectedPokemon.Nature)
             </span>
         </div>
+
         <div>
-            <label for="moves">Moves:</label>
+            <label for="moves">
+                Moves:
+            </label>
             <ul id="moves">
                 @foreach (var move in AppState.SelectedPokemon.Moves.Select(m => (Move)m)
                .Where(MoveExtension.IsValidMove))
@@ -76,8 +99,10 @@
                 }
             </ul>
         </div>
+
         <div>
-            <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))"></span>
+            <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))">
+            </span>
         </div>
     </div>
 }

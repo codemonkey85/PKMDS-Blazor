@@ -1,5 +1,25 @@
 ﻿@inherits LayoutComponentBase
 
-<main>
-    @Body
-</main>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar>
+@*
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start" 
+                       OnClick="@DrawerToggle" />
+*@
+        PKMDS Save Editor
+    </MudAppBar>
+@*
+    <MudDrawer @bind-Open="@drawerOpen">
+        <NavMenu/>
+    </MudDrawer>
+*@
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
