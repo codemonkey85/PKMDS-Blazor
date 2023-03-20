@@ -1,4 +1,4 @@
-﻿@if (AppState.SelectedPokemon is { Species: > 0 })
+﻿@if (AppState.SaveFile is not null && AppState.SelectedPokemon is { Species: > 0 })
 {
     <h3>Pokémon Details</h3>
 
@@ -25,6 +25,22 @@
             </label>
             <span id="speciesName">
                 @SpeciesName.GetSpeciesName(AppState.SelectedPokemon.Species, (int)LanguageID.English)
+            </span>
+        </div>
+
+        <div>
+            <label for="formName">
+                Form:
+            </label>
+            <span id="formName">
+                @{
+                    var formId = AppState.SelectedPokemon.Form;
+                    var strings = GameInfo.GetStrings("en-US");
+                    var context = AppState.SaveFile.Context;
+                    var forms = FormConverter.GetFormList(AppState.SelectedPokemon.Species, strings.Types, strings.forms, genderForms, context);
+                    var formName = forms[formId];
+                }
+                @formName (@formId)
             </span>
         </div>
 
