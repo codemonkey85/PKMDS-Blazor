@@ -9,7 +9,12 @@
         </div>
 
         <MudExpansionPanels>
-            @if (AppState is { SaveFile: not null, GameStrings: not null, SelectedPokemon.Species: > 0 })
+            @if (AppState is
+                {
+                    SaveFile: not null,
+                    GameStrings: not null,
+                    SelectedPokemon.Species: > 0
+                })
             {
                 <MudButton OnClick="@AppState.ClearSelection"
                            ButtonType="@ButtonType.Button"
