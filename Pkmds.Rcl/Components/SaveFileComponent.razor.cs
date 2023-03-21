@@ -6,6 +6,8 @@ public partial class SaveFileComponent : IDisposable
 
     private const long MaxFileSize = 4_000_000L; // bytes
 
+    private bool showProgressIndicator = false;
+
     private IBrowserFile? browserFile;
 
     protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
@@ -22,12 +24,15 @@ public partial class SaveFileComponent : IDisposable
         AppState.SaveFile = null;
         AppState.SelectedBoxSlot = null;
         AppState.SelectedPokemon = null;
+        showProgressIndicator = true;
 
         await using var fileStream = browserFile.OpenReadStream(MaxFileSize);
         using var memoryStream = new MemoryStream();
         await fileStream.CopyToAsync(memoryStream);
         var data = memoryStream.ToArray();
         AppState.SaveFile = SaveUtil.GetVariantSAV(data);
+        showProgressIndicator = false;
+
         if (AppState.SaveFile is null)
         {
             return;
