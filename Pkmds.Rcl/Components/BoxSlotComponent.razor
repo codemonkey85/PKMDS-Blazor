@@ -4,8 +4,17 @@
     <div class="box-slot">
         @if (Pokemon is { Species: > 0 })
         {
-            <span class="@(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))">
-            </span>
+            <MudPaper Elevation="3" Class="slot-fill">
+                <span class="@(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))">
+                </span>
+            </MudPaper>
+        }
+        else
+        {
+            <MudPaper Outlined="true">
+                <span class="pokesprite pokemon empty">
+                </span>
+            </MudPaper>
         }
     </div>
 

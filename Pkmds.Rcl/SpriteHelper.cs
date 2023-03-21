@@ -10,19 +10,22 @@ public static class SpriteHelper
 
     public static string GetPokemonSpriteCssClass(PKM? pokemon)
     {
-        switch (pokemon)
+        if (pokemon is null or { Species: <= (ushort)Species.None or > (ushort)Species.MAX_COUNT })
         {
-            case null or { Species: <= (ushort)Species.None or > (ushort)Species.MAX_COUNT }:
-                return Unknown;
-            case { IsEgg: true }:
-                return pokemon switch
-                {
-                    { Species: (ushort)Species.Manaphy } => "manaphy-egg",
-                    _ => "egg",
-                };
+            return Unknown;
         }
 
         var sb = new StringBuilder("pokesprite pokemon ");
+
+        if (pokemon.IsEgg)
+        {
+            sb.Append(pokemon switch
+            {
+                { Species: (ushort)Species.Manaphy } => "manaphy-egg",
+                _ => "egg",
+            });
+            return sb.ToString();
+        }
 
         // TODO: Temp workaround until we have Gen IX Sprites
         if (pokemon is { Species: > (ushort)Species.Enamorus })

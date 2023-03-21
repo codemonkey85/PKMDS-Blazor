@@ -1,27 +1,35 @@
-﻿td {
-    width: 16.66%;
-    position: relative;
-    border: 1px solid black;
+﻿.box-slot {
+    margin: 1px;
+    padding: 1px;
 }
 
-    td:after {
-        content: '';
-        display: block;
-        margin-top: 100%;
+.slot-fill :hover {
+    transform-origin: center;
+    animation: pulse 1000ms infinite ease-in-out forwards;
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1.0);
     }
 
-    td .box-slot {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
+    50% {
+        transform: scale(1.2);
     }
 
-    .selected {
-        border: 2px solid red;
+    to {
+        transform: scale(1.0);
     }
+}
 
-    td:not(.empty) :hover {
-        background-color: orange;
-    }
+.pokesprite.pokemon.empty {
+    background-image: url('');
+}
+
+td :hover {
+    /*border: 1px solid black;*/
+}
+
+td.selected {
+    border: 2px solid red;
+}
