@@ -5,7 +5,8 @@
 
 .slot-fill :hover {
     transform-origin: center;
-    animation: pulse 1000ms infinite ease-in-out forwards;
+    animation: pulse 200ms ease-in-out forwards;
+    border-radius: 6px;
 }
 
 @keyframes pulse {
@@ -13,12 +14,8 @@
         transform: scale(1.0);
     }
 
-    50% {
-        transform: scale(1.2);
-    }
-
     to {
-        transform: scale(1.0);
+        transform: scale(1.2);
     }
 }
 
@@ -26,10 +23,7 @@
     background-image: url('');
 }
 
-td :hover {
-    /*border: 1px solid black;*/
-}
-
 td.selected {
-    border: 2px solid red;
+    background-color: orange;
+    border-radius: 6px;
 }
