@@ -7,8 +7,22 @@
             </MudText>
             <BoxGrid BoxEdit="@BoxEdit" />
         </div>
-        <div class="column-2 box details-container">
-            <PokemonDetailsComponent />
-        </div>
+
+        <MudExpansionPanels>
+            @if (AppState is { SaveFile: not null, GameStrings: not null, SelectedPokemon.Species: > 0 })
+            {
+                <MudButton OnClick="@AppState.ClearSelection"
+                           ButtonType="@ButtonType.Button"
+                           Variant="@Variant.Filled"
+                           Color="@Color.Primary">
+                    Clear Selection
+                </MudButton>
+
+                <MudExpansionPanel Text="Pokémon Details">
+                    <PokemonDetailsComponent />
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+
     </MudStack>
 }

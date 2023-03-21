@@ -1,14 +1,10 @@
 ﻿@if (AppState is { SaveFile: not null, GameStrings: not null, SelectedPokemon.Species: > 0 })
 {
-    <h3>Pokémon Details</h3>
-
     <div>
-        <MudButton OnClick="@AppState.ClearSelection"
-                   ButtonType="@ButtonType.Button"
-                   Variant="@Variant.Filled"
-                   Color="@Color.Primary">
-            Clear Selection
-        </MudButton>
+        <div>
+            <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))">
+            </span>
+        </div>
 
         <div>
             <label for="nickname">
@@ -99,11 +95,6 @@
                     </li>
                 }
             </ul>
-        </div>
-
-        <div>
-            <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))">
-            </span>
         </div>
     </div>
 }
