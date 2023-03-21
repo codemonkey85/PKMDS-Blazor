@@ -6,19 +6,28 @@
 
 <MudLayout>
     <MudAppBar>
-@*
         <MudIconButton Icon="@Icons.Material.Filled.Menu"
                        Color="Color.Inherit"
-                       Edge="Edge.Start" 
+                       Edge="Edge.Start"
                        OnClick="@DrawerToggle" />
-*@
         PKMDS Save Editor
     </MudAppBar>
-@*
     <MudDrawer @bind-Open="@drawerOpen">
-        <NavMenu/>
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6"
+                     Color="Color.Primary">
+                PKMDS Save Editor
+            </MudText>
+        </MudDrawerHeader>
+        <MudButton OnClick="@ShowFileDialog"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   FullWidth="false"
+                   Style="width: 80%; align-self: center;">
+            Load Save File...
+        </MudButton>
+        <NavMenu />
     </MudDrawer>
-*@
     <MudMainContent>
         @Body
     </MudMainContent>

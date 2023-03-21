@@ -19,6 +19,10 @@ public record AppState : IAppState
 
     public int? SelectedBoxSlot { get; set; }
 
+    public bool ShowProgressIndicator { get; set; }
+
+    public string FileDisplayName { get; set; }
+
     public void Refresh() => OnAppStateChanged?.Invoke();
 
     public void ClearSelection()

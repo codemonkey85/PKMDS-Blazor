@@ -5,12 +5,12 @@
 </PageTitle>
 
 <div id="indexDiv">
-    <MudText Typo="Typo.h3">
-        PKMDS Save Editor
-    </MudText>
-
+    @if (AppState.SaveFile is null)
+    {
+        <MudText Typo="Typo.h5">
+            Please load a save file.
+        </MudText>
+    }
     <SaveFileComponent />
 </div>
 
-
-@*"Red", "Orange", "Yellow", "Blue", "Green", "Pink",*@

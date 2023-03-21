@@ -1,4 +1,5 @@
-﻿<div>
+﻿@*
+<div>
     <MudFileUpload T="IBrowserFile"
                    FilesChanged="HandleFile"
                    Accept=".sav,.bin">
@@ -29,7 +30,8 @@
 
     </MudFileUpload>
 </div>
-
+*@
+@*
 <div class="button-container">
     <MudButton OnClick="@LoadSaveFileAsync"
                ButtonType="@ButtonType.Submit"
@@ -39,10 +41,11 @@
         Load
     </MudButton>
 </div>
+*@
 
 @if (AppState.SaveFile is null)
 {
-    @if(showProgressIndicator)
+    @if(AppState.ShowProgressIndicator)
     {
         <MudSkeleton SkeletonType="SkeletonType.Rectangle"
                      Width="210px"
@@ -60,11 +63,11 @@
 else
 {
     <PageTitle>
-        PKMDS Save Editor - @FileDisplayName
+        PKMDS Save Editor - @AppState.FileDisplayName
     </PageTitle>
 
     <MudText Typo="Typo.h5">
-        @FileDisplayName
+        @AppState.FileDisplayName
     </MudText>
 
     <div class="controls-container">

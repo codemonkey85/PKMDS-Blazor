@@ -45,5 +45,6 @@ public partial class StatChart
     private static string[] BackgroundColor => new[]
     {
         "#A6A6A688"
+         // "Red", "Orange", "Yellow", "Blue", "Green", "Pink",
     };
 }

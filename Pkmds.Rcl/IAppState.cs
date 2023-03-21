@@ -14,6 +14,10 @@ public interface IAppState
 
     int? SelectedBoxSlot { get; set; }
 
+    bool ShowProgressIndicator { get; set; }
+
+    string FileDisplayName { get; set; }
+
     void Refresh();
 
     void ClearSelection();
