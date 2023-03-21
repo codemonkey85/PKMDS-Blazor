@@ -24,6 +24,10 @@
         "font/fonts/open-iconic.ttf",
         "font/fonts/open-iconic.woff"
       ]
+    },
+    {
+      "library": "Chart.js@4.2.1",
+      "destination": "wwwroot/lib/Chart.js/"
     }
   ]
 }
