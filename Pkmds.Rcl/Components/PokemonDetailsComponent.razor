@@ -92,14 +92,22 @@
                 Moves:
             </label>
             <ul id="moves">
-                @foreach (var move in AppState.SelectedPokemon.Moves
-                .Where(MoveExtension.IsValidMove))
+                @foreach (var move in AppState.SelectedPokemon.Moves)
                 {
                     <li>
-                        @AppState.GameStrings.Move[move]
+                        @{
+                            var moveName = MoveExtension.IsValidMove(move)
+                                ? AppState.GameStrings.Move[move]
+                                : "---";
+                        }
+                        @moveName
                     </li>
                 }
             </ul>
+        </div>
+
+        <div>
+            <StatChart Pokemon="@AppState.SelectedPokemon" />
         </div>
     </div>
 }

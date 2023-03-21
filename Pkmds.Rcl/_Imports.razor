@@ -1,12 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop;
 @using MudBlazor
 @using MudBlazor.Services;
 @using PKHeX.Core
 @using Pkmds.Rcl
 @using Pkmds.Rcl.Components
 @using Pkmds.Rcl.Shared
+@using Pkmds.Rcl.Components.Charts
 
+@inject IJSRuntime JSRuntime
 @inject IBreakpointService BreakpointListener
 @inject IAppState AppState
