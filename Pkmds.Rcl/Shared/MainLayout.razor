@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider @ref="@mudThemeProvider"
+                  @bind-IsDarkMode="@isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -11,6 +12,10 @@
                        Edge="Edge.Start"
                        OnClick="@DrawerToggle" />
         PKMDS Save Editor
+        <MudSpacer />
+        <MudSwitch @bind-Checked="@isDarkMode"
+                   Color="Color.Primary"
+                   Label="@(isDarkMode ? "Dark" : "Light")" />
     </MudAppBar>
     <MudDrawer @bind-Open="@drawerOpen">
         <MudDrawerHeader>
