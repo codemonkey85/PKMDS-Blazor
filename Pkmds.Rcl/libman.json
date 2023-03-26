@@ -3,29 +3,6 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "bootstrap@5.2.3",
-      "destination": "wwwroot/lib/bootstrap/",
-      "files": [
-        "js/bootstrap.min.js",
-        "js/bootstrap.min.js.map",
-        "css/bootstrap.min.css",
-        "css/bootstrap.min.css.map"
-      ]
-    },
-    {
-      "library": "open-iconic@1.1.1",
-      "destination": "wwwroot/lib/open-iconic/",
-      "files": [
-        "font/css/open-iconic.min.css",
-        "font/css/open-iconic-bootstrap.min.css",
-        "font/fonts/open-iconic.eot",
-        "font/fonts/open-iconic.otf",
-        "font/fonts/open-iconic.svg",
-        "font/fonts/open-iconic.ttf",
-        "font/fonts/open-iconic.woff"
-      ]
-    },
-    {
       "library": "Chart.js@4.2.1",
       "destination": "wwwroot/lib/Chart.js/"
     }
