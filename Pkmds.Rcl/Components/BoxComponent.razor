@@ -8,7 +8,7 @@
             <BoxGrid BoxEdit="@BoxEdit" />
         </div>
 
-        <MudExpansionPanels>
+        <MudExpansionPanels Class="mt-1">
             @if (AppState is
                 {
                     SaveFile: not null,
@@ -23,7 +23,8 @@
                     Clear Selection
                 </MudButton>
 
-                <MudExpansionPanel IsExpanded="true" Text="Pokémon Details">
+                <MudExpansionPanel Text="Pokémon Details"
+                                   Class="mt-1">
                     <PokemonDetailsComponent />
                 </MudExpansionPanel>
             }
