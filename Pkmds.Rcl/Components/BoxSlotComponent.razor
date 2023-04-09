@@ -5,15 +5,19 @@
         @if (Pokemon is { Species: > 0 })
         {
             <MudPaper Elevation="3" Class="slot-fill">
-                <span class="@(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))">
+                <span>
+                    @{
+                        var sprite = SpriteHelper.GetPokemonSpriteFilename(Pokemon);
+                    }
+                    <MudImage Src="@sprite" />
                 </span>
             </MudPaper>
         }
         else
         {
-            <MudPaper Outlined="true">
-                <span class="pokesprite pokemon empty">
-                </span>
+            <MudPaper Outlined="true"
+                      Width="68px"
+                      Height="62px">
             </MudPaper>
         }
     </div>

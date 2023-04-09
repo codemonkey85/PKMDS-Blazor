@@ -1,6 +1,8 @@
 ﻿.box-slot {
     margin: 1px;
     padding: 1px;
+    width: 68px;
+    height: 62px;
 }
 
 .slot-fill :hover {
