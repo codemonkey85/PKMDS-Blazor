@@ -6,10 +6,7 @@
         {
             <MudPaper Elevation="3" Class="slot-fill">
                 <span>
-                    @{
-                        var sprite = SpriteHelper.GetPokemonSpriteFilename(Pokemon);
-                    }
-                    <MudImage Src="@sprite" />
+                    <PkmSprite Pokemon="@Pokemon" />
                 </span>
             </MudPaper>
         }
@@ -17,7 +14,7 @@
         {
             <MudPaper Outlined="true"
                       Width="68px"
-                      Height="62px">
+                      Height="68px">
             </MudPaper>
         }
     </div>
