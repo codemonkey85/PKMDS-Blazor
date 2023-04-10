@@ -1,7 +1,8 @@
 ﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
-  saveFileEntityContext != EntityContext.None &&
-  saveFileEntityContext != EntityContext.SplitInvalid &&
-  saveFileEntityContext != EntityContext.MaxInvalid)
+   saveFileEntityContext is not
+   EntityContext.None or
+   EntityContext.SplitInvalid or
+   EntityContext.MaxInvalid)
 {
     @if (AppState.SelectedPokemon is not null)
     {
