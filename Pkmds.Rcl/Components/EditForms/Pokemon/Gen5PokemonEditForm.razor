@@ -3,4 +3,10 @@
     <MudNumericField Label="PID"
                      @bind-Value="AppState.SelectedPokemon.PID"
                      For="@(() => AppState.SelectedPokemon.PID)" />
+
+    <MudAutocomplete T="ushort"
+                     @bind-Value="@AppState.SelectedPokemon.Species"
+                     @bind-Value:after="@(AppState.Refresh)"
+                     SearchFunc="@SearchPokemonNames"
+                     ToStringFunc="@ConvertSpeciesToName" />
 }

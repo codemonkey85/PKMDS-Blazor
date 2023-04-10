@@ -2,10 +2,35 @@
 
 public record AppState : IAppState
 {
+    private static readonly string[] SpeciesExcludes = new string[]
+    {
+        "Egg",
+    };
+
     public AppState()
     {
         GameStrings = GameInfo.GetStrings("en-US");
+
+        if (SpeciesNameDictionary.Count > 0)
+        {
+            return;
+        }
+
+        foreach (Species species in Enum.GetValues(typeof(Species)))
+        {
+            var name = SpeciesName.GetSpeciesName((ushort)species, (int)LanguageID.English);
+            if (SpeciesExcludes.Contains(name, StringComparer.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            Console.WriteLine(name);
+
+            SpeciesNameDictionary.Add(species, name);
+        }
     }
+
+    public Dictionary<Species, string> SpeciesNameDictionary { get; } = new();
 
     public GameStrings? GameStrings { get; set; }
 

@@ -4,6 +4,8 @@ public interface IAppState
 {
     public event Action? OnAppStateChanged;
 
+    Dictionary<Species, string> SpeciesNameDictionary { get; }
+
     GameStrings? GameStrings { get; set; }
 
     string[] GenderForms { get; }
