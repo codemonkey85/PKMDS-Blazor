@@ -24,8 +24,6 @@ public record AppState : IAppState
                 continue;
             }
 
-            Console.WriteLine(name);
-
             SpeciesNameDictionary.Add(species, name);
         }
     }
