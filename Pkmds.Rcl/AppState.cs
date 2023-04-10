@@ -9,7 +9,7 @@ public record AppState : IAppState
 
     public GameStrings? GameStrings { get; set; }
 
-    public string[] GenderForms => new[] { "", "F", "" };
+    public string[] GenderForms => new[] { string.Empty, "F", string.Empty };
 
     public event Action? OnAppStateChanged;
 
@@ -21,7 +21,7 @@ public record AppState : IAppState
 
     public bool ShowProgressIndicator { get; set; }
 
-    public string FileDisplayName { get; set; }
+    public string FileDisplayName { get; set; } = string.Empty;
 
     public void Refresh() => OnAppStateChanged?.Invoke();
 

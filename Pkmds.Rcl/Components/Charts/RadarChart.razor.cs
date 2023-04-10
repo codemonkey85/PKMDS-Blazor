@@ -3,16 +3,16 @@ namespace Pkmds.Rcl.Components.Charts;
 public partial class RadarChart
 {
     [Parameter, EditorRequired]
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     [Parameter]
-    public string[] Data { get; set; }
+    public string[]? Data { get; set; }
 
     [Parameter]
-    public string[] BackgroundColor { get; set; }
+    public string[]? BackgroundColor { get; set; }
 
     [Parameter]
-    public string[] Labels { get; set; }
+    public string[]? Labels { get; set; }
 
     [Parameter]
     public bool BeginAtZero { get; set; } = true;
