@@ -35,22 +35,4 @@ public partial class BoxSlotComponent : IDisposable
         }
         AppState.Refresh();
     }
-
-    private string GetCssClass()
-    {
-        var cssClassBuilder = new StringBuilder(
-            "d-flex align-items-center justify-center slot-fill ");
-
-        if (Pokemon is not { Species: > 0 })
-        {
-            cssClassBuilder.Append("empty ");
-        };
-
-        if (AppState.SelectedBoxSlot == BoxSlot)
-        {
-            cssClassBuilder.Append("selected ");
-        }
-
-        return cssClassBuilder.ToString().Trim();
-    }
 }
