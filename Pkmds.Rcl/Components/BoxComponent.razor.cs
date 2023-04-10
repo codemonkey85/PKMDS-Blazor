@@ -7,6 +7,8 @@ public partial class BoxComponent : IDisposable
 
     private BoxEdit? BoxEdit { get; set; }
 
+    private bool DetailsExpanded { get; set; } = true;
+
     protected override void OnInitialized() =>
         AppState.OnAppStateChanged += StateHasChanged;
 

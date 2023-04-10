@@ -8,6 +8,15 @@ public partial class BoxSlotComponent : IDisposable
     [Parameter]
     public int BoxSlot { get; set; }
 
+    private string GetStyle()
+    {
+        var styleBuilder = new StringBuilder();
+        styleBuilder.Append(AppState.SelectedBoxSlot == BoxSlot
+            ? "border: 4px solid orange; border-radius: 6px;"
+            : string.Empty);
+        return styleBuilder.ToString();
+    }
+
     protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() => AppState.OnAppStateChanged -= StateHasChanged;
@@ -29,7 +38,8 @@ public partial class BoxSlotComponent : IDisposable
 
     private string GetCssClass()
     {
-        var cssClassBuilder = new StringBuilder();
+        var cssClassBuilder = new StringBuilder(
+            "d-flex align-items-center justify-center slot-fill ");
 
         if (Pokemon is not { Species: > 0 })
         {

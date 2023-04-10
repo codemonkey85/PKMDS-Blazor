@@ -1,17 +1,16 @@
 ﻿@if (BoxEdit is not null)
 {
-    <table>
-        @for (var rowNum = 0; rowNum < rows; rowNum++)
+    <MudGrid Spacing="1"
+             Justify="@Justify.Center"
+             Style="@(GridStyle)">
+        @for (var i = 0; i < (AppState?.SaveFile?.BoxSlotCount ?? 0); i++)
         {
-            <tr>
-                @for (var colNum = 0; colNum < columns; colNum++)
-                {
-                    var boxSlot = rowNum * columns + colNum;
-                    var pkm = BoxEdit[boxSlot];
-                    <BoxSlotComponent BoxSlot="boxSlot"
-                                      Pokemon="pkm" />
-                }
-            </tr>
+            var slotNum = i;
+            var pkm = BoxEdit[slotNum];
+            <MudItem xs="2" Style="width: 68px; height: 68px;">
+                <BoxSlotComponent BoxSlot="slotNum"
+                                  Pokemon="pkm" />
+            </MudItem>
         }
-    </table>
+    </MudGrid>
 }

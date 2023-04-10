@@ -3,7 +3,5 @@
 }
 
 .box-sprite {
-    margin-top: 20px;
-    margin-bottom: 30px;
-    transform: scale(2);
+    transform: scale(1.5);
 }
