@@ -1,18 +1,6 @@
 ﻿@if (AppState.SelectedPokemon is not null)
 {
-    <EditForm Model="@AppState.SelectedPokemon"
-              OnValidSubmit="OnValidSubmit">
-
-        <MudNumericField Label="PID"
-                         @bind-Value="AppState.SelectedPokemon.PID"
-                         For="@(() => AppState.SelectedPokemon.PID)" />
-
-        <MudButton ButtonType="ButtonType.Submit"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Class="ml-auto mt-2">
-            Save
-        </MudButton>
-
-    </EditForm>
+    <MudNumericField Label="PID"
+                     @bind-Value="AppState.SelectedPokemon.PID"
+                     For="@(() => AppState.SelectedPokemon.PID)" />
 }

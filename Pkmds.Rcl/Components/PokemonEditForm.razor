@@ -1,6 +1,9 @@
-﻿@if (AppState.SaveFile is not null)
+﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+    saveFileEntityContext != EntityContext.None &&
+    saveFileEntityContext != EntityContext.SplitInvalid &&
+    saveFileEntityContext != EntityContext.MaxInvalid)
 {
-    @switch (AppState.SaveFile.Context)
+    @switch (saveFileEntityContext)
     {
         case EntityContext.Gen1:
             <Gen1PokemonEditForm />
