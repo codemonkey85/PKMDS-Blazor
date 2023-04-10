@@ -1,15 +1,21 @@
-﻿.slot-fill :hover {
+﻿img {
+    max-width: 68px;
+    max-height: 56px;
+    align-self: center;
+}
+
+.slot-fill :hover {
     transform-origin: center;
-    animation: pulse 200ms ease-in-out forwards;
+    animation: bounce 500ms linear infinite;
     border-radius: 6px;
 }
 
-@keyframes pulse {
-    from {
-        transform: scale(1.0);
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
     }
 
-    to {
-        transform: scale(1.2);
+    50% {
+        transform: translateY(-5px);
     }
 }
