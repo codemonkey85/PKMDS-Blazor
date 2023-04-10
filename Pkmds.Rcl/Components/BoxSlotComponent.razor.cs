@@ -21,7 +21,7 @@ public partial class BoxSlotComponent : IDisposable
 
     public void Dispose() => AppState.OnAppStateChanged -= StateHasChanged;
 
-    private void SetPreviewPokemon()
+    private void SetSelectedPokemon()
     {
         if (Pokemon is not { Species: > 0 })
         {

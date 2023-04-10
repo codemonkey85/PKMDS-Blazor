@@ -1,6 +1,6 @@
 ﻿@if (AppState.SaveFile is null)
 {
-    @if(AppState.ShowProgressIndicator)
+    @if (AppState.ShowProgressIndicator)
     {
         <MudSkeleton SkeletonType="SkeletonType.Rectangle"
                      Width="210px"
@@ -11,7 +11,7 @@
                      Height="50px" />
         <br />
         <MudSkeleton SkeletonType="SkeletonType.Rectangle"
-                     Width="420px"
+                     Width="432px"
                      Height="350px" />
     }
 }
@@ -25,36 +25,14 @@ else
         @AppState.FileDisplayName
     </MudText>
 
-    <div class="controls-container">
-        <MudIconButton OnClick="@NavigateLeft"
-                       ButtonType="@ButtonType.Button"
-                       Icon="@Icons.Material.Filled.ArrowLeft"
-                       Variant="@Variant.Filled"
-                       Class="navigate-button">
-        </MudIconButton>
-
-        <div class="select-container">
-            <MudSelect T="@int"
-                       @bind-Value="@AppState.SaveFile.CurrentBox"
-                       @bind-Value:after="@AppState.ClearSelection"
-                       Class="box-select">
-                @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
-                {
-                    var boxName = AppState.SaveFile.GetBoxName(boxId);
-                    <MudSelectItem Value="@boxId">
-                        @boxName
-                    </MudSelectItem>
-                }
-            </MudSelect>
-        </div>
-
-        <MudIconButton OnClick="@NavigateRight"
-                       ButtonType="@ButtonType.Button"
-                       Icon="@Icons.Material.Filled.ArrowRight"
-                       Variant="@Variant.Filled"
-                       Class="navigate-button">
-        </MudIconButton>
-    </div>
-
-    <BoxComponent BoxId="@AppState.SaveFile.CurrentBox" />
+    <MudGrid>
+        <MudItem xs="12">
+            <PokemonStorageComponent />
+        </MudItem>
+        <MudPaper MaxWidth="432px" Elevation="0">
+            <MudItem xs="12">
+                <PokemonEditForm />
+            </MudItem>
+        </MudPaper>
+    </MudGrid>
 }

@@ -1,0 +1,45 @@
+﻿@if (AppState.SaveFile is not null)
+{
+    @switch (AppState.SaveFile.Context)
+    {
+        case EntityContext.Gen1:
+            <Gen1PokemonEditForm />
+            break;
+        case EntityContext.Gen2:
+            <Gen2PokemonEditForm />
+            break;
+        case EntityContext.Gen3:
+            <Gen3PokemonEditForm />
+            break;
+        case EntityContext.Gen4:
+            <Gen4PokemonEditForm />
+            break;
+        case EntityContext.Gen5:
+            <Gen5PokemonEditForm />
+            break;
+        case EntityContext.Gen6:
+            <Gen6PokemonEditForm />
+            break;
+        case EntityContext.Gen7:
+            <Gen7PokemonEditForm />
+            break;
+        case EntityContext.Gen7b:
+            <Gen7bPokemonEditForm />
+            break;
+        case EntityContext.Gen8:
+            <Gen8PokemonEditForm />
+            break;
+        case EntityContext.Gen8a:
+            <Gen8aPokemonEditForm />
+            break;
+        case EntityContext.Gen8b:
+            <Gen8bPokemonEditForm />
+            break;
+        case EntityContext.Gen9:
+            <Gen9PokemonEditForm />
+            break;
+        default:
+            <span>Unknown Gen</span>
+            break;
+    }
+}

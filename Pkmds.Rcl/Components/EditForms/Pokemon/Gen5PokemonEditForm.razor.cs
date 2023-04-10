@@ -1,8 +1,12 @@
-namespace Pkmds.Rcl.Components;
+namespace Pkmds.Rcl.Components.EditForms.Pokemon;
 
-public partial class SaveFileComponent : IDisposable
+public partial class Gen5PokemonEditForm : IDisposable
 {
     protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() => AppState.OnAppStateChanged -= StateHasChanged;
+
+    private void OnValidSubmit(EditContext context)
+    {
+    }
 }

@@ -1,35 +1,33 @@
 ﻿@if (BoxEdit is not null)
 {
-    <MudContainer>
-        <div>
-            <MudText Typo="Typo.h5">
-                @BoxEdit.BoxName
-            </MudText>
-            <BoxGrid BoxEdit="@BoxEdit" />
-        </div>
-
-        <MudExpansionPanels Class="mt-1">
-            @if (AppState is
-                {
-                    SaveFile: not null,
-                    GameStrings: not null,
-                    SelectedPokemon.Species: > 0
-                })
+    <div>
+        <MudText Typo="Typo.h5">
+            @BoxEdit.BoxName
+        </MudText>
+        <BoxGrid BoxEdit="@BoxEdit" />
+    </div>
+@*
+    <MudExpansionPanels Class="mt-1">
+        @if (AppState is
             {
-                <MudButton OnClick="@AppState.ClearSelection"
-                           ButtonType="@ButtonType.Button"
-                           Variant="@Variant.Filled"
-                           Class="mt-2">
-                    Clear Selection
-                </MudButton>
+                SaveFile: not null,
+                GameStrings: not null,
+                SelectedPokemon.Species: > 0
+            })
+        {
+            <MudButton OnClick="@AppState.ClearSelection"
+                        ButtonType="@ButtonType.Button"
+                        Variant="@Variant.Filled"
+                        Class="mt-2">
+                Clear Selection
+            </MudButton>
 
-                <MudExpansionPanel Text="Pokémon Details"
-                                   Class="mt-2"
-                                   @bind-IsExpanded="@DetailsExpanded">
-                    <PokemonDetailsComponent />
-                </MudExpansionPanel>
-            }
-        </MudExpansionPanels>
-
-    </MudContainer>
+            <MudExpansionPanel Text="Pokémon Details"
+                                Class="mt-2"
+                                @bind-IsExpanded="@DetailsExpanded">
+                <PokemonDetailsComponent />
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
+*@
 }
