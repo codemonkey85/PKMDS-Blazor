@@ -1,8 +1,18 @@
 ﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
-    saveFileEntityContext != EntityContext.None &&
-    saveFileEntityContext != EntityContext.SplitInvalid &&
-    saveFileEntityContext != EntityContext.MaxInvalid)
+  saveFileEntityContext != EntityContext.None &&
+  saveFileEntityContext != EntityContext.SplitInvalid &&
+  saveFileEntityContext != EntityContext.MaxInvalid)
 {
+    @if (AppState.SelectedPokemon is not null)
+    {
+        <MudButton OnClick="@AppState.ClearSelection"
+                   ButtonType="@ButtonType.Button"
+                   Variant="@Variant.Filled"
+                   Class="mt-2">
+            Clear Selection
+        </MudButton>
+    }
+
     @switch (saveFileEntityContext)
     {
         case EntityContext.Gen1:
