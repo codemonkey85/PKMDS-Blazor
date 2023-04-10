@@ -1,9 +1,4 @@
-﻿.box-slot {
-    margin: 1px;
-    padding: 1px;
-}
-
-.slot-fill :hover {
+﻿.slot-fill :hover {
     transform-origin: center;
     animation: pulse 200ms ease-in-out forwards;
     border-radius: 6px;
@@ -17,13 +12,4 @@
     to {
         transform: scale(1.2);
     }
-}
-
-.pokesprite.pokemon.empty {
-    background-image: url('');
-}
-
-td.selected {
-    background-color: orange;
-    border-radius: 6px;
 }

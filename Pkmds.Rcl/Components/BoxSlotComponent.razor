@@ -1,21 +1,8 @@
-﻿<td class="@GetCssClass()"
-    @onclick="SetPreviewPokemon">
-
-    <div class="box-slot">
-        @if (Pokemon is { Species: > 0 })
-        {
-            <MudPaper Elevation="3" Class="slot-fill">
-                <span class="@(SpriteHelper.GetPokemonSpriteCssClass(Pokemon))">
-                </span>
-            </MudPaper>
-        }
-        else
-        {
-            <MudPaper Outlined="true">
-                <span class="pokesprite pokemon empty">
-                </span>
-            </MudPaper>
-        }
-    </div>
-
-</td>
+﻿<MudPaper Elevation="3"
+          @onclick="SetPreviewPokemon"
+          Width="68px"
+          Height="68px"
+          Class="d-flex align-items-center justify-center slot-fill"
+          Style="@GetStyle()">
+        <img src="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)" />
+</MudPaper>

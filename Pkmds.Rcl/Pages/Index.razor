@@ -4,13 +4,10 @@
     PKMDS Save Editor
 </PageTitle>
 
-<div id="indexDiv">
-    @if (AppState.SaveFile is null)
-    {
-        <MudText Typo="Typo.h5">
-            Please load a save file.
-        </MudText>
-    }
-    <SaveFileComponent />
-</div>
-
+@if (AppState.SaveFile is null)
+{
+    <MudText Typo="Typo.h5">
+        Please load a save file.
+    </MudText>
+}
+<SaveFileComponent />

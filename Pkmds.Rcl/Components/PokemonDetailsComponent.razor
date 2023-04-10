@@ -7,8 +7,10 @@
 {
     <div>
         <div>
-            <span class="box-sprite @(SpriteHelper.GetPokemonSpriteCssClass(AppState.SelectedPokemon))">
-            </span>
+            <div>
+                <img src="@(AppState.SelectedPokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(AppState.SelectedPokemon) : null)"
+                     class="box-sprite mb-1 pb-1" />
+            </div>
         </div>
 
         <div>

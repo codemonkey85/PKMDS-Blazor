@@ -1,7 +1,7 @@
 ﻿@if (BoxEdit is not null)
 {
     <MudContainer>
-        <div class="column-1 box box-container">
+        <div>
             <MudText Typo="Typo.h5">
                 @BoxEdit.BoxName
             </MudText>
@@ -19,12 +19,14 @@
                 <MudButton OnClick="@AppState.ClearSelection"
                            ButtonType="@ButtonType.Button"
                            Variant="@Variant.Filled"
-                           Color="@Color.Primary">
+                           Color="@Color.Primary"
+                           Class="mt-2">
                     Clear Selection
                 </MudButton>
 
                 <MudExpansionPanel Text="Pokémon Details"
-                                   Class="mt-2">
+                                   Class="mt-2"
+                                   @bind-IsExpanded="@DetailsExpanded">
                     <PokemonDetailsComponent />
                 </MudExpansionPanel>
             }
