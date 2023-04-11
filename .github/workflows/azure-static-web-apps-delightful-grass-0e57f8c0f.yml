@@ -20,6 +20,8 @@ jobs:
           submodules: true
       - name: Install .NET SDK 7.0.203
         run: dotnet tool install --global dotnet-sdk-7.0.203
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
