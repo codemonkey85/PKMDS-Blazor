@@ -27,4 +27,8 @@
 		<ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
 	</ItemGroup>
 
+	<Target Name="IncrementVersionNumber" AfterTargets="Build">
+		<Exec Command="PowerShell -Command &quot;$new_version = [int]([DateTime]::UtcNow - [DateTime]::ParseExact('1970-01-01T00:00:00Z', 'yyyy-MM-ddTHH:mm:ssZ', [System.Globalization.CultureInfo]::InvariantCulture)).TotalSeconds; $new_version | Set-Content wwwroot/version.txt&quot;" />
+	</Target>
+
 </Project>
