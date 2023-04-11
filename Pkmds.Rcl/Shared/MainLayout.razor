@@ -8,25 +8,25 @@
 <MudLayout>
     <MudAppBar>
         <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                       Color="Color.Inherit"
-                       Edge="Edge.Start"
+                       Color="@Color.Inherit"
+                       Edge="@Edge.Start"
                        OnClick="@DrawerToggle" />
         PKMDS Save Editor
         <MudSpacer />
         <MudSwitch @bind-Checked="@isDarkMode"
-                   Color="Color.Primary"
+                   Color="@Color.Primary"
                    Label="@(isDarkMode ? "Dark" : "Light")" />
     </MudAppBar>
     <MudDrawer @bind-Open="@drawerOpen">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h6"
-                     Color="Color.Primary">
+            <MudText Typo="@Typo.h6"
+                     Color="@Color.Primary">
                 PKMDS Save Editor
             </MudText>
         </MudDrawerHeader>
         <MudButton OnClick="@ShowFileDialog"
-                   Variant="Variant.Filled"
-                   FullWidth="false"
+                   Variant="@Variant.Filled"
+                   FullWidth="@false"
                    Style="width: 80%; align-self: center;">
             Load Save File...
         </MudButton>
