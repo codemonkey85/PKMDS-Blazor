@@ -2,33 +2,12 @@
 
 public record AppState : IAppState
 {
-    private static readonly string[] SpeciesExcludes = new string[]
-    {
-        "Egg",
-    };
-
     public AppState()
     {
-        GameStrings = GameInfo.GetStrings("en-US");
-
-        if (SpeciesNameDictionary.Count > 0)
-        {
-            return;
-        }
-
-        foreach (Species species in Enum.GetValues(typeof(Species)))
-        {
-            var name = SpeciesName.GetSpeciesName((ushort)species, (int)LanguageID.English);
-            if (SpeciesExcludes.Contains(name, StringComparer.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            SpeciesNameDictionary.Add(species, name);
-        }
+        GameStrings = GameInfo.GetStrings(CurrentLanguageId);
     }
 
-    public Dictionary<Species, string> SpeciesNameDictionary { get; } = new();
+    public int CurrentLanguageId { get; set; } = (int)LanguageID.English;
 
     public GameStrings? GameStrings { get; set; }
 
@@ -45,6 +24,20 @@ public record AppState : IAppState
     public bool ShowProgressIndicator { get; set; }
 
     public string FileDisplayName { get; set; } = string.Empty;
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<IEnumerable<ushort>> SearchPokemonNames(
+        EntityContext generationContext, string searchString) =>
+        SpeciesName.SpeciesLang[CurrentLanguageId]
+            .Skip(1) // Skip 'Egg'
+            .Take(SaveFile?.MaxSpeciesID ?? (ushort)Species.MAX_COUNT)
+            .Where(speciesName => speciesName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .Order()
+            .Select(speciesName => (ushort)SpeciesName.GetSpeciesID(speciesName, CurrentLanguageId));
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+    public string ConvertSpeciesToName(ushort species) =>
+        SpeciesName.GetSpeciesName(species, CurrentLanguageId);
 
     public void Refresh() => OnAppStateChanged?.Invoke();
 

@@ -4,7 +4,11 @@ public interface IAppState
 {
     public event Action? OnAppStateChanged;
 
-    Dictionary<Species, string> SpeciesNameDictionary { get; }
+    int CurrentLanguageId { get; set; }
+
+    Task<IEnumerable<ushort>> SearchPokemonNames(EntityContext generationContext, string searchString);
+
+    string ConvertSpeciesToName(ushort species);
 
     GameStrings? GameStrings { get; set; }
 

@@ -7,6 +7,6 @@
     <MudAutocomplete T="ushort"
                      @bind-Value="@AppState.SelectedPokemon.Species"
                      @bind-Value:after="@(AppState.Refresh)"
-                     SearchFunc="@SearchPokemonNames"
-                     ToStringFunc="@ConvertSpeciesToName" />
+                     SearchFunc="@(async (searchString) => await AppState.SearchPokemonNames(EntityContext.Gen5, searchString))"
+                     ToStringFunc="@AppState.ConvertSpeciesToName" />
 }
