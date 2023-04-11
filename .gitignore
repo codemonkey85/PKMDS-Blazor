@@ -351,4 +351,3 @@ MigrationBackup/
 *.DS_Store
 
 .vscode
-Pkmds.Blazor/wwwroot/version.txt
