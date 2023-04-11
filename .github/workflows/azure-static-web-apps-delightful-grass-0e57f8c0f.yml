@@ -14,6 +14,8 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    env:
+      DOTNET_INSTALL_DIR: "/opt/dotnet/"
     steps:
       - uses: actions/checkout@v3
         with:
