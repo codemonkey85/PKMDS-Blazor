@@ -50,7 +50,9 @@
                     <MudText>
                         @(nature.ToString())
                     </MudText>
-                    @{ var str = AppState.GetStatModifierString((int)nature); }
+                    @{
+                        var str = AppState.GetStatModifierString((int)nature);
+                    }
                     @if (str is { Length: > 0 })
                     {
                         <MudText>
@@ -61,4 +63,169 @@
             </MudSelectItem>
         }
     </MudSelect>
+
+    @*
+    <MudAutocomplete T="int"
+                     Label="Held Item"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@AppState.SelectedPokemon.HeldItem"
+                     @bind-Value:after="@(AppState.Refresh)"
+                     SearchFunc="@(async (searchString) => await AppState.SearchItemNames(EntityContext.Gen5, searchString))"
+                     ToStringFunc="@AppState.ConvertItemToName"
+                     For="@(() => AppState.SelectedPokemon.HeldItem)" />
+
+    <MudAutocomplete T="int"
+                     Label="Ability"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@AppState.SelectedPokemon.Ability"
+                     @bind-Value:after="@(AppState.Refresh)"
+                     SearchFunc="@(async (searchString) => await AppState.SearchAbilityNames(EntityContext.Gen5, searchString))"
+                     ToStringFunc="@AppState.ConvertAbilityToName"
+                     For="@(() => AppState.SelectedPokemon.Ability)" />
+
+    <MudAutocomplete T="int"
+                     Label="Language"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@AppState.SelectedPokemon.Language"
+                     @bind-Value:after="@(AppState.Refresh)"
+                     SearchFunc="@(async (searchString) => await AppState.SearchLanguageNames(EntityContext.Gen5, searchString))"
+                     ToStringFunc="@AppState.ConvertLanguageToName"
+                     For="@(() => AppState.SelectedPokemon.Language)" />
+*@
+
+    <MudNumericField T="int"
+                     Label="Friendship"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="255"
+                     @bind-Value="@AppState.SelectedPokemon.CurrentFriendship"
+                     For="@(() => AppState.SelectedPokemon.CurrentFriendship)" />
+
+    <MudNumericField T="int"
+                     Label="HP EV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="255"
+                     @bind-Value="@AppState.SelectedPokemon.EV_HP"
+                     For="@(() => AppState.SelectedPokemon.EV_HP)" />
+
+    <MudNumericField T="int"
+                     Label="Attack EV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="255"
+                     @bind-Value="@AppState.SelectedPokemon.EV_ATK"
+                     For="@(() => AppState.SelectedPokemon.EV_ATK)" />
+
+    <MudNumericField T="int"
+                     Label="Defense EV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="255"
+                     @bind-Value="@AppState.SelectedPokemon.EV_DEF"
+                     For="@(() => AppState.SelectedPokemon.EV_DEF)" />
+
+    <MudNumericField T="int"
+                     Label="Speed EV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="255"
+                     @bind-Value="@AppState.SelectedPokemon.EV_SPE"
+                     For="@(() => AppState.SelectedPokemon.EV_SPE)" />
+
+    <MudNumericField T="int"
+                     Label="Sp. Attack EV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="255"
+                     @bind-Value="@AppState.SelectedPokemon.EV_SPA"
+                     For="@(() => AppState.SelectedPokemon.EV_SPA)" />
+
+    <MudNumericField T="int"
+                     Label="Sp. Defense EV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="255"
+                     @bind-Value="@AppState.SelectedPokemon.EV_SPD"
+                     For="@(() => AppState.SelectedPokemon.EV_SPD)" />
+
+    <MudNumericField T="int"
+                     Label="HP IV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="31"
+                     @bind-Value="@AppState.SelectedPokemon.IV_HP"
+                     For="@(() => AppState.SelectedPokemon.IV_HP)" />
+
+    <MudNumericField T="int"
+                     Label="Attack IV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="31"
+                     @bind-Value="@AppState.SelectedPokemon.IV_ATK"
+                     For="@(() => AppState.SelectedPokemon.IV_ATK)" />
+
+    <MudNumericField T="int"
+                     Label="Defense IV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="31"
+                     @bind-Value="@AppState.SelectedPokemon.IV_DEF"
+                     For="@(() => AppState.SelectedPokemon.IV_DEF)" />
+
+    <MudNumericField T="int"
+                     Label="Speed IV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="31"
+                     @bind-Value="@AppState.SelectedPokemon.IV_SPE"
+                     For="@(() => AppState.SelectedPokemon.IV_SPE)" />
+
+    <MudNumericField T="int"
+                     Label="Sp. Attack IV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="31"
+                     @bind-Value="@AppState.SelectedPokemon.IV_SPA"
+                     For="@(() => AppState.SelectedPokemon.IV_SPA)" />
+
+    <MudNumericField T="int"
+                     Label="Sp. Defense IV"
+                     Variant="@Variant.Outlined"
+                     Min="0"
+                     Max="31"
+                     @bind-Value="@AppState.SelectedPokemon.IV_SPD"
+                     For="@(() => AppState.SelectedPokemon.IV_SPD)" />
+
+    <MudCheckBox Label="Is Egg"
+                 @bind-Checked="@AppState.SelectedPokemon.IsEgg"
+                 @bind-Checked:after="@AppState.Refresh"
+                 For="@(() => AppState.SelectedPokemon.IsEgg)"/>
+
+    <MudCheckBox Label="Infected"
+                 @bind-Checked="@AppState.SelectedPokemon.PKRS_Infected"
+                 @bind-Checked:after="@AppState.Refresh"
+                 For="@(() => AppState.SelectedPokemon.PKRS_Infected)"/>
+
+    <MudCheckBox Label="Cured"
+                 @bind-Checked="@AppState.SelectedPokemon.PKRS_Cured"
+                 @bind-Checked:after="@AppState.Refresh"
+                 For="@(() => AppState.SelectedPokemon.PKRS_Cured)"/>
+@*
+    <MudCheckBox Label="N's Sparkle'"
+                 @bind-Checked="@AppState.SelectedPokemon"
+                 @bind-Checked:after="@AppState.Refresh"
+                 For="@(() => AppState.SelectedPokemon.PKRS_Cured)"/>
+*@
+
+    <MudCheckBox Label="Shiny"
+                 Checked="@AppState.SelectedPokemon.IsShiny"
+                 ReadOnly="@true"
+                 For="@(() => AppState.SelectedPokemon.IsShiny)" />
+
+
+    <MudCheckBox Label="Nicknamed"
+                 @bind-Checked="@AppState.SelectedPokemon.IsNicknamed"
+                 @bind-Checked:after="@AppState.Refresh"
+                 For="@(() => AppState.SelectedPokemon.IsNicknamed)" />
 }
