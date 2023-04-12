@@ -27,4 +27,8 @@ public interface IAppState
     void Refresh();
 
     void ClearSelection();
+
+    string[] NatureStatShortNames { get; }
+
+    string GetStatModifierString(int nature);
 }

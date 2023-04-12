@@ -47,4 +47,12 @@ public record AppState : IAppState
         SelectedBoxSlot = null;
         Refresh();
     }
+
+    public string[] NatureStatShortNames => new[] { "Atk", "Def", "Spe", "SpA", "SpD" };
+
+    public string GetStatModifierString(int nature)
+    {
+        var (up, down) = NatureAmp.GetNatureModification(nature);
+        return up == down ? string.Empty : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
+    }
 }
