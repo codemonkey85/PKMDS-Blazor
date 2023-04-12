@@ -1,4 +1,6 @@
-﻿@if (AppState.SelectedPokemon is not null)
+﻿@inherits BaseEditForm
+
+@if (AppState.SelectedPokemon is not null)
 {
     <MudNumericField Label="PID"
                      Variant="@Variant.Outlined"
