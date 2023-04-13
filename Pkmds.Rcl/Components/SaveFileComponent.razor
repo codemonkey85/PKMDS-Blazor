@@ -26,13 +26,15 @@ else
     </MudText>
 
     <MudGrid>
-        <MudItem xs="12">
-            <PokemonStorageComponent />
+        <MudItem xs="12" lg="6">
+            <MudPaper MaxWidth="432px" Elevation="0">
+                <PokemonStorageComponent />
+            </MudPaper>
         </MudItem>
-        <MudPaper MaxWidth="432px" Elevation="0">
-            <MudItem xs="12">
+        <MudItem xs="12" lg="6">
+            <MudPaper MaxWidth="432px" Elevation="0">
                 <PokemonEditForm />
-            </MudItem>
-        </MudPaper>
+            </MudPaper>
+        </MudItem>
     </MudGrid>
 }
