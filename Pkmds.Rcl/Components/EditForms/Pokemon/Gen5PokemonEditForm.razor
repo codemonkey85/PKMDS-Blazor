@@ -2,7 +2,9 @@
 
 @if (AppState.SelectedPokemon is not null)
 {
-    <MudTabs>
+    <MudTabs Outlined="true"
+             Rounded="true"
+             Border="true">
         <MudTabPanel Text="Main">
 
             <MudNumericField Label="PID"
@@ -233,6 +235,42 @@
         </MudTabPanel>
 
         <MudTabPanel Text="Stats">
+
+            <MudNumericField Label="Level"
+                             Variant="@Variant.Outlined"
+                             @bind-Value="@AppState.SelectedPokemon.CurrentLevel"
+                             @bind-Value:after="@(AppState.LoadPokemonStats)"
+                             For="@(() => AppState.SelectedPokemon.CurrentLevel)" />
+
+            <MudSelect Label="Nature"
+                       Variant="@Variant.Outlined"
+                       @bind-Value="@AppState.SelectedPokemon.Nature"
+                       @bind-Value:after="@(AppState.LoadPokemonStats)"
+                       For="@(() => AppState.SelectedPokemon.Nature)">
+                @foreach (Nature nature in Enum.GetValues(typeof(Nature)))
+                {
+                    if (nature == Nature.Random)
+                    {
+                        continue;
+                    }
+                    <MudSelectItem Value="@((int)nature)">
+                        <MudStack>
+                            <MudText>
+                                @(nature.ToString())
+                        </MudText>
+                        @{
+                            var str = AppState.GetStatModifierString((int)nature);
+                        }
+                        @if (str is { Length: > 0 })
+                        {
+                            <MudText>
+                                @str
+                            </MudText>
+                        }
+                    </MudStack>
+                </MudSelectItem>
+                }
+            </MudSelect>
 
             <MudGrid>
 
