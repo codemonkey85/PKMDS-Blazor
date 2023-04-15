@@ -179,18 +179,18 @@
     <MudCheckBox Label="Is Egg"
                  @bind-Checked="@AppState.SelectedPokemon.IsEgg"
                  @bind-Checked:after="@AppState.Refresh"
-                 For="@(() => AppState.SelectedPokemon.IsEgg)"/>
+                 For="@(() => AppState.SelectedPokemon.IsEgg)" />
 
     <MudCheckBox Label="Infected"
                  @bind-Checked="@AppState.SelectedPokemon.PKRS_Infected"
                  @bind-Checked:after="@AppState.Refresh"
-                 For="@(() => AppState.SelectedPokemon.PKRS_Infected)"/>
+                 For="@(() => AppState.SelectedPokemon.PKRS_Infected)" />
 
     <MudCheckBox Label="Cured"
                  @bind-Checked="@AppState.SelectedPokemon.PKRS_Cured"
                  @bind-Checked:after="@AppState.Refresh"
-                 For="@(() => AppState.SelectedPokemon.PKRS_Cured)"/>
-@*
+                 For="@(() => AppState.SelectedPokemon.PKRS_Cured)" />
+    @*
     <MudCheckBox Label="N's Sparkle'"
                  @bind-Checked="@AppState.SelectedPokemon"
                  @bind-Checked:after="@AppState.Refresh"
@@ -223,10 +223,29 @@
                      Variant="@Variant.Outlined"
                      @bind-Value="@AppState.SelectedPokemon.Met_Location"
                      For="@(() => AppState.SelectedPokemon.Language)" />
-@*
+    @*
                      SearchFunc="@(async (searchString) => await AppState.SearchLanguageNames(EntityContext.Gen5, searchString))"
                      ToStringFunc="@AppState.ConvertLanguageToName"
 *@
+
+    <MudSelect Label="Ball"
+               Variant="@Variant.Outlined"
+               @bind-Value="@AppState.SelectedPokemon.Ball"
+               For="@(() => AppState.SelectedPokemon.Ball)">
+        @foreach (ComboItem ball in GameInfo.BallDataSource)
+        {
+            <MudSelectItem Value="@ball.Value">
+                <MudStack Row="@true">
+                    <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
+                              Width="20"
+                              Height="20"/>
+                    <MudText>
+                        @ball.Text
+                    </MudText>
+                </MudStack>
+            </MudSelectItem>
+        }
+    </MudSelect>
 }
 
 @code {

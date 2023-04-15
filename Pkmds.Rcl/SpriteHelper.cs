@@ -20,4 +20,7 @@ public static class SpriteHelper
             _ => "unknown",
         })
         .Append(".png").ToString();
+
+    public static string GetBallSpriteFilename(int ball) =>
+        $"_content/Pkmds.Rcl/sprites/b/_ball{ball}.png";
 }
