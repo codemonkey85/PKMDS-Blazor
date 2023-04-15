@@ -17,7 +17,17 @@ public record AppState : IAppState
 
     public SaveFile? SaveFile { get; set; }
 
-    public PKM? SelectedPokemon { get; set; }
+    private PKM? _selectedPokemon;
+
+    public PKM? SelectedPokemon
+    {
+        get => _selectedPokemon;
+        set
+        {
+            _selectedPokemon = value;
+            LoadPokemonStats();
+        }
+    }
 
     public int? SelectedBoxSlot { get; set; }
 
@@ -54,5 +64,19 @@ public record AppState : IAppState
     {
         var (up, down) = NatureAmp.GetNatureModification(nature);
         return up == down ? string.Empty : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
+    }
+
+    public void LoadPokemonStats()
+    {
+        if (SaveFile is null || _selectedPokemon is null)
+        {
+            return;
+        }
+
+        var pt = SaveFile.Personal;
+        var pi = pt.GetFormEntry(_selectedPokemon.Species, _selectedPokemon.Form);
+        Span<ushort> stats = stackalloc ushort[6];
+        _selectedPokemon.LoadStats(pi, stats);
+        _selectedPokemon.SetStats(stats);
     }
 }

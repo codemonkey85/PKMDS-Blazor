@@ -31,4 +31,6 @@ public interface IAppState
     string[] NatureStatShortNames { get; }
 
     string GetStatModifierString(int nature);
+
+    void LoadPokemonStats();
 }
