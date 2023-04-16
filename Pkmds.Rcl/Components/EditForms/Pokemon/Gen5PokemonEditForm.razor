@@ -10,6 +10,7 @@
             <MudNumericField Label="PID"
                              Variant="@Variant.Outlined"
                              @bind-Value="AppState.SelectedPokemon.PID"
+                             @bind-Value:after="@(() => { AppState.LoadPokemonStats(); AppState.Refresh(); })"
                              For="@(() => AppState.SelectedPokemon.PID)" />
 
             <MudAutocomplete T="ComboItem"
@@ -28,6 +29,7 @@
             <MudNumericField Label="EXP"
                              Variant="@Variant.Outlined"
                              @bind-Value="@AppState.SelectedPokemon.EXP"
+                             @bind-Value:after="@(AppState.LoadPokemonStats)"
                              For="@(() => AppState.SelectedPokemon.EXP)" />
 
             <MudNumericField Label="Level"
