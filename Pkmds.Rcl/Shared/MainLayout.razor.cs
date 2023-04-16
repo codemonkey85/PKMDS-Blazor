@@ -63,7 +63,7 @@ public partial class MainLayout
             return;
         }
 
-        AppState.FileDisplayName = $"{AppState.SaveFile.OT} ({AppState.SaveFile.DisplayTID}, {AppState.SaveFile.Version})";
+        AppState.FileDisplayName = $"{AppState.SaveFile.OT} ({AppState.SaveFile.DisplayTID}, {AppState.SaveFile.Version}, {AppState.SaveFile.PlayTimeString})";
         AppState.Refresh();
     }
 

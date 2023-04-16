@@ -21,6 +21,10 @@
                              SearchFunc="@(async (searchString) => await AppState.SearchPokemonNames(searchString))"
                              ToStringFunc="@((species) => species.Text)" />
 
+            <MudCheckBox Label="Is Nicknamed"
+                         @bind-Checked="@AppState.SelectedPokemon.IsNicknamed"
+                         For="@(() => AppState.SelectedPokemon.IsNicknamed)" />
+
             <MudTextField Label="Nickname"
                           Variant="@Variant.Outlined"
                           @bind-Value="@AppState.SelectedPokemon.Nickname"
