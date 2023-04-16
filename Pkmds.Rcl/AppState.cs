@@ -4,19 +4,37 @@ public record AppState : IAppState
 {
     public AppState()
     {
-        GameStrings = GameInfo.GetStrings(CurrentLanguageId);
+        GameInfo.Strings = GameInfo.GetStrings(CurrentLanguage);
+    }
+
+    public string CurrentLanguage
+    {
+        get => currentLanguage;
+        set
+        {
+            currentLanguage = value;
+            LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
+        }
     }
 
     public int CurrentLanguageId { get; set; } = (int)LanguageID.English;
-
-    public GameStrings? GameStrings { get; set; }
 
     public string[] GenderForms => new[] { string.Empty, "F", string.Empty };
 
     public event Action? OnAppStateChanged;
 
-    public SaveFile? SaveFile { get; set; }
+    public SaveFile? SaveFile
+    {
+        get => saveFile;
+        set
+        {
+            saveFile = value;
+            LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
+        }
+    }
 
+    private string currentLanguage = GameLanguage.DefaultLanguage;
+    private SaveFile? saveFile;
     private PKM? _selectedPokemon;
 
     public PKM? SelectedPokemon
@@ -36,18 +54,40 @@ public record AppState : IAppState
     public string FileDisplayName { get; set; } = string.Empty;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task<IEnumerable<ushort>> SearchPokemonNames(
-        EntityContext generationContext, string searchString) =>
-        SpeciesName.SpeciesLang[CurrentLanguageId]
-            .Skip(1) // Skip 'Egg'
-            .Take(SaveFile?.MaxSpeciesID ?? (ushort)Species.MAX_COUNT)
-            .Where(speciesName => speciesName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            .Order()
-            .Select(speciesName => (ushort)SpeciesName.GetSpeciesID(speciesName, CurrentLanguageId));
+    public async Task<IEnumerable<ushort>> SearchPokemonNames(string searchString) => SaveFile is null
+        ? Enumerable.Empty<ushort>()
+        : GameInfo.FilteredSources.Species
+            .Where(species => species.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(species => species.Text)
+            .Select(species => (ushort)species.Value);
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public string ConvertSpeciesToName(ushort species) =>
         SpeciesName.GetSpeciesName(species, CurrentLanguageId);
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<IEnumerable<int>> SearchItemNames(string searchString) => SaveFile is null
+        ? Enumerable.Empty<int>()
+        : GameInfo.FilteredSources.Items
+            .Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(item => item.Text)
+            .Select(item => item.Value);
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+    public string ConvertItemToName(int itemId) => GameInfo.FilteredSources.Items
+        .FirstOrDefault(item => item.Value == itemId)?.Text ?? string.Empty;
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<IEnumerable<int>> SearchAbilityNames(string searchString) => SaveFile is null
+        ? Enumerable.Empty<int>()
+        : GameInfo.FilteredSources.Abilities
+            .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(ability => ability.Text)
+            .Select(ability => ability.Value);
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+    public string ConvertAbilityToName(int abilityId) => GameInfo.FilteredSources.Abilities
+        .FirstOrDefault(ability => ability.Value == abilityId)?.Text ?? string.Empty;
 
     public void Refresh() => OnAppStateChanged?.Invoke();
 

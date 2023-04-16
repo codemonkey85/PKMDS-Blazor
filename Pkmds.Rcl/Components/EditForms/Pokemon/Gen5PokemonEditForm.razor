@@ -16,7 +16,7 @@
                              Variant="@Variant.Outlined"
                              @bind-Value="@AppState.SelectedPokemon.Species"
                              @bind-Value:after="@(() => { AppState.LoadPokemonStats(); AppState.Refresh(); })"
-                             SearchFunc="@(async (searchString) => await AppState.SearchPokemonNames(EntityContext.Gen5, searchString))"
+                             SearchFunc="@(async (searchString) => await AppState.SearchPokemonNames(searchString))"
                              ToStringFunc="@AppState.ConvertSpeciesToName"
                              For="@(() => AppState.SelectedPokemon.Species)" />
 
@@ -41,28 +41,24 @@
                        @bind-Value="@AppState.SelectedPokemon.Nature"
                        @bind-Value:after="@(AppState.LoadPokemonStats)"
                        For="@(() => AppState.SelectedPokemon.Nature)">
-                @foreach (Nature nature in Enum.GetValues(typeof(Nature)))
+                @foreach (var nature in GameInfo.FilteredSources.Natures)
                 {
-                    if (nature == Nature.Random)
-                    {
-                        continue;
-                    }
-                    <MudSelectItem Value="@((int)nature)">
+                    <MudSelectItem Value="@(nature.Value)">
                         <MudStack>
                             <MudText>
-                                @(nature.ToString())
+                                @nature.Text
                             </MudText>
                             @{
-                                var str = AppState.GetStatModifierString((int)nature);
+                                var str = AppState.GetStatModifierString(nature.Value);
                             }
-                            @if (str is { Length: > 0 })
-                            {
-                                <MudText>
-                                    @str
-                                </MudText>
-                            }
-                        </MudStack>
-                    </MudSelectItem>
+                        @if (str is { Length: > 0 })
+                        {
+                            <MudText>
+                                @str
+                            </MudText>
+                        }
+                    </MudStack>
+                </MudSelectItem>
                 }
             </MudSelect>
 
@@ -70,26 +66,7 @@
                              Variant="@Variant.Outlined"
                              @bind-Value="@AppState.SelectedPokemon.HeldItem"
                              @bind-Value:after="@(AppState.Refresh)"
-                             For="@(() => AppState.SelectedPokemon.HeldItem)" />
-
-            <MudAutocomplete Label="Ability"
-                             Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.Ability"
-                             @bind-Value:after="@(AppState.Refresh)"
-                             For="@(() => AppState.SelectedPokemon.Ability)" />
-
-            <MudAutocomplete Label="Language"
-                             Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.Language"
-                             @bind-Value:after="@(AppState.Refresh)"
-                             For="@(() => AppState.SelectedPokemon.Language)" />
-
-            @*
-            <MudAutocomplete Label="Held Item"
-                             Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.HeldItem"
-                             @bind-Value:after="@(AppState.Refresh)"
-                             SearchFunc="@(async (searchString) => await AppState.SearchItemNames(EntityContext.Gen5, searchString))"
+                             SearchFunc="@(async (searchString) => await AppState.SearchItemNames(searchString))"
                              ToStringFunc="@AppState.ConvertItemToName"
                              For="@(() => AppState.SelectedPokemon.HeldItem)" />
 
@@ -97,18 +74,21 @@
                              Variant="@Variant.Outlined"
                              @bind-Value="@AppState.SelectedPokemon.Ability"
                              @bind-Value:after="@(AppState.Refresh)"
-                             SearchFunc="@(async (searchString) => await AppState.SearchAbilityNames(EntityContext.Gen5, searchString))"
+                             SearchFunc="@(async (searchString) => await AppState.SearchAbilityNames(searchString))"
                              ToStringFunc="@AppState.ConvertAbilityToName"
                              For="@(() => AppState.SelectedPokemon.Ability)" />
 
-            <MudAutocomplete Label="Language"
-                             Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.Language"
-                             @bind-Value:after="@(AppState.Refresh)"
-                             SearchFunc="@(async (searchString) => await AppState.SearchLanguageNames(EntityContext.Gen5, searchString))"
-                             ToStringFunc="@AppState.ConvertLanguageToName"
-                             For="@(() => AppState.SelectedPokemon.Language)" />
-        *@
+            <MudSelect Label="Language"
+                       Variant="@Variant.Outlined"
+                       @bind-Value="@AppState.SelectedPokemon.Language"
+                       For="@(() => AppState.SelectedPokemon.Language)">
+                @foreach (var language in GameInfo.FilteredSources.Languages)
+                {
+                    <MudSelectItem Value="language.Value">
+                        @language.Text
+                    </MudSelectItem>
+                }
+            </MudSelect>
 
             <MudNumericField Label="Friendship"
                              Variant="@Variant.Outlined"
@@ -515,6 +495,17 @@
                 </MudItem>
 
             </MudGrid>
+
+            <MudSelect Label="Hidden Power Type"
+                       @bind-Value:get="@AppState.SelectedPokemon.HPType"
+                       @bind-Value:set="@((int type) => AppState.SelectedPokemon.SetHiddenPower(type))">
+                @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)))
+                {
+                    <MudSelectItem Value="@type.Value">
+                        @type.Text
+                    </MudSelectItem>
+                }
+            </MudSelect>
 
         </MudTabPanel>
     </MudTabs>
