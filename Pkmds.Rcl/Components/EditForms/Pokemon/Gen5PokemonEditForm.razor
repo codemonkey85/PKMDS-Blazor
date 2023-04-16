@@ -143,26 +143,17 @@
                 }
             </MudSelect>
 
-            <MudAutocomplete Label="Met Location"
-                             Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.Met_Location"
-                             For="@(() => AppState.SelectedPokemon.Language)" />
-            @*
-                             SearchFunc="@(async (searchString) => await AppState.SearchLanguageNames(EntityContext.Gen5, searchString))"
-                             ToStringFunc="@AppState.ConvertLanguageToName"
-        *@
-
             <MudSelect Label="Ball"
-                       Variant="@Variant.Outlined"
-                       @bind-Value="@AppState.SelectedPokemon.Ball"
-                       For="@(() => AppState.SelectedPokemon.Ball)">
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@AppState.SelectedPokemon.Ball"
+                   For="@(() => AppState.SelectedPokemon.Ball)">
                 @foreach (ComboItem ball in GameInfo.BallDataSource)
                 {
                     <MudSelectItem Value="@ball.Value">
                         <MudStack Row="@true">
                             <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
-                                      Width="20"
-                                      Height="20" />
+                              Width="20"
+                              Height="20" />
                             <MudText>
                                 @ball.Text
                             </MudText>
@@ -170,6 +161,14 @@
                     </MudSelectItem>
                 }
             </MudSelect>
+
+            <MudAutocomplete T="ComboItem"
+                             Label="Met Location"
+                             Variant="@Variant.Outlined"
+                             @bind-Value:get="@(AppState.GetMetLocationComboItem(AppState.SelectedPokemon.Met_Location))"
+                             @bind-Value:set="@((metLocation) => AppState.SelectedPokemon.Met_Location = metLocation.Value)"
+                             SearchFunc="@(async (searchString) => await AppState.SearchMetLocations(searchString))"
+                             ToStringFunc="@((metLocation) => metLocation.Text)" />
 
             <MudPaper Elevation="0"
                       Outlined="@true"
@@ -190,10 +189,13 @@
                          @bind-Checked:after="@AppState.Refresh"
                          For="@(() => AppState.SelectedPokemon.WasEgg)" />
         *@
-            <MudAutocomplete Label="Egg Location"
+            <MudAutocomplete T="ComboItem"
+                             Label="Egg Location"
                              Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.Egg_Location"
-                             For="@(() => AppState.SelectedPokemon.Language)" />
+                             @bind-Value:get="@(AppState.GetMetLocationComboItem(AppState.SelectedPokemon.Egg_Location))"
+                             @bind-Value:set="@((metLocation) => AppState.SelectedPokemon.Egg_Location = metLocation.Value)"
+                             SearchFunc="@(async (searchString) => await AppState.SearchMetLocations(searchString))"
+                             ToStringFunc="@((metLocation) => metLocation.Text)" />
             @*
                              SearchFunc="@(async (searchString) => await AppState.SearchLanguageNames(EntityContext.Gen5, searchString))"
                              ToStringFunc="@AppState.ConvertLanguageToName"
@@ -496,17 +498,38 @@
 
             </MudGrid>
 
-            <MudSelect Label="Hidden Power Type"
-                       @bind-Value:get="@AppState.SelectedPokemon.HPType"
-                       @bind-Value:set="@((int type) => AppState.SelectedPokemon.SetHiddenPower(type))">
-                @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)))
-                {
-                    <MudSelectItem Value="@type.Value">
-                        @type.Text
-                    </MudSelectItem>
-                }
-            </MudSelect>
+            <MudStack Row="@true" AlignItems="@AlignItems.Center">
+                <MudSelect Label="Hidden Power Type"
+                           @bind-Value:get="@AppState.SelectedPokemon.HPType"
+                           @bind-Value:set="@((int type) => AppState.SelectedPokemon.SetHiddenPower(type))">
+                    @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)))
+                    {
+                        <MudSelectItem Value="@type.Value">
+                            @type.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+                <MudText>
+                    @AppState.SelectedPokemon.HPPower
+                </MudText>
+            </MudStack>
 
+            <MudText>
+                Characteristic: @GameInfo.Strings.characteristics[AppState.SelectedPokemon.Characteristic]
+            </MudText>
+
+        </MudTabPanel>
+
+        <MudTabPanel Text="Moves">
+            <FeatureNotImplemented />
+        </MudTabPanel>
+
+        <MudTabPanel Text="Cosmetic">
+            <FeatureNotImplemented />
+        </MudTabPanel>
+
+        <MudTabPanel Text="OT/Misc">
+            <FeatureNotImplemented />
         </MudTabPanel>
     </MudTabs>
 }

@@ -116,4 +116,17 @@ public record AppState : IAppState
         _selectedPokemon.LoadStats(pi, stats);
         _selectedPokemon.SetStats(stats);
     }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<IEnumerable<ComboItem>> SearchMetLocations(string searchString, bool isEggLocation = false) => SaveFile is null || searchString is not { Length: > 0 }
+        ? Enumerable.Empty<ComboItem>()
+        : GameInfo.GetLocationList(SaveFile.Version, SaveFile.Context, isEggLocation)
+            .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(ability => ability.Text);
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+    public ComboItem GetMetLocationComboItem(int metLocationId, bool isEggLocation = false) => SaveFile is null
+        ? default!
+        : GameInfo.GetLocationList(SaveFile.Version, SaveFile.Context, isEggLocation)
+            .FirstOrDefault(metLocation => metLocation.Value == metLocationId) ?? default!;
 }

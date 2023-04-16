@@ -32,7 +32,8 @@
         </MudButton>
         <MudButton OnClick="@Ok"
                    Variant="@Variant.Filled"
-                   Color="@Color.Primary">
+                   Color="@Color.Primary"
+                   Disabled=@(browserFile is null)>
             Ok
         </MudButton>
     </DialogActions>
