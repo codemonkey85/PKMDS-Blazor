@@ -2,7 +2,7 @@
 
 public interface IAppState
 {
-    public event Action? OnAppStateChanged;
+    event Action? OnAppStateChanged;
 
     string CurrentLanguage { get; set; }
 
@@ -49,4 +49,10 @@ public interface IAppState
     Task<IEnumerable<ComboItem>> SearchMoves(string searchString);
 
     ComboItem GetMoveComboItem(int moveId);
+
+    bool GetMarking(int index);
+
+    void SetMarking(int index, bool value);
+
+    void ToggleMarking(int index);
 }

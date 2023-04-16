@@ -565,7 +565,51 @@
         </MudTabPanel>
 
         <MudTabPanel Text="Cosmetic">
-            <FeatureNotImplemented />
+            
+            <MudStack Row="@true"
+                      AlignItems="@AlignItems.Center">
+
+                <MudIcon Icon="fa-solid fa-circle" />
+                <MudIcon Icon="fa-solid fa-play fa-rotate-270" />
+                <MudIcon Icon="fa-solid fa-square" />
+                <MudIcon Icon="fa-solid fa-heart" />
+                <MudIcon Icon="fa-solid fa-star" />
+                <MudIcon Icon="fa-solid fa-diamond" />
+
+@*
+                      <MudCheckBox T="bool"
+                                   Label="Circle"
+                                   Checked="AppState.GetMarking(0)"
+                                   CheckedChanged="@((checkedValue) => AppState.SetMarking(0, checkedValue))" />
+
+                      <MudCheckBox T="bool"
+                                   Label="Triangle"
+                                   Checked="AppState.GetMarking(1)"
+                                   CheckedChanged="@((checkedValue) => AppState.SetMarking(1, checkedValue))" />
+
+                      <MudCheckBox T="bool"
+                                   Label="Square"
+                                   Checked="AppState.GetMarking(2)"
+                                   CheckedChanged="@((checkedValue) => AppState.SetMarking(2, checkedValue))" />
+
+                      <MudCheckBox T="bool"
+                                   Label="Heart"
+                                   Checked="AppState.GetMarking(3)"
+                                   CheckedChanged="@((checkedValue) => AppState.SetMarking(3, checkedValue))" />
+
+                      <MudCheckBox T="bool"
+                                   Label="Star"
+                                   Checked="AppState.GetMarking(4)"
+                                   CheckedChanged="@((checkedValue) => AppState.SetMarking(4, checkedValue))" />
+
+                      <MudCheckBox T="bool"
+                                   Label="Diamond"
+                                   Checked="AppState.GetMarking(5)"
+                                   CheckedChanged="@((checkedValue) => AppState.SetMarking(5, checkedValue))" />
+*@
+
+            </MudStack>
+
         </MudTabPanel>
 
         <MudTabPanel Text="OT/Misc">
