@@ -4,7 +4,7 @@ public record AppState : IAppState
 {
     public AppState()
     {
-        GameInfo.Strings = GameInfo.GetStrings(CurrentLanguage);
+        LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
     }
 
     public string CurrentLanguage
