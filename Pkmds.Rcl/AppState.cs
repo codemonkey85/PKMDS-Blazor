@@ -129,4 +129,15 @@ public record AppState : IAppState
         ? default!
         : GameInfo.GetLocationList(SaveFile.Version, SaveFile.Context, isEggLocation)
             .FirstOrDefault(metLocation => metLocation.Value == metLocationId) ?? default!;
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<IEnumerable<ComboItem>> SearchMoves(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
+        ? Enumerable.Empty<ComboItem>()
+        : GameInfo.FilteredSources.Moves
+            .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(move => move.Text);
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+    public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
+        .FirstOrDefault(metLocation => metLocation.Value == moveId) ?? default!;
 }

@@ -45,4 +45,8 @@ public interface IAppState
     Task<IEnumerable<ComboItem>> SearchMetLocations(string searchString, bool isEggLocation = false);
 
     ComboItem GetMetLocationComboItem(int metLocationId, bool isEggLocation = false);
+
+    Task<IEnumerable<ComboItem>> SearchMoves(string searchString);
+
+    ComboItem GetMoveComboItem(int moveId);
 }
