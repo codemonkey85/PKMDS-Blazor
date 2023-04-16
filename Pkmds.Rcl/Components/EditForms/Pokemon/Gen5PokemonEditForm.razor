@@ -122,7 +122,7 @@
                          @bind-Checked="@AppState.SelectedPokemon"
                          @bind-Checked:after="@AppState.Refresh"
                          For="@(() => AppState.SelectedPokemon.PKRS_Cured)" />
-        *@
+            *@
 
             <MudCheckBox Label="Shiny"
                          Checked="@AppState.SelectedPokemon.IsShiny"
@@ -203,10 +203,6 @@
                              @bind-Value:set="@((metLocation) => AppState.SelectedPokemon.Egg_Location = metLocation.Value)"
                              SearchFunc="@(async (searchString) => await AppState.SearchMetLocations(searchString))"
                              ToStringFunc="@((metLocation) => metLocation.Text)" />
-            @*
-                             SearchFunc="@(async (searchString) => await AppState.SearchLanguageNames(EntityContext.Gen5, searchString))"
-                             ToStringFunc="@AppState.ConvertLanguageToName"
-        *@
 
             <MudPaper Elevation="0"
                       Outlined="@true"
@@ -568,15 +564,6 @@
             
             <MudStack Row="@true"
                       AlignItems="@AlignItems.Center">
-
-                <MudIcon Icon="fa-solid fa-circle" />
-                <MudIcon Icon="fa-solid fa-play fa-rotate-270" />
-                <MudIcon Icon="fa-solid fa-square" />
-                <MudIcon Icon="fa-solid fa-heart" />
-                <MudIcon Icon="fa-solid fa-star" />
-                <MudIcon Icon="fa-solid fa-diamond" />
-
-@*
                       <MudCheckBox T="bool"
                                    Label="Circle"
                                    Checked="AppState.GetMarking(0)"
@@ -606,7 +593,6 @@
                                    Label="Diamond"
                                    Checked="AppState.GetMarking(5)"
                                    CheckedChanged="@((checkedValue) => AppState.SetMarking(5, checkedValue))" />
-*@
 
             </MudStack>
 
