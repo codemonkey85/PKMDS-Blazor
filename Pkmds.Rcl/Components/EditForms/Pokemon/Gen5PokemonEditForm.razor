@@ -12,13 +12,13 @@
                              @bind-Value="AppState.SelectedPokemon.PID"
                              For="@(() => AppState.SelectedPokemon.PID)" />
 
-            <MudAutocomplete Label="Species"
+            <MudAutocomplete T="ComboItem"
+                             Label="Species"
                              Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.Species"
-                             @bind-Value:after="@(() => { AppState.LoadPokemonStats(); AppState.Refresh(); })"
+                             @bind-Value:get="@(AppState.GetSpeciesComboItem(AppState.SelectedPokemon.Species))"
+                             @bind-Value:set="@((species) => { AppState.SelectedPokemon.Species = (ushort)species.Value; AppState.LoadPokemonStats(); AppState.Refresh(); })"
                              SearchFunc="@(async (searchString) => await AppState.SearchPokemonNames(searchString))"
-                             ToStringFunc="@AppState.ConvertSpeciesToName"
-                             For="@(() => AppState.SelectedPokemon.Species)" />
+                             ToStringFunc="@((species) => species.Text)" />
 
             <MudTextField Label="Nickname"
                           Variant="@Variant.Outlined"
@@ -62,21 +62,21 @@
                 }
             </MudSelect>
 
-            <MudAutocomplete Label="Held Item"
+            <MudAutocomplete T="ComboItem"
+                             Label="Held Item"
                              Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.HeldItem"
-                             @bind-Value:after="@(AppState.Refresh)"
+                             @bind-Value:get="@(AppState.GetItemComboItem(AppState.SelectedPokemon.HeldItem))"
+                             @bind-Value:set="@((item) => { AppState.SelectedPokemon.HeldItem = item.Value; AppState.LoadPokemonStats(); AppState.Refresh(); })"
                              SearchFunc="@(async (searchString) => await AppState.SearchItemNames(searchString))"
-                             ToStringFunc="@AppState.ConvertItemToName"
-                             For="@(() => AppState.SelectedPokemon.HeldItem)" />
+                             ToStringFunc="@((item) => item.Text)" />
 
-            <MudAutocomplete Label="Ability"
+            <MudAutocomplete T="ComboItem"
+                             Label="Ability"
                              Variant="@Variant.Outlined"
-                             @bind-Value="@AppState.SelectedPokemon.Ability"
-                             @bind-Value:after="@(AppState.Refresh)"
+                             @bind-Value:get="@(AppState.GetAbilityComboItem(AppState.SelectedPokemon.Ability))"
+                             @bind-Value:set="@((ability) => AppState.SelectedPokemon.Ability = ability.Value)"
                              SearchFunc="@(async (searchString) => await AppState.SearchAbilityNames(searchString))"
-                             ToStringFunc="@AppState.ConvertAbilityToName"
-                             For="@(() => AppState.SelectedPokemon.Ability)" />
+                             ToStringFunc="@((ability) => ability.Text)" />
 
             <MudSelect Label="Language"
                        Variant="@Variant.Outlined"

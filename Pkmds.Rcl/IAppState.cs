@@ -8,9 +8,9 @@ public interface IAppState
 
     int CurrentLanguageId { get; set; }
 
-    Task<IEnumerable<ushort>> SearchPokemonNames(string searchString);
+    Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString);
 
-    string ConvertSpeciesToName(ushort species);
+    ComboItem GetSpeciesComboItem(ushort speciesId);
 
     string[] GenderForms { get; }
 
@@ -34,11 +34,11 @@ public interface IAppState
 
     void LoadPokemonStats();
 
-    Task<IEnumerable<int>> SearchItemNames(string searchString);
+    Task<IEnumerable<ComboItem>> SearchItemNames(string searchString);
 
-    string ConvertItemToName(int item);
+    ComboItem GetItemComboItem(int itemId);
 
-    Task<IEnumerable<int>> SearchAbilityNames(string searchString);
+    Task<IEnumerable<ComboItem>> SearchAbilityNames(string searchString);
 
-    string ConvertAbilityToName(int ability);
+    ComboItem GetAbilityComboItem(int abilityId);
 }
