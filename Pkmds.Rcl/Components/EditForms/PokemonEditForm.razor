@@ -82,6 +82,21 @@ AppState.SelectedPokemon is not null)
                     }
                 </MudSelect>
 
+                <MudSelect T="byte"
+                       Label="Forme"
+                       Variant="@Variant.Outlined"
+                       @bind-Value="@AppState.SelectedPokemon.Form"
+                       @bind-Value:after="@(() => { AppState.LoadPokemonStats(); AppState.Refresh(); })"
+                       For="@(() => AppState.SelectedPokemon.Form)">
+                    @for (byte i = 0; i < AppState.SelectedPokemon.PersonalInfo.FormCount; i++)
+                    {
+                        var formId = i;
+                        <MudSelectItem Value="@formId">
+                            @formId
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+
                 <MudAutocomplete T="ComboItem"
                              Label="Held Item"
                              Variant="@Variant.Outlined"
@@ -534,7 +549,7 @@ AppState.SelectedPokemon is not null)
                 </MudStack>
 
                 <MudText>
-                    Characteristic: @GameInfo.Strings.characteristics[AppState.SelectedPokemon.Characteristic]
+                    Characteristic: @(AppState.GetCharacteristic())
                 </MudText>
 
             </MudTabPanel>

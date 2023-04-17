@@ -141,18 +141,20 @@ public record AppState : IAppState
     public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
         .FirstOrDefault(metLocation => metLocation.Value == moveId) ?? default!;
 
-    public bool GetMarking(int index)
-    {
-        return SelectedPokemon is null ? false : SelectedPokemon.GetMarking(index) == 1;
-    }
+    public bool GetMarking(int index) =>
+        SelectedPokemon is not null && index <= SelectedPokemon.MarkingCount - 1 && SelectedPokemon.GetMarking(index) == 1;
 
-    public void SetMarking(int index, bool value)
-    {
+    public void SetMarking(int index, bool value) =>
         SelectedPokemon?.SetMarking(index, value ? 1 : 0);
-    }
 
-    public void ToggleMarking(int index)
-    {
+    public void ToggleMarking(int index) =>
         SelectedPokemon?.ToggleMarking(index);
-    }
+
+    public string GetCharacteristic() =>
+        SelectedPokemon?.Characteristic is int characteristicIndex &&
+        characteristicIndex > -1 &&
+        GameInfo.Strings.characteristics is { Length: > 0 } characteristics &&
+        characteristicIndex < characteristics.Length
+            ? characteristics[characteristicIndex]
+            : string.Empty;
 }

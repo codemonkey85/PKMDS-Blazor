@@ -55,4 +55,6 @@ public interface IAppState
     void SetMarking(int index, bool value);
 
     void ToggleMarking(int index);
+
+    string GetCharacteristic();
 }
