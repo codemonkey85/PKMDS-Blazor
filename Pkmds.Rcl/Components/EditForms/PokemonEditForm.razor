@@ -1,6 +1,4 @@
-﻿@inherits BaseEditForm
-
-@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
@@ -82,38 +80,46 @@ AppState.SelectedPokemon is not null)
                     }
                 </MudSelect>
 
-                @if (AppState.SelectedPokemon is { PersonalInfo.HasForms: true })
+                @if (AppState.SelectedPokemon is { PersonalInfo.HasForms: true } || AppState.SelectedPokemon is { Species: (ushort)Species.Unown })
                 {
-                    <MudSelect T="byte"
+                    var forms = FormConverter.GetFormList(AppState.SelectedPokemon.Species, GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, AppState.SelectedPokemon.Context);
+                    if (forms.AsEnumerable().Any(f => !string.IsNullOrEmpty(f)))
+                    {
+                        <MudSelect T="byte"
+                       @ref="@FormSelect"
                        Label="Forme"
                        Variant="@Variant.Outlined"
                        @bind-Value="@AppState.SelectedPokemon.Form"
                        @bind-Value:after="@(() => { AppState.LoadPokemonStats(); AppState.Refresh(); })"
                        For="@(() => AppState.SelectedPokemon.Form)">
-                        @for (byte i = 0; i < AppState.SelectedPokemon.PersonalInfo.FormCount; i++)
-                        {
-                            var formId = i;
-                            <MudSelectItem Value="@formId">
-                                @formId
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
+                            @for (byte i = 0; i < forms.Length; i++)
+                            {
+                                var formId = i;
+                                <MudSelectItem Value="@formId">
+                                    @forms[formId]
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
 
-                    @if (AppState.SelectedPokemon is IFormArgument f && FormArgumentUtil.GetFormArgumentMax(AppState.SelectedPokemon.Species, AppState.SelectedPokemon.Form, AppState.SelectedPokemon.Generation) > 0 && FormConverter.GetFormArgumentIsNamedIndex(AppState.SelectedPokemon.Species))
-                    {
-                        <MudSelect T="uint?"
+                        @if (AppState.SelectedPokemon is IFormArgument f && FormArgumentUtil.GetFormArgumentMax(AppState.SelectedPokemon.Species, AppState.SelectedPokemon.Form, AppState.SelectedPokemon.Generation) > 0 && FormConverter.GetFormArgumentIsNamedIndex(AppState.SelectedPokemon.Species))
+                        {
+                            <MudSelect T="uint?"
                        Label="Forme Arg"
                        Variant="@Variant.Outlined"
                        @bind-Value:get="@(AppState.SelectedPokemon.GetFormArgument())"
                        @bind-Value:set="@((formArg) => { AppState.SelectedPokemon.ChangeFormArgument(formArg ?? 0); AppState.LoadPokemonStats(); AppState.Refresh(); })">
-                            @for (uint? i = 0; i < FormArgumentUtil.GetFormArgumentMax(AppState.SelectedPokemon.Species, AppState.SelectedPokemon.Form, AppState.SelectedPokemon.Generation); i++)
-                            {
-                                var formArg = i;
-                                <MudSelectItem Value="@formArg">
-                                    @formArg
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
+                                @{
+                                    var formArgs = FormConverter.GetFormArgumentStrings(AppState.SelectedPokemon.Species);
+                                }
+                                @for (uint? i = 0; i < formArgs.Length; i++)
+                                {
+                                    var formArg = i;
+                                    <MudSelectItem Value="@(formArg)">
+                                        @formArgs[formArg ?? 0]
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                        }
                     }
                 }
 
