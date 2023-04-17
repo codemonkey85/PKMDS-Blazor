@@ -23,4 +23,7 @@ public static class SpriteHelper
 
     public static string GetBallSpriteFilename(int ball) =>
         $"_content/Pkmds.Rcl/sprites/b/_ball{ball}.png";
+
+    public static string GetBigItemSpriteFilename(int item) =>
+        $"_content/Pkmds.Rcl/sprites/bi/bitem_{item}.png";
 }

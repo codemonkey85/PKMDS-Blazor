@@ -129,7 +129,25 @@ AppState.SelectedPokemon is not null)
                              @bind-Value:get="@(AppState.GetItemComboItem(AppState.SelectedPokemon.HeldItem))"
                              @bind-Value:set="@((item) => { AppState.SelectedPokemon.HeldItem = item.Value; AppState.LoadPokemonStats(); AppState.Refresh(); })"
                              SearchFunc="@(async (searchString) => await AppState.SearchItemNames(searchString))"
-                             ToStringFunc="@((item) => item.Text)" />
+                             ToStringFunc="@((item) => item.Text)">
+                    <ItemTemplate Context="item">
+                        <MudStack Row="@true">
+                            @if (item.Value != 0)
+                            {
+                                var pkm = AppState.SelectedPokemon.Clone();
+                                pkm.HeldItem = item.Value;
+                                <MudImage Src="@SpriteHelper.GetBigItemSpriteFilename(pkm.SpriteItem)"
+                                  ObjectFit="@ObjectFit.Contain"
+                                  ObjectPosition="@ObjectPosition.Center"
+                                  Width="22"
+                                  Height="22" />
+                            }
+                            <MudText>
+                                @item.Text
+                            </MudText>
+                        </MudStack>
+                    </ItemTemplate>
+                </MudAutocomplete>
 
                 <MudAutocomplete T="ComboItem"
                              Label="Ability"
@@ -213,8 +231,10 @@ AppState.SelectedPokemon is not null)
                         <MudSelectItem Value="@ball.Value">
                             <MudStack Row="@true">
                                 <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
-                                  Width="20"
-                                  Height="20" />
+                                  ObjectFit="@ObjectFit.Contain"
+                                  ObjectPosition="@ObjectPosition.Center"
+                                  Width="22"
+                                  Height="22" />
                                 <MudText>
                                     @ball.Text
                                 </MudText>
