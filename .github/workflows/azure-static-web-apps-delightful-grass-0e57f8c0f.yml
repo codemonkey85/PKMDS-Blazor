@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
+      - uses: actions/setup-node@v3
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - run: npm i -g npx
       - run: npm install -g postcss
       - run: npm install -g tailwindcss
       - name: Build And Deploy
