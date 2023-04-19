@@ -24,7 +24,7 @@ jobs:
           args: npm install -g postcss tailwindcss
       - uses: mikeal/npx@master
         with:
-          args: npx tailwindcss -i ./$Pkmds.Rcl/wwwroot/css/app.css -o ./$Pkmds.Rcl/wwwroot/css/tailwind.css --minify
+          args: npx tailwindcss -i ./Pkmds.Rcl/wwwroot/css/app.css -o ./Pkmds.Rcl/wwwroot/css/tailwind.css --minify
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
