@@ -19,10 +19,9 @@ jobs:
         with:
           submodules: true
       - uses: actions/setup-node@v3
+      - uses: mikeal/npx@master
         with:
-          cache: "npm"
-      - run: npm install -g postcss
-      - run: npm install -g tailwindcss
+          args: npm install -g postcss tailwindcss
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
