@@ -6,13 +6,11 @@ public interface IAppState
 
     string CurrentLanguage { get; set; }
 
-    int CurrentLanguageId { get; set; }
+    int CurrentLanguageId { get; }
 
     Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString);
 
     ComboItem GetSpeciesComboItem(ushort speciesId);
-
-    string[] GenderForms { get; }
 
     SaveFile? SaveFile { get; set; }
 

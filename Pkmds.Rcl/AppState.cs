@@ -17,9 +17,7 @@ public record AppState : IAppState
         }
     }
 
-    public int CurrentLanguageId { get; set; } = (int)LanguageID.English;
-
-    public string[] GenderForms => new[] { string.Empty, "F", string.Empty };
+    public int CurrentLanguageId => SaveFile?.Language ?? (int)LanguageID.English;
 
     public event Action? OnAppStateChanged;
 
