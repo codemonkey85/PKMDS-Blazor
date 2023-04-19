@@ -351,3 +351,4 @@ MigrationBackup/
 *.DS_Store
 
 .vscode
+Pkmds.Rcl/wwwroot/css/tailwind.css

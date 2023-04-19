@@ -20,4 +20,8 @@
 	  <Folder Include="wwwroot\js\" />
 	</ItemGroup>
 
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="npx tailwindcss -i $(MSBuildProjectDirectory)/wwwroot/css/app.css -o $(MSBuildProjectDirectory)/wwwroot/css/tailwind.css --minify" />
+	</Target>
+
 </Project>
