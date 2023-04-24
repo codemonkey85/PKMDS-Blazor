@@ -95,6 +95,10 @@ public record AppState : IAppState
 
     public string[] NatureStatShortNames => new[] { "Atk", "Def", "Spe", "SpA", "SpD" };
 
+    public bool IsPurificationVisible => false;
+
+    public bool IsSizeVisible => false;
+
     public string GetStatModifierString(int nature)
     {
         var (up, down) = NatureAmp.GetNatureModification(nature);

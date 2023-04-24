@@ -55,4 +55,8 @@ public interface IAppState
     void ToggleMarking(int index);
 
     string GetCharacteristic();
+
+    bool IsPurificationVisible { get; }
+
+    bool IsSizeVisible { get; }
 }
