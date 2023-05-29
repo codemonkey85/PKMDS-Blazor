@@ -4,9 +4,13 @@ public interface IAppState
 {
     event Action? OnAppStateChanged;
 
+    event Action? OnBoxStateChanged;
+
     string CurrentLanguage { get; set; }
 
     int CurrentLanguageId { get; }
+
+    PKM? EditFormPokemon { get; set; }
 
     IEnumerable<ComboItem> SearchPokemonNames(string searchString);
 
@@ -14,9 +18,9 @@ public interface IAppState
 
     SaveFile? SaveFile { get; set; }
 
-    PKM? SelectedPokemon { get; set; }
+    int? SelectedBoxNumber { get; set; }
 
-    int? SelectedBoxSlot { get; set; }
+    int? SelectedSlotNumber { get; set; }
 
     bool ShowProgressIndicator { get; set; }
 
@@ -30,7 +34,7 @@ public interface IAppState
 
     string GetStatModifierString(int nature);
 
-    void LoadPokemonStats();
+    void LoadPokemonStats(PKM? pokemon);
 
     IEnumerable<ComboItem> SearchItemNames(string searchString);
 
@@ -48,15 +52,19 @@ public interface IAppState
 
     ComboItem GetMoveComboItem(int moveId);
 
-    bool GetMarking(int index);
+    bool GetMarking(PKM? pokemon, int index);
 
-    void SetMarking(int index, bool value);
+    void SetMarking(PKM? pokemon, int index, bool value);
 
-    void ToggleMarking(int index);
+    void ToggleMarking(PKM? pokemon, int index);
 
-    string GetCharacteristic();
+    string GetCharacteristic(PKM? pokemon);
 
     bool IsPurificationVisible { get; }
 
     bool IsSizeVisible { get; }
+
+    public void SavePokemon(PKM? SelectedPokemon);
+
+    string GetCleanFileName(PKM pkm);
 }

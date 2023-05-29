@@ -1,16 +1,32 @@
-﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+﻿@if (Pokemon is not null &&
+AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-AppState.SelectedPokemon is not null)
+AppState.SelectedBoxNumber is not null &&
+AppState.SelectedSlotNumber is not null)
 {
-    <MudButton OnClick="@AppState.ClearSelection"
-               ButtonType="@ButtonType.Button"
-               Variant="@Variant.Filled"
-               Class="my-2">
-        Clear Selection
-    </MudButton>
+    <MudStack Row="@true"
+              Spacing="3"
+              Justify="@Justify.FlexEnd">
+
+        <MudButton OnClick="@AppState.ClearSelection"
+                   ButtonType="@ButtonType.Button"
+                   Variant="@Variant.Filled"
+                   Class="my-2">
+            Clear Selection
+        </MudButton>
+
+        <MudButton OnClick="@(() => AppState.SavePokemon(Pokemon))"
+                   ButtonType="@ButtonType.Button"
+                   Variant="@Variant.Filled"
+                   Class="my-2"
+                   Color="@Color.Primary">
+            Save
+        </MudButton>
+
+    </MudStack>
 
     <div class="mb-2">
 
@@ -19,27 +35,27 @@ AppState.SelectedPokemon is not null)
                  Border="true">
 
             <MudTabPanel Text="Main">
-                <MainTab />
+                <MainTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
             <MudTabPanel Text="Met">
-                <MetTab />
+                <MetTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
             <MudTabPanel Text="Stats">
-                <StatsTab />
+                <StatsTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
             <MudTabPanel Text="Moves">
-                <MovesTab />
+                <MovesTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
             <MudTabPanel Text="Cosmetic">
-                <CosmeticTab />
+                <CosmeticTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
             <MudTabPanel Text="OT/Misc">
-                <OtMiscTab />
+                <OtMiscTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
         </MudTabs>

@@ -19,7 +19,18 @@ public record AppState : IAppState
 
     public int CurrentLanguageId => SaveFile?.Language ?? (int)LanguageID.English;
 
+    public PKM? EditFormPokemon
+    {
+        get => editFormPokemon;
+        set
+        {
+            editFormPokemon = value?.Clone();
+            LoadPokemonStats(editFormPokemon);
+        }
+    }
+
     public event Action? OnAppStateChanged;
+    public event Action? OnBoxStateChanged;
 
     public SaveFile? SaveFile
     {
@@ -33,19 +44,11 @@ public record AppState : IAppState
 
     private string currentLanguage = GameLanguage.DefaultLanguage;
     private SaveFile? saveFile;
-    private PKM? _selectedPokemon;
+    private PKM? editFormPokemon;
 
-    public PKM? SelectedPokemon
-    {
-        get => _selectedPokemon;
-        set
-        {
-            _selectedPokemon = value;
-            LoadPokemonStats();
-        }
-    }
+    public int? SelectedBoxNumber { get; set; }
 
-    public int? SelectedBoxSlot { get; set; }
+    public int? SelectedSlotNumber { get; set; }
 
     public bool ShowProgressIndicator { get; set; }
 
@@ -82,8 +85,8 @@ public record AppState : IAppState
 
     public void ClearSelection()
     {
-        SelectedPokemon = null;
-        SelectedBoxSlot = null;
+        SelectedBoxNumber = null;
+        SelectedSlotNumber = null;
         Refresh();
     }
 
@@ -99,18 +102,18 @@ public record AppState : IAppState
         return up == down ? string.Empty : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
     }
 
-    public void LoadPokemonStats()
+    public void LoadPokemonStats(PKM? pokemon)
     {
-        if (SaveFile is null || _selectedPokemon is null)
+        if (SaveFile is null || pokemon is null)
         {
             return;
         }
 
         var pt = SaveFile.Personal;
-        var pi = pt.GetFormEntry(_selectedPokemon.Species, _selectedPokemon.Form);
+        var pi = pt.GetFormEntry(pokemon.Species, pokemon.Form);
         Span<ushort> stats = stackalloc ushort[6];
-        _selectedPokemon.LoadStats(pi, stats);
-        _selectedPokemon.SetStats(stats);
+        pokemon.LoadStats(pi, stats);
+        pokemon.SetStats(stats);
     }
 
     public IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false) => SaveFile is null || searchString is not { Length: > 0 }
@@ -133,20 +136,45 @@ public record AppState : IAppState
     public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
         .FirstOrDefault(metLocation => metLocation.Value == moveId) ?? default!;
 
-    public bool GetMarking(int index) =>
-        SelectedPokemon is not null && index <= SelectedPokemon.MarkingCount - 1 && SelectedPokemon.GetMarking(index) == 1;
+    public bool GetMarking(PKM? pokemon, int index) =>
+        pokemon is not null && index <= pokemon.MarkingCount - 1 && pokemon.GetMarking(index) == 1;
 
-    public void SetMarking(int index, bool value) =>
-        SelectedPokemon?.SetMarking(index, value ? 1 : 0);
+    public void SetMarking(PKM? pokemon, int index, bool value) =>
+        pokemon?.SetMarking(index, value ? 1 : 0);
 
-    public void ToggleMarking(int index) =>
-        SelectedPokemon?.ToggleMarking(index);
+    public void ToggleMarking(PKM? pokemon, int index) =>
+        pokemon?.ToggleMarking(index);
 
-    public string GetCharacteristic() =>
-        SelectedPokemon?.Characteristic is int characteristicIndex &&
+    public string GetCharacteristic(PKM? pokemon) =>
+        pokemon?.Characteristic is int characteristicIndex &&
         characteristicIndex > -1 &&
         GameInfo.Strings.characteristics is { Length: > 0 } characteristics &&
         characteristicIndex < characteristics.Length
             ? characteristics[characteristicIndex]
             : string.Empty;
+
+    public void SavePokemon(PKM? pokemon)
+    {
+        if (SaveFile is null || pokemon is null || SelectedBoxNumber is null || SelectedSlotNumber is null)
+        {
+            return;
+        }
+
+        SaveFile.SetBoxSlotAtIndex(pokemon, SelectedBoxNumber.Value, SelectedSlotNumber.Value);
+        OnBoxStateChanged?.Invoke();
+    }
+
+    private const string defaultFileName = "pkm.bin";
+
+    public string GetCleanFileName(PKM pkm) => pkm.Context switch
+    {
+        EntityContext.SplitInvalid or EntityContext.MaxInvalid => defaultFileName,
+        EntityContext.Gen1 or EntityContext.Gen2 => pkm switch
+        {
+            PK1 pk1 => $"{GameInfo.GetStrings("en").Species[pk1.Species]}_{pk1.DV16}.{pk1.Extension}",
+            PK2 pk2 => $"{GameInfo.GetStrings("en").Species[pk2.Species]}_{pk2.DV16}.{pk2.Extension}",
+            _ => defaultFileName,
+        },
+        _ => $"{GameInfo.GetStrings("en").Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}",
+    };
 }

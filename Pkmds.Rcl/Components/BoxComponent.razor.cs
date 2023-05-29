@@ -3,17 +3,21 @@ namespace Pkmds.Rcl.Components;
 public partial class BoxComponent : IDisposable
 {
     [Parameter]
-    public int BoxId { get; set; }
+    public int BoxNumber { get; set; }
 
     private BoxEdit? BoxEdit { get; set; }
 
-    private bool DetailsExpanded { get; set; } = true;
-
-    protected override void OnInitialized() =>
+    protected override void OnInitialized()
+    {
         AppState.OnAppStateChanged += StateHasChanged;
+        AppState.OnBoxStateChanged += ReloadBox;
+    }
 
-    public void Dispose() =>
+    public void Dispose()
+    {
         AppState.OnAppStateChanged -= StateHasChanged;
+        AppState.OnBoxStateChanged -= ReloadBox;
+    }
 
     protected override void OnParametersSet()
     {
@@ -22,10 +26,20 @@ public partial class BoxComponent : IDisposable
             return;
         }
 
-        AppState.SelectedPokemon = null;
-        AppState.Refresh();
+        AppState.SelectedBoxNumber = null;
+        AppState.SelectedSlotNumber = null;
+        ReloadBox();
+    }
+
+    private void ReloadBox()
+    {
+        if (AppState.SaveFile is null)
+        {
+            return;
+        }
 
         BoxEdit = new BoxEdit(AppState.SaveFile);
-        BoxEdit.LoadBox(BoxId);
+        BoxEdit.LoadBox(BoxNumber);
+        AppState.Refresh();
     }
 }

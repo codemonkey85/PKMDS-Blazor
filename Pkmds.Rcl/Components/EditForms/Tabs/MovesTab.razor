@@ -1,39 +1,41 @@
-﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+﻿@if (Pokemon is not null &&
+AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-AppState.SelectedPokemon is not null)
+AppState.SelectedBoxNumber is not null &&
+AppState.SelectedSlotNumber is not null)
 {
     <MudAutocomplete T="ComboItem"
                      Label="Move 1"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMoveComboItem(AppState.SelectedPokemon.Move1))"
-                     @bind-Value:set="@((move) => { AppState.SelectedPokemon.Move1 = (ushort)move.Value; AppState.Refresh(); })"
+                     @bind-Value:get="@(AppState.GetMoveComboItem(Pokemon.Move1))"
+                     @bind-Value:set="@((move) => { Pokemon.Move1 = (ushort)move.Value; AppState.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMoves(searchString)))"
                      ToStringFunc="@((move) => move.Text)" />
 
     <MudAutocomplete T="ComboItem"
                      Label="Move 2"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMoveComboItem(AppState.SelectedPokemon.Move2))"
-                     @bind-Value:set="@((move) => { AppState.SelectedPokemon.Move2 = (ushort)move.Value; AppState.Refresh(); })"
+                     @bind-Value:get="@(AppState.GetMoveComboItem(Pokemon.Move2))"
+                     @bind-Value:set="@((move) => { Pokemon.Move2 = (ushort)move.Value; AppState.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMoves(searchString)))"
                      ToStringFunc="@((move) => move.Text)" />
 
     <MudAutocomplete T="ComboItem"
                      Label="Move 3"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMoveComboItem(AppState.SelectedPokemon.Move3))"
-                     @bind-Value:set="@((move) => { AppState.SelectedPokemon.Move3 = (ushort)move.Value; AppState.Refresh(); })"
+                     @bind-Value:get="@(AppState.GetMoveComboItem(Pokemon.Move3))"
+                     @bind-Value:set="@((move) => { Pokemon.Move3 = (ushort)move.Value; AppState.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMoves(searchString)))"
                      ToStringFunc="@((move) => move.Text)" />
 
     <MudAutocomplete T="ComboItem"
                      Label="Move 4"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMoveComboItem(AppState.SelectedPokemon.Move4))"
-                     @bind-Value:set="@((move) => { AppState.SelectedPokemon.Move4 = (ushort)move.Value; AppState.Refresh(); })"
+                     @bind-Value:get="@(AppState.GetMoveComboItem(Pokemon.Move4))"
+                     @bind-Value:set="@((move) => { Pokemon.Move4 = (ushort)move.Value; AppState.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMoves(searchString)))"
                      ToStringFunc="@((move) => move.Text)" />
 }

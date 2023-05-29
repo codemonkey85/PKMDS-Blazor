@@ -9,8 +9,9 @@
             var pkm = BoxEdit[slotNum];
             <MudItem xs="@(AppState.SaveFile is { BoxSlotCount: 30 } ? 2 : 3)"
                      Style="width: 68px; height: 68px;">
-                <BoxSlotComponent BoxSlot="slotNum"
-                                  Pokemon="pkm" />
+                <BoxSlotComponent BoxNumber="@BoxNumber"
+                                  SlotNumber="slotNum"
+                                  Pokemon="@pkm" />
             </MudItem>
         }
     </MudGrid>

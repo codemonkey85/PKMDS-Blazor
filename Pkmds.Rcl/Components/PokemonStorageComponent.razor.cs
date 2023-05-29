@@ -22,8 +22,8 @@ public partial class PokemonStorageComponent : IDisposable
             AppState.SaveFile.CurrentBox++;
         }
 
-        AppState.SelectedBoxSlot = null;
-        AppState.SelectedPokemon = null;
+        AppState.SelectedBoxNumber = null;
+        AppState.SelectedSlotNumber = null;
     }
 
     private void NavigateLeft()
@@ -42,7 +42,7 @@ public partial class PokemonStorageComponent : IDisposable
             AppState.SaveFile.CurrentBox--;
         }
 
-        AppState.SelectedBoxSlot = null;
-        AppState.SelectedPokemon = null;
+        AppState.SelectedBoxNumber = null;
+        AppState.SelectedSlotNumber = null;
     }
 }

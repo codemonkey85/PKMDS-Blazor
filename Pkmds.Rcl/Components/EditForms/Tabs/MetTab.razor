@@ -1,20 +1,22 @@
-﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+﻿@if (Pokemon is not null &&
+AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-AppState.SelectedPokemon is not null)
+AppState.SelectedBoxNumber is not null &&
+AppState.SelectedSlotNumber is not null)
 {
     <MudCheckBox Label="Nicknamed"
-                 @bind-Checked="@AppState.SelectedPokemon.IsNicknamed"
+                 @bind-Checked="@Pokemon.IsNicknamed"
                  @bind-Checked:after="@AppState.Refresh"
-                 For="@(() => AppState.SelectedPokemon.IsNicknamed)" />
+                 For="@(() => Pokemon.IsNicknamed)" />
 
     <MudSelect Label="Origin Game"
                Variant="@Variant.Outlined"
-               @bind-Value="@AppState.SelectedPokemon.Version"
+               @bind-Value="@Pokemon.Version"
                ToStringFunc="@((version) => GameInfo.GetVersionName((GameVersion)version))"
-               For="@(() => AppState.SelectedPokemon.Version)">
+               For="@(() => Pokemon.Version)">
         @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
         {
             <MudSelectItem Value="@((int)(byte)version)" />
@@ -23,8 +25,8 @@ AppState.SelectedPokemon is not null)
 
     <MudSelect Label="Ball"
                Variant="@Variant.Outlined"
-               @bind-Value="@AppState.SelectedPokemon.Ball"
-               For="@(() => AppState.SelectedPokemon.Ball)">
+               @bind-Value="@Pokemon.Ball"
+               For="@(() => Pokemon.Ball)">
         @foreach (ComboItem ball in GameInfo.BallDataSource)
         {
             <MudSelectItem Value="@ball.Value">
@@ -45,8 +47,8 @@ AppState.SelectedPokemon is not null)
     <MudAutocomplete T="ComboItem"
                      Label="Met Location"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMetLocationComboItem(AppState.SelectedPokemon.Met_Location))"
-                     @bind-Value:set="@((metLocation) => AppState.SelectedPokemon.Met_Location = metLocation.Value)"
+                     @bind-Value:get="@(AppState.GetMetLocationComboItem(Pokemon.Met_Location))"
+                     @bind-Value:set="@((metLocation) => Pokemon.Met_Location = metLocation.Value)"
                      SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation.Text)" />
 
@@ -57,7 +59,7 @@ AppState.SelectedPokemon is not null)
             <MudInputLabel ForId="metDate">
                 Met Date
             </MudInputLabel>
-            <InputDate @bind-Value="@AppState.SelectedPokemon.MetDate"
+            <InputDate @bind-Value="@Pokemon.MetDate"
                        style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface)"
                        id="metDate"
                        DisplayName="Met Date" />
@@ -66,15 +68,15 @@ AppState.SelectedPokemon is not null)
 
     @*
             <MudCheckBox Label="Met as Egg"
-            @bind-Checked="@AppState.SelectedPokemon.WasEgg"
+            @bind-Checked="@Pokemon.WasEgg"
             @bind-Checked:after="@AppState.Refresh"
-            For="@(() => AppState.SelectedPokemon.WasEgg)" />
+            For="@(() => Pokemon.WasEgg)" />
             *@
     <MudAutocomplete T="ComboItem"
                      Label="Egg Location"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMetLocationComboItem(AppState.SelectedPokemon.Egg_Location))"
-                     @bind-Value:set="@((metLocation) => AppState.SelectedPokemon.Egg_Location = metLocation.Value)"
+                     @bind-Value:get="@(AppState.GetMetLocationComboItem(Pokemon.Egg_Location))"
+                     @bind-Value:set="@((metLocation) => Pokemon.Egg_Location = metLocation.Value)"
                      SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation.Text)" />
 
@@ -85,7 +87,7 @@ AppState.SelectedPokemon is not null)
             <MudInputLabel ForId="eggDate">
                 Egg Date
             </MudInputLabel>
-            <InputDate @bind-Value="@AppState.SelectedPokemon.EggMetDate"
+            <InputDate @bind-Value="@Pokemon.EggMetDate"
                        style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface)"
                        id="eggDate"
                        DisplayName="Egg Date" />

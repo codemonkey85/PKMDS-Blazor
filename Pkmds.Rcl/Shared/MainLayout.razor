@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 <MudThemeProvider @ref="@mudThemeProvider"
-                  @bind-IsDarkMode="@isDarkMode" />
+@bind-IsDarkMode="@isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -24,12 +24,28 @@
                 PKMDS Save Editor
             </MudText>
         </MudDrawerHeader>
-        <MudButton OnClick="@ShowFileDialog"
-                   Variant="@Variant.Filled"
-                   FullWidth="@false"
-                   Style="width: 80%; align-self: center;">
-            Load Save File...
-        </MudButton>
+        <MudStack Spacing="3">
+            <MudButton OnClick="@ShowLoadSaveFileDialogAsync"
+                       Variant="@Variant.Filled"
+                       FullWidth="@false"
+                       Style="width: 80%; align-self: center;">
+                Load Save File...
+            </MudButton>
+            <MudButton OnClick="@ExportSaveFileAsync"
+                       Variant="@Variant.Filled"
+                       FullWidth="@false"
+                       Style="width: 80%; align-self: center;"
+                       Disabled="@(AppState.SaveFile is null)">
+                Export Save File...
+            </MudButton>
+            <MudButton OnClick="@ExportSelectedPokemonAsync"
+                       Variant="@Variant.Filled"
+                       FullWidth="@false"
+                       Style="width: 80%; align-self: center;"
+                       Disabled="@(AppState.EditFormPokemon is null)">
+                Export Selected Pokémon...
+            </MudButton>
+        </MudStack>
         <NavMenu />
     </MudDrawer>
     <MudMainContent>

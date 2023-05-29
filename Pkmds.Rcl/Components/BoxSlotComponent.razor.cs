@@ -2,13 +2,16 @@ namespace Pkmds.Rcl.Components;
 
 public partial class BoxSlotComponent : IDisposable
 {
-    [Parameter]
+    [Parameter, EditorRequired]
+    public int BoxNumber { get; set; }
+
+    [Parameter, EditorRequired]
+    public int SlotNumber { get; set; }
+
+    [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    [Parameter]
-    public int BoxSlot { get; set; }
-
-    private string Style => AppState.SelectedBoxSlot == BoxSlot
+    private string Style => AppState.SelectedSlotNumber == SlotNumber
         ? "border: 4px solid orange; border-radius: 6px;"
         : string.Empty;
 
@@ -22,13 +25,15 @@ public partial class BoxSlotComponent : IDisposable
     {
         if (Pokemon is not { Species: > 0 })
         {
-            AppState.SelectedPokemon = null;
-            AppState.SelectedBoxSlot = null;
+            AppState.SelectedBoxNumber = null;
+            AppState.SelectedSlotNumber = null;
+            AppState.EditFormPokemon = null;
         }
         else
         {
-            AppState.SelectedPokemon = Pokemon;
-            AppState.SelectedBoxSlot = BoxSlot;
+            AppState.SelectedBoxNumber = BoxNumber;
+            AppState.SelectedSlotNumber = SlotNumber;
+            AppState.EditFormPokemon = Pokemon;
         }
         AppState.Refresh();
     }
