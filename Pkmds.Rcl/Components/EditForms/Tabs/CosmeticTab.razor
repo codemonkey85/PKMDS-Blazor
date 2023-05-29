@@ -1,0 +1,98 @@
+﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+saveFileEntityContext is not
+EntityContext.None or
+EntityContext.SplitInvalid or
+EntityContext.MaxInvalid &&
+AppState.SelectedPokemon is not null)
+{
+    <MudCheckBox Label="Nicknamed"
+    @bind-Checked="@AppState.SelectedPokemon.IsNicknamed"
+    @bind-Checked:after="@AppState.Refresh"
+                 For="@(() => AppState.SelectedPokemon.IsNicknamed)" />
+
+    <MudSelect Label="Origin Game"
+               Variant="@Variant.Outlined"
+    @bind-Value="@AppState.SelectedPokemon.Version"
+               ToStringFunc="@((version) => GameInfo.GetVersionName((GameVersion)version))"
+               For="@(() => AppState.SelectedPokemon.Version)">
+        @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
+        {
+            <MudSelectItem Value="@((int)(byte)version)" />
+        }
+    </MudSelect>
+
+    <MudSelect Label="Ball"
+               Variant="@Variant.Outlined"
+    @bind-Value="@AppState.SelectedPokemon.Ball"
+               For="@(() => AppState.SelectedPokemon.Ball)">
+        @foreach (ComboItem ball in GameInfo.BallDataSource)
+        {
+            <MudSelectItem Value="@ball.Value">
+                <MudStack Row="@true">
+                    <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
+                              ObjectFit="@ObjectFit.Contain"
+                              ObjectPosition="@ObjectPosition.Center"
+                              Width="22"
+                              Height="22" />
+                    <MudText>
+                        @ball.Text
+                    </MudText>
+                </MudStack>
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudAutocomplete T="ComboItem"
+                     Label="Met Location"
+                     Variant="@Variant.Outlined"
+    @bind-Value:get="@(AppState.GetMetLocationComboItem(AppState.SelectedPokemon.Met_Location))"
+    @bind-Value:set="@((metLocation) => AppState.SelectedPokemon.Met_Location = metLocation.Value)"
+                     SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMetLocations(searchString)))"
+                     ToStringFunc="@((metLocation) => metLocation.Text)" />
+
+    <MudPaper Elevation="0"
+              Outlined="@true"
+              Class="my-2">
+        <MudStack>
+            <MudInputLabel ForId="metDate">
+                Met Date
+            </MudInputLabel>
+            <InputDate @bind-Value="@AppState.SelectedPokemon.MetDate"
+                       style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface)"
+                       id="metDate"
+                       DisplayName="Met Date" />
+        </MudStack>
+    </MudPaper>
+
+    @*
+    <MudCheckBox Label="Met as Egg"
+    @bind-Checked="@AppState.SelectedPokemon.WasEgg"
+    @bind-Checked:after="@AppState.Refresh"
+    For="@(() => AppState.SelectedPokemon.WasEgg)" />
+    *@
+    <MudAutocomplete T="ComboItem"
+                     Label="Egg Location"
+                     Variant="@Variant.Outlined"
+    @bind-Value:get="@(AppState.GetMetLocationComboItem(AppState.SelectedPokemon.Egg_Location))"
+    @bind-Value:set="@((metLocation) => AppState.SelectedPokemon.Egg_Location = metLocation.Value)"
+                     SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMetLocations(searchString)))"
+                     ToStringFunc="@((metLocation) => metLocation.Text)" />
+
+    <MudPaper Elevation="0"
+              Outlined="@true"
+              Class="my-2">
+        <MudStack>
+            <MudInputLabel ForId="eggDate">
+                Egg Date
+            </MudInputLabel>
+            <InputDate @bind-Value="@AppState.SelectedPokemon.EggMetDate"
+                       style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface)"
+                       id="eggDate"
+                       DisplayName="Egg Date" />
+        </MudStack>
+    </MudPaper>
+}
+
+@code {
+
+}

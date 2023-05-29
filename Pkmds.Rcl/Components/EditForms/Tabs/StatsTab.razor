@@ -1,0 +1,312 @@
+﻿@if (AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+saveFileEntityContext is not
+EntityContext.None or
+EntityContext.SplitInvalid or
+EntityContext.MaxInvalid &&
+AppState.SelectedPokemon is not null)
+{
+    <MudNumericField Label="Level"
+                     Variant="@Variant.Outlined"
+    @bind-Value="@AppState.SelectedPokemon.CurrentLevel"
+    @bind-Value:after="@(AppState.LoadPokemonStats)"
+                     For="@(() => AppState.SelectedPokemon.CurrentLevel)" />
+
+    <MudSelect Label="Nature"
+               Variant="@Variant.Outlined"
+    @bind-Value="@AppState.SelectedPokemon.Nature"
+    @bind-Value:after="@(AppState.LoadPokemonStats)"
+               For="@(() => AppState.SelectedPokemon.Nature)">
+        @foreach (Nature nature in Enum.GetValues(typeof(Nature)))
+        {
+            if (nature == Nature.Random)
+            {
+                continue;
+            }
+            <MudSelectItem Value="@((int)nature)">
+                <MudStack>
+                    <MudText>
+                        @(nature.ToString())
+                </MudText>
+                @{
+                    var str = AppState.GetStatModifierString((int)nature);
+                }
+                @if (str is { Length: > 0 })
+                {
+                    <MudText>
+                        @str
+                    </MudText>
+                }
+            </MudStack>
+        </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudGrid>
+
+        <MudItem xs="3">
+            <MudStack>
+                <MudText>
+                    Base
+                </MudText>
+
+                <MudNumericField Label="HP"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.PersonalInfo.HP"
+                                 For="@(() => AppState.SelectedPokemon.IV_HP)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Attack"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.PersonalInfo.ATK"
+                                 For="@(() => AppState.SelectedPokemon.IV_ATK)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Defense"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.PersonalInfo.DEF"
+                                 For="@(() => AppState.SelectedPokemon.IV_DEF)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Sp. Atk"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.PersonalInfo.SPA"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPA)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Sp. Def"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.PersonalInfo.SPD"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPD)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Speed"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.PersonalInfo.SPE"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPE)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Total"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.PersonalInfo.GetBaseStatTotal()"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+            </MudStack>
+        </MudItem>
+
+        <MudItem xs="3">
+            <MudStack>
+                <MudText>
+                    IVs
+                </MudText>
+
+                <MudNumericField Label="HP"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="31"
+                @bind-Value="@AppState.SelectedPokemon.IV_HP"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.IV_HP)" />
+
+                <MudNumericField Label="Attack"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="31"
+                @bind-Value="@AppState.SelectedPokemon.IV_ATK"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.IV_ATK)" />
+
+                <MudNumericField Label="Defense"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="31"
+                @bind-Value="@AppState.SelectedPokemon.IV_DEF"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.IV_DEF)" />
+
+                <MudNumericField Label="Sp. Atk"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="31"
+                @bind-Value="@AppState.SelectedPokemon.IV_SPA"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPA)" />
+
+                <MudNumericField Label="Sp. Def"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="31"
+                @bind-Value="@AppState.SelectedPokemon.IV_SPD"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPD)" />
+
+                <MudNumericField Label="Speed"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="31"
+                @bind-Value="@AppState.SelectedPokemon.IV_SPE"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPE)" />
+
+                <MudNumericField Label="Total"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.IVTotal"
+                                 For="@(() => AppState.SelectedPokemon.IVTotal)"
+                                 ReadOnly="@true" />
+
+            </MudStack>
+        </MudItem>
+
+        <MudItem xs="3">
+            <MudStack>
+                <MudText>
+                    EVs
+                </MudText>
+
+                <MudNumericField Label="HP"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="255"
+                @bind-Value="@AppState.SelectedPokemon.EV_HP"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.EV_HP)" />
+
+                <MudNumericField Label="Attack"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="255"
+                @bind-Value="@AppState.SelectedPokemon.EV_ATK"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.EV_ATK)" />
+
+                <MudNumericField Label="Defense"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="255"
+                @bind-Value="@AppState.SelectedPokemon.EV_DEF"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.EV_DEF)" />
+
+                <MudNumericField Label="Sp. Atk"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="255"
+                @bind-Value="@AppState.SelectedPokemon.EV_SPA"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.EV_SPA)" />
+
+                <MudNumericField Label="Sp. Def"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="255"
+                @bind-Value="@AppState.SelectedPokemon.EV_SPD"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.EV_SPD)" />
+
+                <MudNumericField Label="Speed"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="255"
+                @bind-Value="@AppState.SelectedPokemon.EV_SPE"
+                @bind-Value:after="@(AppState.LoadPokemonStats)"
+                                 For="@(() => AppState.SelectedPokemon.EV_SPE)" />
+
+                <MudNumericField Label="Total"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.EVTotal"
+                                 For="@(() => AppState.SelectedPokemon.EVTotal)"
+                                 ReadOnly="@true" />
+
+            </MudStack>
+        </MudItem>
+
+        <MudItem xs="3">
+            <MudStack>
+                <MudText>
+                    Stats
+                </MudText>
+
+                <MudNumericField Label="HP"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.Stat_HPMax"
+                                 For="@(() => AppState.SelectedPokemon.IV_HP)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Attack"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.Stat_ATK"
+                                 For="@(() => AppState.SelectedPokemon.IV_ATK)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Defense"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.Stat_DEF"
+                                 For="@(() => AppState.SelectedPokemon.IV_DEF)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Sp. Atk"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.Stat_SPA"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPA)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Sp. Def"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.Stat_SPD"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPD)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudNumericField Label="Speed"
+                                 Variant="@Variant.Outlined"
+                                 Value="@AppState.SelectedPokemon.Stat_SPE"
+                                 For="@(() => AppState.SelectedPokemon.IV_SPE)"
+                                 ReadOnly="@true"
+                                 HideSpinButtons="@true" />
+
+                <MudText>
+                    <MudText>
+                        @AppState.SelectedPokemon.GetPotentialString()
+                    </MudText>
+                </MudText>
+
+            </MudStack>
+        </MudItem>
+
+    </MudGrid>
+
+    <MudStack Row="@true"
+              AlignItems="@AlignItems.Center">
+        <MudSelect Label="Hidden Power Type"
+        @bind-Value:get="@AppState.SelectedPokemon.HPType"
+        @bind-Value:set="@((int type) => AppState.SelectedPokemon.SetHiddenPower(type))">
+            @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)))
+            {
+                <MudSelectItem Value="@type.Value">
+                    @type.Text
+                </MudSelectItem>
+            }
+        </MudSelect>
+        <MudText>
+            @AppState.SelectedPokemon.HPPower
+        </MudText>
+    </MudStack>
+
+    <MudText>
+        Characteristic: @(AppState.GetCharacteristic())
+    </MudText>
+}
+
+@code {
+
+}
