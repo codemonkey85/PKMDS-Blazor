@@ -51,35 +51,29 @@ public record AppState : IAppState
 
     public string FileDisplayName { get; set; } = string.Empty;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
+    public IEnumerable<ComboItem> SearchPokemonNames(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
         ? Enumerable.Empty<ComboItem>()
         : GameInfo.FilteredSources.Species
             .Where(species => species.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(species => species.Text);
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public ComboItem GetSpeciesComboItem(ushort speciesId) => GameInfo.FilteredSources.Species
         .FirstOrDefault(species => species.Value == speciesId) ?? default!;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task<IEnumerable<ComboItem>> SearchItemNames(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
+    public IEnumerable<ComboItem> SearchItemNames(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
         ? Enumerable.Empty<ComboItem>()
         : GameInfo.FilteredSources.Items
             .Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(item => item.Text);
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public ComboItem GetItemComboItem(int itemId) => GameInfo.FilteredSources.Items
         .FirstOrDefault(item => item.Value == itemId) ?? default!;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task<IEnumerable<ComboItem>> SearchAbilityNames(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
+    public IEnumerable<ComboItem> SearchAbilityNames(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
         ? Enumerable.Empty<ComboItem>()
         : GameInfo.FilteredSources.Abilities
             .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(ability => ability.Text);
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public ComboItem GetAbilityComboItem(int abilityId) => GameInfo.FilteredSources.Abilities
         .FirstOrDefault(ability => ability.Value == abilityId) ?? default!;
@@ -119,26 +113,22 @@ public record AppState : IAppState
         _selectedPokemon.SetStats(stats);
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task<IEnumerable<ComboItem>> SearchMetLocations(string searchString, bool isEggLocation = false) => SaveFile is null || searchString is not { Length: > 0 }
+    public IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false) => SaveFile is null || searchString is not { Length: > 0 }
         ? Enumerable.Empty<ComboItem>()
         : GameInfo.GetLocationList(SaveFile.Version, SaveFile.Context, isEggLocation)
             .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(ability => ability.Text);
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public ComboItem GetMetLocationComboItem(int metLocationId, bool isEggLocation = false) => SaveFile is null
         ? default!
         : GameInfo.GetLocationList(SaveFile.Version, SaveFile.Context, isEggLocation)
             .FirstOrDefault(metLocation => metLocation.Value == metLocationId) ?? default!;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task<IEnumerable<ComboItem>> SearchMoves(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
+    public IEnumerable<ComboItem> SearchMoves(string searchString) => SaveFile is null || searchString is not { Length: > 0 }
         ? Enumerable.Empty<ComboItem>()
         : GameInfo.FilteredSources.Moves
             .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(move => move.Text);
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
         .FirstOrDefault(metLocation => metLocation.Value == moveId) ?? default!;

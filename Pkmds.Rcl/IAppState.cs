@@ -8,7 +8,7 @@ public interface IAppState
 
     int CurrentLanguageId { get; }
 
-    Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString);
+    IEnumerable<ComboItem> SearchPokemonNames(string searchString);
 
     ComboItem GetSpeciesComboItem(ushort speciesId);
 
@@ -32,19 +32,19 @@ public interface IAppState
 
     void LoadPokemonStats();
 
-    Task<IEnumerable<ComboItem>> SearchItemNames(string searchString);
+    IEnumerable<ComboItem> SearchItemNames(string searchString);
 
     ComboItem GetItemComboItem(int itemId);
 
-    Task<IEnumerable<ComboItem>> SearchAbilityNames(string searchString);
+    IEnumerable<ComboItem> SearchAbilityNames(string searchString);
 
     ComboItem GetAbilityComboItem(int abilityId);
 
-    Task<IEnumerable<ComboItem>> SearchMetLocations(string searchString, bool isEggLocation = false);
+    IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false);
 
     ComboItem GetMetLocationComboItem(int metLocationId, bool isEggLocation = false);
 
-    Task<IEnumerable<ComboItem>> SearchMoves(string searchString);
+    IEnumerable<ComboItem> SearchMoves(string searchString);
 
     ComboItem GetMoveComboItem(int moveId);
 
