@@ -173,7 +173,7 @@ AppState.SelectedPokemon is not null)
                                  Variant="@Variant.Outlined"
                                  Min="0"
                                  Max="255"
-                @bind-Value="@AppState.SelectedPokemon.EV_HP"
+                                 @bind-Value="@AppState.SelectedPokemon.EV_HP"
                                  @bind-Value:after="@(AppState.LoadPokemonStats)"
                                  For="@(() => AppState.SelectedPokemon.EV_HP)" />
 
@@ -181,7 +181,7 @@ AppState.SelectedPokemon is not null)
                                  Variant="@Variant.Outlined"
                                  Min="0"
                                  Max="255"
-                @bind-Value="@AppState.SelectedPokemon.EV_ATK"
+                                 @bind-Value="@AppState.SelectedPokemon.EV_ATK"
                                  @bind-Value:after="@(AppState.LoadPokemonStats)"
                                  For="@(() => AppState.SelectedPokemon.EV_ATK)" />
 
