@@ -1,7 +1,9 @@
-namespace Pkmds.Rcl.Components.EditForms;
+namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
-public partial class PokemonEditForm : IDisposable
+public partial class CosmeticTab : IDisposable
 {
+    private int ColSpan => AppState.SelectedPokemon?.MarkingCount == 6 ? 4 : 6;
+
     protected override void OnInitialized() =>
         AppState.OnAppStateChanged += StateHasChanged;
 

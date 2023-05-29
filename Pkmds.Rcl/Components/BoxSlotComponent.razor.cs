@@ -8,18 +8,15 @@ public partial class BoxSlotComponent : IDisposable
     [Parameter]
     public int BoxSlot { get; set; }
 
-    private string GetStyle()
-    {
-        var styleBuilder = new StringBuilder();
-        styleBuilder.Append(AppState.SelectedBoxSlot == BoxSlot
-            ? "border: 4px solid orange; border-radius: 6px;"
-            : string.Empty);
-        return styleBuilder.ToString();
-    }
+    private string Style => AppState.SelectedBoxSlot == BoxSlot
+        ? "border: 4px solid orange; border-radius: 6px;"
+        : string.Empty;
 
-    protected override void OnInitialized() => AppState.OnAppStateChanged += StateHasChanged;
+    protected override void OnInitialized() =>
+        AppState.OnAppStateChanged += StateHasChanged;
 
-    public void Dispose() => AppState.OnAppStateChanged -= StateHasChanged;
+    public void Dispose() =>
+        AppState.OnAppStateChanged -= StateHasChanged;
 
     private void SetSelectedPokemon()
     {

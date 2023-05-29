@@ -1,6 +1,6 @@
-namespace Pkmds.Rcl.Components.EditForms;
+namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
-public partial class PokemonEditForm : IDisposable
+public partial class StatsTab : IDisposable
 {
     protected override void OnInitialized() =>
         AppState.OnAppStateChanged += StateHasChanged;
