@@ -7,26 +7,26 @@ AppState.SelectedPokemon is not null)
 {
     <MudNumericField Label="TID"
                      Variant="@Variant.Outlined"
-    @bind-Value="AppState.SelectedPokemon.TID16"
-    @bind-Value:after="@(AppState.Refresh)"
+                     @bind-Value="AppState.SelectedPokemon.TID16"
+                     @bind-Value:after="@(AppState.Refresh)"
                      Format="@TrainerIDExtensions.TID16"
                      For="@(() => AppState.SelectedPokemon.TID16)" />
 
     <MudNumericField Label="SID"
                      Variant="@Variant.Outlined"
-    @bind-Value="AppState.SelectedPokemon.SID16"
-    @bind-Value:after="@(AppState.Refresh)"
+                     @bind-Value="AppState.SelectedPokemon.SID16"
+                     @bind-Value:after="@(AppState.Refresh)"
                      Format="@TrainerIDExtensions.SID16"
                      For="@(() => AppState.SelectedPokemon.SID16)" />
 
     <MudTextField Label="OT"
                   Variant="@Variant.Outlined"
-    @bind-Value="AppState.SelectedPokemon.OT_Name"
+                  @bind-Value="AppState.SelectedPokemon.OT_Name"
                   For="@(() => AppState.SelectedPokemon.OT_Name)" />
 
     <MudSelect Label="OT Gender"
                Variant="@Variant.Outlined"
-    @bind-Value="AppState.SelectedPokemon.OT_Gender"
+               @bind-Value="AppState.SelectedPokemon.OT_Gender"
                For="@(() => AppState.SelectedPokemon.OT_Gender)">
 
         <MudSelectItem Value="@((int)Gender.Male)">
@@ -50,7 +50,4 @@ AppState.SelectedPokemon is not null)
         </MudSelectItem>
 
     </MudSelect>
-}
-
-@code {
 }
