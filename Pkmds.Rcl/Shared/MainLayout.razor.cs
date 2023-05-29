@@ -107,6 +107,12 @@ public partial class MainLayout : IDisposable
 
     private async Task WriteFile(byte[] data, string fileName)
     {
+        if (await FileSystemAccessService.IsSupportedAsync() == false)
+        {
+            await WriteFileOldWay(data, fileName);
+            return;
+        }
+
         try
         {
             await using var fileHandle = await FileSystemAccessService.ShowSaveFilePickerAsync(
@@ -121,18 +127,15 @@ public partial class MainLayout : IDisposable
                 await writable.WriteAsync(data);
                 await writable.CloseAsync();
             }
-
-            return;
         }
         catch (JSException ex)
         {
             Console.WriteLine(ex);
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+    }
 
+    private async Task WriteFileOldWay(byte[] data, string fileName)
+    {
         // Convert the byte array to a base64 string
         var base64String = Convert.ToBase64String(data);
 
