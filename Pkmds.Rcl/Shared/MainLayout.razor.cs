@@ -107,6 +107,32 @@ public partial class MainLayout : IDisposable
 
     private async Task WriteFile(byte[] data, string fileName)
     {
+        try
+        {
+            await using var fileHandle = await FileSystemAccessService.ShowSaveFilePickerAsync(
+                new KristofferStrube.Blazor.FileSystemAccess.SaveFilePickerOptionsStartInFileSystemHandle
+                {
+                    SuggestedName = fileName,
+                });
+
+            if (fileHandle is not null)
+            {
+                await using var writable = await fileHandle.CreateWritableAsync();
+                await writable.WriteAsync(data);
+                await writable.CloseAsync();
+            }
+
+            return;
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine(ex);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
         // Convert the byte array to a base64 string
         var base64String = Convert.ToBase64String(data);
 
@@ -115,6 +141,8 @@ public partial class MainLayout : IDisposable
 
         // Set the download link properties
         await element.InvokeVoidAsync("setAttribute", "href", "data:application/octet-stream;base64," + base64String);
+        await element.InvokeVoidAsync("setAttribute", "target", "_blank");
+        await element.InvokeVoidAsync("setAttribute", "rel", "noopener noreferrer");
         await element.InvokeVoidAsync("setAttribute", "download", fileName);
 
         // Programmatically click the download link
