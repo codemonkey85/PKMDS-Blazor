@@ -5,38 +5,54 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 AppState.SelectedPokemon is not null)
 {
-    <MudStack Row="@true"
-              AlignItems="@AlignItems.Center">
+    <MudGrid Spacing="1"
+             Justify="@Justify.Center">
 
-        <MudCheckBox T="bool"
-                     Label="Circle"
-                     Checked="AppState.GetMarking(0)"
-                     CheckedChanged="@((checkedValue) => AppState.SetMarking(0, checkedValue))" />
+        <MudItem xs="@ColSpan">
+            <MudCheckBox T="bool"
+                         Label="Circle"
+                         Checked="AppState.GetMarking(0)"
+                         CheckedChanged="@((checkedValue) => AppState.SetMarking(0, checkedValue))" />
+        </MudItem>
 
-        <MudCheckBox T="bool"
-                     Label="Triangle"
-                     Checked="AppState.GetMarking(1)"
-                     CheckedChanged="@((checkedValue) => AppState.SetMarking(1, checkedValue))" />
+        <MudItem xs="@ColSpan">
+            <MudCheckBox T="bool"
+                         Label="Triangle"
+                         Checked="AppState.GetMarking(1)"
+                         CheckedChanged="@((checkedValue) => AppState.SetMarking(1, checkedValue))" />
+        </MudItem>
 
-        <MudCheckBox T="bool"
-                     Label="Square"
-                     Checked="AppState.GetMarking(2)"
-                     CheckedChanged="@((checkedValue) => AppState.SetMarking(2, checkedValue))" />
+        <MudItem xs="@ColSpan">
+            <MudCheckBox T="bool"
+                         Label="Square"
+                         Checked="AppState.GetMarking(2)"
+                         CheckedChanged="@((checkedValue) => AppState.SetMarking(2, checkedValue))" />
+        </MudItem>
 
-        <MudCheckBox T="bool"
-                     Label="Heart"
-                     Checked="AppState.GetMarking(3)"
-                     CheckedChanged="@((checkedValue) => AppState.SetMarking(3, checkedValue))" />
+        <MudItem xs="@ColSpan">
+            <MudCheckBox T="bool"
+                         Label="Heart"
+                         Checked="AppState.GetMarking(3)"
+                         CheckedChanged="@((checkedValue) => AppState.SetMarking(3, checkedValue))" />
+        </MudItem>
 
-        <MudCheckBox T="bool"
-                     Label="Star"
-                     Checked="AppState.GetMarking(4)"
-                     CheckedChanged="@((checkedValue) => AppState.SetMarking(4, checkedValue))" />
+        <MudItem xs="@ColSpan">
+            <MudCheckBox T="bool"
+                         Label="Star"
+                         Checked="AppState.GetMarking(4)"
+                         CheckedChanged="@((checkedValue) => AppState.SetMarking(4, checkedValue))" />
+        </MudItem>
 
-        <MudCheckBox T="bool"
-                     Label="Diamond"
-                     Checked="AppState.GetMarking(5)"
-                     CheckedChanged="@((checkedValue) => AppState.SetMarking(5, checkedValue))" />
+        <MudItem xs="@ColSpan">
+            <MudCheckBox T="bool"
+                         Label="Diamond"
+                         Checked="AppState.GetMarking(5)"
+                         CheckedChanged="@((checkedValue) => AppState.SetMarking(5, checkedValue))" />
+        </MudItem>
 
-    </MudStack>
+    </MudGrid>
+}
+
+@code {
+    private int ColSpan => AppState.SelectedPokemon?.MarkingCount == 6 ? 4 : 6;
 }
