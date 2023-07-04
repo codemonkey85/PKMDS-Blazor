@@ -25,10 +25,15 @@ else
         @AppState.FileDisplayName
     </MudText>
 
-    <MudGrid>
-        <MudItem xs="12" lg="6">
+    <MudGrid Spacing="1">
+        <MudItem xs="12" lg="4">
             <MudPaper MaxWidth="432px" Elevation="0">
                 <PokemonStorageComponent />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" lg="2">
+            <MudPaper MaxWidth="144px" Elevation="0">
+                <PartyGrid />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" lg="6">

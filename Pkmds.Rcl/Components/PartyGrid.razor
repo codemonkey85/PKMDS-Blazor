@@ -1,0 +1,31 @@
+﻿@if (AppState.SaveFile is not null)
+{
+    <MudGrid Spacing="1"
+             Justify="@Justify.Center"
+             Style="@(GridStyle)">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h6"
+                     Align="@Align.Center">
+                Party
+            </MudText>
+        </MudItem>
+        @for (var i = 0; i < 6 && i < AppState.SaveFile.PartyData.Count; i++)
+        {
+            var slotNum = i;
+            var pkm = AppState.SaveFile.PartyData[slotNum];
+
+            @if (pkm is not null)
+            {
+                <MudItem xs="6"
+                         Style="width: 68px; height: 68px;">
+                    <MudPaper Elevation="3"
+                              Width="68px"
+                              Height="68px"
+                              Class="d-flex align-items-center justify-center slot-fill">
+                        <img src="@(pkm is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(pkm) : null)" />
+                    </MudPaper>
+                </MudItem>
+            }
+        }
+    </MudGrid>
+}
