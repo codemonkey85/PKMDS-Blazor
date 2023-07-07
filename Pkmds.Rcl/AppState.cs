@@ -31,6 +31,7 @@ public record AppState : IAppState
 
     public event Action? OnAppStateChanged;
     public event Action? OnBoxStateChanged;
+    public event Action? OnPartyStateChanged;
 
     public SaveFile? SaveFile
     {
@@ -48,7 +49,9 @@ public record AppState : IAppState
 
     public int? SelectedBoxNumber { get; set; }
 
-    public int? SelectedSlotNumber { get; set; }
+    public int? SelectedBoxSlotNumber { get; set; }
+
+    public int? SelectedPartySlotNumber { get; set; }
 
     public bool ShowProgressIndicator { get; set; }
 
@@ -86,7 +89,7 @@ public record AppState : IAppState
     public void ClearSelection()
     {
         SelectedBoxNumber = null;
-        SelectedSlotNumber = null;
+        SelectedBoxSlotNumber = null;
         Refresh();
     }
 
@@ -155,13 +158,21 @@ public record AppState : IAppState
 
     public void SavePokemon(PKM? pokemon)
     {
-        if (SaveFile is null || pokemon is null || SelectedBoxNumber is null || SelectedSlotNumber is null)
+        if (SaveFile is null || pokemon is null)
         {
             return;
         }
 
-        SaveFile.SetBoxSlotAtIndex(pokemon, SelectedBoxNumber.Value, SelectedSlotNumber.Value);
-        OnBoxStateChanged?.Invoke();
+        if (SelectedPartySlotNumber is not null)
+        {
+            SaveFile.SetPartySlotAtIndex(pokemon, SelectedPartySlotNumber.Value);
+            OnPartyStateChanged?.Invoke();
+        }
+        else if (SelectedBoxNumber is not null && SelectedBoxSlotNumber is not null)
+        {
+            SaveFile.SetBoxSlotAtIndex(pokemon, SelectedBoxNumber.Value, SelectedBoxSlotNumber.Value);
+            OnBoxStateChanged?.Invoke();
+        }
     }
 
     private const string defaultFileName = "pkm.bin";
@@ -177,4 +188,41 @@ public record AppState : IAppState
         },
         _ => $"{GameInfo.GetStrings("en").Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}",
     };
+
+    public void SetSelectedBoxPokemon(PKM? pkm, int boxNumber, int slotNumber)
+    {
+        SelectedPartySlotNumber = null;
+
+        if (pkm is not { Species: > 0 })
+        {
+            SelectedBoxNumber = null;
+            SelectedBoxSlotNumber = null;
+            EditFormPokemon = null;
+        }
+        else
+        {
+            SelectedBoxNumber = boxNumber;
+            SelectedBoxSlotNumber = slotNumber;
+            EditFormPokemon = pkm;
+        }
+        Refresh();
+    }
+
+    public void SetSelectedPartyPokemon(PKM? pkm, int slotNumber)
+    {
+        SelectedBoxNumber = null;
+        SelectedBoxSlotNumber = null;
+
+        if (pkm is not { Species: > 0 })
+        {
+            SelectedPartySlotNumber = null;
+            EditFormPokemon = null;
+        }
+        else
+        {
+            SelectedPartySlotNumber = slotNumber;
+            EditFormPokemon = pkm;
+        }
+        Refresh();
+    }
 }

@@ -4,8 +4,7 @@ saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-AppState.SelectedBoxNumber is not null &&
-AppState.SelectedSlotNumber is not null)
+((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
     <MudNumericField Label="Level"
                      Variant="@Variant.Outlined"
@@ -28,18 +27,18 @@ AppState.SelectedSlotNumber is not null)
                 <MudStack>
                     <MudText>
                         @(nature.ToString())
-                </MudText>
-                @{
-                    var str = AppState.GetStatModifierString((int)nature);
-                }
-                @if (str is { Length: > 0 })
-                {
-                    <MudText>
-                        @str
                     </MudText>
-                }
-            </MudStack>
-        </MudSelectItem>
+                    @{
+                        var str = AppState.GetStatModifierString((int)nature);
+                    }
+                    @if (str is { Length: > 0 })
+                    {
+                        <MudText>
+                            @str
+                        </MudText>
+                    }
+                </MudStack>
+            </MudSelectItem>
         }
     </MudSelect>
 

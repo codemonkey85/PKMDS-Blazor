@@ -16,15 +16,8 @@
 
             @if (pkm is not null)
             {
-                <MudItem xs="6"
-                         Style="width: 68px; height: 68px;">
-                    <MudPaper Elevation="3"
-                              Width="68px"
-                              Height="68px"
-                              Class="d-flex align-items-center justify-center slot-fill">
-                        <img src="@(pkm is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(pkm) : null)" />
-                    </MudPaper>
-                </MudItem>
+                <PartySlotComponent Pokemon="@pkm"
+                                    SlotNumber="@slotNum" />
             }
         }
     </MudGrid>

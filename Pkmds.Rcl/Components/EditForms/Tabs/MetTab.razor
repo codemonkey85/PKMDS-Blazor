@@ -4,8 +4,7 @@ saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-AppState.SelectedBoxNumber is not null &&
-AppState.SelectedSlotNumber is not null)
+((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
     <MudCheckBox Label="Nicknamed"
                  @bind-Checked="@Pokemon.IsNicknamed"
@@ -67,11 +66,11 @@ AppState.SelectedSlotNumber is not null)
     </MudPaper>
 
     @*
-            <MudCheckBox Label="Met as Egg"
-            @bind-Checked="@Pokemon.WasEgg"
-            @bind-Checked:after="@AppState.Refresh"
-            For="@(() => Pokemon.WasEgg)" />
-            *@
+        <MudCheckBox Label="Met as Egg"
+        @bind-Checked="@Pokemon.WasEgg"
+        @bind-Checked:after="@AppState.Refresh"
+        For="@(() => Pokemon.WasEgg)" />
+    *@
     <MudAutocomplete T="ComboItem"
                      Label="Egg Location"
                      Variant="@Variant.Outlined"

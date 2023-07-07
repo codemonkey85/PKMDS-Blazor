@@ -4,13 +4,19 @@ public partial class PartyGrid
 {
     private static int GridHeight => (56 + 4) * 3;
 
-    private int GridWidth => (68 + 4) * 2;
+    private static int GridWidth => (68 + 4) * 2;
 
-    private string GridStyle => $"width: {GridWidth}px; height: {GridHeight}px;";
+    private static string GridStyle => $"width: {GridWidth}px; height: {GridHeight}px;";
 
-    protected override void OnInitialized() =>
+    protected override void OnInitialized()
+    {
         AppState.OnAppStateChanged += StateHasChanged;
+        AppState.OnPartyStateChanged += StateHasChanged;
+    }
 
-    public void Dispose() =>
+    public void Dispose()
+    {
         AppState.OnAppStateChanged -= StateHasChanged;
+        AppState.OnPartyStateChanged -= StateHasChanged;
+    }
 }

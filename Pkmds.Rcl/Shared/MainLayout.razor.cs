@@ -55,7 +55,7 @@ public partial class MainLayout : IDisposable
 
         AppState.SaveFile = null;
         AppState.SelectedBoxNumber = null;
-        AppState.SelectedSlotNumber = null;
+        AppState.SelectedBoxSlotNumber = null;
         AppState.ShowProgressIndicator = true;
 
         await using var fileStream = browserLoadSaveFile.OpenReadStream(MaxFileSize);

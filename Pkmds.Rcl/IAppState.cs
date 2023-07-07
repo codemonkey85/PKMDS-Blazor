@@ -6,6 +6,8 @@ public interface IAppState
 
     event Action? OnBoxStateChanged;
 
+    event Action? OnPartyStateChanged;
+
     string CurrentLanguage { get; set; }
 
     int CurrentLanguageId { get; }
@@ -20,7 +22,9 @@ public interface IAppState
 
     int? SelectedBoxNumber { get; set; }
 
-    int? SelectedSlotNumber { get; set; }
+    int? SelectedBoxSlotNumber { get; set; }
+
+    int? SelectedPartySlotNumber { get; set; }
 
     bool ShowProgressIndicator { get; set; }
 
@@ -67,4 +71,8 @@ public interface IAppState
     public void SavePokemon(PKM? SelectedPokemon);
 
     string GetCleanFileName(PKM pkm);
+
+    void SetSelectedBoxPokemon(PKM? pkm, int boxNumber, int slotNumber);
+
+    void SetSelectedPartyPokemon(PKM? pkm, int slotNumber);
 }
