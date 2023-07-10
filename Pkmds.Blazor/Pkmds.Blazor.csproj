@@ -7,6 +7,12 @@
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(RunConfiguration)' == 'https' ">
+	  <ExternalConsole>true</ExternalConsole>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(RunConfiguration)' == 'http' ">
+	  <ExternalConsole>true</ExternalConsole>
+	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="TestFiles\**" />
 		<Content Remove="TestFiles\**" />

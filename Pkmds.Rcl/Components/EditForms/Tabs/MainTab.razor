@@ -4,8 +4,7 @@ saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-AppState.SelectedBoxNumber is not null &&
-AppState.SelectedSlotNumber is not null)
+((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
     <MudNumericField Label="PID"
                      Variant="@Variant.Outlined"
@@ -55,16 +54,16 @@ AppState.SelectedSlotNumber is not null)
                         @nature.Text
                     </MudText>
                     @{
-                    var str = AppState.GetStatModifierString(nature.Value);
-                }
-                @if (str is { Length: > 0 })
-                {
-                    <MudText>
-                        @str
-                    </MudText>
-                }
-            </MudStack>
-        </MudSelectItem>
+                        var str = AppState.GetStatModifierString(nature.Value);
+                    }
+                    @if (str is { Length: > 0 })
+                    {
+                        <MudText>
+                            @str
+                        </MudText>
+                    }
+                </MudStack>
+            </MudSelectItem>
         }
     </MudSelect>
 
@@ -74,7 +73,7 @@ AppState.SelectedSlotNumber is not null)
         if (forms.AsEnumerable().Any(f => !string.IsNullOrEmpty(f)))
         {
             <MudSelect T="byte"
-            @ref="@FormSelect"
+                       @ref="@FormSelect"
                        Label="Forme"
                        Variant="@Variant.Outlined"
                        @bind-Value="@Pokemon.Form"
@@ -179,11 +178,11 @@ AppState.SelectedSlotNumber is not null)
                  @bind-Checked:after="@AppState.Refresh"
                  For="@(() => Pokemon.PKRS_Cured)" />
     @*
-            <MudCheckBox Label="N's Sparkle"
-            @bind-Checked="@Pokemon"
-            @bind-Checked:after="@AppState.Refresh"
-            For="@(() => Pokemon.PKRS_Cured)" />
-            *@
+        <MudCheckBox Label="N's Sparkle"
+        @bind-Checked="@Pokemon"
+        @bind-Checked:after="@AppState.Refresh"
+        For="@(() => Pokemon.PKRS_Cured)" />
+    *@
 
     <MudCheckBox Label="Shiny"
                  Checked="@Pokemon.IsShiny"

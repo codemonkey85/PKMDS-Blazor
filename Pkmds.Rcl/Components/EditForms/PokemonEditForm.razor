@@ -4,12 +4,11 @@ saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-AppState.SelectedBoxNumber is not null &&
-AppState.SelectedSlotNumber is not null)
+((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
     <MudStack Row="@true"
               Spacing="3"
-              Justify="@Justify.FlexEnd">
+              Justify="@Justify.FlexStart">
 
         <MudButton OnClick="@AppState.ClearSelection"
                    ButtonType="@ButtonType.Button"

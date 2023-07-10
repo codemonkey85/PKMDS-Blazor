@@ -27,7 +27,7 @@ public partial class BoxComponent : IDisposable
         }
 
         AppState.SelectedBoxNumber = null;
-        AppState.SelectedSlotNumber = null;
+        AppState.SelectedBoxSlotNumber = null;
         ReloadBox();
     }
 
