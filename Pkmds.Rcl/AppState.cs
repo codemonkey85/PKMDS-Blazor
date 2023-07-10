@@ -90,6 +90,8 @@ public record AppState : IAppState
     {
         SelectedBoxNumber = null;
         SelectedBoxSlotNumber = null;
+        SelectedPartySlotNumber = null;
+        EditFormPokemon = null;
         Refresh();
     }
 

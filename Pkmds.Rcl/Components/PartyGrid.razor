@@ -1,24 +1,23 @@
 ﻿@if (AppState.SaveFile is not null)
 {
-    <MudGrid Spacing="1"
-             Justify="@Justify.Center"
-             Style="@(GridStyle)">
-        <MudItem xs="12">
-            <MudText Typo="Typo.h6"
-                     Align="@Align.Center">
-                Party
-            </MudText>
-        </MudItem>
-        @for (var i = 0; i < 6 && i < AppState.SaveFile.PartyData.Count; i++)
-        {
-            var slotNum = i;
-            var pkm = AppState.SaveFile.PartyData[slotNum];
-
-            @if (pkm is not null)
+    <div class="party-grid">
+        <MudGrid Spacing="1"
+                 Justify="@Justify.FlexStart">
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6"
+                         Align="@Align.Center">
+                    Party
+                </MudText>
+            </MudItem>
+            @for (var i = 0; i < 6; i++)
             {
-                <PartySlotComponent Pokemon="@pkm"
-                                    SlotNumber="@slotNum" />
+                var slotNum = i;
+                PKM? pkm = i < AppState.SaveFile.PartyCount ? AppState.SaveFile.PartyData[slotNum] : null;
+                <MudItem xs="2">
+                    <PartySlotComponent Pokemon="@pkm"
+                                        SlotNumber="@slotNum" />
+                </MudItem>
             }
-        }
-    </MudGrid>
+        </MudGrid>
+    </div>
 }

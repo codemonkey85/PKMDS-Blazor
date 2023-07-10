@@ -10,6 +10,10 @@
     border-radius: 6px;
 }
 
+.party-grid {
+    width: 462px; /* (68 + 4 + 5) * 30 */
+}
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);

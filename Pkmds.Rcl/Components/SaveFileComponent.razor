@@ -11,7 +11,7 @@
                      Height="50px" />
         <br />
         <MudSkeleton SkeletonType="SkeletonType.Rectangle"
-                     Width="432px"
+                     Width="462px"
                      Height="350px" />
     }
 }
@@ -25,19 +25,18 @@ else
         @AppState.FileDisplayName
     </MudText>
 
-    <MudGrid Spacing="1">
-        <MudItem xs="12" lg="4">
-            <MudPaper MaxWidth="432px" Elevation="0">
+    <MudGrid Spacing="1"
+             Justify="@Justify.FlexStart">
+        <MudItem xs="12"
+                 lg="6"
+                 Style="max-width: 462px;">
+            <MudPaper Elevation="0">
                 <PokemonStorageComponent />
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" lg="2">
-            <MudPaper MaxWidth="144px" Elevation="0">
-                <PartyGrid />
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" lg="6">
-            <MudPaper MaxWidth="432px" Elevation="0">
+        <MudItem xs="12"
+                 lg="6">
+            <MudPaper Elevation="0">
                 <PokemonEditForm Pokemon="@AppState.EditFormPokemon" />
             </MudPaper>
         </MudItem>
