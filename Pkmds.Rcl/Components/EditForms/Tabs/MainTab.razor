@@ -88,7 +88,7 @@ EntityContext.MaxInvalid &&
                 }
             </MudSelect>
 
-            @if (Pokemon is IFormArgument f && FormArgumentUtil.GetFormArgumentMax(Pokemon.Species, Pokemon.Form, Pokemon.Generation) > 0 && FormConverter.GetFormArgumentIsNamedIndex(Pokemon.Species))
+            @if (Pokemon is IFormArgument f && FormArgumentUtil.GetFormArgumentMax(Pokemon.Species, Pokemon.Form, Pokemon.Context) > 0 && FormConverter.GetFormArgumentIsNamedIndex(Pokemon.Species))
             {
                 <MudSelect T="uint?"
                            Label="Forme Arg"
