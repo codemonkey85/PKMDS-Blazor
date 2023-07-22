@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 <MudThemeProvider @ref="@mudThemeProvider"
-                  @bind-IsDarkMode="@isDarkMode" />
+@bind-IsDarkMode="@isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -46,7 +46,33 @@
                 Export Selected Pokémon...
             </MudButton>
         </MudStack>
-        <NavMenu />
+        <MudSpacer />
+        <MudStack Spacing="1">
+            <MudText Class="mx-1">
+                Created by <MudLink Href="https://codemonkey85.github.io/aboutme/"
+                                    Target="_blank">
+                    codemonkey85
+                </MudLink>
+            </MudText>
+            <MudText Class="mx-1">
+                Based on <MudLink Href="https://github.com/kwsch/PKHeX/tree/master/PKHeX.Core"
+                                  Target="_blank">
+                    PKHeX.Core
+                </MudLink> by <MudLink Href="https://github.com/kwsch/"
+                                       Target="_blank">
+                    Kaphotics
+                </MudLink>
+            </MudText>
+            <MudButton Class="object-center mx-1"
+                       EndIcon="@Icons.Custom.Brands.GitHub"
+                       Href="https://github.com/codemonkey85/PKMDS-Blazor"
+                       Target="_blank"
+                       title="Source on GitHub"
+                       Color="@Color.Inherit"
+                       Variant="@Variant.Outlined">
+                Source on GitHub
+            </MudButton>
+        </MudStack>
     </MudDrawer>
     <MudMainContent>
         <MudContainer MaxWidth="@MaxWidth.False">
