@@ -150,14 +150,6 @@ public record AppState : IAppState
     public void ToggleMarking(PKM? pokemon, int index) =>
         pokemon?.ToggleMarking(index);
 
-    public string GetCharacteristic(PKM? pokemon) =>
-        pokemon?.Characteristic is int characteristicIndex &&
-        characteristicIndex > -1 &&
-        GameInfo.Strings.characteristics is { Length: > 0 } characteristics &&
-        characteristicIndex < characteristics.Length
-            ? characteristics[characteristicIndex]
-            : string.Empty;
-
     public void SavePokemon(PKM? pokemon)
     {
         if (SaveFile is null || pokemon is null)

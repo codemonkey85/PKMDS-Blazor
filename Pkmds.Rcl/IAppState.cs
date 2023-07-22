@@ -62,8 +62,6 @@ public interface IAppState
 
     void ToggleMarking(PKM? pokemon, int index);
 
-    string GetCharacteristic(PKM? pokemon);
-
     bool IsPurificationVisible { get; }
 
     bool IsSizeVisible { get; }

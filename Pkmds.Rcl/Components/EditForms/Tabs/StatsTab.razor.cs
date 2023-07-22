@@ -10,4 +10,12 @@ public partial class StatsTab : IDisposable
 
     public void Dispose() =>
         AppState.OnAppStateChanged -= StateHasChanged;
+
+    public string GetCharacteristic(PKM? pokemon) =>
+        pokemon?.Characteristic is int characteristicIndex &&
+        characteristicIndex > -1 &&
+        GameInfo.Strings.characteristics is { Length: > 0 } characteristics &&
+        characteristicIndex < characteristics.Length
+            ? characteristics[characteristicIndex]
+            : string.Empty;
 }
