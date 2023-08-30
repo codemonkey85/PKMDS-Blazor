@@ -20,6 +20,8 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@((searchString) => Task.FromResult(AppState.SearchPokemonNames(searchString)))"
                      ToStringFunc="@((species) => species.Text)" />
 
+    @TypeSummary(Pokemon.PersonalInfo.Type1, Pokemon.PersonalInfo.Type2)
+
     <MudCheckBox Label="Is Nicknamed"
                  @bind-Checked="@Pokemon.IsNicknamed"
                  For="@(() => Pokemon.IsNicknamed)" />
@@ -73,7 +75,7 @@ EntityContext.MaxInvalid &&
         if (forms.AsEnumerable().Any(f => !string.IsNullOrEmpty(f)))
         {
             <MudSelect T="byte"
-            @ref="@FormSelect"
+                       @ref="@FormSelect"
                        Label="Forme"
                        Variant="@Variant.Outlined"
                        @bind-Value="@Pokemon.Form"
@@ -180,10 +182,10 @@ EntityContext.MaxInvalid &&
                      @bind-Checked:after="@AppState.Refresh"
                      For="@(() => Pokemon.PKRS_Cured)" />
         @*
-            <MudCheckBox Label="N's Sparkle"
-            @bind-Checked="@Pokemon"
-            @bind-Checked:after="@AppState.Refresh"
-            For="@(() => Pokemon.PKRS_Cured)" />
+        <MudCheckBox Label="N's Sparkle"
+                     @bind-Checked="@Pokemon"
+                     @bind-Checked:after="@AppState.Refresh"
+                     For="@(() => Pokemon.PKRS_Cured)" />
         *@
 
         <MudCheckBox Label="Shiny"
@@ -192,4 +194,27 @@ EntityContext.MaxInvalid &&
                      For="@(() => Pokemon.IsShiny)" />
 
     </MudStack>
+}
+
+@code {
+    private static RenderFragment TypeSummary(byte type1, byte type2) =>
+        @<MudStack Row="@true"
+                   Class="my-2">
+            <MudText>
+                Type:
+            </MudText>
+            <MudImage Src="@SpriteHelper.GetTypeWideSpriteFileName(type1)"
+                      Alt="@GameInfo.Strings.Types[type1]"
+                      title="@GameInfo.Strings.Types[type1]"
+                      ObjectFit="@ObjectFit.Contain"
+                      ObjectPosition="@ObjectPosition.Center" />
+            @if (type1 != type2)
+            {
+                <MudImage Src="@SpriteHelper.GetTypeWideSpriteFileName(type2)"
+                          Alt="@GameInfo.Strings.Types[type2]"
+                          title="@GameInfo.Strings.Types[type2]"
+                          ObjectFit="@ObjectFit.Contain"
+                          ObjectPosition="@ObjectPosition.Center" />
+            }
+        </MudStack>;
 }

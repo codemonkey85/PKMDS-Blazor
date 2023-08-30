@@ -26,4 +26,13 @@ public static class SpriteHelper
 
     public static string GetBigItemSpriteFilename(int item) =>
         $"_content/Pkmds.Rcl/sprites/bi/bitem_{item}.png";
+
+    public static string GetTypeGemSpriteFileName(byte type) =>
+        $"_content/Pkmds.Rcl/sprites/t/g/type_wide_{type:00}.png";
+
+    public static string GetTypeSqureSpriteFileName(byte type) =>
+        $"_content/Pkmds.Rcl/sprites/t/s/type_wide_{type:00}.png";
+
+    public static string GetTypeWideSpriteFileName(byte type) =>
+        $"_content/Pkmds.Rcl/sprites/t/w/type_wide_{type:00}.png";
 }
