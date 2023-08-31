@@ -22,9 +22,9 @@ EntityContext.MaxInvalid &&
 
     @TypeSummary(Pokemon.PersonalInfo.Type1, Pokemon.PersonalInfo.Type2)
 
-    @if(Pokemon is PK9 pK9)
+    @if (Pokemon is PK9 pK9)
     {
-        @TeraTypeSummary((byte)pK9.TeraType);
+        @TeraTypeSummary((byte)pK9.TeraType)
     }
 
     <MudCheckBox Label="Is Nicknamed"

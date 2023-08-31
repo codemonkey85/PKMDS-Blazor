@@ -19,7 +19,8 @@ public static class SpriteHelper
                 pokemon.Species.ToString(),
             _ => "unknown",
         })
-        .Append(".png").ToString();
+        .Append(".png")
+        .ToString();
 
     public static string GetBallSpriteFilename(int ball) =>
         $"_content/Pkmds.Rcl/sprites/b/_ball{ball}.png";
