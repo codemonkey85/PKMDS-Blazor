@@ -9,14 +9,14 @@ EntityContext.MaxInvalid &&
     <MudNumericField Label="TID"
                      Variant="@Variant.Outlined"
                      @bind-Value="Pokemon.TID16"
-                     @bind-Value:after="@(AppState.Refresh)"
+                     @bind-Value:after="@(RefreshService.Refresh)"
                      Format="@TrainerIDExtensions.TID16"
                      For="@(() => Pokemon.TID16)" />
 
     <MudNumericField Label="SID"
                      Variant="@Variant.Outlined"
                      @bind-Value="Pokemon.SID16"
-                     @bind-Value:after="@(AppState.Refresh)"
+                     @bind-Value:after="@(RefreshService.Refresh)"
                      Format="@TrainerIDExtensions.SID16"
                      For="@(() => Pokemon.SID16)" />
 

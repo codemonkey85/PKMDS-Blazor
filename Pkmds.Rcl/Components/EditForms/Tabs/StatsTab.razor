@@ -9,13 +9,13 @@ EntityContext.MaxInvalid &&
     <MudNumericField Label="Level"
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.CurrentLevel"
-                     @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.CurrentLevel)" />
 
     <MudSelect Label="Nature"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Nature"
-               @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+               @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                For="@(() => Pokemon.Nature)">
         @foreach (Nature nature in Enum.GetValues(typeof(Nature)))
         {
@@ -29,7 +29,7 @@ EntityContext.MaxInvalid &&
                         @(nature.ToString())
                     </MudText>
                     @{
-                        var str = AppState.GetStatModifierString((int)nature);
+                        var str = AppService.GetStatModifierString((int)nature);
                     }
                     @if (str is { Length: > 0 })
                     {
@@ -112,7 +112,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_HP"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_HP)" />
 
                 <MudNumericField Label="Attack"
@@ -120,7 +120,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_ATK"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_ATK)" />
 
                 <MudNumericField Label="Defense"
@@ -128,7 +128,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_DEF"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_DEF)" />
 
                 <MudNumericField Label="Sp. Atk"
@@ -136,7 +136,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_SPA"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_SPA)" />
 
                 <MudNumericField Label="Sp. Def"
@@ -144,7 +144,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_SPD"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_SPD)" />
 
                 <MudNumericField Label="Speed"
@@ -152,7 +152,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_SPE"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_SPE)" />
 
                 <MudNumericField Label="Total"
@@ -175,7 +175,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="255"
                                  @bind-Value="@Pokemon.EV_HP"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.EV_HP)" />
 
                 <MudNumericField Label="Attack"
@@ -183,7 +183,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="255"
                                  @bind-Value="@Pokemon.EV_ATK"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.EV_ATK)" />
 
                 <MudNumericField Label="Defense"
@@ -191,7 +191,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="255"
                                  @bind-Value="@Pokemon.EV_DEF"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.EV_DEF)" />
 
                 <MudNumericField Label="Sp. Atk"
@@ -199,7 +199,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="255"
                                  @bind-Value="@Pokemon.EV_SPA"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.EV_SPA)" />
 
                 <MudNumericField Label="Sp. Def"
@@ -207,7 +207,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="255"
                                  @bind-Value="@Pokemon.EV_SPD"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.EV_SPD)" />
 
                 <MudNumericField Label="Speed"
@@ -215,7 +215,7 @@ EntityContext.MaxInvalid &&
                                  Min="0"
                                  Max="255"
                                  @bind-Value="@Pokemon.EV_SPE"
-                                 @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.EV_SPE)" />
 
                 <MudNumericField Label="Total"

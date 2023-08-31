@@ -13,11 +13,11 @@ public partial class PartySlotComponent : IDisposable
         : string.Empty;
 
     protected override void OnInitialized() =>
-        AppState.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() =>
-        AppState.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnAppStateChanged -= StateHasChanged;
 
     private void SetSelectedPokemon() =>
-        AppState.SetSelectedPartyPokemon(Pokemon, SlotNumber);
+        AppService.SetSelectedPartyPokemon(Pokemon, SlotNumber);
 }

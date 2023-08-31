@@ -9,14 +9,14 @@ public partial class BoxComponent : IDisposable
 
     protected override void OnInitialized()
     {
-        AppState.OnAppStateChanged += StateHasChanged;
-        AppState.OnBoxStateChanged += ReloadBox;
+        RefreshService.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnBoxStateChanged += ReloadBox;
     }
 
     public void Dispose()
     {
-        AppState.OnAppStateChanged -= StateHasChanged;
-        AppState.OnBoxStateChanged -= ReloadBox;
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnBoxStateChanged -= ReloadBox;
     }
 
     protected override void OnParametersSet()
@@ -40,6 +40,6 @@ public partial class BoxComponent : IDisposable
 
         BoxEdit = new BoxEdit(AppState.SaveFile);
         BoxEdit.LoadBox(BoxNumber);
-        AppState.Refresh();
+        RefreshService.Refresh();
     }
 }

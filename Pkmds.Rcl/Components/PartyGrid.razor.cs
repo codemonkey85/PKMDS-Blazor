@@ -4,13 +4,13 @@ public partial class PartyGrid
 {
     protected override void OnInitialized()
     {
-        AppState.OnAppStateChanged += StateHasChanged;
-        AppState.OnPartyStateChanged += StateHasChanged;
+        RefreshService.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnPartyStateChanged += StateHasChanged;
     }
 
     public void Dispose()
     {
-        AppState.OnAppStateChanged -= StateHasChanged;
-        AppState.OnPartyStateChanged -= StateHasChanged;
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnPartyStateChanged -= StateHasChanged;
     }
 }

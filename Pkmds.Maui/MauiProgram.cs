@@ -16,6 +16,8 @@ public static class MauiProgram
             .AddMudServices()
             .AddSingleton<HttpClient>()
             .AddScoped<IAppState, AppState>()
+            .AddScoped<IRefreshService, RefreshService>()
+            .AddScoped<IAppService, AppService>()
             .AddSingleton<MainPage>();
 
 #if DEBUG

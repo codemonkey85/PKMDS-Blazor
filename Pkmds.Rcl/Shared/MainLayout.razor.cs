@@ -7,10 +7,10 @@ public partial class MainLayout : IDisposable
     private MudThemeProvider? mudThemeProvider;
 
     protected override void OnInitialized() =>
-        AppState.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() =>
-        AppState.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnAppStateChanged -= StateHasChanged;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -70,7 +70,7 @@ public partial class MainLayout : IDisposable
         }
 
         AppState.FileDisplayName = $"{AppState.SaveFile.OT} ({AppState.SaveFile.DisplayTID}, {AppState.SaveFile.Version}, {AppState.SaveFile.PlayTimeString})";
-        AppState.Refresh();
+        RefreshService.Refresh();
     }
 
     private async Task ExportSaveFileAsync()
@@ -89,17 +89,17 @@ public partial class MainLayout : IDisposable
 
     private async Task ExportSelectedPokemonAsync()
     {
-        if (AppState.EditFormPokemon is null)
+        if (AppService.EditFormPokemon is null)
         {
             return;
         }
 
-        var pkm = AppState.EditFormPokemon;
+        var pkm = AppService.EditFormPokemon;
 
         AppState.ShowProgressIndicator = true;
 
         pkm.RefreshChecksum();
-        var cleanFileName = AppState.GetCleanFileName(pkm);
+        var cleanFileName = AppService.GetCleanFileName(pkm);
         await WriteFile(pkm.Data, cleanFileName);
 
         AppState.ShowProgressIndicator = false;

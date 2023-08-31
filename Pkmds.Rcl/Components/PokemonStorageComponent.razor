@@ -14,7 +14,7 @@
         <div class="select-container">
             <MudSelect T="@int"
                        @bind-Value="@AppState.SaveFile.CurrentBox"
-                       @bind-Value:after="@AppState.ClearSelection"
+                       @bind-Value:after="@AppService.ClearSelection"
                        Class="box-select">
                 @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
                 {

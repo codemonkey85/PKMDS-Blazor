@@ -6,8 +6,8 @@ public partial class MovesTab : IDisposable
     public PKM? Pokemon { get; set; }
 
     protected override void OnInitialized() =>
-        AppState.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() =>
-        AppState.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnAppStateChanged -= StateHasChanged;
 }

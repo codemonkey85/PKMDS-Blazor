@@ -6,10 +6,10 @@ public partial class StatsTab : IDisposable
     public PKM? Pokemon { get; set; }
 
     protected override void OnInitialized() =>
-        AppState.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() =>
-        AppState.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnAppStateChanged -= StateHasChanged;
 
     public string GetCharacteristic(PKM? pokemon) =>
         pokemon?.Characteristic is int characteristicIndex &&

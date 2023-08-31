@@ -15,8 +15,8 @@ public partial class BoxGrid : IDisposable
     private string GridStyle => $"width: {GridWidth}px; height: {GridHeight}px;";
 
     protected override void OnInitialized() =>
-        AppState.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() =>
-        AppState.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnAppStateChanged -= StateHasChanged;
 }

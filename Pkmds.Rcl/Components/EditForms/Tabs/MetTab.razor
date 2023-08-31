@@ -8,7 +8,7 @@ EntityContext.MaxInvalid &&
 {
     <MudCheckBox Label="Nicknamed"
                  @bind-Checked="@Pokemon.IsNicknamed"
-                 @bind-Checked:after="@AppState.Refresh"
+                 @bind-Checked:after="@RefreshService.Refresh"
                  For="@(() => Pokemon.IsNicknamed)" />
 
     <MudSelect Label="Origin Game"
@@ -46,9 +46,9 @@ EntityContext.MaxInvalid &&
     <MudAutocomplete T="ComboItem"
                      Label="Met Location"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMetLocationComboItem(Pokemon.Met_Location))"
+                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Met_Location))"
                      @bind-Value:set="@((metLocation) => Pokemon.Met_Location = metLocation.Value)"
-                     SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMetLocations(searchString)))"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation.Text)" />
 
     <MudPaper Elevation="0"
@@ -68,15 +68,15 @@ EntityContext.MaxInvalid &&
     @*
         <MudCheckBox Label="Met as Egg"
         @bind-Checked="@Pokemon.WasEgg"
-        @bind-Checked:after="@AppState.Refresh"
+        @bind-Checked:after="@RefreshService.Refresh"
         For="@(() => Pokemon.WasEgg)" />
     *@
     <MudAutocomplete T="ComboItem"
                      Label="Egg Location"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetMetLocationComboItem(Pokemon.Egg_Location))"
+                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Egg_Location))"
                      @bind-Value:set="@((metLocation) => Pokemon.Egg_Location = metLocation.Value)"
-                     SearchFunc="@((searchString) => Task.FromResult(AppState.SearchMetLocations(searchString)))"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation.Text)" />
 
     <MudPaper Elevation="0"

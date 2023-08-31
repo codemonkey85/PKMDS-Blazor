@@ -9,15 +9,15 @@ EntityContext.MaxInvalid &&
     <MudNumericField Label="PID"
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.PID"
-                     @bind-Value:after="@(() => { AppState.LoadPokemonStats(Pokemon); AppState.Refresh(); })"
+                     @bind-Value:after="@(() => { AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
                      For="@(() => Pokemon.PID)" />
 
     <MudAutocomplete T="ComboItem"
                      Label="Species"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetSpeciesComboItem(Pokemon.Species))"
-                     @bind-Value:set="@((species) => { Pokemon.Species = (ushort)species.Value; AppState.LoadPokemonStats(Pokemon); AppState.Refresh(); })"
-                     SearchFunc="@((searchString) => Task.FromResult(AppState.SearchPokemonNames(searchString)))"
+                     @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
+                     @bind-Value:set="@((species) => { Pokemon.Species = (ushort)species.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchPokemonNames(searchString)))"
                      ToStringFunc="@((species) => species.Text)" />
 
     @TypeSummary(Pokemon.PersonalInfo.Type1, Pokemon.PersonalInfo.Type2)
@@ -39,19 +39,19 @@ EntityContext.MaxInvalid &&
     <MudNumericField Label="EXP"
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.EXP"
-                     @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.EXP)" />
 
     <MudNumericField Label="Level"
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.CurrentLevel"
-                     @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.CurrentLevel)" />
 
     <MudSelect Label="Nature"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Nature"
-               @bind-Value:after="@(() => AppState.LoadPokemonStats(Pokemon))"
+               @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                For="@(() => Pokemon.Nature)">
         @foreach (var nature in GameInfo.FilteredSources.Natures)
         {
@@ -61,7 +61,7 @@ EntityContext.MaxInvalid &&
                         @nature.Text
                     </MudText>
                     @{
-                        var str = AppState.GetStatModifierString(nature.Value);
+                        var str = AppService.GetStatModifierString(nature.Value);
                     }
                 @if (str is { Length: > 0 })
                 {
@@ -84,7 +84,7 @@ EntityContext.MaxInvalid &&
                        Label="Forme"
                        Variant="@Variant.Outlined"
                        @bind-Value="@Pokemon.Form"
-                       @bind-Value:after="@(() => { AppState.LoadPokemonStats(Pokemon); AppState.Refresh(); })"
+                       @bind-Value:after="@(() => { AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
                        For="@(() => Pokemon.Form)">
                 @for (byte i = 0; i < forms.Length; i++)
                 {
@@ -101,7 +101,7 @@ EntityContext.MaxInvalid &&
                            Label="Forme Arg"
                            Variant="@Variant.Outlined"
                            @bind-Value:get="@(Pokemon.GetFormArgument())"
-                           @bind-Value:set="@((formArg) => { Pokemon.ChangeFormArgument(formArg ?? 0); AppState.LoadPokemonStats(Pokemon); AppState.Refresh(); })">
+                           @bind-Value:set="@((formArg) => { Pokemon.ChangeFormArgument(formArg ?? 0); AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })">
                     @{
                         var formArgs = FormConverter.GetFormArgumentStrings(Pokemon.Species);
                     }
@@ -120,9 +120,9 @@ EntityContext.MaxInvalid &&
     <MudAutocomplete T="ComboItem"
                      Label="Held Item"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetItemComboItem(Pokemon.HeldItem))"
-                     @bind-Value:set="@((item) => { Pokemon.HeldItem = item.Value; AppState.LoadPokemonStats(Pokemon); AppState.Refresh(); })"
-                     SearchFunc="@((searchString) => Task.FromResult(AppState.SearchItemNames(searchString)))"
+                     @bind-Value:get="@(AppService.GetItemComboItem(Pokemon.HeldItem))"
+                     @bind-Value:set="@((item) => { Pokemon.HeldItem = item.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchItemNames(searchString)))"
                      ToStringFunc="@((item) => item.Text)">
         <ItemTemplate Context="item">
             <MudStack Row="@true">
@@ -146,9 +146,9 @@ EntityContext.MaxInvalid &&
     <MudAutocomplete T="ComboItem"
                      Label="Ability"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppState.GetAbilityComboItem(Pokemon.Ability))"
+                     @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
                      @bind-Value:set="@((ability) => Pokemon.Ability = ability.Value)"
-                     SearchFunc="@((searchString) => Task.FromResult(AppState.SearchAbilityNames(searchString)))"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchAbilityNames(searchString)))"
                      ToStringFunc="@((ability) => ability.Text)" />
 
     <MudSelect Label="Language"
@@ -174,22 +174,22 @@ EntityContext.MaxInvalid &&
 
         <MudCheckBox Label="Is Egg"
                      @bind-Checked="@Pokemon.IsEgg"
-                     @bind-Checked:after="@AppState.Refresh"
+                     @bind-Checked:after="@RefreshService.Refresh"
                      For="@(() => Pokemon.IsEgg)" />
 
         <MudCheckBox Label="Infected"
                      @bind-Checked="@Pokemon.PKRS_Infected"
-                     @bind-Checked:after="@AppState.Refresh"
+                     @bind-Checked:after="@RefreshService.Refresh"
                      For="@(() => Pokemon.PKRS_Infected)" />
 
         <MudCheckBox Label="Cured"
                      @bind-Checked="@Pokemon.PKRS_Cured"
-                     @bind-Checked:after="@AppState.Refresh"
+                     @bind-Checked:after="@RefreshService.Refresh"
                      For="@(() => Pokemon.PKRS_Cured)" />
         @*
         <MudCheckBox Label="N's Sparkle"
                      @bind-Checked="@Pokemon"
-                     @bind-Checked:after="@AppState.Refresh"
+                     @bind-Checked:after="@RefreshService.Refresh"
                      For="@(() => Pokemon.PKRS_Cured)" />
         *@
 
