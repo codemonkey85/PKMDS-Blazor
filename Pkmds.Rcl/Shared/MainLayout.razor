@@ -49,20 +49,23 @@
         <MudSpacer />
         <MudStack Spacing="1"
                   Class="mx-1 mb-1">
-            <MudText>
+            <MudText Typo="@Typo.subtitle2">
+                Version @System.Reflection.Assembly.GetAssembly(typeof(App))?.GetName().Version?.ToString()
+            </MudText>
+            <MudText Typo="@Typo.subtitle2">
                 Created by <MudLink Href="https://codemonkey85.github.io/aboutme/"
                                     Target="_blank">
                     codemonkey85
                 </MudLink>
             </MudText>
-            <MudText>
+            <MudText Typo="@Typo.subtitle2">
                 Based on <MudLink Href="https://github.com/kwsch/PKHeX/tree/master/PKHeX.Core"
                                   Target="_blank">
                     PKHeX.Core
                 </MudLink> by <MudLink Href="https://github.com/kwsch/"
                                        Target="_blank">
                     Kaphotics
-                </MudLink>
+                </MudLink> (version @System.Reflection.Assembly.GetAssembly(typeof(PKHeX.Core.PKM))?.GetName().Version?.ToString())
             </MudText>
             <MudButton Class="object-center"
                        EndIcon="@Icons.Custom.Brands.GitHub"
