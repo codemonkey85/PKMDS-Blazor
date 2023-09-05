@@ -17,4 +17,8 @@ public interface IAppState
     bool ShowProgressIndicator { get; set; }
 
     string FileDisplayName { get; set; }
+
+    static string? AppVersion => Assembly.GetAssembly(typeof(App))?.GetName().Version?.ToString();
+
+    static string? PkhexVersion => Assembly.GetAssembly(typeof(PKM))?.GetName().Version?.ToString();
 }

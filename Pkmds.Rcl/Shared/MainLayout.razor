@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 <MudThemeProvider @ref="@mudThemeProvider"
-@bind-IsDarkMode="@isDarkMode" />
+                  @bind-IsDarkMode="@isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -50,7 +50,7 @@
         <MudStack Spacing="1"
                   Class="mx-1 mb-1">
             <MudText Typo="@Typo.subtitle2">
-                Version @System.Reflection.Assembly.GetAssembly(typeof(App))?.GetName().Version?.ToString()
+                Version @IAppState.AppVersion
             </MudText>
             <MudText Typo="@Typo.subtitle2">
                 Created by <MudLink Href="https://codemonkey85.github.io/aboutme/"
@@ -65,7 +65,7 @@
                 </MudLink> by <MudLink Href="https://github.com/kwsch/"
                                        Target="_blank">
                     Kaphotics
-                </MudLink> (version @System.Reflection.Assembly.GetAssembly(typeof(PKHeX.Core.PKM))?.GetName().Version?.ToString())
+                </MudLink> (version @IAppState.PkhexVersion)
             </MudText>
             <MudButton Class="object-center"
                        EndIcon="@Icons.Custom.Brands.GitHub"
