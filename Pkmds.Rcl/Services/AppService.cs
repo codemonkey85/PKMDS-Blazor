@@ -2,7 +2,8 @@
 
 public record AppService(IAppState AppState, IRefreshService RefreshService) : IAppService
 {
-    private const string defaultFileName = "pkm.bin";
+    private const string EnglishLang = "en";
+    private const string defaultPkmFileName = "pkm.bin";
 
     private PKM? editFormPokemon;
 
@@ -124,14 +125,14 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
 
     public string GetCleanFileName(PKM pkm) => pkm.Context switch
     {
-        EntityContext.SplitInvalid or EntityContext.MaxInvalid => defaultFileName,
+        EntityContext.SplitInvalid or EntityContext.MaxInvalid => defaultPkmFileName,
         EntityContext.Gen1 or EntityContext.Gen2 => pkm switch
         {
-            PK1 pk1 => $"{GameInfo.GetStrings("en").Species[pk1.Species]}_{pk1.DV16}.{pk1.Extension}",
-            PK2 pk2 => $"{GameInfo.GetStrings("en").Species[pk2.Species]}_{pk2.DV16}.{pk2.Extension}",
-            _ => defaultFileName,
+            PK1 pk1 => $"{GameInfo.GetStrings(EnglishLang).Species[pk1.Species]}_{pk1.DV16}.{pk1.Extension}",
+            PK2 pk2 => $"{GameInfo.GetStrings(EnglishLang).Species[pk2.Species]}_{pk2.DV16}.{pk2.Extension}",
+            _ => defaultPkmFileName,
         },
-        _ => $"{GameInfo.GetStrings("en").Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}",
+        _ => $"{GameInfo.GetStrings(EnglishLang).Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}",
     };
 
     public void SetSelectedBoxPokemon(PKM? pkm, int boxNumber, int slotNumber)
