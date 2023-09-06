@@ -139,18 +139,10 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     {
         AppState.SelectedPartySlotNumber = null;
 
-        if (pkm is not { Species: > 0 })
-        {
-            AppState.SelectedBoxNumber = null;
-            AppState.SelectedBoxSlotNumber = null;
-            EditFormPokemon = null;
-        }
-        else
-        {
-            AppState.SelectedBoxNumber = boxNumber;
-            AppState.SelectedBoxSlotNumber = slotNumber;
-            EditFormPokemon = pkm;
-        }
+        AppState.SelectedBoxNumber = boxNumber;
+        AppState.SelectedBoxSlotNumber = slotNumber;
+        EditFormPokemon = pkm;
+
         RefreshService.Refresh();
     }
 
@@ -159,16 +151,13 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        if (pkm is not { Species: > 0 })
-        {
-            AppState.SelectedPartySlotNumber = null;
-            EditFormPokemon = null;
-        }
-        else
-        {
-            AppState.SelectedPartySlotNumber = slotNumber;
-            EditFormPokemon = pkm;
-        }
+        AppState.SelectedPartySlotNumber = slotNumber;
+        EditFormPokemon = pkm;
+
         RefreshService.Refresh();
+    }
+
+    public void DeletePokemon()
+    {
     }
 }

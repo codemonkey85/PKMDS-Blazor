@@ -10,12 +10,15 @@ EntityContext.MaxInvalid &&
               Spacing="3"
               Justify="@Justify.FlexStart">
 
-        <MudButton OnClick="@AppService.ClearSelection"
-                   ButtonType="@ButtonType.Button"
-                   Variant="@Variant.Filled"
-                   Class="my-2">
-            Clear Selection
-        </MudButton>
+        @*
+            <MudButton OnClick="@AppService.DeletePokemon"
+                       ButtonType="@ButtonType.Button"
+                       Variant="@Variant.Filled"
+                       Class="my-2"
+                       StartIcon="@Icons.Material.Filled.Delete">
+                Delete Pokémon
+            </MudButton>
+        *@
 
         <MudButton OnClick="@(() => AppService.SavePokemon(Pokemon))"
                    ButtonType="@ButtonType.Button"

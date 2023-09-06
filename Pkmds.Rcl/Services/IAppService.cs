@@ -8,6 +8,8 @@ public interface IAppService
 
     void ClearSelection();
 
+    void DeletePokemon();
+
     IEnumerable<ComboItem> SearchPokemonNames(string searchString);
 
     ComboItem GetSpeciesComboItem(ushort speciesId);
