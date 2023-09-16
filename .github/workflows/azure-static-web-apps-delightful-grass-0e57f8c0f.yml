@@ -30,7 +30,6 @@ jobs:
           app_location: "Pkmds.Blazor" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "wwwroot" # Built app content directory - optional
-          include-prerelease: true
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
