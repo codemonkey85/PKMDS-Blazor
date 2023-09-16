@@ -1,4 +1,6 @@
-﻿@if (Pokemon is not null &&
+﻿@inherits BasePkmdsComponent
+
+@if (Pokemon is not null &&
 AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
 saveFileEntityContext is not
 EntityContext.None or

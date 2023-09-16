@@ -1,4 +1,6 @@
-﻿@if (AppState.SaveFile is null)
+﻿@inherits BasePkmdsComponent
+
+@if (AppState.SaveFile is null)
 {
     @if (AppState.ShowProgressIndicator)
     {
@@ -18,11 +20,11 @@
 else
 {
     <PageTitle>
-        PKMDS Save Editor - @AppState.FileDisplayName
+        PKMDS Save Editor - <SaveFileNameDisplay />
     </PageTitle>
 
     <MudText Typo="Typo.h5">
-        @AppState.FileDisplayName
+        <SaveFileNameDisplay />
     </MudText>
 
     <MudGrid Spacing="1"

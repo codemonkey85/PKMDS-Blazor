@@ -1,0 +1,72 @@
+﻿@code {
+    public static RenderFragment TypeSummary(byte type1, byte type2) =>
+    @<MudStack Row="@true"
+                   Class="my-2"
+                   AlignItems="@AlignItems.Center">
+        <MudText>
+            Type:
+        </MudText>
+        <MudImage Src="@SpriteHelper.GetTypeWideSpriteFileName(type1)"
+                  Alt="@GameInfo.Strings.Types[type1]"
+                  title="@GameInfo.Strings.Types[type1]"
+                  ObjectFit="@ObjectFit.Contain"
+                  ObjectPosition="@ObjectPosition.Center" />
+        @if (type1 != type2)
+        {
+            <MudImage Src="@SpriteHelper.GetTypeWideSpriteFileName(type2)"
+                      Alt="@GameInfo.Strings.Types[type2]"
+                      title="@GameInfo.Strings.Types[type2]"
+                      ObjectFit="@ObjectFit.Contain"
+                      ObjectPosition="@ObjectPosition.Center" />
+        }
+    </MudStack>;
+
+    public static RenderFragment TeraTypeSummary(byte type) =>
+    @<MudStack Row="@true"
+                   Class="my-2"
+                   AlignItems="@AlignItems.Center">
+        <MudText>
+            Tera Type:
+        </MudText>
+        <MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(type)"
+                  Alt="@GameInfo.Strings.Types[type]"
+                  title="@GameInfo.Strings.Types[type]"
+                  ObjectFit="@ObjectFit.Contain"
+                  ObjectPosition="@ObjectPosition.Center"
+                  Width="30" />
+    </MudStack>;
+
+    public static RenderFragment GenderDisplayIcon(int gender)
+    {
+        var icon = gender switch
+        {
+            0 => Icons.Material.Filled.Male,
+            1 => Icons.Material.Filled.Female,
+            _ => string.Empty,
+        };
+        var color = gender switch
+        {
+            0 => Colors.Blue.Default,
+            1 => Colors.Red.Default,
+            _ => string.Empty,
+        };
+        return @<MudIcon Icon="@icon" Style="@($"color: {color};")" />;
+    }
+
+    public static RenderFragment GenderDisplayAscii(int gender)
+    {
+        var color = gender switch
+        {
+            0 => Colors.Blue.Default,
+            1 => Colors.Red.Default,
+            _ => string.Empty,
+        };
+        return @<MudText Style="@($"color: { color}; ")">@GameInfo.GenderSymbolASCII[gender]</MudText>;
+    }
+
+    public static RenderFragment GenderDisplay(int gender) =>
+    @<MudStack Row="@true">
+        @GenderDisplayIcon(gender)
+        @GenderDisplayAscii(gender)
+    </MudStack>;
+}

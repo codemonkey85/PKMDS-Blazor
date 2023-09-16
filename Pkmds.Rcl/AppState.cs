@@ -39,6 +39,4 @@ public record AppState : IAppState
     public int? SelectedPartySlotNumber { get; set; }
 
     public bool ShowProgressIndicator { get; set; }
-
-    public string FileDisplayName { get; set; } = string.Empty;
 }

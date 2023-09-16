@@ -69,7 +69,6 @@ public partial class MainLayout : IDisposable
             return;
         }
 
-        AppState.FileDisplayName = $"{AppState.SaveFile.OT} ({AppState.SaveFile.DisplayTID}, {AppState.SaveFile.Version}, {AppState.SaveFile.PlayTimeString})";
         RefreshService.Refresh();
     }
 
