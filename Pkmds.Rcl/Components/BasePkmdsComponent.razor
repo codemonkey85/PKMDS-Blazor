@@ -21,6 +21,9 @@
         }
     </MudStack>;
 
+    public static RenderFragment TypeSummary((byte Type1, byte Type2) types) =>
+        TypeSummary(types.Type1, types.Type2);
+
     public static RenderFragment TeraTypeSummary(byte type) =>
     @<MudStack Row="@true"
                    Class="my-2"
