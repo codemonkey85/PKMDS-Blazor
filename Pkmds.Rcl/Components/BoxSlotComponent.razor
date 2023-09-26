@@ -4,7 +4,7 @@
           @onclick="SetSelectedPokemon"
           Width="68px"
           Height="68px"
-          Class="d-flex align-items-center justify-center slot-fill"
+          Class="@SpriteHelper.GetSpriteCssClass(Pokemon)"
           Style="@Style">
-        <img src="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)" />
+    <img class="pkm-sprite" src="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)" />
 </MudPaper>
