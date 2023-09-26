@@ -1,4 +1,5 @@
 ﻿@inherits BasePkmdsComponent
+@implements IDisposable
 
 @if (AppState.SaveFile is { Gender: 0 or 1 } saveFile)
 {
@@ -15,4 +16,8 @@
         <span>, @saveFile.Version</span>
         <span>, @saveFile.PlayTimeString)</span>
     </MudStack>;
+
+    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
+
+    public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
 }
