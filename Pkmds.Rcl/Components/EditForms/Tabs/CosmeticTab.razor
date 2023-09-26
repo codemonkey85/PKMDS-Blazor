@@ -8,50 +8,5 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 ((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
-    <MudGrid Spacing="1"
-             Justify="@Justify.Center">
-
-        <MudItem xs="@ColSpan">
-            <MudCheckBox T="bool"
-                         Label="Circle"
-                         Checked="AppService.GetMarking(Pokemon, 0)"
-                         CheckedChanged="@((checkedValue) => AppService.SetMarking(Pokemon, 0, checkedValue))" />
-        </MudItem>
-
-        <MudItem xs="@ColSpan">
-            <MudCheckBox T="bool"
-                         Label="Triangle"
-                         Checked="AppService.GetMarking(Pokemon, 1)"
-                         CheckedChanged="@((checkedValue) => AppService.SetMarking(Pokemon, 1, checkedValue))" />
-        </MudItem>
-
-        <MudItem xs="@ColSpan">
-            <MudCheckBox T="bool"
-                         Label="Square"
-                         Checked="AppService.GetMarking(Pokemon, 2)"
-                         CheckedChanged="@((checkedValue) => AppService.SetMarking(Pokemon, 2, checkedValue))" />
-        </MudItem>
-
-        <MudItem xs="@ColSpan">
-            <MudCheckBox T="bool"
-                         Label="Heart"
-                         Checked="AppService.GetMarking(Pokemon, 3)"
-                         CheckedChanged="@((checkedValue) => AppService.SetMarking(Pokemon, 3, checkedValue))" />
-        </MudItem>
-
-        <MudItem xs="@ColSpan">
-            <MudCheckBox T="bool"
-                         Label="Star"
-                         Checked="AppService.GetMarking(Pokemon, 4)"
-                         CheckedChanged="@((checkedValue) => AppService.SetMarking(Pokemon, 4, checkedValue))" />
-        </MudItem>
-
-        <MudItem xs="@ColSpan">
-            <MudCheckBox T="bool"
-                         Label="Diamond"
-                         Checked="AppService.GetMarking(Pokemon, 5)"
-                         CheckedChanged="@((checkedValue) => AppService.SetMarking(Pokemon, 5, checkedValue))" />
-        </MudItem>
-
-    </MudGrid>
+    <MarkingsContainer Pokemon="@Pokemon" />
 }

@@ -34,12 +34,6 @@ public interface IAppService
 
     ComboItem GetMoveComboItem(int moveId);
 
-    bool GetMarking(PKM? pokemon, int index);
-
-    void SetMarking(PKM? pokemon, int index, bool value);
-
-    void ToggleMarking(PKM? pokemon, int index);
-
     public void SavePokemon(PKM? SelectedPokemon);
 
     string GetCleanFileName(PKM pkm);

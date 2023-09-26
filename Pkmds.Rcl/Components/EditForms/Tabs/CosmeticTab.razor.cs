@@ -5,8 +5,6 @@ public partial class CosmeticTab : IDisposable
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    private int ColSpan => Pokemon?.MarkingCount == 6 ? 4 : 6;
-
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
 

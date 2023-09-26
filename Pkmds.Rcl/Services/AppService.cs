@@ -95,15 +95,6 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
         .FirstOrDefault(metLocation => metLocation.Value == moveId) ?? default!;
 
-    public bool GetMarking(PKM? pokemon, int index) =>
-        pokemon is not null && index <= pokemon.MarkingCount - 1 && pokemon.GetMarking(index) == 1;
-
-    public void SetMarking(PKM? pokemon, int index, bool value) =>
-        pokemon?.SetMarking(index, value ? 1 : 0);
-
-    public void ToggleMarking(PKM? pokemon, int index) =>
-        pokemon?.ToggleMarking(index);
-
     public void SavePokemon(PKM? pokemon)
     {
         if (AppState.SaveFile is null || pokemon is null)
