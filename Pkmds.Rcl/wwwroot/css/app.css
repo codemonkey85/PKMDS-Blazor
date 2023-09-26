@@ -7,7 +7,6 @@ pkm-sprite {
 .slot-fill :hover {
     transform-origin: center;
     animation: bounce 500ms linear infinite;
-    border-radius: 6px;
 }
 
 .party-grid {
