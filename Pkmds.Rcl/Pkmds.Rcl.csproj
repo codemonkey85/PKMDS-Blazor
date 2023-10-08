@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -11,14 +11,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.0" />
+		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.11" />
-		<PackageReference Include="MudBlazor" Version="6.10.0" />
+		<PackageReference Include="MudBlazor" Version="6.11.0" />
 		<PackageReference Include="PKHeX.Core" Version="23.9.25" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="wwwroot\js\" />
 	</ItemGroup>
 
 </Project>
