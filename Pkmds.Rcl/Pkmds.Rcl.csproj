@@ -11,10 +11,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.11" />
+		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.12" />
 		<PackageReference Include="MudBlazor" Version="6.11.0" />
-		<PackageReference Include="PKHeX.Core" Version="23.9.25" />
+		<PackageReference Include="PKHeX.Core" Version="23.10.11" />
 	</ItemGroup>
 
 </Project>
