@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -12,7 +13,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.13" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0-rc.2.23480.2" />
 		<PackageReference Include="MudBlazor" Version="6.11.0" />
 		<PackageReference Include="PKHeX.Core" Version="23.10.11" />
 	</ItemGroup>
