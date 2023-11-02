@@ -1,8 +1,0 @@
-<Project>
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<Langversion>preview</Langversion>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
-</Project>
