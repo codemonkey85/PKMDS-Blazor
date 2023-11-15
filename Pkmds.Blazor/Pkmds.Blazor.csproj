@@ -4,7 +4,6 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<LangVersion>preview</LangVersion>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 	</PropertyGroup>
 
@@ -14,16 +13,10 @@
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'http' ">
 		<ExternalConsole>true</ExternalConsole>
 	</PropertyGroup>
-	<ItemGroup>
-		<Compile Remove="TestFiles\**" />
-		<Content Remove="TestFiles\**" />
-		<EmbeddedResource Remove="TestFiles\**" />
-		<None Remove="TestFiles\**" />
-	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0-rc.2.23480.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0-rc.2.23480.2" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
