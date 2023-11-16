@@ -15,7 +15,7 @@ public partial class BoxGrid : IDisposable
         AppService.SetSelectedBoxPokemon(pokemon, boxNumber, slotNumber);
 
     private string GetStyle(int slotNumber) => AppState.SelectedBoxSlotNumber == slotNumber
-        ? "border: 4px solid orange; border-radius: 6px;"
+        ? Constants.SelectedSlotStyle
         : string.Empty;
 
     protected override void OnInitialized() =>

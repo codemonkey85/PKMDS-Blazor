@@ -6,7 +6,7 @@ public partial class PartyGrid
         AppService.SetSelectedPartyPokemon(pokemon, slotNumber);
 
     private string GetStyle(int slotNumber) => AppState.SelectedPartySlotNumber == slotNumber
-        ? "border: 4px solid orange; border-radius: 6px;"
+        ? Constants.SelectedSlotStyle
         : string.Empty;
 
     protected override void OnInitialized()
