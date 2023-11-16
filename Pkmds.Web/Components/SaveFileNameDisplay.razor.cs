@@ -43,7 +43,7 @@ public partial class SaveFileNameDisplay
         GE => "Let's Go Eevee",
         SW => "Sword",
         SH => "Shield",
-        PLA => "Legends Arceus",
+        PLA => "Legends: Arceus",
         BD => "Brilliant Diamond",
         SP => "Shining Pearl",
         SL => "Scarlet",
