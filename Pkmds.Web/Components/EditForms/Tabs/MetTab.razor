@@ -51,7 +51,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Met_Location))"
                      @bind-Value:set="@((metLocation) => Pokemon.Met_Location = metLocation.Value)"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
-                     ToStringFunc="@((metLocation) => metLocation.Text)" />
+                     ToStringFunc="@((metLocation) => metLocation?.Text)" />
 
     <MudPaper Elevation="0"
               Outlined="@true"
@@ -79,7 +79,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Egg_Location))"
                      @bind-Value:set="@((metLocation) => Pokemon.Egg_Location = metLocation.Value)"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
-                     ToStringFunc="@((metLocation) => metLocation.Text)" />
+                     ToStringFunc="@((metLocation) => metLocation?.Text)" />
 
     <MudPaper Elevation="0"
               Outlined="@true"

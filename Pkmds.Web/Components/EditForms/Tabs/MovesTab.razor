@@ -14,7 +14,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move1))"
                      @bind-Value:set="@((move) => { Pokemon.Move1 = (ushort)move.Value; RefreshService.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
-                     ToStringFunc="@((move) => move.Text)" />
+                     ToStringFunc="@((move) => move?.Text)" />
 
     <MudAutocomplete T="ComboItem"
                      Label="Move 2"
@@ -22,7 +22,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move2))"
                      @bind-Value:set="@((move) => { Pokemon.Move2 = (ushort)move.Value; RefreshService.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
-                     ToStringFunc="@((move) => move.Text)" />
+                     ToStringFunc="@((move) => move?.Text)" />
 
     <MudAutocomplete T="ComboItem"
                      Label="Move 3"
@@ -30,7 +30,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move3))"
                      @bind-Value:set="@((move) => { Pokemon.Move3 = (ushort)move.Value; RefreshService.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
-                     ToStringFunc="@((move) => move.Text)" />
+                     ToStringFunc="@((move) => move?.Text)" />
 
     <MudAutocomplete T="ComboItem"
                      Label="Move 4"
@@ -38,5 +38,5 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move4))"
                      @bind-Value:set="@((move) => { Pokemon.Move4 = (ushort)move.Value; RefreshService.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
-                     ToStringFunc="@((move) => move.Text)" />
+                     ToStringFunc="@((move) => move?.Text)" />
 }

@@ -23,7 +23,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
                      @bind-Value:set="@((species) => { Pokemon.Species = (ushort)species.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchPokemonNames(searchString)))"
-                     ToStringFunc="@((species) => species.Text)" />
+                     ToStringFunc="@((species) => species?.Text)" />
 
     @TypeSummary(Pokemon.GetGenerationTypes())
 
@@ -131,7 +131,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:get="@(AppService.GetItemComboItem(Pokemon.HeldItem))"
                      @bind-Value:set="@((item) => { Pokemon.HeldItem = item.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchItemNames(searchString)))"
-                     ToStringFunc="@((item) => item.Text)">
+                     ToStringFunc="@((item) => item?.Text)">
         <ItemTemplate Context="item">
             <MudStack Row="@true">
                 @if (item.Value != 0)
@@ -159,7 +159,7 @@ EntityContext.MaxInvalid &&
                          @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
                          @bind-Value:set="@((ability) => Pokemon.Ability = ability.Value)"
                          SearchFunc="@((searchString) => Task.FromResult(AppService.SearchAbilityNames(searchString)))"
-                         ToStringFunc="@((ability) => ability.Text)" />
+                         ToStringFunc="@((ability) => ability?.Text)" />
     }
 
     @if (Pokemon.Generation >= 4)
