@@ -8,7 +8,15 @@ public partial class BoxGrid : IDisposable
     [Parameter, EditorRequired]
     public int BoxNumber { get; set; }
 
-    private string BoxGridClass => AppState.SaveFile?.BoxSlotCount == 20 ? "box-grid-20" : "box-grid-30";
+    private string BoxGridClass =>
+        AppState.SaveFile?.BoxSlotCount == 20 ? "box-grid-20" : "box-grid-30";
+
+    private void SetSelectedPokemon(PKM? pokemon, int boxNumber, int slotNumber) =>
+        AppService.SetSelectedBoxPokemon(pokemon, boxNumber, slotNumber);
+
+    private string GetStyle(int slotNumber) => AppState.SelectedBoxSlotNumber == slotNumber
+        ? "border: 4px solid orange; border-radius: 6px;"
+        : string.Empty;
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;

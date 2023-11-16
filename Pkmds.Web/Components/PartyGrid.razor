@@ -16,8 +16,10 @@
                 var slotNum = i;
                 PKM? pkm = i < AppState.SaveFile.PartyCount ? AppState.SaveFile.PartyData[slotNum] : null;
                 <MudItem xs="2">
-                    <PartySlotComponent Pokemon="@pkm"
-                                        SlotNumber="@slotNum" />
+                    <PokemonSlotComponent Pokemon="@pkm"
+                                          SlotNumber="@slotNum"
+                                          OnSlotClick="@(() => SetSelectedPokemon(pkm, slotNum))"
+                                          GetStyleFunction="@(() => GetStyle(slotNum))" />
                 </MudItem>
             }
         </MudGrid>

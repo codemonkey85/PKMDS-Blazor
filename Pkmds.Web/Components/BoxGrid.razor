@@ -10,8 +10,9 @@
 
             <BoxSlotComponent BoxNumber="@BoxNumber"
                               SlotNumber="slotNum"
-                              Pokemon="@pkm" />
-
+                              Pokemon="@pkm"
+                              OnSlotClick="@(() => SetSelectedPokemon(pkm, BoxNumber, slotNum))"
+                              GetStyleFunction="@(() => GetStyle(slotNum))" />
         }
     </div>
 }
