@@ -30,8 +30,5 @@ public partial class MarkingComponent
         _ => string.Empty,
     }}";
 
-    private void Toggle()
-    {
-        Pokemon?.ToggleMarking((int)Shape);
-    }
+    private void Toggle() => Pokemon?.ToggleMarking((int)Shape);
 }
