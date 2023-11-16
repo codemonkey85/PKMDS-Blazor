@@ -1,5 +1,56 @@
-﻿<h3>OtMiscTab</h3>
+﻿@inherits BasePkmdsComponent
 
-@code {
+@if (Pokemon is not null &&
+AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+saveFileEntityContext is not
+EntityContext.None or
+EntityContext.SplitInvalid or
+EntityContext.MaxInvalid &&
+((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
+{
+    <MudNumericField Label="TID"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="Pokemon.TID16"
+                     @bind-Value:after="@(RefreshService.Refresh)"
+                     Format="@TrainerIDExtensions.TID16"
+                     For="@(() => Pokemon.TID16)" />
 
+    <MudNumericField Label="SID"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="Pokemon.SID16"
+                     @bind-Value:after="@(RefreshService.Refresh)"
+                     Format="@TrainerIDExtensions.SID16"
+                     For="@(() => Pokemon.SID16)" />
+
+    <MudTextField Label="OT"
+                  Variant="@Variant.Outlined"
+                  @bind-Value="Pokemon.OT_Name"
+                  For="@(() => Pokemon.OT_Name)" />
+
+    <MudSelect Label="OT Gender"
+               Variant="@Variant.Outlined"
+               @bind-Value="Pokemon.OT_Gender"
+               For="@(() => Pokemon.OT_Gender)">
+
+        <MudSelectItem Value="@((int)Gender.Male)">
+            <MudStack Row="@true">
+                <MudIcon Icon="@Icons.Material.Filled.Male"
+                         Style="@($"color: {Colors.Blue.Default};")" />
+                <MudText Style="@($"color: {Colors.Blue.Default};")">
+                    @GameInfo.GenderSymbolASCII[(int)Gender.Male]
+                </MudText>
+            </MudStack>
+        </MudSelectItem>
+
+        <MudSelectItem Value="@((int)Gender.Female)">
+            <MudStack Row="@true">
+                <MudIcon Icon="@Icons.Material.Filled.Female"
+                         Style="@($"color: {Colors.Red.Default};")" />
+                <MudText Style="@($"color: {Colors.Red.Default};")">
+                    @GameInfo.GenderSymbolASCII[(int)Gender.Female]
+                </MudText>
+            </MudStack>
+        </MudSelectItem>
+
+    </MudSelect>
 }

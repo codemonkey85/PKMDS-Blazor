@@ -1,5 +1,25 @@
-﻿<h3>MarkingsContainer</h3>
+﻿@if (Pokemon is { Generation: >= 3 })
+{
+    <div class="@ContainerClass">
+        <MarkingComponent Pokemon="@Pokemon"
+                          Shape="MarkingsHelper.Markings.Circle" />
 
-@code {
+        <MarkingComponent Pokemon="@Pokemon"
+                          Shape="MarkingsHelper.Markings.Triangle" />
 
+        <MarkingComponent Pokemon="@Pokemon"
+                          Shape="MarkingsHelper.Markings.Square" />
+
+        <MarkingComponent Pokemon="@Pokemon"
+                          Shape="MarkingsHelper.Markings.Heart" />
+
+        @if (Pokemon.Generation >= 4)
+        {
+            <MarkingComponent Pokemon="@Pokemon"
+                              Shape="MarkingsHelper.Markings.Star" />
+
+            <MarkingComponent Pokemon="@Pokemon"
+                              Shape="MarkingsHelper.Markings.Diamond" />
+        }
+    </div>
 }

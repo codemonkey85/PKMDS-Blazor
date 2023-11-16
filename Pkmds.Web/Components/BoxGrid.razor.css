@@ -1,0 +1,15 @@
+﻿.box-grid-30 {
+    width: 480px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(6, 80px);
+    grid-template-rows: repeat(5, 80px);
+}
+
+.box-grid-20 {
+    width: 320px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    grid-template-rows: repeat(5, 80px);
+}

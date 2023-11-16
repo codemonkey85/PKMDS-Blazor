@@ -1,5 +1,12 @@
-﻿<h3>BoxComponent</h3>
+﻿@inherits BasePkmdsComponent
 
-@code {
-
+@if (BoxEdit is not null)
+{
+    <div>
+        <MudText Typo="Typo.h5">
+            @BoxEdit.BoxName
+        </MudText>
+        <BoxGrid BoxEdit="@BoxEdit"
+                 BoxNumber="@BoxNumber" />
+    </div>
 }

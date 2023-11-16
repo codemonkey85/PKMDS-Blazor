@@ -1,0 +1,25 @@
+﻿.marking {
+    max-width: 68.63px;
+    font-size: 3.0rem;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+}
+
+.gray-mark {
+    color: gray;
+}
+
+.black-mark {
+    color: black;
+}
+
+.blue-mark {
+    color: blue;
+}
+
+.red-mark {
+    color: red;
+}

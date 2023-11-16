@@ -1,5 +1,97 @@
-﻿<h3>MetTab</h3>
+﻿@inherits BasePkmdsComponent
 
-@code {
+@if (Pokemon is not null &&
+AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+saveFileEntityContext is not
+EntityContext.None or
+EntityContext.SplitInvalid or
+EntityContext.MaxInvalid &&
+((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
+{
+    <MudCheckBox Label="Nicknamed"
+                 @bind-Checked="@Pokemon.IsNicknamed"
+                 @bind-Checked:after="@RefreshService.Refresh"
+                 For="@(() => Pokemon.IsNicknamed)" />
 
+    <MudSelect Label="Origin Game"
+               Variant="@Variant.Outlined"
+               @bind-Value="@Pokemon.Version"
+               ToStringFunc="@((version) => GameInfo.GetVersionName((GameVersion)version))"
+               For="@(() => Pokemon.Version)">
+        @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
+        {
+            <MudSelectItem Value="@((int)(byte)version)" />
+        }
+    </MudSelect>
+
+    <MudSelect Label="Ball"
+               Variant="@Variant.Outlined"
+               @bind-Value="@Pokemon.Ball"
+               For="@(() => Pokemon.Ball)">
+        @foreach (ComboItem ball in GameInfo.BallDataSource)
+        {
+            <MudSelectItem Value="@ball.Value">
+                <MudStack Row="@true">
+                    <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
+                              ObjectFit="@ObjectFit.Contain"
+                              ObjectPosition="@ObjectPosition.Center"
+                              Width="22"
+                              Height="22" />
+                    <MudText>
+                        @ball.Text
+                </MudText>
+            </MudStack>
+        </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudAutocomplete T="ComboItem"
+                     Label="Met Location"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Met_Location))"
+                     @bind-Value:set="@((metLocation) => Pokemon.Met_Location = metLocation.Value)"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
+                     ToStringFunc="@((metLocation) => metLocation.Text)" />
+
+    <MudPaper Elevation="0"
+              Outlined="@true"
+              Class="my-2">
+        <MudStack>
+            <MudInputLabel ForId="metDate">
+                Met Date
+            </MudInputLabel>
+            <InputDate @bind-Value="@Pokemon.MetDate"
+                       style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface);"
+                       id="metDate"
+                       DisplayName="Met Date" />
+        </MudStack>
+    </MudPaper>
+
+    @*
+        <MudCheckBox Label="Met as Egg"
+        @bind-Checked="@Pokemon.WasEgg"
+        @bind-Checked:after="@RefreshService.Refresh"
+        For="@(() => Pokemon.WasEgg)" />
+    *@
+    <MudAutocomplete T="ComboItem"
+                     Label="Egg Location"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Egg_Location))"
+                     @bind-Value:set="@((metLocation) => Pokemon.Egg_Location = metLocation.Value)"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
+                     ToStringFunc="@((metLocation) => metLocation.Text)" />
+
+    <MudPaper Elevation="0"
+              Outlined="@true"
+              Class="my-2">
+        <MudStack>
+            <MudInputLabel ForId="eggDate">
+                Egg Date
+            </MudInputLabel>
+            <InputDate @bind-Value="@Pokemon.EggMetDate"
+                       style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface);"
+                       id="eggDate"
+                       DisplayName="Egg Date" />
+        </MudStack>
+    </MudPaper>
 }

@@ -1,5 +1,41 @@
-﻿<h3>PokemonStorageComponent</h3>
+﻿@inherits BasePkmdsComponent
 
-@code {
+@if (AppState.SaveFile is not null)
+{
+    <PartyGrid />
 
+    <div class="controls-container">
+        <MudIconButton OnClick="@NavigateLeft"
+                       Title="Navigate Left"
+                       ButtonType="@ButtonType.Button"
+                       Icon="@Icons.Material.Filled.ArrowLeft"
+                       Variant="@Variant.Filled"
+                       Class="navigate-button">
+        </MudIconButton>
+
+        <div class="select-container">
+            <MudSelect T="@int"
+                       @bind-Value="@AppState.SaveFile.CurrentBox"
+                       @bind-Value:after="@AppService.ClearSelection"
+                       Class="box-select">
+                @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
+                {
+                    var boxName = AppState.SaveFile.GetBoxName(boxId);
+                    <MudSelectItem Value="@boxId">
+                        @boxName
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+
+        <MudIconButton OnClick="@NavigateRight"
+                       Title="Navigate Right"
+                       ButtonType="@ButtonType.Button"
+                       Icon="@Icons.Material.Filled.ArrowRight"
+                       Variant="@Variant.Filled"
+                       Class="navigate-button">
+        </MudIconButton>
+    </div>
+
+    <BoxComponent BoxNumber="@AppState.SaveFile.CurrentBox" />
 }

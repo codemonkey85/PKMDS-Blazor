@@ -1,5 +1,42 @@
-﻿<h3>MovesTab</h3>
+﻿@inherits BasePkmdsComponent
 
-@code {
+@if (Pokemon is not null &&
+AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+saveFileEntityContext is not
+EntityContext.None or
+EntityContext.SplitInvalid or
+EntityContext.MaxInvalid &&
+((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
+{
+    <MudAutocomplete T="ComboItem"
+                     Label="Move 1"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move1))"
+                     @bind-Value:set="@((move) => { Pokemon.Move1 = (ushort)move.Value; RefreshService.Refresh(); })"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
+                     ToStringFunc="@((move) => move.Text)" />
 
+    <MudAutocomplete T="ComboItem"
+                     Label="Move 2"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move2))"
+                     @bind-Value:set="@((move) => { Pokemon.Move2 = (ushort)move.Value; RefreshService.Refresh(); })"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
+                     ToStringFunc="@((move) => move.Text)" />
+
+    <MudAutocomplete T="ComboItem"
+                     Label="Move 3"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move3))"
+                     @bind-Value:set="@((move) => { Pokemon.Move3 = (ushort)move.Value; RefreshService.Refresh(); })"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
+                     ToStringFunc="@((move) => move.Text)" />
+
+    <MudAutocomplete T="ComboItem"
+                     Label="Move 4"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move4))"
+                     @bind-Value:set="@((move) => { Pokemon.Move4 = (ushort)move.Value; RefreshService.Refresh(); })"
+                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
+                     ToStringFunc="@((move) => move.Text)" />
 }

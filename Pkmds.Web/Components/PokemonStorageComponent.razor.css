@@ -1,0 +1,23 @@
+﻿.select-container {
+    width: 300px;
+    margin: 6px;
+    padding: 6px;
+}
+
+.controls-container {
+    display: flex;
+    margin: 5px;
+    padding: 5px;
+    align-items: center;
+    height: 50px;
+}
+
+.box-select {
+    margin: 6px;
+    padding: 6px;
+}
+
+.navigate-button {
+    margin: 6px;
+    padding: 6px;
+}

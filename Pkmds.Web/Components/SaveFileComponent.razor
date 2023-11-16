@@ -1,5 +1,46 @@
-﻿<h3>SaveFileComponent</h3>
+﻿@inherits BasePkmdsComponent
 
-@code {
+@if (AppState.SaveFile is null)
+{
+    @if (AppState.ShowProgressIndicator)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle"
+                     Width="210px"
+                     Height="50px" />
+        <br />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle"
+                     Width="210px"
+                     Height="50px" />
+        <br />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle"
+                     Width="480px"
+                     Height="350px" />
+    }
+}
+else
+{
+    <PageTitle>
+        PKMDS Save Editor - <SaveFileNameDisplay />
+    </PageTitle>
 
+    <MudText Typo="Typo.h5">
+        <SaveFileNameDisplay />
+    </MudText>
+
+    <MudGrid Spacing="1"
+             Justify="@Justify.FlexStart">
+        <MudItem xs="12"
+                 lg="6"
+                 Style="max-width: 480px;">
+            <MudPaper Elevation="0">
+                <PokemonStorageComponent />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12"
+                 lg="6">
+            <MudPaper Elevation="0">
+                <PokemonEditForm Pokemon="@AppService.EditFormPokemon" />
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 }
