@@ -10,13 +10,17 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="Pkmds.Web.styles.css" />
     <link href="icon-512.png" type="image/png" rel="icon" />
-    <HeadOutlet />
+    <HeadOutlet @rendermode="@globalRenderMode" />
 </head>
 
 <body>
-    <Routes />
+    <Routes @rendermode="@globalRenderMode" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </body>
 
 </html>
+
+@code {
+    IComponentRenderMode globalRenderMode = InteractiveServer;
+}
