@@ -1,0 +1,11 @@
+﻿@inherits BasePkmdsComponent
+@implements IDisposable
+
+<MudPaper Elevation="3"
+          @onclick="HandleClick"
+          Width="68px"
+          Height="68px"
+          Class="@SpriteHelper.GetSpriteCssClass(Pokemon)"
+          Style="@GetStyle()">
+    <img class="pkm-sprite" src="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)" />
+</MudPaper>

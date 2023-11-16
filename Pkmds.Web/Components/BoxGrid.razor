@@ -1,0 +1,18 @@
+﻿@inherits BasePkmdsComponent
+
+@if (BoxEdit is not null)
+{
+    <div class="@BoxGridClass">
+        @for (var i = 0; i < (AppState.SaveFile?.BoxSlotCount ?? 0); i++)
+        {
+            var slotNum = i;
+            var pkm = BoxEdit[slotNum];
+
+            <BoxSlotComponent BoxNumber="@BoxNumber"
+                              SlotNumber="slotNum"
+                              Pokemon="@pkm"
+                              OnSlotClick="@(() => SetSelectedPokemon(pkm, BoxNumber, slotNum))"
+                              GetStyleFunction="@(() => GetStyle(slotNum))" />
+        }
+    </div>
+}

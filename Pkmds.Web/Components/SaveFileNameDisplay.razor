@@ -1,0 +1,23 @@
+﻿@inherits BasePkmdsComponent
+@implements IDisposable
+
+@if (AppState.SaveFile is { Gender: 0 or 1 } saveFile)
+{
+    var gender = saveFile.Gender;
+    @Display(saveFile, gender)
+}
+
+@code {
+    private static RenderFragment Display(SaveFile saveFile, int gender) =>
+    @<MudStack Row="@true" Spacing="1">
+        <span>@saveFile.OT </span>
+        @GenderDisplayIcon(gender)
+        <span>(@saveFile.DisplayTID</span>
+        <span>, @FriendlyGameName(saveFile.Version)</span>
+        <span>, @saveFile.PlayTimeString)</span>
+    </MudStack>;
+
+    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
+
+    public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
+}
