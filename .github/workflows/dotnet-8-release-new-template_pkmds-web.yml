@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - pkmds-web
 on:
   push:
     branches:
-      - dotnet-8-release-new-template
+      - main
   workflow_dispatch:
 
 jobs:
