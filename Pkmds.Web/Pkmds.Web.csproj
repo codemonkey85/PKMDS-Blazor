@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MudBlazor" Version="6.11.1" />
+		<PackageReference Include="MudBlazor" Version="6.11.2" />
 		<PackageReference Include="PKHeX.Core" Version="23.10.12" />
 		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2" />
 	</ItemGroup>

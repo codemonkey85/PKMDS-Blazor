@@ -13,7 +13,7 @@
                        OnClick="@DrawerToggle" />
         PKMDS Save Editor
         <MudSpacer />
-        <MudSwitch @bind-Checked="@isDarkMode"
+        <MudSwitch @bind-Value="@isDarkMode"
                    Color="@Color.Primary"
                    Label="@(isDarkMode ? "Dark" : "Light")" />
     </MudAppBar>
