@@ -33,7 +33,7 @@ EntityContext.MaxInvalid &&
     }
 
     <MudCheckBox Label="Is Nicknamed"
-                 @bind-Checked="@Pokemon.IsNicknamed"
+                 @bind-Value="@Pokemon.IsNicknamed"
                  For="@(() => Pokemon.IsNicknamed)" />
 
     <MudTextField Label="Nickname"
@@ -189,28 +189,28 @@ EntityContext.MaxInvalid &&
         <MudStack Row="@true">
 
             <MudCheckBox Label="Is Egg"
-                         @bind-Checked="@Pokemon.IsEgg"
-                         @bind-Checked:after="@RefreshService.Refresh"
+                         @bind-Value="@Pokemon.IsEgg"
+                         @bind-Value:after="@RefreshService.Refresh"
                          For="@(() => Pokemon.IsEgg)" />
 
             <MudCheckBox Label="Infected"
-                         @bind-Checked="@Pokemon.PKRS_Infected"
-                         @bind-Checked:after="@RefreshService.Refresh"
+                         @bind-Value="@Pokemon.PKRS_Infected"
+                         @bind-Value:after="@RefreshService.Refresh"
                          For="@(() => Pokemon.PKRS_Infected)" />
 
             <MudCheckBox Label="Cured"
-                         @bind-Checked="@Pokemon.PKRS_Cured"
-                         @bind-Checked:after="@RefreshService.Refresh"
+                         @bind-Value="@Pokemon.PKRS_Cured"
+                         @bind-Value:after="@RefreshService.Refresh"
                          For="@(() => Pokemon.PKRS_Cured)" />
             @*
     <MudCheckBox Label="N's Sparkle"
-    @bind-Checked="@Pokemon"
-    @bind-Checked:after="@RefreshService.Refresh"
+    @bind-Value="@Pokemon"
+    @bind-Value:after="@RefreshService.Refresh"
     For="@(() => Pokemon.PKRS_Cured)" />
     *@
 
             <MudCheckBox Label="Shiny"
-                         Checked="@Pokemon.IsShiny"
+                         Value="@Pokemon.IsShiny"
                          ReadOnly="@true"
                          For="@(() => Pokemon.IsShiny)" />
 

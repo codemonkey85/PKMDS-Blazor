@@ -6,6 +6,10 @@ public interface IAppService
 
     PKM? EditFormPokemon { get; set; }
 
+    bool IsDrawerOpen { get; set; }
+
+    void ToggleDrawer();
+
     void ClearSelection();
 
     void DeletePokemon();

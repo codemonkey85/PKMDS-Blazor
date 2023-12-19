@@ -9,8 +9,8 @@ EntityContext.MaxInvalid &&
 ((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
     <MudCheckBox Label="Nicknamed"
-                 @bind-Checked="@Pokemon.IsNicknamed"
-                 @bind-Checked:after="@RefreshService.Refresh"
+                 @bind-Value="@Pokemon.IsNicknamed"
+                 @bind-Value:after="@RefreshService.Refresh"
                  For="@(() => Pokemon.IsNicknamed)" />
 
     <MudSelect Label="Origin Game"
@@ -69,8 +69,8 @@ EntityContext.MaxInvalid &&
 
     @*
         <MudCheckBox Label="Met as Egg"
-        @bind-Checked="@Pokemon.WasEgg"
-        @bind-Checked:after="@RefreshService.Refresh"
+        @bind-Value="@Pokemon.WasEgg"
+        @bind-Value:after="@RefreshService.Refresh"
         For="@(() => Pokemon.WasEgg)" />
     *@
     <MudAutocomplete T="ComboItem"

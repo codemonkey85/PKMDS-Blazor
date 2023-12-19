@@ -6,6 +6,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     private const string defaultPkmFileName = "pkm.bin";
 
     private PKM? editFormPokemon;
+    private bool isDrawerOpen;
 
     public string[] NatureStatShortNames => new[] { "Atk", "Def", "Spe", "SpA", "SpD" };
 
@@ -18,6 +19,18 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
             LoadPokemonStats(editFormPokemon);
         }
     }
+
+    public bool IsDrawerOpen
+    {
+        get => isDrawerOpen;
+        set
+        {
+            isDrawerOpen = value;
+            RefreshService.Refresh();
+        }
+    }
+
+    public void ToggleDrawer() => IsDrawerOpen = !IsDrawerOpen;
 
     public void ClearSelection()
     {
