@@ -5777,6 +5777,1570 @@
       "url": "sprites\/a\/a_unknown.png"
     },
     {
+      "hash": "sha256-qiNu4+DINOJzlvTho1ThazzjMFbUIQsBcbdHelgYCrE=",
+      "url": "sprites\/ai\/aitem_1.png"
+    },
+    {
+      "hash": "sha256-uIkGUSJHWmgSJJxhYUXnQO6FTdRlW2zudbbYz\/JNQJ8=",
+      "url": "sprites\/ai\/aitem_10.png"
+    },
+    {
+      "hash": "sha256-hz+BLmuZ8Z5a5RVkwGjn3nsBCx0TMaHBYJv8hsZ7k18=",
+      "url": "sprites\/ai\/aitem_106.png"
+    },
+    {
+      "hash": "sha256-UEmjF8IGAL0HSFyaGUstb5z5ni8qXxx+Imgs4UsLlPI=",
+      "url": "sprites\/ai\/aitem_107.png"
+    },
+    {
+      "hash": "sha256-ANtmmF2\/2dH7HNbiVpocD5izRWK3JuDikVyUHyRv7LY=",
+      "url": "sprites\/ai\/aitem_108.png"
+    },
+    {
+      "hash": "sha256-yrdjUfixuVZy\/hkiEBjlveNdwsi69Ax1Cu1o26sprzo=",
+      "url": "sprites\/ai\/aitem_109.png"
+    },
+    {
+      "hash": "sha256-HRnVRU\/uydhoSKdXJG33RypJ2i05BGw10ohRsOjLGQo=",
+      "url": "sprites\/ai\/aitem_11.png"
+    },
+    {
+      "hash": "sha256-iqQiJsVxob9QnrPgkP7QyfZ5WNbq36lkKn3heIylQXs=",
+      "url": "sprites\/ai\/aitem_110.png"
+    },
+    {
+      "hash": "sha256-VwT8zgXW22cvFy56B1Ne0C7qdx3srAekkvR23yduh\/M=",
+      "url": "sprites\/ai\/aitem_1103.png"
+    },
+    {
+      "hash": "sha256-RRGMhq0I4wexIOiD8Fd+XDv1KnHZ+f1Cxu0ddyeZe1E=",
+      "url": "sprites\/ai\/aitem_1104.png"
+    },
+    {
+      "hash": "sha256-TZhNKHQsrp92q0DCIxTK\/uxLkHw6BH8cb+g6F5tONtQ=",
+      "url": "sprites\/ai\/aitem_1109.png"
+    },
+    {
+      "hash": "sha256-4uZhSq7KEJMOPB6TIn0LN3jPfQ7D4ueWxomx7l3tfkU=",
+      "url": "sprites\/ai\/aitem_111.png"
+    },
+    {
+      "hash": "sha256-fTLRuM4R0g7lIVkqrd1pnOJHvRDt5Jfcq9WQozvKTt8=",
+      "url": "sprites\/ai\/aitem_1110.png"
+    },
+    {
+      "hash": "sha256-DVM5Ag8+z9Cbi8h7qMlNArzQfJf86seZcXxkflo0ey8=",
+      "url": "sprites\/ai\/aitem_1111.png"
+    },
+    {
+      "hash": "sha256-2zoqpp1IM6ev0hg6DT0d2ZgnukdV8jec0Bp5LxU+fBc=",
+      "url": "sprites\/ai\/aitem_1112.png"
+    },
+    {
+      "hash": "sha256-981lQEkrIqQ3SYZwR4s+7JCCw+WCEkHp8OGJeak3LQE=",
+      "url": "sprites\/ai\/aitem_1113.png"
+    },
+    {
+      "hash": "sha256-UstQ5KOw3go24q5kZJxHC7ZAtjhLkSAXgQGKnrJ8HIw=",
+      "url": "sprites\/ai\/aitem_1114.png"
+    },
+    {
+      "hash": "sha256-yiRHCR6ic2Bht\/UX1cgbZFkpCvbNQR4dXacLaijum+4=",
+      "url": "sprites\/ai\/aitem_1115.png"
+    },
+    {
+      "hash": "sha256-6z6lyhrrA27p\/TcZxnSbTiL9C+d44LC4hXpbAULCmdI=",
+      "url": "sprites\/ai\/aitem_1116.png"
+    },
+    {
+      "hash": "sha256-3+t8xYYST6W9diXs8lsE\/b21K\/SDVJbiHvUL9vHqz1Y=",
+      "url": "sprites\/ai\/aitem_1117.png"
+    },
+    {
+      "hash": "sha256-r\/gllUke7tpLtOKJfpY7ZoJw1v03ln0L8YOesGQTSNI=",
+      "url": "sprites\/ai\/aitem_1118.png"
+    },
+    {
+      "hash": "sha256-aafvDq+4wWmvMFHuBacGrzDhUFdeosI+e392QQpjEbw=",
+      "url": "sprites\/ai\/aitem_1119.png"
+    },
+    {
+      "hash": "sha256-VDlHKDWPzJhSkrzIYdSNtEbBk4DcZzlNf+0z+C7HFQ8=",
+      "url": "sprites\/ai\/aitem_112.png"
+    },
+    {
+      "hash": "sha256-OnoVfWd72GZvYUZf9qSXlWZtrCpZGF29uA0Jl55UwE4=",
+      "url": "sprites\/ai\/aitem_1120.png"
+    },
+    {
+      "hash": "sha256-hJbW2oNPPIXlbsFZyZ\/u6c5AZVboBkn\/S6oqUnWkNcQ=",
+      "url": "sprites\/ai\/aitem_1121.png"
+    },
+    {
+      "hash": "sha256-PDD9AnfSbkJp88p3TbS0hNPmTMcPdGWN\/jP8mAZUfXU=",
+      "url": "sprites\/ai\/aitem_1122.png"
+    },
+    {
+      "hash": "sha256-ILDIuKYWLCh3jGcFmMuopIa+FwAf+KGL3vM+Hr2azZ8=",
+      "url": "sprites\/ai\/aitem_1123.png"
+    },
+    {
+      "hash": "sha256-yYxob0sCNwaSMavzKtykJvD8NRBiSnP2Ql2TC6m4aKQ=",
+      "url": "sprites\/ai\/aitem_1124.png"
+    },
+    {
+      "hash": "sha256-pXiHFP\/1Dg6nn\/ajH+zoR1AlOKxWlNeRrpy85foPmdM=",
+      "url": "sprites\/ai\/aitem_1125.png"
+    },
+    {
+      "hash": "sha256-kXR2s3wK5hsU+w98Pgb9A\/0R1kOMtaPA83H5Kk+ZQWA=",
+      "url": "sprites\/ai\/aitem_1126.png"
+    },
+    {
+      "hash": "sha256-BoN7zHTsC4jWY\/7rN2zIRm9Zz0EuRQqrz\/b\/kknl\/88=",
+      "url": "sprites\/ai\/aitem_1127.png"
+    },
+    {
+      "hash": "sha256-yulZAvctd0f\/\/3UnMUTFmTSfkWsz3qrnEI4Oex688yY=",
+      "url": "sprites\/ai\/aitem_1128.png"
+    },
+    {
+      "hash": "sha256-E+zsn7LEo+Ebpvpn8+0+5BfuWxkKnESdizA+avpZRUI=",
+      "url": "sprites\/ai\/aitem_12.png"
+    },
+    {
+      "hash": "sha256-dqjUBaxHEv3gOufv7cmRN6YDGs6RpJUzOK12nAR4Soo=",
+      "url": "sprites\/ai\/aitem_1231.png"
+    },
+    {
+      "hash": "sha256-dqjUBaxHEv3gOufv7cmRN6YDGs6RpJUzOK12nAR4Soo=",
+      "url": "sprites\/ai\/aitem_1232.png"
+    },
+    {
+      "hash": "sha256-dqjUBaxHEv3gOufv7cmRN6YDGs6RpJUzOK12nAR4Soo=",
+      "url": "sprites\/ai\/aitem_1233.png"
+    },
+    {
+      "hash": "sha256-dqjUBaxHEv3gOufv7cmRN6YDGs6RpJUzOK12nAR4Soo=",
+      "url": "sprites\/ai\/aitem_1234.png"
+    },
+    {
+      "hash": "sha256-Pl7kZXWiHm8rjnC6a6DMZb\/R1qBxxJWqmrNGQDKuICg=",
+      "url": "sprites\/ai\/aitem_1235.png"
+    },
+    {
+      "hash": "sha256-Pl7kZXWiHm8rjnC6a6DMZb\/R1qBxxJWqmrNGQDKuICg=",
+      "url": "sprites\/ai\/aitem_1236.png"
+    },
+    {
+      "hash": "sha256-Pl7kZXWiHm8rjnC6a6DMZb\/R1qBxxJWqmrNGQDKuICg=",
+      "url": "sprites\/ai\/aitem_1237.png"
+    },
+    {
+      "hash": "sha256-Pl7kZXWiHm8rjnC6a6DMZb\/R1qBxxJWqmrNGQDKuICg=",
+      "url": "sprites\/ai\/aitem_1238.png"
+    },
+    {
+      "hash": "sha256-Rh2Kcy8usacHL1TLkCgfMi9vl9FhiojER1nMCfdXrmA=",
+      "url": "sprites\/ai\/aitem_1239.png"
+    },
+    {
+      "hash": "sha256-Rh2Kcy8usacHL1TLkCgfMi9vl9FhiojER1nMCfdXrmA=",
+      "url": "sprites\/ai\/aitem_1240.png"
+    },
+    {
+      "hash": "sha256-Rh2Kcy8usacHL1TLkCgfMi9vl9FhiojER1nMCfdXrmA=",
+      "url": "sprites\/ai\/aitem_1241.png"
+    },
+    {
+      "hash": "sha256-Rh2Kcy8usacHL1TLkCgfMi9vl9FhiojER1nMCfdXrmA=",
+      "url": "sprites\/ai\/aitem_1242.png"
+    },
+    {
+      "hash": "sha256-9MQP019p6gBrK29F5tt6bm\/VXFcDbckcWDRv24E\/P18=",
+      "url": "sprites\/ai\/aitem_1243.png"
+    },
+    {
+      "hash": "sha256-9MQP019p6gBrK29F5tt6bm\/VXFcDbckcWDRv24E\/P18=",
+      "url": "sprites\/ai\/aitem_1244.png"
+    },
+    {
+      "hash": "sha256-9MQP019p6gBrK29F5tt6bm\/VXFcDbckcWDRv24E\/P18=",
+      "url": "sprites\/ai\/aitem_1245.png"
+    },
+    {
+      "hash": "sha256-9MQP019p6gBrK29F5tt6bm\/VXFcDbckcWDRv24E\/P18=",
+      "url": "sprites\/ai\/aitem_1246.png"
+    },
+    {
+      "hash": "sha256-BAl7jfVaRZNbbPT5MBu5u79ANfURVNWIHUbK1Tu6sfA=",
+      "url": "sprites\/ai\/aitem_1247.png"
+    },
+    {
+      "hash": "sha256-BAl7jfVaRZNbbPT5MBu5u79ANfURVNWIHUbK1Tu6sfA=",
+      "url": "sprites\/ai\/aitem_1248.png"
+    },
+    {
+      "hash": "sha256-BAl7jfVaRZNbbPT5MBu5u79ANfURVNWIHUbK1Tu6sfA=",
+      "url": "sprites\/ai\/aitem_1249.png"
+    },
+    {
+      "hash": "sha256-BAl7jfVaRZNbbPT5MBu5u79ANfURVNWIHUbK1Tu6sfA=",
+      "url": "sprites\/ai\/aitem_1250.png"
+    },
+    {
+      "hash": "sha256-gwL1X9HiwK0l9Nxvn8JsVAyMTrg+QiqDGvhLW9pGdeU=",
+      "url": "sprites\/ai\/aitem_1251.png"
+    },
+    {
+      "hash": "sha256-oCLGZ5OxsTa6ZWpXahqCn2471LlkCY7x2p5eviTclX4=",
+      "url": "sprites\/ai\/aitem_1253.png"
+    },
+    {
+      "hash": "sha256-IJX7XIwMk2YEjSaQDyC3+PjzBPsIpJ7JuHGWgEuy9TQ=",
+      "url": "sprites\/ai\/aitem_1254.png"
+    },
+    {
+      "hash": "sha256-tOdrLpaGFx3aDlVXhXyl179Cl7Ah\/\/oQ5KNA+\/oGpuA=",
+      "url": "sprites\/ai\/aitem_13.png"
+    },
+    {
+      "hash": "sha256-8ggIunSgTEKIvTDP1sgcwbMPjxBUnStJuYZlWcAIizw=",
+      "url": "sprites\/ai\/aitem_135.png"
+    },
+    {
+      "hash": "sha256-DYLgFJA+YF8KQScRxqogjN+xH8FsH84OeCCrnYwht5M=",
+      "url": "sprites\/ai\/aitem_136.png"
+    },
+    {
+      "hash": "sha256-i6hIAwf0LUAIpaSgLz\/j1ckVMMACgIp5p0PcgytpOoQ=",
+      "url": "sprites\/ai\/aitem_14.png"
+    },
+    {
+      "hash": "sha256-qtUxn8bvoeGkV2aqTaTSE8QLMepK1iarlEl3JuSrd+w=",
+      "url": "sprites\/ai\/aitem_149.png"
+    },
+    {
+      "hash": "sha256-WGBgvuPUs03ymktzcHd+1LXvDHgvHNb+mVwg\/IoSwA0=",
+      "url": "sprites\/ai\/aitem_15.png"
+    },
+    {
+      "hash": "sha256-244lwfSS2saRn2BxD55zLnL+Eq+BYmIn3LONy4pYwT8=",
+      "url": "sprites\/ai\/aitem_150.png"
+    },
+    {
+      "hash": "sha256-puzK7mrWkpzVah0LivuHjRfjc4L3AmB9hcFt\/D5\/9yc=",
+      "url": "sprites\/ai\/aitem_151.png"
+    },
+    {
+      "hash": "sha256-Ki15IWZaNCIY3lr5nkhCDwgcf1k4b1X4EeTjgIjo2sQ=",
+      "url": "sprites\/ai\/aitem_152.png"
+    },
+    {
+      "hash": "sha256-ktagVy0n3cL51CMgUNkwGXFq6zoly+vy1u8s6E4XMyY=",
+      "url": "sprites\/ai\/aitem_153.png"
+    },
+    {
+      "hash": "sha256-JlS\/OXDf6MgFZ5rdy\/EGNOnUxSmUHY3dSZDChW\/BVAo=",
+      "url": "sprites\/ai\/aitem_154.png"
+    },
+    {
+      "hash": "sha256-RyKFp3vF9olkl8zjYLIsV9oASkwEfx4H72rUiNxFPhU=",
+      "url": "sprites\/ai\/aitem_155.png"
+    },
+    {
+      "hash": "sha256-Zq77yDh8ZCpHFnTbYS4IHO9xis9crCzG0e5rvhnW1EE=",
+      "url": "sprites\/ai\/aitem_156.png"
+    },
+    {
+      "hash": "sha256-VHi+buPKC\/8\/HbIt7fPtRjf3vwkHyrzfUWbERheCP0Q=",
+      "url": "sprites\/ai\/aitem_157.png"
+    },
+    {
+      "hash": "sha256-iFnMnxl4DFGqr1MxPx+eSKqsf4Zkd05h7FtQg8przuE=",
+      "url": "sprites\/ai\/aitem_158.png"
+    },
+    {
+      "hash": "sha256-BVB+wr9CmW8vgFECs5BW8cIhqZ8y5RA+0TKa8suS9pw=",
+      "url": "sprites\/ai\/aitem_1581.png"
+    },
+    {
+      "hash": "sha256-bXzBYz6Ujk2ufO18QuIJnE8n8VTkFohOZQf3fByWdjg=",
+      "url": "sprites\/ai\/aitem_1582.png"
+    },
+    {
+      "hash": "sha256-MrHA1UHc1n5j+I0PPHqHuGQSeIVnD+k+zbqmt\/E54vA=",
+      "url": "sprites\/ai\/aitem_159.png"
+    },
+    {
+      "hash": "sha256-L0y3csoOxds0nP0X1R7B2Yc3DD0zQ9qhcY1XWYlcLbQ=",
+      "url": "sprites\/ai\/aitem_1592.png"
+    },
+    {
+      "hash": "sha256-CQWnQwui1Kp\/gQ17ouBLFBPAMAQQN7vvYzHi1E1Xv54=",
+      "url": "sprites\/ai\/aitem_16.png"
+    },
+    {
+      "hash": "sha256-3sguWDPWPi6wCNw1Ok6fmM9L8uzDA4C+8sK4tnfzsFo=",
+      "url": "sprites\/ai\/aitem_160.png"
+    },
+    {
+      "hash": "sha256-AH0jdZfzVBx8\/hLm\/\/E4ZIj0gUh+i7l0Yy848ZJYV2Q=",
+      "url": "sprites\/ai\/aitem_1606.png"
+    },
+    {
+      "hash": "sha256-8p5xqmEjgedaWg8vbNB\/tZDK1G7It1E6kH5Ti77ZKQg=",
+      "url": "sprites\/ai\/aitem_161.png"
+    },
+    {
+      "hash": "sha256-nshbHg9DZGGYHeLyMv+G5XJtAII+qHDsATHaQFZipHk=",
+      "url": "sprites\/ai\/aitem_162.png"
+    },
+    {
+      "hash": "sha256-QDJzekifhgX4dqUNV0\/a9no\/nd91ZC6xAcBall4V0Ck=",
+      "url": "sprites\/ai\/aitem_163.png"
+    },
+    {
+      "hash": "sha256-8Jm07K8m\/diOuhTDABFd\/+y\/g\/4RfzJPIL0lmEelG38=",
+      "url": "sprites\/ai\/aitem_169.png"
+    },
+    {
+      "hash": "sha256-XcSPXSBb1+QdhG6Zw0ag5QBLdTv\/GmS7SIa6SKgaCnM=",
+      "url": "sprites\/ai\/aitem_17.png"
+    },
+    {
+      "hash": "sha256-CKTrwIxezZZMICZKgnWXWdweoazHPer9bSdIfeXZmpA=",
+      "url": "sprites\/ai\/aitem_170.png"
+    },
+    {
+      "hash": "sha256-Z\/3+Zo6+zAd8MyaiRPDuYQ54SnlRZufE1KVV4rwh6io=",
+      "url": "sprites\/ai\/aitem_171.png"
+    },
+    {
+      "hash": "sha256-5Chqt04WV1Mo4vQqku7yFZHxcwmNI7fwEHfYu7eDRWo=",
+      "url": "sprites\/ai\/aitem_172.png"
+    },
+    {
+      "hash": "sha256-Dyri6aItAW1OIZMnH4I3UbvMpsrqn1f9KHAtSagw9r4=",
+      "url": "sprites\/ai\/aitem_173.png"
+    },
+    {
+      "hash": "sha256-be9B9E6V5CKp68\/8gs7C5ONlIbqQNrH8pYj0E3xqAb4=",
+      "url": "sprites\/ai\/aitem_174.png"
+    },
+    {
+      "hash": "sha256-1KS2GaQmyU\/iZOpTxKL6s7Mex3PRqNZdLNmbUWMuvSU=",
+      "url": "sprites\/ai\/aitem_1777.png"
+    },
+    {
+      "hash": "sha256-bKveUEWNsTGkzupB8YqTqvWL3cOYqyRoyKws2Ut4FTI=",
+      "url": "sprites\/ai\/aitem_1778.png"
+    },
+    {
+      "hash": "sha256-pPvOTvl+5UsBiV7YScxvum3sXmvNEELvVR4Ihb5R1WM=",
+      "url": "sprites\/ai\/aitem_1779.png"
+    },
+    {
+      "hash": "sha256-BE4VTNG0hL5S9kSuwXB7WOwhnKRo5wmUZinkOWo7U6A=",
+      "url": "sprites\/ai\/aitem_1785.png"
+    },
+    {
+      "hash": "sha256-fkzM1W8Leuo3q7+mRCJjjeiHj13HJiI47oXkFERUs+k=",
+      "url": "sprites\/ai\/aitem_18.png"
+    },
+    {
+      "hash": "sha256-LeVpiwJE61IiQrm4yZZcnFHhzQfZc8yN1LhMwR8zZCg=",
+      "url": "sprites\/ai\/aitem_184.png"
+    },
+    {
+      "hash": "sha256-OMRmlDOCffmBlbmdf5zCwgdLdTZ6RVTFohc1qx2kjLQ=",
+      "url": "sprites\/ai\/aitem_1842.png"
+    },
+    {
+      "hash": "sha256-jPj7MfHgOOO8zJ8yYHVgbdAq8mIytBg8r7whv4uITTk=",
+      "url": "sprites\/ai\/aitem_1843.png"
+    },
+    {
+      "hash": "sha256-J2Lwp36UxhNbVgB1t1Emg6XFFbWuEfETRvaiMCWIvGE=",
+      "url": "sprites\/ai\/aitem_185.png"
+    },
+    {
+      "hash": "sha256-TCNPGNW5ccvOLNRaT48kolb8je5NlPo5WAokQVNJdao=",
+      "url": "sprites\/ai\/aitem_186.png"
+    },
+    {
+      "hash": "sha256-A9jklLl2t7Ol6+\/PPIwK6hC6MjZktxAwwsGry0iriwo=",
+      "url": "sprites\/ai\/aitem_1861.png"
+    },
+    {
+      "hash": "sha256-5qJdPlWAUe7OcTqNdYR\/H5vPeBRhQ7hqMqlawo4YWUo=",
+      "url": "sprites\/ai\/aitem_1862.png"
+    },
+    {
+      "hash": "sha256-9qlwQ4h67PVde4jdjgTFWd3gHrSSvFJ2gJeKtAr9z2k=",
+      "url": "sprites\/ai\/aitem_1863.png"
+    },
+    {
+      "hash": "sha256-dynaRdj3yThonwIVy4iGKMZFzTYxwjU2pVE2WaaQ\/ec=",
+      "url": "sprites\/ai\/aitem_1864.png"
+    },
+    {
+      "hash": "sha256-s5O0qga9YDVlD561Lc+TCLe5H9WDNunxExbRj\/\/Juu4=",
+      "url": "sprites\/ai\/aitem_1865.png"
+    },
+    {
+      "hash": "sha256-RTFsIMhYzmr3hUhjeW9doHclSbl5hMbCYNQ+cXW+G0g=",
+      "url": "sprites\/ai\/aitem_1866.png"
+    },
+    {
+      "hash": "sha256-dzvslDUVZ8y6vihku26tsHJ03qBUMnXvluf6tH\/Q8ho=",
+      "url": "sprites\/ai\/aitem_1867.png"
+    },
+    {
+      "hash": "sha256-R5NhV+ZxrtVkUNFttj29imnIPDi0mBqKbdeMlfYheI8=",
+      "url": "sprites\/ai\/aitem_1868.png"
+    },
+    {
+      "hash": "sha256-TMJFaVPG\/tFIg\/SpI70HIojeW5z8r7H5ffroI3lkYZg=",
+      "url": "sprites\/ai\/aitem_1869.png"
+    },
+    {
+      "hash": "sha256-6UScZOFcAIGXvhLSvrDpTkyF3Wf80CcNXqteg17eWS0=",
+      "url": "sprites\/ai\/aitem_187.png"
+    },
+    {
+      "hash": "sha256-msFhtqUhe2B15gLFSpYVJm06fD1Pn\/nn6\/u\/7dEmG+4=",
+      "url": "sprites\/ai\/aitem_1870.png"
+    },
+    {
+      "hash": "sha256-FaD\/uQ4NM8OVA\/ETts3by7Kf\/h1cEHGa79+s6VD+7xc=",
+      "url": "sprites\/ai\/aitem_1871.png"
+    },
+    {
+      "hash": "sha256-kZ62HELcpNPnvtOtVkGq\/wZ6aazMuW90+1tGD5J\/wFE=",
+      "url": "sprites\/ai\/aitem_1872.png"
+    },
+    {
+      "hash": "sha256-irHzoxrbIrVjza2NrYUy15aKdjGvOeDh6c5b37G3Dag=",
+      "url": "sprites\/ai\/aitem_1873.png"
+    },
+    {
+      "hash": "sha256-X8brikmPBUOSAcWpXghNacIaYfIY18vrNPJ2uYcvaU4=",
+      "url": "sprites\/ai\/aitem_1874.png"
+    },
+    {
+      "hash": "sha256-ltHyTQMOfFvKG60RivFar\/dpAuZwzOJnmS9BlV9lgVM=",
+      "url": "sprites\/ai\/aitem_1875.png"
+    },
+    {
+      "hash": "sha256-MXVq9vXgoxfv2FyCpOEcCK8pmY9rdDSmtb0O\/Lvj6Nw=",
+      "url": "sprites\/ai\/aitem_1876.png"
+    },
+    {
+      "hash": "sha256-f27lXys9ZdskNHmfdTHxVe8JUXewJPqeLzxIGImc\/dE=",
+      "url": "sprites\/ai\/aitem_1877.png"
+    },
+    {
+      "hash": "sha256-scqtsQmaNfXqz4Dy0tYoz3BcYZ+fAWPgKutGd9WVZwM=",
+      "url": "sprites\/ai\/aitem_1878.png"
+    },
+    {
+      "hash": "sha256-oYsKQLQ\/tJ4NcmL2Z976r+kUSVDq\/VNl3CeKsaQS6Cs=",
+      "url": "sprites\/ai\/aitem_1879.png"
+    },
+    {
+      "hash": "sha256-bjPmVex32RIVLIM7bAY332HeKs53Y0XIT9hueKF70oE=",
+      "url": "sprites\/ai\/aitem_188.png"
+    },
+    {
+      "hash": "sha256-TrZ2lf9pJoi4SILDaYW1uxBzeZgiSSHAZxxtJtiLpYI=",
+      "url": "sprites\/ai\/aitem_1880.png"
+    },
+    {
+      "hash": "sha256-icCloTkJLVRzlWToPJiojth10jAeAchsBOymsF5dC3o=",
+      "url": "sprites\/ai\/aitem_1881.png"
+    },
+    {
+      "hash": "sha256-JMs2uAbK0jjvr78YC3VMXZasuFHixtR+7NcXXCPjWvw=",
+      "url": "sprites\/ai\/aitem_1882.png"
+    },
+    {
+      "hash": "sha256-quTPLOQROo0hXXddY4BqA\/yZLglBRtcix3w75KWFhJw=",
+      "url": "sprites\/ai\/aitem_1883.png"
+    },
+    {
+      "hash": "sha256-VINslu9Zr9QJ\/0PcHSEJ4kjw368jQvS1KrlK+qxMbDY=",
+      "url": "sprites\/ai\/aitem_1884.png"
+    },
+    {
+      "hash": "sha256-NVxMxPN07H5TXuQuFcJGH1Ch\/IS\/iZscyvoskKNZfD8=",
+      "url": "sprites\/ai\/aitem_1885.png"
+    },
+    {
+      "hash": "sha256-9yUJaNq17P30c8ugSB7FC8ltcxoUzGvrX+LBsbLIX2E=",
+      "url": "sprites\/ai\/aitem_1886.png"
+    },
+    {
+      "hash": "sha256-JCphCEL8rTY1Y8clbUKJQ9qlKpfzJ0vxevrMjB\/5jHY=",
+      "url": "sprites\/ai\/aitem_189.png"
+    },
+    {
+      "hash": "sha256-6sFaCojQi65MwGjvM4g67kWU\/VkMAJvhA4GRoIg\/f+g=",
+      "url": "sprites\/ai\/aitem_19.png"
+    },
+    {
+      "hash": "sha256-1+XYCqvZHi60ClW3bef3Bp4Q3GVGaI8BNNlq8FmV2pU=",
+      "url": "sprites\/ai\/aitem_190.png"
+    },
+    {
+      "hash": "sha256-TaJgnnyiqc+sG16XwhR9phzE22ygQ5lCeUrfNKB72sw=",
+      "url": "sprites\/ai\/aitem_191.png"
+    },
+    {
+      "hash": "sha256-Ck\/4Sbu7oor6RUhMaEw9+R9eDcQsXjvm8sjFR50X63U=",
+      "url": "sprites\/ai\/aitem_192.png"
+    },
+    {
+      "hash": "sha256-bQuz8ajHZaSTf2kVJalUtVP+b26\/hYIDzVDf5A0RtzM=",
+      "url": "sprites\/ai\/aitem_193.png"
+    },
+    {
+      "hash": "sha256-\/fW2lPx6jeBl\/XE4faR32\/jZL7iXtNurgmvQ+hBZD6k=",
+      "url": "sprites\/ai\/aitem_194.png"
+    },
+    {
+      "hash": "sha256-JYk6HnBHiPlqRfIFgcX0AyqYBSgJ0dS4bJSYYXp769A=",
+      "url": "sprites\/ai\/aitem_195.png"
+    },
+    {
+      "hash": "sha256-j0AZOHyQDx2PDxv1maiz3z0SRzFrb1pOV3jp2L0rF44=",
+      "url": "sprites\/ai\/aitem_196.png"
+    },
+    {
+      "hash": "sha256-+hVqkI4n8oS2XmwqxAGIJb43k5UQNem9\/8HnQeTEByY=",
+      "url": "sprites\/ai\/aitem_197.png"
+    },
+    {
+      "hash": "sha256-nrZCuP78xzuer0AdCShfKmVKl\/tQJayMOvvqlDGJiIY=",
+      "url": "sprites\/ai\/aitem_198.png"
+    },
+    {
+      "hash": "sha256-Tzz+74hu61MXLgp5APwMLw2gjnr5y77YEyHrirdMj0k=",
+      "url": "sprites\/ai\/aitem_199.png"
+    },
+    {
+      "hash": "sha256-A7pe4rHSfaZ7VNZRGMFgmjCE1Zmfhad56l\/5tvjaZVg=",
+      "url": "sprites\/ai\/aitem_2.png"
+    },
+    {
+      "hash": "sha256-2pt9xAZRUyMelA114y6I1hPOSXPAikGE3r2tRhz9jjY=",
+      "url": "sprites\/ai\/aitem_20.png"
+    },
+    {
+      "hash": "sha256-XyOjCl635kI7M\/WuvtIB5WhE8edB2WyVOlJvn6uinKI=",
+      "url": "sprites\/ai\/aitem_200.png"
+    },
+    {
+      "hash": "sha256-0NtmDiQitvIVC3XFrtv+5XRMO7a16FYcyC1HwS0ielQ=",
+      "url": "sprites\/ai\/aitem_201.png"
+    },
+    {
+      "hash": "sha256-68KOuuFjtYtu2tJYStv+6hGNtfx6kaDFfUs6F9RpL3k=",
+      "url": "sprites\/ai\/aitem_202.png"
+    },
+    {
+      "hash": "sha256-c3j1Dltl5JHCXaDLT+EwipWUtbXAD6nviqi47TpRWcg=",
+      "url": "sprites\/ai\/aitem_203.png"
+    },
+    {
+      "hash": "sha256-7EfUHOh7XfU1PL7LyMAD4Wq6GjWD5EulDHSRzxA3Gwc=",
+      "url": "sprites\/ai\/aitem_204.png"
+    },
+    {
+      "hash": "sha256-e70DDB5a88sw9ATDM\/8Fxe6UMOVFzt7R+VsURMu\/IgM=",
+      "url": "sprites\/ai\/aitem_205.png"
+    },
+    {
+      "hash": "sha256-NmJBsZ2ertCJ4aZynJFMxq52B+s+hJsttunZ9Pett1I=",
+      "url": "sprites\/ai\/aitem_206.png"
+    },
+    {
+      "hash": "sha256-aVB+Hup99d284JhW7laYW3eHBDkZDnagsyYD2WiD\/\/Y=",
+      "url": "sprites\/ai\/aitem_207.png"
+    },
+    {
+      "hash": "sha256-kFwdPQcHb9w+jqvuE6I+vgh9vZbN1krcIm1YSZmPewE=",
+      "url": "sprites\/ai\/aitem_208.png"
+    },
+    {
+      "hash": "sha256-IMOVfNN9tQSoLwUnDd7h0Z01kKohlji1k9qJgvBsaAc=",
+      "url": "sprites\/ai\/aitem_209.png"
+    },
+    {
+      "hash": "sha256-l299DmLgsvtPC4a4Ad8G+m3hhS3VVvUN7dc0ScJXhvg=",
+      "url": "sprites\/ai\/aitem_21.png"
+    },
+    {
+      "hash": "sha256-q\/fqkVvNhcmxxslSJtT2BHvtI1KXd2SyRtIHGsALZno=",
+      "url": "sprites\/ai\/aitem_210.png"
+    },
+    {
+      "hash": "sha256-SNanZQBYPR6hNSXiV3JRi7ojVPWcRkv0gzxUYPrk0BU=",
+      "url": "sprites\/ai\/aitem_211.png"
+    },
+    {
+      "hash": "sha256-nQbEl07BEvq87FT71CGjV6+wGmqqrmfu9UHWkVuxcG8=",
+      "url": "sprites\/ai\/aitem_212.png"
+    },
+    {
+      "hash": "sha256-VbJtz1T2P\/i8tzQtUaOo\/CcsURsjt9osJ+zS43AOxVY=",
+      "url": "sprites\/ai\/aitem_213.png"
+    },
+    {
+      "hash": "sha256-XtlzdI\/DJTWARw5n\/gz5DdMoENc9b+qzYJxz1bNvIIM=",
+      "url": "sprites\/ai\/aitem_214.png"
+    },
+    {
+      "hash": "sha256-hCAAOUYDNmAfm826ZYpkDEo7bJwsXSMNycGtAJoEa6Y=",
+      "url": "sprites\/ai\/aitem_217.png"
+    },
+    {
+      "hash": "sha256-p4BY4MYECQ7geZl7C97obJQLtiFYQSmToOMwfSqnCXM=",
+      "url": "sprites\/ai\/aitem_218.png"
+    },
+    {
+      "hash": "sha256-9DwxSPmUTGrgLcOSq++KcnqxfU9jF6h7xuqn101sI\/0=",
+      "url": "sprites\/ai\/aitem_219.png"
+    },
+    {
+      "hash": "sha256-SI1RQGt4ECaD\/Och5sJJ0I2gSbl9ZyHJ14dAIafWO7s=",
+      "url": "sprites\/ai\/aitem_22.png"
+    },
+    {
+      "hash": "sha256-KKA8MxFO8SyFtK01WkhJGB3R7ik6ugYeoY1Xdbph3fU=",
+      "url": "sprites\/ai\/aitem_220.png"
+    },
+    {
+      "hash": "sha256-1mSH+gvh1ZwINOOQaEcichJ\/oXwC1Jl6bCGiK1v9Ty0=",
+      "url": "sprites\/ai\/aitem_221.png"
+    },
+    {
+      "hash": "sha256-zf7JgSaGRUvqgd\/BWAMffII2\/4r8QWgI8d\/mcDr\/J9o=",
+      "url": "sprites\/ai\/aitem_222.png"
+    },
+    {
+      "hash": "sha256-LgXA3DoMgwiZp8BVnkwQ2eaxC4Hd9w6Wt7h3F5h\/Kx8=",
+      "url": "sprites\/ai\/aitem_223.png"
+    },
+    {
+      "hash": "sha256-c6x0RR7Mn3Fa2fRhxVrjz5y897dHxFweKUlg0o\/qPQI=",
+      "url": "sprites\/ai\/aitem_224.png"
+    },
+    {
+      "hash": "sha256-VeeOsX76\/cVbjvegIy014TY4TB\/CAm3muCPD57gVeWI=",
+      "url": "sprites\/ai\/aitem_225.png"
+    },
+    {
+      "hash": "sha256-hRm0JGjXwi8i9soWMeiWpHzhNxy8Ge\/V5jcM2hH5YKk=",
+      "url": "sprites\/ai\/aitem_228.png"
+    },
+    {
+      "hash": "sha256-8w1yIxaJ0w4uOmG3LDC7d\/J0fNRR7JLqRXSuRxWPiNY=",
+      "url": "sprites\/ai\/aitem_229.png"
+    },
+    {
+      "hash": "sha256-XgXDRHCIIP4aD02ZZG+rYfXaYxEoG9WgIstG8vKAPDs=",
+      "url": "sprites\/ai\/aitem_23.png"
+    },
+    {
+      "hash": "sha256-K\/fyIyJrEZvUt3+HduzVKi3yHFJsd4eBJi6yS9nG2Cg=",
+      "url": "sprites\/ai\/aitem_230.png"
+    },
+    {
+      "hash": "sha256-xunW+\/EmlqWzh+rjfUB+3UK9L57o8K+TeesCD7ZI5nI=",
+      "url": "sprites\/ai\/aitem_231.png"
+    },
+    {
+      "hash": "sha256-tTHlVn7TDdPGlFUkaXRunlpBvJBxLAsPHDaZR9cilY8=",
+      "url": "sprites\/ai\/aitem_232.png"
+    },
+    {
+      "hash": "sha256-E37mQ4dW0lbHtHTTZw5yBK6SZoiCzr6pv8aEmv4Vq+M=",
+      "url": "sprites\/ai\/aitem_233.png"
+    },
+    {
+      "hash": "sha256-inPe8YfHe2\/WPaJLRTzzUeH+KjIswJVBJMNsGgkZ19s=",
+      "url": "sprites\/ai\/aitem_234.png"
+    },
+    {
+      "hash": "sha256-ZGoBWxFVn8xGZWDG9zSlw7C2v4qdadzZ05zYh4PSoSc=",
+      "url": "sprites\/ai\/aitem_2344.png"
+    },
+    {
+      "hash": "sha256-owLHYk6VoxttkAYu0qxGIIbC7e3UXfBD+08bhhRzJ3M=",
+      "url": "sprites\/ai\/aitem_2345.png"
+    },
+    {
+      "hash": "sha256-ZNw5qa5U3\/otNOke8SIdZ5Orssz4vRuGuLiN7qQGgbk=",
+      "url": "sprites\/ai\/aitem_235.png"
+    },
+    {
+      "hash": "sha256-UgW82ee70JSPQuUmCz9j51KB3W7wrjXljb631NCkKWg=",
+      "url": "sprites\/ai\/aitem_236.png"
+    },
+    {
+      "hash": "sha256-jrRa7wZs4Gjb9CWQIIa21fzt2sAkFrKsgQomSBDlWl8=",
+      "url": "sprites\/ai\/aitem_237.png"
+    },
+    {
+      "hash": "sha256-4Aqv4g9YxGxiuPg9E4IyRJ2okM\/7h6E2fznKcG+fy9E=",
+      "url": "sprites\/ai\/aitem_238.png"
+    },
+    {
+      "hash": "sha256-W2kGV31HJRKcEFs0V1Ttw55+aA1MxuXyt68M79pq+Rc=",
+      "url": "sprites\/ai\/aitem_239.png"
+    },
+    {
+      "hash": "sha256-tfoavx\/YHHxO6OrnJauiskJK9xRr0ifD98+qOEN30bU=",
+      "url": "sprites\/ai\/aitem_24.png"
+    },
+    {
+      "hash": "sha256-\/R3Msu6LWFdE18CLlmS+XhXJRbtyf67kYIq20+tbsSc=",
+      "url": "sprites\/ai\/aitem_240.png"
+    },
+    {
+      "hash": "sha256-yR9zKqaKbT\/p7Z5YNB3IZkmr5KxVy9D+Qxj8v1Gdr2k=",
+      "url": "sprites\/ai\/aitem_2401.png"
+    },
+    {
+      "hash": "sha256-wo2TSgDOx3Cp3qTf8o8N9uWBlTVicYBLRUsFQCXAg1o=",
+      "url": "sprites\/ai\/aitem_2402.png"
+    },
+    {
+      "hash": "sha256-ryAlq8r1pm81d85OYevfFPbRv38BAX74twcQuli\/rNM=",
+      "url": "sprites\/ai\/aitem_2403.png"
+    },
+    {
+      "hash": "sha256-6QcQW45JVWWJMYAUMVnqkskdLHgidTQJVUdT3GWGI2Y=",
+      "url": "sprites\/ai\/aitem_2404.png"
+    },
+    {
+      "hash": "sha256-aq17W3pSfeL5yYpZEwLhXk7U5zM3K\/6JAl4vm22odqg=",
+      "url": "sprites\/ai\/aitem_2406.png"
+    },
+    {
+      "hash": "sha256-ccQixzLLSTwVv7VFpi8DGb0nsTpOCvl4PQo4sp6sDf4=",
+      "url": "sprites\/ai\/aitem_2407.png"
+    },
+    {
+      "hash": "sha256-kRw4bEe3yIkm22KF4AIxaUlL\/SI+ztsk8QaQKAQQv7w=",
+      "url": "sprites\/ai\/aitem_2408.png"
+    },
+    {
+      "hash": "sha256-gj5bsieDusC0Y4cqKbGN9KSA1OH7yI+9R211vc32ORc=",
+      "url": "sprites\/ai\/aitem_241.png"
+    },
+    {
+      "hash": "sha256-VQPk\/NvKQkxyt8LdM4tpxx3wB5b+39XobQeGlqrIIRw=",
+      "url": "sprites\/ai\/aitem_2411.png"
+    },
+    {
+      "hash": "sha256-uiZ0BlwT2raZ5uzSgQGFqMBCJxRKbnTNol3Wm6nbfog=",
+      "url": "sprites\/ai\/aitem_2412.png"
+    },
+    {
+      "hash": "sha256-YYwftMZM2bjWi1qYc3OwhR19C0NdH6CKV\/yFLpnjb0g=",
+      "url": "sprites\/ai\/aitem_2413.png"
+    },
+    {
+      "hash": "sha256-YCHnnSGwfC7uyu+tUlYKP04nOMmco6TVovEvbazir1s=",
+      "url": "sprites\/ai\/aitem_2414.png"
+    },
+    {
+      "hash": "sha256-iK6xEYBTb6g0LempWqCmlPtCC3xidV5UIrDu\/hSsF\/I=",
+      "url": "sprites\/ai\/aitem_2415.png"
+    },
+    {
+      "hash": "sha256-Atipx0hwDjIoa3OLJHW9bLIaeNyXcBldZTKfyhrIHik=",
+      "url": "sprites\/ai\/aitem_2416.png"
+    },
+    {
+      "hash": "sha256-7n6RpQ+3Vp29aEsrCE5myZ5x\/6EHXlCCJk2sPEAdgtc=",
+      "url": "sprites\/ai\/aitem_242.png"
+    },
+    {
+      "hash": "sha256-My5Wmk+48SGw62yW1Ua2Cz1Q0eBVo81IMI9d\/T61ikE=",
+      "url": "sprites\/ai\/aitem_243.png"
+    },
+    {
+      "hash": "sha256-R7VtVa+RsxKTGIghBi+M02sN4h1WOQfjzr\/\/fJkGu08=",
+      "url": "sprites\/ai\/aitem_244.png"
+    },
+    {
+      "hash": "sha256-06WSMlpmKt1VBTBvfpyAW6r6KaRyWWAIV15t3Sw0NI0=",
+      "url": "sprites\/ai\/aitem_245.png"
+    },
+    {
+      "hash": "sha256-MLtLW2GYZlGZPsYWPXmDWy0O6Bx0PoxWbP8i5WsfAeU=",
+      "url": "sprites\/ai\/aitem_246.png"
+    },
+    {
+      "hash": "sha256-AIeD736vM1FF4PZa\/DyXJx\/v9YnCBl3I5EbmB74t7gM=",
+      "url": "sprites\/ai\/aitem_247.png"
+    },
+    {
+      "hash": "sha256-B1RXpsQei0\/MYJYyBYg05Tvoye74Or\/r3A1Hlnb7xzg=",
+      "url": "sprites\/ai\/aitem_2479.png"
+    },
+    {
+      "hash": "sha256-I7sOEXUjho13fyymiDhWXro8o6S\/xm7piaS8h\/KwHFM=",
+      "url": "sprites\/ai\/aitem_248.png"
+    },
+    {
+      "hash": "sha256-II4gmjfzHuVotW7ryKOKcn3FAIukBKgiP2WlMrdpY+c=",
+      "url": "sprites\/ai\/aitem_2482.png"
+    },
+    {
+      "hash": "sha256-KTuA\/0b6GUMPkG8g3WZ0nE6OyW2WUo\/6uTqbm451rPg=",
+      "url": "sprites\/ai\/aitem_249.png"
+    },
+    {
+      "hash": "sha256-eejj1toItFke8u\/KEHD2hgR7tPtmIsOC3tmF5Eqn5I4=",
+      "url": "sprites\/ai\/aitem_25.png"
+    },
+    {
+      "hash": "sha256-+SPP+NfLpz53wvM10YAyuqWsgGOYWqVNeecRQbEYf9M=",
+      "url": "sprites\/ai\/aitem_250.png"
+    },
+    {
+      "hash": "sha256-ToD2ZftaVmDfvsAGlMtQK9aLTK8JAj\/KyytSFmjwoKA=",
+      "url": "sprites\/ai\/aitem_251.png"
+    },
+    {
+      "hash": "sha256-8q1Os\/gG83EdMj1Zl16g1dLJhDayOP2tLnLJ1b0JbLw=",
+      "url": "sprites\/ai\/aitem_252.png"
+    },
+    {
+      "hash": "sha256-MKEMHCH4rucLJkatqWydyTCg4+\/bVxN0a6VpFjy0nTE=",
+      "url": "sprites\/ai\/aitem_253.png"
+    },
+    {
+      "hash": "sha256-KxqZkY6Qwx\/pQXficRujmXMSqfTwtIi1QXkvvi6VKpw=",
+      "url": "sprites\/ai\/aitem_2549.png"
+    },
+    {
+      "hash": "sha256-ou1kFLNe\/GBdnO7qe3Lu5HWLxJroF+updWByIvK\/Ai0=",
+      "url": "sprites\/ai\/aitem_26.png"
+    },
+    {
+      "hash": "sha256-2WfmjQk7bwTNiNhs0SuxQ5sCjDNT2ftuecCWFX8iONU=",
+      "url": "sprites\/ai\/aitem_265.png"
+    },
+    {
+      "hash": "sha256-hNu6qwmu+OjJ0idhkXcEAGyX2UZNmGilRwjkJtWsdtc=",
+      "url": "sprites\/ai\/aitem_266.png"
+    },
+    {
+      "hash": "sha256-SwLezIkDYT1liUoao6pFleEMcfY9jusiAWYlx\/PmQco=",
+      "url": "sprites\/ai\/aitem_267.png"
+    },
+    {
+      "hash": "sha256-X3dQkrd4fzOHFzx6m6R8Sl\/SJ9Qw87gtm48nMWV5IBs=",
+      "url": "sprites\/ai\/aitem_268.png"
+    },
+    {
+      "hash": "sha256-wrj2u5MsytmKAlBvojfDPAbB3a1FMSlRaMEDWZJZC2A=",
+      "url": "sprites\/ai\/aitem_269.png"
+    },
+    {
+      "hash": "sha256-XuuRhHZJGqfgGScSqYASAX5DytSBYuqevL\/dJWE+Kj4=",
+      "url": "sprites\/ai\/aitem_27.png"
+    },
+    {
+      "hash": "sha256-DJJryGArfRoBUbfs+2qFw3eLSrGgl2AHc6LC+JesWMw=",
+      "url": "sprites\/ai\/aitem_270.png"
+    },
+    {
+      "hash": "sha256-dSXlkhnlisMu+W9DwKWUZZLEk1iM0mOEoGpg\/dr6XKQ=",
+      "url": "sprites\/ai\/aitem_271.png"
+    },
+    {
+      "hash": "sha256-ONh1Rd3EPexileyne5G6EXSgRCzOH9xVJbu2fX8uRRQ=",
+      "url": "sprites\/ai\/aitem_272.png"
+    },
+    {
+      "hash": "sha256-qJ1WqMcU4MUmzBPC+NZzteUdEd2lwesjVy0H0AkKvRY=",
+      "url": "sprites\/ai\/aitem_273.png"
+    },
+    {
+      "hash": "sha256-a8VjbHdeLmaOl2LPHgc84Yk5f2UwsxNzi2Rc0frks8I=",
+      "url": "sprites\/ai\/aitem_275.png"
+    },
+    {
+      "hash": "sha256-48d2SvQIe6qg3+j6fJNZtl5Gs4X2g+TzsmcLsiIOUgs=",
+      "url": "sprites\/ai\/aitem_276.png"
+    },
+    {
+      "hash": "sha256-G50xQk1uhtRw8YPFt5\/B+THcaGCMAEw\/7mUkUBJKhzU=",
+      "url": "sprites\/ai\/aitem_277.png"
+    },
+    {
+      "hash": "sha256-if466pLpMMvwLxh5bnD4KVBdf924AoJ6XzvJHpT4Ewg=",
+      "url": "sprites\/ai\/aitem_278.png"
+    },
+    {
+      "hash": "sha256-UK+ySvAoPxKU7ih4hR7jyhsobCea0EIi74Ckn3uBWTY=",
+      "url": "sprites\/ai\/aitem_279.png"
+    },
+    {
+      "hash": "sha256-fTtZZ56Mtl8eZFQ10JmQUAGV8gGUuwCHlvUS9TllzU8=",
+      "url": "sprites\/ai\/aitem_28.png"
+    },
+    {
+      "hash": "sha256-iAh+LbiSHGWPubhyQ0EgMQqhgIZBG5zwEZedTdmtOZA=",
+      "url": "sprites\/ai\/aitem_280.png"
+    },
+    {
+      "hash": "sha256-GWGplY1YC7zvRv22CJ85WjAW1TxTqugWjzH0BBrGshc=",
+      "url": "sprites\/ai\/aitem_281.png"
+    },
+    {
+      "hash": "sha256-XxHwsTSOVoidNs4YKOF8WFCU6bpcipTkn1pccsvGksk=",
+      "url": "sprites\/ai\/aitem_282.png"
+    },
+    {
+      "hash": "sha256-5X1AtglIr6zhtNBT6oq4ZF9PNqe9+dE0\/yfK6OOewLU=",
+      "url": "sprites\/ai\/aitem_283.png"
+    },
+    {
+      "hash": "sha256-oyAdTw9yqH7mxJ3LrGQk\/FyJ1JjajsjvQpVgzlQ7JGs=",
+      "url": "sprites\/ai\/aitem_284.png"
+    },
+    {
+      "hash": "sha256-AVwV4\/GIP8PFKFGcQOspCqIvx+vwkbpjnzyJwvis0LQ=",
+      "url": "sprites\/ai\/aitem_285.png"
+    },
+    {
+      "hash": "sha256-GEGM7EIXtDzyI6mbfQke0iVGjppu58NrPWvPN\/6NK1c=",
+      "url": "sprites\/ai\/aitem_286.png"
+    },
+    {
+      "hash": "sha256-9eHqBaA5QNkkezz9\/XCPIzK1FvJsuZlq1jYIb9Bh63k=",
+      "url": "sprites\/ai\/aitem_287.png"
+    },
+    {
+      "hash": "sha256-+ZiWEzk6TfqCT6x5sH298yTW\/MVAt+6YvnEV3SkW45o=",
+      "url": "sprites\/ai\/aitem_288.png"
+    },
+    {
+      "hash": "sha256-2UtLSEil9Gh6uTmwDZgZ2aQQ0\/1XFL3D9dFU6e93P14=",
+      "url": "sprites\/ai\/aitem_289.png"
+    },
+    {
+      "hash": "sha256-oh2bIGGIahZRX3ZJzWjucnREvc5E8JmizFqm3tXJn1Y=",
+      "url": "sprites\/ai\/aitem_29.png"
+    },
+    {
+      "hash": "sha256-lQRe3xi8ITIFI7uBEewBwqITkmdkkDg1mptr+w2r4Bo=",
+      "url": "sprites\/ai\/aitem_290.png"
+    },
+    {
+      "hash": "sha256-cU20U+bAwA0Ns6XTQsE4ZMqaLI2okN8uUUNcNFmh9QM=",
+      "url": "sprites\/ai\/aitem_291.png"
+    },
+    {
+      "hash": "sha256-MH2LHFWFLRGevT5MbkXNEyFGXryKON8bFdO1BLU3Az8=",
+      "url": "sprites\/ai\/aitem_292.png"
+    },
+    {
+      "hash": "sha256-1Wv821y+o+UKWE+hyoJN2AtGe2eldw7r\/J5LcmBgXx4=",
+      "url": "sprites\/ai\/aitem_293.png"
+    },
+    {
+      "hash": "sha256-xlvYAaWNNQ9shbRjrCK2CQmtngHelDTd9QpJXnIbb3Q=",
+      "url": "sprites\/ai\/aitem_294.png"
+    },
+    {
+      "hash": "sha256-\/k3rvVT+drwwAkNWO\/mNErouXwsxnLuDJhvzUDwEELE=",
+      "url": "sprites\/ai\/aitem_295.png"
+    },
+    {
+      "hash": "sha256-Btrk6+HiYFDe3ddUp114\/AbywkltuN9ZuaIDH7bFk9E=",
+      "url": "sprites\/ai\/aitem_296.png"
+    },
+    {
+      "hash": "sha256-qPBffRxHM\/F8PTt5YZtc6Ipd3\/E0OPgXz2ZeOtG8KWg=",
+      "url": "sprites\/ai\/aitem_297.png"
+    },
+    {
+      "hash": "sha256-mW+QWXyMiC4g5fUBD9ip42YIYGwGfdVXUuVbtmKrKUc=",
+      "url": "sprites\/ai\/aitem_298.png"
+    },
+    {
+      "hash": "sha256-iyBJw4c+b6VeyIZ38eS+nv9KHRjigCZsbfQa+dPRSBs=",
+      "url": "sprites\/ai\/aitem_299.png"
+    },
+    {
+      "hash": "sha256-CFto4Gk0j0ufv2oSo7jZqJh893fW87vR8WFX8AjG8so=",
+      "url": "sprites\/ai\/aitem_3.png"
+    },
+    {
+      "hash": "sha256-rrvfg5lm0mLQsC3Ec6kmniZ+bz97qnekw4AzTNgT3i0=",
+      "url": "sprites\/ai\/aitem_30.png"
+    },
+    {
+      "hash": "sha256-0NYfyTKRliOEvhecpAvC3K+zw0AL3h2RMRYfyB6GnsQ=",
+      "url": "sprites\/ai\/aitem_300.png"
+    },
+    {
+      "hash": "sha256-SWPQOb5oEJzo8ut8dNQHvZ7EaxJvKfUpEO0eqYA9hJs=",
+      "url": "sprites\/ai\/aitem_301.png"
+    },
+    {
+      "hash": "sha256-CfwKtRP1zQoV6jvlvZ0sjPnbXAe1LE51Gr7qElm7nVs=",
+      "url": "sprites\/ai\/aitem_302.png"
+    },
+    {
+      "hash": "sha256-sjae6WFQeHvhvz2y9y4eQzAxEI2neHnsgcKxy7\/Eq\/w=",
+      "url": "sprites\/ai\/aitem_303.png"
+    },
+    {
+      "hash": "sha256-Z7B62Bs1cO3jjFEkCH3qQnjpG2cranxZKE6UECRrBw4=",
+      "url": "sprites\/ai\/aitem_304.png"
+    },
+    {
+      "hash": "sha256-0fazHltPY97Ur+fw8IlEWTNCzH9OvKUatuJPDp+Lw5Q=",
+      "url": "sprites\/ai\/aitem_305.png"
+    },
+    {
+      "hash": "sha256-Vj0DMmj5DHhuKT9CLuOfDc0Gl\/+co867CIc6kMXZH1U=",
+      "url": "sprites\/ai\/aitem_306.png"
+    },
+    {
+      "hash": "sha256-3kR2TVrjfNMsZT\/x6Kj53WYqY\/aKkyw5zLa1R\/IOQSk=",
+      "url": "sprites\/ai\/aitem_307.png"
+    },
+    {
+      "hash": "sha256-Q18KVOjMvwyJj242jQIdhE1mLQIcK\/c4ONzK1sZ6rUs=",
+      "url": "sprites\/ai\/aitem_308.png"
+    },
+    {
+      "hash": "sha256-HHVSKYmEdTCMKK9ctr0MFqw\/P8FRj5qRFi4z7jXjBOQ=",
+      "url": "sprites\/ai\/aitem_309.png"
+    },
+    {
+      "hash": "sha256-pZSFX99kRTjUUMtrwTqKWS1AyXCXwcxXTBfMLBtY7y8=",
+      "url": "sprites\/ai\/aitem_31.png"
+    },
+    {
+      "hash": "sha256-S\/eMLAiLwKKmXhLCdoPIIuSQNTaD9o2rZ0Q3ajsNYfQ=",
+      "url": "sprites\/ai\/aitem_310.png"
+    },
+    {
+      "hash": "sha256-uH1H0DUEXkwruhbdiMsCaoHUJuqBdYSBVOnFLUJfTsY=",
+      "url": "sprites\/ai\/aitem_311.png"
+    },
+    {
+      "hash": "sha256-7Q\/1nxnKbH25elmlGtrn83BbBfNuCJgQwxU5HU7Judw=",
+      "url": "sprites\/ai\/aitem_312.png"
+    },
+    {
+      "hash": "sha256-bxd9nC5+ccHEJLN\/UcoObRXl8SdVcw5h3vURjKF3spk=",
+      "url": "sprites\/ai\/aitem_313.png"
+    },
+    {
+      "hash": "sha256-OeOHk7KFICVyHKQ8cSAWKDOJInD9CDPVzL8YzoEdGgA=",
+      "url": "sprites\/ai\/aitem_32.png"
+    },
+    {
+      "hash": "sha256-fCs7zK2vPtNdFTXT1edgvwGk6Wydoy8xlkEjv\/WqR5w=",
+      "url": "sprites\/ai\/aitem_321.png"
+    },
+    {
+      "hash": "sha256-UEO3af0dC602fWOUZKKl1bbj++Old9jebv03SRzrdUY=",
+      "url": "sprites\/ai\/aitem_322.png"
+    },
+    {
+      "hash": "sha256-WGMDPrQZ53bbzfOE+Edg0JQJGGXcN7xV+voJOUDotpQ=",
+      "url": "sprites\/ai\/aitem_323.png"
+    },
+    {
+      "hash": "sha256-YfjEfmEvhnt3prjOAOnHkMxCPdKONqJFkDURdbIbmIU=",
+      "url": "sprites\/ai\/aitem_324.png"
+    },
+    {
+      "hash": "sha256-Rbo7HZRsn6E2JZ6fPkAqR1hlbnREQ9ErhkyyqcAlLmE=",
+      "url": "sprites\/ai\/aitem_325.png"
+    },
+    {
+      "hash": "sha256-TZU4UkAcllk6SNL3pN6PK6Vqfst+HGhdLyEtc9Q4YgM=",
+      "url": "sprites\/ai\/aitem_326.png"
+    },
+    {
+      "hash": "sha256-HFJCS\/9OFv7VzbRWFfEjlkvHB3wk0t6Lp6Kas\/TGJC0=",
+      "url": "sprites\/ai\/aitem_327.png"
+    },
+    {
+      "hash": "sha256-wPDNKtu2PjPMsseDuH7AUrI9BJAV\/2tB88kaSZj7Rbg=",
+      "url": "sprites\/ai\/aitem_33.png"
+    },
+    {
+      "hash": "sha256-MNH1NMzLB72Xe0k0ikOI9yW3oCm39BS020p7DStHIh4=",
+      "url": "sprites\/ai\/aitem_34.png"
+    },
+    {
+      "hash": "sha256-4hwbPpXxQAZd3tp6W50bXFy7EQQzmUX+yOUYFzPd0zQ=",
+      "url": "sprites\/ai\/aitem_35.png"
+    },
+    {
+      "hash": "sha256-9uQ2yg5tFZi4nDo+8ON74g6Xr5viL4NkP4ofiDrZmgw=",
+      "url": "sprites\/ai\/aitem_36.png"
+    },
+    {
+      "hash": "sha256-ZdVKGSWw\/xcLXdR1W7iLBtqyY26xKCT+geel3hNjR5Q=",
+      "url": "sprites\/ai\/aitem_37.png"
+    },
+    {
+      "hash": "sha256-egPU9Z9wK9\/LYSPSK64hOrs3ineS\/lBEDlC06eYwVJI=",
+      "url": "sprites\/ai\/aitem_38.png"
+    },
+    {
+      "hash": "sha256-P96vJ3kDtpAOZscVU3m1EUS\/gIs4q0NigxZtOGebX8U=",
+      "url": "sprites\/ai\/aitem_39.png"
+    },
+    {
+      "hash": "sha256-ZKstSyEso0vk+AwIUfp5TLw+uPwr7dF5dZdJEv9UCvA=",
+      "url": "sprites\/ai\/aitem_4.png"
+    },
+    {
+      "hash": "sha256-vIed5+IckB8TVr5b5UO0TrVxLhTqp96PfOb6VCkv34c=",
+      "url": "sprites\/ai\/aitem_40.png"
+    },
+    {
+      "hash": "sha256-qPRsYfsYItR+AF7hmhjNmv3Pf4iRx6EGpX7ZqHTiCQs=",
+      "url": "sprites\/ai\/aitem_41.png"
+    },
+    {
+      "hash": "sha256-4lf21OQUUCu8UXALFWV+GJTerUAJDvUDZRvAo6GpiVQ=",
+      "url": "sprites\/ai\/aitem_45.png"
+    },
+    {
+      "hash": "sha256-R4JNzpz3+82vTnZ7cPalo6SaLuEjaglCC0yfjosYocw=",
+      "url": "sprites\/ai\/aitem_46.png"
+    },
+    {
+      "hash": "sha256-MzuGCDeirB+e2SY9T8rVlBNMEsXSZomziuWGb1QUfNY=",
+      "url": "sprites\/ai\/aitem_47.png"
+    },
+    {
+      "hash": "sha256-kKcsiGvMd2yQfkBWzbaD2\/n6uSHqfdkLLQAbZsmtIhM=",
+      "url": "sprites\/ai\/aitem_48.png"
+    },
+    {
+      "hash": "sha256-BgQPoBk0MyepZ6roXtlzBXt5sKpEqKxMEB5lnV\/0SIs=",
+      "url": "sprites\/ai\/aitem_485.png"
+    },
+    {
+      "hash": "sha256-gkyaBTx0lprk5SNaKuHME5aRbdQC6Her057saoATg18=",
+      "url": "sprites\/ai\/aitem_486.png"
+    },
+    {
+      "hash": "sha256-2lEjtn8JooEtofNlsJUYPjId5kXZTais7Es1k6VM8YU=",
+      "url": "sprites\/ai\/aitem_487.png"
+    },
+    {
+      "hash": "sha256-TcumjpgAkkxiC0ZVvvovX66ItmcoWs3I1iMJ6NJeWZg=",
+      "url": "sprites\/ai\/aitem_488.png"
+    },
+    {
+      "hash": "sha256-Jq+q3rnnBV0xVsyn245sMYlWwgE9hSo6NBZLDU9kKMc=",
+      "url": "sprites\/ai\/aitem_489.png"
+    },
+    {
+      "hash": "sha256-+DtpmDj7GaJS\/hCOkpBwNsj1Bfytp2AagoB78DA6sPQ=",
+      "url": "sprites\/ai\/aitem_49.png"
+    },
+    {
+      "hash": "sha256-avwUX\/LaevZY+E005C5VZu7kGaIjX8RFqfanvDyC3yg=",
+      "url": "sprites\/ai\/aitem_490.png"
+    },
+    {
+      "hash": "sha256-v7yaNYNGFBKVEW2j0gHYPPjp7P37xQqHMSPjzOIE\/o4=",
+      "url": "sprites\/ai\/aitem_491.png"
+    },
+    {
+      "hash": "sha256-KMgWCyu+5hcvROX1owfehmUF1RJ7cuNyucDh+xI\/YFg=",
+      "url": "sprites\/ai\/aitem_492.png"
+    },
+    {
+      "hash": "sha256-jpSRm54yK9WBy0DvW5iTCBretmL5nqgaGbmEOcRZq48=",
+      "url": "sprites\/ai\/aitem_493.png"
+    },
+    {
+      "hash": "sha256-w+RneV4+3r7OEf9z0AmccN8LFy6ZkxbZBUu0DUF4Spw=",
+      "url": "sprites\/ai\/aitem_494.png"
+    },
+    {
+      "hash": "sha256-F\/yUqGYUialA79eVvGQluWl+Kc4gQImiiNPcR1tFidI=",
+      "url": "sprites\/ai\/aitem_495.png"
+    },
+    {
+      "hash": "sha256-7i+ARNhf0FfnYgLJ3daNvt8ZkLk\/xISc2\/4lNvB9d04=",
+      "url": "sprites\/ai\/aitem_496.png"
+    },
+    {
+      "hash": "sha256-ZKjk13Iki4A\/kyzmbHWrSihUj0jAG+zorGBcxoyvUPQ=",
+      "url": "sprites\/ai\/aitem_497.png"
+    },
+    {
+      "hash": "sha256-Qi5Ezdx8iSMmR+XtnE72tdrkXk4hN3QTzZGISyBrFbk=",
+      "url": "sprites\/ai\/aitem_498.png"
+    },
+    {
+      "hash": "sha256-2J4G4EzDN0YjI\/ZW2h\/4J\/wtp+jJcgOB0S9IN\/mse6g=",
+      "url": "sprites\/ai\/aitem_499.png"
+    },
+    {
+      "hash": "sha256-dCjBUJhyCO7dM3aIXpTba9ORh1WDy0kj8GYqS7c73JM=",
+      "url": "sprites\/ai\/aitem_5.png"
+    },
+    {
+      "hash": "sha256-pXvJ89gtYEVY74cjQTq18SRZ1751PCXUrap1pUFwO\/I=",
+      "url": "sprites\/ai\/aitem_50.png"
+    },
+    {
+      "hash": "sha256-CK4X8nF7MDF2Z5dzoiwmS8WpDh4NGPLNSNnfmT53ozs=",
+      "url": "sprites\/ai\/aitem_500.png"
+    },
+    {
+      "hash": "sha256-UtXSO3mebgrUVngRW1sLufrBfbofjyFQEOFBVKEe\/Ug=",
+      "url": "sprites\/ai\/aitem_51.png"
+    },
+    {
+      "hash": "sha256-RAjccUKzYmAPa6k9bs1dbuzRIY3rAZVswZEOKJjvO+s=",
+      "url": "sprites\/ai\/aitem_52.png"
+    },
+    {
+      "hash": "sha256-rLU2ifuFtFYPBzKuPOT7TMq3i388DxHFVQmC5UPGQRM=",
+      "url": "sprites\/ai\/aitem_53.png"
+    },
+    {
+      "hash": "sha256-VTWdfDMwkek1xgTCKeNkEdzxUe6nk1v4p8f11cycaeY=",
+      "url": "sprites\/ai\/aitem_537.png"
+    },
+    {
+      "hash": "sha256-LpC0D1Ln+vA8lYQLEX9W5flK+3emolU2WoKyetk5\/0o=",
+      "url": "sprites\/ai\/aitem_538.png"
+    },
+    {
+      "hash": "sha256-Yitsx0UcxsYPZhr1Lp6Z\/SwYACeXK06avFyMDmylBYg=",
+      "url": "sprites\/ai\/aitem_539.png"
+    },
+    {
+      "hash": "sha256-wgshzaStOsU4Rp3ow5PrA17\/A6jcv+3rQlxZzZlbpdg=",
+      "url": "sprites\/ai\/aitem_540.png"
+    },
+    {
+      "hash": "sha256-92QNOEVBqIYxtXYnJpprfrKeTaa0EqzHhiGdyPjV8OA=",
+      "url": "sprites\/ai\/aitem_541.png"
+    },
+    {
+      "hash": "sha256-sVZpPIggI7oX+xoHp8xfzA07hhMdpoL6oBHdFsloq8s=",
+      "url": "sprites\/ai\/aitem_542.png"
+    },
+    {
+      "hash": "sha256-3n4vrsLX\/qpZb7x\/LsJHTJ1dN3bteP73o\/ZvKrZth0U=",
+      "url": "sprites\/ai\/aitem_543.png"
+    },
+    {
+      "hash": "sha256-mNsYBRPUktvkiFW+Dh5wIHEgiv2q1\/9jIMxvh9c3Cpg=",
+      "url": "sprites\/ai\/aitem_544.png"
+    },
+    {
+      "hash": "sha256-G1dZ63Q4MxZPs2kIFlpo9CP5DkzuOTmJ8so+JUzwUIM=",
+      "url": "sprites\/ai\/aitem_545.png"
+    },
+    {
+      "hash": "sha256-3Oz\/ngJK1DsogMD8QdYYWs7m90Xv\/HPnhufY\/vXjfCs=",
+      "url": "sprites\/ai\/aitem_546.png"
+    },
+    {
+      "hash": "sha256-MhPg9UMkpbdCs7\/yAJdiR\/5sKRha\/jsGDxHvctIAxRc=",
+      "url": "sprites\/ai\/aitem_547.png"
+    },
+    {
+      "hash": "sha256-Wm9lFmRGkj4T\/IVkvTOIZ2T7KM19yvbjBFisIn62mWs=",
+      "url": "sprites\/ai\/aitem_55.png"
+    },
+    {
+      "hash": "sha256-uQu0abet71a5ZvD1xsrJTsmqjDTDd1l8IYVsIKnSFSg=",
+      "url": "sprites\/ai\/aitem_56.png"
+    },
+    {
+      "hash": "sha256-FfN8agh5cwGSXgQONuVoysjXrDlzIXOtezvRaDh5FfI=",
+      "url": "sprites\/ai\/aitem_564.png"
+    },
+    {
+      "hash": "sha256-fMzRA95crDGyFV9sj40Xz48Ru5H6BRLdJYHSvhNyqOY=",
+      "url": "sprites\/ai\/aitem_565.png"
+    },
+    {
+      "hash": "sha256-BX3kaV36tGT27nWF5MUxocIxJKskt3EvKH3rx6764FE=",
+      "url": "sprites\/ai\/aitem_566.png"
+    },
+    {
+      "hash": "sha256-LaMU3+Qfja9jMi2Dx4IbEV3Ow32q6LNcvLi8hFWYdGU=",
+      "url": "sprites\/ai\/aitem_567.png"
+    },
+    {
+      "hash": "sha256-IFL3QpmYeWWUPryRlMZsrrYfLubOkhOU5igtyp027Ig=",
+      "url": "sprites\/ai\/aitem_568.png"
+    },
+    {
+      "hash": "sha256-zCsM2Bh39ByuMCHcawMJJGtWVttJtLrL2QlULQuvXSA=",
+      "url": "sprites\/ai\/aitem_569.png"
+    },
+    {
+      "hash": "sha256-zQRRV\/ha\/9VCrvgorXsMD0c4hVwNuhP8XAvVcEAj8go=",
+      "url": "sprites\/ai\/aitem_57.png"
+    },
+    {
+      "hash": "sha256-uVn3Ucqu7WmWNHP\/Fq1CJwYGbpPn6a9mlkcbN0Lwxr0=",
+      "url": "sprites\/ai\/aitem_570.png"
+    },
+    {
+      "hash": "sha256-8rKfULR2j\/U8y2UdysQukp2ZgFjXgZ9NNAg33UPjhxk=",
+      "url": "sprites\/ai\/aitem_571.png"
+    },
+    {
+      "hash": "sha256-iqZ6nXLDRg0mc\/DDUfIM9UbSU5KqilMNw8nO2seiCug=",
+      "url": "sprites\/ai\/aitem_576.png"
+    },
+    {
+      "hash": "sha256-oijyx1NwxoEW2JZ4yohqZnUSrza4R+OLc1JaBF\/woJs=",
+      "url": "sprites\/ai\/aitem_58.png"
+    },
+    {
+      "hash": "sha256-iXakNLw5GR1lVq925qgeuqmAOmg+IN2HNHE7mgFANAg=",
+      "url": "sprites\/ai\/aitem_580.png"
+    },
+    {
+      "hash": "sha256-Q+coUEfKuGJqJGpxf02n7G+YwHafCVS5HX2HmIJ+6Q0=",
+      "url": "sprites\/ai\/aitem_581.png"
+    },
+    {
+      "hash": "sha256-W4LuX4tARXPnOh8mwOjeBk5Yr3wF3rwXNKL4kMvTBvg=",
+      "url": "sprites\/ai\/aitem_582.png"
+    },
+    {
+      "hash": "sha256-O4yJ7vfuU5DtzXzc0EY0sXuO2ZdRCQuFMem7FI4u7z4=",
+      "url": "sprites\/ai\/aitem_583.png"
+    },
+    {
+      "hash": "sha256-53bLUG7ckkRKvY4Yuz4d3jZdSkcBYnbCZBApUU8X2qg=",
+      "url": "sprites\/ai\/aitem_59.png"
+    },
+    {
+      "hash": "sha256-ybrW1txcqsns+1o\/FF+WrtYPsV+enAe2nRnRQW6xWlk=",
+      "url": "sprites\/ai\/aitem_6.png"
+    },
+    {
+      "hash": "sha256-xqmfBmO21Bdqa3kHUMj3RBvA\/\/lp9eETyMqwr1fSwys=",
+      "url": "sprites\/ai\/aitem_60.png"
+    },
+    {
+      "hash": "sha256-YRyMTwESkRHfRKs\/h2H+k+Sold9u7gCMYGygKa05PXU=",
+      "url": "sprites\/ai\/aitem_61.png"
+    },
+    {
+      "hash": "sha256-\/t4+5wTygONIss8yuneEZfBEh5XmnCQwVXZ8FExzV5M=",
+      "url": "sprites\/ai\/aitem_62.png"
+    },
+    {
+      "hash": "sha256-Ml48ebq7e7+MCw3eNpS\/1k+ma0pyhQ0sy4d3mdUGunw=",
+      "url": "sprites\/ai\/aitem_63.png"
+    },
+    {
+      "hash": "sha256-fzEMImX88qD6AkOqiCC5LkpYDUcj9DbWDKDWfL8v\/18=",
+      "url": "sprites\/ai\/aitem_639.png"
+    },
+    {
+      "hash": "sha256-XnEac1YaObskjdz5wARVvP0115mX\/BUC9bRqll0dIAs=",
+      "url": "sprites\/ai\/aitem_640.png"
+    },
+    {
+      "hash": "sha256-tTU4oTl8FOzSMFqg79KfUZv4tXtP2NgS7fO+vO3RPmg=",
+      "url": "sprites\/ai\/aitem_644.png"
+    },
+    {
+      "hash": "sha256-QGLHKCvzBiAg+ArsO66ade8iH40V63wMppnpl8Bu3Dc=",
+      "url": "sprites\/ai\/aitem_645.png"
+    },
+    {
+      "hash": "sha256-bnw5rgSWy2AE95vbqi6tGhqituW9kbxi6okca4+fls0=",
+      "url": "sprites\/ai\/aitem_648.png"
+    },
+    {
+      "hash": "sha256-ePeUU3bA6yEP8C86cQy7N02dlZrzzhELapiLU8BnD1s=",
+      "url": "sprites\/ai\/aitem_649.png"
+    },
+    {
+      "hash": "sha256-y+5IYOyh\/\/H+uH51suyweH4PQMjHyzrCN74z4DGGu7E=",
+      "url": "sprites\/ai\/aitem_650.png"
+    },
+    {
+      "hash": "sha256-+s12s7wR9YbcINHpJKxsd75neo1Volbl77GsM0vwL2U=",
+      "url": "sprites\/ai\/aitem_686.png"
+    },
+    {
+      "hash": "sha256-jOfjvuQ8s1ewdEhlEVp\/b3Nl6c829h6sJuuCcjJooiQ=",
+      "url": "sprites\/ai\/aitem_687.png"
+    },
+    {
+      "hash": "sha256-8jFMkqdc7RGuoxdZRy0a2CBJ0rY3lf5iZgx8k8M1CW8=",
+      "url": "sprites\/ai\/aitem_688.png"
+    },
+    {
+      "hash": "sha256-TjJAxf358Dn5UloVz7KAC5hh5L\/0eNoPeVcnJHqQyBk=",
+      "url": "sprites\/ai\/aitem_7.png"
+    },
+    {
+      "hash": "sha256-nGV8NcdkmFbOPM+AJKC7Vz\/23f\/h5nlVKmIrSiLdWNg=",
+      "url": "sprites\/ai\/aitem_708.png"
+    },
+    {
+      "hash": "sha256-usHGocYsDbuupNoZiO9mb488WG1ROTkc2d5ABSwLGbg=",
+      "url": "sprites\/ai\/aitem_709.png"
+    },
+    {
+      "hash": "sha256-XPb17ig9hprXjHvI4+F\/w10+AHNWQgUELqA6nFGe5Yg=",
+      "url": "sprites\/ai\/aitem_795.png"
+    },
+    {
+      "hash": "sha256-CAht9H6WPpsSQWs81vQbnsP1ldmuBM3BmegMJi9xZH8=",
+      "url": "sprites\/ai\/aitem_796.png"
+    },
+    {
+      "hash": "sha256-Xpr\/0nNgdk8zfT5ChLZHETyvKifqRQ8Ma+iQQ8pmki0=",
+      "url": "sprites\/ai\/aitem_8.png"
+    },
+    {
+      "hash": "sha256-+iRgtTE3IjNOknvPU04NNSBUHpwwY1WFprtXmFj2qko=",
+      "url": "sprites\/ai\/aitem_80.png"
+    },
+    {
+      "hash": "sha256-FA4SySOZsqSTbMAXtg\/efw3w3GHDaQy25JeWYEl0MRo=",
+      "url": "sprites\/ai\/aitem_81.png"
+    },
+    {
+      "hash": "sha256-gf5Oq+zyQL\/EBBYiXhLIc0aui6fEzA6a1p7pM\/9CyQA=",
+      "url": "sprites\/ai\/aitem_82.png"
+    },
+    {
+      "hash": "sha256-6y00sG1iQwrrBC98TxBuSyxr9zHvS2GPWC\/csqi6Xjw=",
+      "url": "sprites\/ai\/aitem_83.png"
+    },
+    {
+      "hash": "sha256-ZuZ3G8StjIyFsZWHNMomZo+9+HBuCiCFlvnP9Xg\/hI4=",
+      "url": "sprites\/ai\/aitem_84.png"
+    },
+    {
+      "hash": "sha256-Ar90qu3nY3w5Zd\/arUj0IVrOA6hC4YQTmcogx202iXw=",
+      "url": "sprites\/ai\/aitem_846.png"
+    },
+    {
+      "hash": "sha256-T9w99lFsjjr7fHvVas6FaxN6vaKxogr30+EeiEqhbh4=",
+      "url": "sprites\/ai\/aitem_849.png"
+    },
+    {
+      "hash": "sha256-7s8rB92YYCvqPbznZ2km80Kx8oRG0PcGHe+ZZdjwWTU=",
+      "url": "sprites\/ai\/aitem_85.png"
+    },
+    {
+      "hash": "sha256-JxyjupBFEcDxH4fbnWJMwbbRb1ggQ24GZoBzsFi0BrI=",
+      "url": "sprites\/ai\/aitem_851.png"
+    },
+    {
+      "hash": "sha256-XxxtyIJ1AB1bHLuAAZ+9\/25hIuScUcClLE1vT+htVvc=",
+      "url": "sprites\/ai\/aitem_853.png"
+    },
+    {
+      "hash": "sha256-yExTB1PFSJLR2Bh\/U8oF8KAdNW4+P0a7KPYkyVLdpY0=",
+      "url": "sprites\/ai\/aitem_854.png"
+    },
+    {
+      "hash": "sha256-So2hhjM\/j+jsQNiVO\/JzyIMno5p1689UjAnFGW74sUI=",
+      "url": "sprites\/ai\/aitem_855.png"
+    },
+    {
+      "hash": "sha256-2LpndY4cJ5r9kZ6Mok2I7+iH2ci+\/nKzHvLZAN36\/e8=",
+      "url": "sprites\/ai\/aitem_856.png"
+    },
+    {
+      "hash": "sha256-Z9KhzoK7bPuTcolQMKyn5vGZnKDDh20unr6MUjgy9pE=",
+      "url": "sprites\/ai\/aitem_86.png"
+    },
+    {
+      "hash": "sha256-+Lwl1HQEsiZXlIkpEdBfPQOlRm74CBQPxp8PwlZL7S4=",
+      "url": "sprites\/ai\/aitem_87.png"
+    },
+    {
+      "hash": "sha256-H78XtvpmKGxzHO1wSI8oLQTvkSlJuugHnmVLNTGCTMY=",
+      "url": "sprites\/ai\/aitem_879.png"
+    },
+    {
+      "hash": "sha256-8\/t7IkIQ81nqe7wvjxTs\/+Gfoq+R7ZqXaVQmdAuMb14=",
+      "url": "sprites\/ai\/aitem_88.png"
+    },
+    {
+      "hash": "sha256-pj8uDYTOwHT9yqzWtRXbHCMCqHNB9lPZ2h7CLpuCxac=",
+      "url": "sprites\/ai\/aitem_880.png"
+    },
+    {
+      "hash": "sha256-HmcyJnFpCEslBPVWf5cOkCQitb\/q5spM+B0Or8jL\/sY=",
+      "url": "sprites\/ai\/aitem_881.png"
+    },
+    {
+      "hash": "sha256-iJNW+5qGTK\/VpnfMYpba+lrf1\/RkvuYlG3MlMitBy2U=",
+      "url": "sprites\/ai\/aitem_882.png"
+    },
+    {
+      "hash": "sha256-aJ13+KugdIzfeKIJFpY3Hdn1HZO2mtgLY\/aGIs22mTI=",
+      "url": "sprites\/ai\/aitem_883.png"
+    },
+    {
+      "hash": "sha256-neuVUUY5GbLA\/mOMP294FHDTMqoLRf\/IWd83VaT8yfk=",
+      "url": "sprites\/ai\/aitem_884.png"
+    },
+    {
+      "hash": "sha256-A439Jhv0oyCH6UmaJwAu9svT8YBBnPmnnqbFN+g4PTM=",
+      "url": "sprites\/ai\/aitem_89.png"
+    },
+    {
+      "hash": "sha256-FTQmUTSUgOWtPPLfHnB9GZYd9GVBS4EsaklWuKO1xTg=",
+      "url": "sprites\/ai\/aitem_9.png"
+    },
+    {
+      "hash": "sha256-N7iOZ1Nuam0U4hIqtK3KH\/AhaMu\/OELkJbK\/gzCFHdk=",
+      "url": "sprites\/ai\/aitem_90.png"
+    },
+    {
+      "hash": "sha256-V\/JIYISDkPbVi8AKAR7RnPqoMSTCglRjufl1wJSSuo4=",
+      "url": "sprites\/ai\/aitem_91.png"
+    },
+    {
+      "hash": "sha256-CVjWwpc7p2nF5QWiAR6O7eCIUvdMyoDGu0wFfe+uK8c=",
+      "url": "sprites\/ai\/aitem_92.png"
+    },
+    {
+      "hash": "sha256-\/Gsb5Lgst2IxLiHMja8w4+oDECP2Pe8c\/99m5PUXuaY=",
+      "url": "sprites\/ai\/aitem_94.png"
+    },
+    {
+      "hash": "sha256-oRrK9LYahzr4F+d1IfjrYeuEQVgtLnjgA1yd+86xU+U=",
+      "url": "sprites\/ai\/aitem_tm.png"
+    },
+    {
       "hash": "sha256-Lw7R7RUpaj1zWn0NnaEBCaZ8Sql6H5k1hee76ZUS+z4=",
       "url": "sprites\/b\/_ball1.png"
     },
@@ -8601,7 +10165,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-02wZ\/nDQtKJHjuo4b6CHu0EJ0vKF9X8mEe0nJJeuXUo=",
+      "hash": "sha256-Uq217XVLuPOFaoWa9yzpSKb2s7M8xWVRsXWz+VucoiQ=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -8713,7 +10277,7 @@
       "url": "_framework\/PKHeX.Core.wasm"
     },
     {
-      "hash": "sha256-1n1FY4Pec9a1TYfkVgTRJPMzT1DSDwNMHsnw2C5a+BA=",
+      "hash": "sha256-nDLA\/sk+lFpOX+r+iNCCipGky0mkVJd6qkVZ9qg+CQU=",
       "url": "_framework\/Pkmds.Web.wasm"
     },
     {
@@ -8873,5 +10437,5 @@
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "hTUa++sv"
+  "version": "IrqGiR9l"
 };
