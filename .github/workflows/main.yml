@@ -27,7 +27,7 @@ jobs:
 
       # publishes Blazor project to the release-folder
       - name: Publish .NET Core Project
-        run: dotnet publish Pkmds.Web/Wasm/Pkmds.Web.Wasm.csproj -c Release -o release --nologo
+        run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo
 
       # changes the base-tag in index.html from '/' to 'PKMDS-Blazor' to match GitHub Pages repository subdirectory
       - name: Change base-tag in index.html from / to PKMDS-Blazor
