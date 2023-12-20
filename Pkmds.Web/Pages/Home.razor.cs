@@ -1,4 +1,4 @@
-namespace Pkmds.Web.Components.Pages;
+namespace Pkmds.Web.Pages;
 
 public partial class Home : IDisposable
 {

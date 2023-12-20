@@ -1,9 +1,9 @@
-var builder = WebApplication.CreateBuilder(args);
-var services = builder.Services;
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-services
-    .AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
+
+var services = builder.Services;
 
 services
     .AddMudServices()
@@ -14,20 +14,4 @@ services
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app
-    .UseStaticFiles()
-    .UseAntiforgery();
-
-app
-    .MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.Run();
+await app.RunAsync();
