@@ -28,6 +28,9 @@ public static class SpriteHelper
     public static string GetBigItemSpriteFilename(int item) =>
         $"sprites/bi/bitem_{item}.png";
 
+    public static string GetArtworkItemSpriteFilename(int item) =>
+        $"sprites/ai/aitem_{item}.png";
+
     public static string GetTypeGemSpriteFileName(byte type) =>
         $"sprites/t/g/gem_{type:00}.png";
 
