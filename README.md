@@ -6,7 +6,7 @@ Powered by PKHeX.Core: https://github.com/kwsch/PKHeX
 
 Sprites from: https://github.com/msikma/pokesprite-spritesheet
 
-[![Build and deploy ASP.Net Core app to Azure Web App - pkmds-web](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dotnet-8-release-new-template_pkmds-web.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dotnet-8-release-new-template_pkmds-web.yml)
+[![Deploy to GitHub Pages](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml)
 
 Deployed to: https://www.pkmds.app/
 
