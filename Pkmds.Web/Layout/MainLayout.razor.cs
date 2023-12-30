@@ -77,12 +77,78 @@ public partial class MainLayout
         {
             return;
         }
+        switch ((GameVersion)AppState.SaveFile.Game)
+        {
+            case GameVersion.BD:
+            case GameVersion.SP:
+            case GameVersion.BDSP:
+                await ExportBdsp();
+                break;
+            case GameVersion.SN:
+            case GameVersion.MN:
+            case GameVersion.SM:
+            case GameVersion.US:
+            case GameVersion.UM:
+            case GameVersion.USUM:
+                await ExportSmUsUm();
+                break;
+            default:
+                await ExportSupportedSaveFile();
+                break;
+        };
+    }
 
+    private async Task ExportSupportedSaveFile()
+    {
+        if (AppState.SaveFile is null)
+        {
+            return;
+        }
         AppState.ShowProgressIndicator = true;
-
         await WriteFile(AppState.SaveFile.Write(), browserLoadSaveFile?.Name ?? "save.sav");
-
         AppState.ShowProgressIndicator = false;
+    }
+
+    private bool IsWebAssembly() => JSRuntime is IJSInProcessRuntime;
+
+    private const string UnsupportedSaveFileExportMessage =
+        "Save export not supported for BDSP, Sun / Moon, or Ultra Sun / Moon at this time. " +
+        "See: https://github.com/codemonkey85/PKMDS-Blazor/issues/12#issuecomment-1872579636";
+
+    private async Task ExportSmUsUm()
+    {
+        if (AppState.SaveFile is null)
+        {
+            return;
+        }
+
+        if (!IsWebAssembly())
+        {
+            await ExportSupportedSaveFile();
+            return;
+        }
+
+        await DialogService.ShowMessageBox(
+            "Unsupported File",
+            UnsupportedSaveFileExportMessage);
+    }
+
+    private async Task ExportBdsp()
+    {
+        if (AppState.SaveFile is null)
+        {
+            return;
+        }
+
+        if (!IsWebAssembly())
+        {
+            await ExportSupportedSaveFile();
+            return;
+        }
+
+        await DialogService.ShowMessageBox(
+            "Unsupported File",
+            UnsupportedSaveFileExportMessage);
     }
 
     private async Task ExportSelectedPokemonAsync()
@@ -114,7 +180,7 @@ public partial class MainLayout
         try
         {
             await using var fileHandle = await FileSystemAccessService.ShowSaveFilePickerAsync(
-                new KristofferStrube.Blazor.FileSystemAccess.SaveFilePickerOptionsStartInFileSystemHandle
+                new SaveFilePickerOptionsStartInFileSystemHandle
                 {
                     SuggestedName = fileName,
                 });
