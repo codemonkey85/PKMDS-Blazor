@@ -22,7 +22,7 @@ public static class PKMExtensions
     {
         if (pokemon is not IAppliedMarkings appliedMarkings)
         {
-            throw new ArgumentException("Pokemon does not implement IAppliedMarkings", nameof(pokemon));
+            throw new ArgumentException("Pokémon does not implement IAppliedMarkings", nameof(pokemon));
         }
 
         if ((uint)index >= appliedMarkings.MarkingCount)
@@ -32,10 +32,9 @@ public static class PKMExtensions
 
         return pokemon switch
         {
-            IAppliedMarkings7 markings7 => (int)markings7.GetMarking(index),
-            IAppliedMarkings4 markings4 => markings4.GetMarking(index) ? 1 : 0,
-            IAppliedMarkings3 markings3 => markings3.GetMarking(index) ? 1 : 0,
-            _ => throw new ArgumentException("Pokemon does not implement IAppliedMarkings", nameof(pokemon)),
+            IAppliedMarkings<bool> b => b.GetMarking(index) ? 1 : 0,
+            IAppliedMarkings<MarkingColor> c => (int)c.GetMarking(index),
+            _ => throw new ArgumentException("Pokémon does not implement IAppliedMarkings", nameof(pokemon)),
         };
     }
 }
