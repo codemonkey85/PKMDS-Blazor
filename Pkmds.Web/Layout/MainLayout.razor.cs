@@ -31,7 +31,6 @@ public partial class MainLayout
 
     private void DrawerToggle() => AppService.ToggleDrawer();
 
-    private const long MaxFileSize = 5_000_000L; // bytes
     private IBrowserFile? browserLoadSaveFile;
 
     private async Task ShowLoadSaveFileDialogAsync()
@@ -57,7 +56,7 @@ public partial class MainLayout
         AppState.SelectedBoxSlotNumber = null;
         AppState.ShowProgressIndicator = true;
 
-        await using var fileStream = browserLoadSaveFile.OpenReadStream(MaxFileSize);
+        await using var fileStream = browserLoadSaveFile.OpenReadStream(Constants.MaxFileSize);
         using var memoryStream = new MemoryStream();
         await fileStream.CopyToAsync(memoryStream);
         var data = memoryStream.ToArray();
