@@ -31,7 +31,7 @@ public partial class MainLayout
 
     private void DrawerToggle() => AppService.ToggleDrawer();
 
-    private const long MaxFileSize = 4_000_000L; // bytes
+    private const long MaxFileSize = 5_000_000L; // bytes
     private IBrowserFile? browserLoadSaveFile;
 
     private async Task ShowLoadSaveFileDialogAsync()
