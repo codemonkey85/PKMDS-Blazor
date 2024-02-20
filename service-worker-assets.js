@@ -10165,7 +10165,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-Ubk241QgN6Aa88r2VLTDvHrlj13ssReKW\/2y6F\/V6HY=",
+      "hash": "sha256-yu7D3X0X9butx1ybVAwJ2vq3NFxkqdfkGArl+boIihs=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -10237,11 +10237,11 @@
       "url": "_framework\/Microsoft.Extensions.DependencyInjection.wasm"
     },
     {
-      "hash": "sha256-6HDTvT7GimjFB26DnLvyokz4CGtYcRUadbpC30nHZvU=",
+      "hash": "sha256-ykO99Y3I3rWWxjkFfWf43EUv1GuiYXEqv35skvtK+vE=",
       "url": "_framework\/Microsoft.Extensions.Localization.Abstractions.wasm"
     },
     {
-      "hash": "sha256-VgQbNHoexjaWjPIuouCCesdZ20cbuRVYdM1ge\/TyGxg=",
+      "hash": "sha256-OuYqcSIM9nsF9ryMlsbh\/Sq0s8s3QSL\/m3oarbQQScw=",
       "url": "_framework\/Microsoft.Extensions.Localization.wasm"
     },
     {
@@ -10269,7 +10269,7 @@
       "url": "_framework\/Microsoft.JSInterop.WebAssembly.wasm"
     },
     {
-      "hash": "sha256-P4LBYWAIH\/fwWqARire9nUOgMGPInI6biK80oKJbGhQ=",
+      "hash": "sha256-ZXB0UwCRZ8nhoP6k22BurWUBXPVgolX1OpIDG+ValYo=",
       "url": "_framework\/MudBlazor.wasm"
     },
     {
@@ -10277,7 +10277,7 @@
       "url": "_framework\/PKHeX.Core.wasm"
     },
     {
-      "hash": "sha256-FBLSo1qPdN827CQOZ5ihXUstu7MUoUK0nvMBt+kvovQ=",
+      "hash": "sha256-g3DvrPY01avu\/jrPEO9IWVVOgQ\/mMLEzy+wAjcKlp3E=",
       "url": "_framework\/Pkmds.Web.wasm"
     },
     {
@@ -10429,13 +10429,13 @@
       "url": "_content\/KristofferStrube.Blazor.WebIDL\/KristofferStrube.Blazor.WebIDL.js"
     },
     {
-      "hash": "sha256-QJOANdCBoGybykS4FbgM\/b257FFqxX1IdL9ESB\/dLd4=",
+      "hash": "sha256-MXnAslXv\/m13NTzeHLO6gnidz\/j3w\/Wv6z8\/Tko7TbI=",
       "url": "_content\/MudBlazor\/MudBlazor.min.css"
     },
     {
-      "hash": "sha256-LSta8w4uaIqXmGY7mBPL3ump7G96uq8jZL7ilv67B5o=",
+      "hash": "sha256-hLL4l7QwYBfPgzLm1V7acLpkBhs7GiGNYL3W\/lftqj0=",
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "tuNWrExH"
+  "version": "6CdyO5fU"
 };
