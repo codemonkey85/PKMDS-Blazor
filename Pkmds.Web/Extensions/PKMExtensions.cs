@@ -15,7 +15,7 @@ public static class PKMExtensions
             ? (ConvertGenerationType(type1, generation), ConvertGenerationType(type2, generation))
             : (type1, type2);
 
-        static byte ConvertGenerationType(byte type, int generation) => (byte)((MoveType)type).GetMoveTypeGeneration(generation);
+        static byte ConvertGenerationType(byte type, byte generation) => (byte)((MoveType)type).GetMoveTypeGeneration(generation);
     }
 
     public static int GetMarking(this PKM pokemon, int index)

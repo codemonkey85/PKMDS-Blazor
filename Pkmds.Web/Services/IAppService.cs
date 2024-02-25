@@ -18,7 +18,7 @@ public interface IAppService
 
     ComboItem GetSpeciesComboItem(ushort speciesId);
 
-    string GetStatModifierString(int nature);
+    string GetStatModifierString(Nature nature);
 
     void LoadPokemonStats(PKM? pokemon);
 

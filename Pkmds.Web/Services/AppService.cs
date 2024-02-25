@@ -8,7 +8,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     private PKM? editFormPokemon;
     private bool isDrawerOpen;
 
-    public string[] NatureStatShortNames => new[] { "Atk", "Def", "Spe", "SpA", "SpD" };
+    public string[] NatureStatShortNames => ["Atk", "Def", "Spe", "SpA", "SpD"];
 
     public PKM? EditFormPokemon
     {
@@ -42,7 +42,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     }
 
     public IEnumerable<ComboItem> SearchPokemonNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
-        ? Enumerable.Empty<ComboItem>()
+        ? []
         : GameInfo.FilteredSources.Species
             .Where(species => species.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(species => species.Text);
@@ -51,7 +51,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         .FirstOrDefault(species => species.Value == speciesId) ?? default!;
 
     public IEnumerable<ComboItem> SearchItemNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
-        ? Enumerable.Empty<ComboItem>()
+        ? []
         : GameInfo.FilteredSources.Items
             .Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(item => item.Text);
@@ -60,7 +60,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         .FirstOrDefault(item => item.Value == itemId) ?? default!;
 
     public IEnumerable<ComboItem> SearchAbilityNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
-        ? Enumerable.Empty<ComboItem>()
+        ? []
         : GameInfo.FilteredSources.Abilities
             .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(ability => ability.Text);
@@ -68,7 +68,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public ComboItem GetAbilityComboItem(int abilityId) => GameInfo.FilteredSources.Abilities
         .FirstOrDefault(ability => ability.Value == abilityId) ?? default!;
 
-    public string GetStatModifierString(int nature)
+    public string GetStatModifierString(Nature nature)
     {
         var (up, down) = NatureAmp.GetNatureModification(nature);
         return up == down ? string.Empty : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
@@ -89,7 +89,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     }
 
     public IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false) => AppState.SaveFile is null || searchString is not { Length: > 0 }
-        ? Enumerable.Empty<ComboItem>()
+        ? []
         : GameInfo.GetLocationList(AppState.SaveFile.Version, AppState.SaveFile.Context, isEggLocation)
             .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(ability => ability.Text);
@@ -100,7 +100,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
             .FirstOrDefault(metLocation => metLocation.Value == metLocationId) ?? default!;
 
     public IEnumerable<ComboItem> SearchMoves(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
-        ? Enumerable.Empty<ComboItem>()
+        ? []
         : GameInfo.FilteredSources.Moves
             .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(move => move.Text);

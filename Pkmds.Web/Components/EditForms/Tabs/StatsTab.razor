@@ -31,7 +31,7 @@ EntityContext.MaxInvalid &&
                         @(nature.ToString())
                     </MudText>
                     @{
-                    var str = AppService.GetStatModifierString((int)nature);
+                    var str = AppService.GetStatModifierString(nature);
                 }
                 @if (str is { Length: > 0 })
                 {

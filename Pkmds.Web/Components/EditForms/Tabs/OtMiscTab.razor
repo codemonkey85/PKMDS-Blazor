@@ -24,13 +24,13 @@ EntityContext.MaxInvalid &&
 
     <MudTextField Label="OT"
                   Variant="@Variant.Outlined"
-                  @bind-Value="Pokemon.OT_Name"
-                  For="@(() => Pokemon.OT_Name)" />
+                  @bind-Value="Pokemon.OriginalTrainerName"
+                  For="@(() => Pokemon.OriginalTrainerName)" />
 
     <MudSelect Label="OT Gender"
                Variant="@Variant.Outlined"
-               @bind-Value="Pokemon.OT_Gender"
-               For="@(() => Pokemon.OT_Gender)">
+               @bind-Value="Pokemon.OriginalTrainerGender"
+               For="@(() => Pokemon.OriginalTrainerGender)">
 
         <MudSelectItem Value="@((int)Gender.Male)">
             <MudStack Row="@true">

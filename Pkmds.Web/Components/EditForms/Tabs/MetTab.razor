@@ -48,8 +48,8 @@ EntityContext.MaxInvalid &&
     <MudAutocomplete T="ComboItem"
                      Label="Met Location"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Met_Location))"
-                     @bind-Value:set="@((metLocation) => Pokemon.Met_Location = metLocation.Value)"
+                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.MetLocation))"
+                     @bind-Value:set="@((metLocation) => Pokemon.MetLocation = (ushort)metLocation.Value)"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation?.Text)" />
 
@@ -76,8 +76,8 @@ EntityContext.MaxInvalid &&
     <MudAutocomplete T="ComboItem"
                      Label="Egg Location"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.Egg_Location))"
-                     @bind-Value:set="@((metLocation) => Pokemon.Egg_Location = metLocation.Value)"
+                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
+                     @bind-Value:set="@((metLocation) => Pokemon.EggLocation = (ushort)metLocation.Value)"
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation?.Text)" />
 
