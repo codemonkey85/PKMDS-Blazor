@@ -76,7 +76,7 @@ public partial class MainLayout
         {
             return;
         }
-        switch ((GameVersion)AppState.SaveFile.Game)
+        switch (AppState.SaveFile.Version)
         {
             case GameVersion.BD:
             case GameVersion.SP:

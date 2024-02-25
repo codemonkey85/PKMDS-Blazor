@@ -56,19 +56,20 @@ EntityContext.MaxInvalid &&
     @if (Pokemon.Generation >= 3)
     {
         <MudSelect Label="Nature"
+                   T="@Nature"
                    Variant="@Variant.Outlined"
                    @bind-Value="@Pokemon.Nature"
                    @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                    For="@(() => Pokemon.Nature)">
             @foreach (var nature in GameInfo.FilteredSources.Natures)
             {
-                <MudSelectItem Value="@(nature.Value)">
+                <MudSelectItem Value="@((Nature)nature.Value)">
                     <MudStack>
                         <MudText>
                             @nature.Text
                     </MudText>
                     @{
-                        var str = AppService.GetStatModifierString(nature.Value);
+                        var str = AppService.GetStatModifierString((Nature)nature.Value);
                     }
                     @if (str is { Length: > 0 })
                     {
@@ -181,6 +182,7 @@ EntityContext.MaxInvalid &&
     {
         <MudNumericField Label="Friendship"
                          Variant="@Variant.Outlined"
+                         T="@byte"
                          Min="0"
                          Max="255"
                          @bind-Value="@Pokemon.CurrentFriendship"
@@ -194,19 +196,19 @@ EntityContext.MaxInvalid &&
                          For="@(() => Pokemon.IsEgg)" />
 
             <MudCheckBox Label="Infected"
-                         @bind-Value="@Pokemon.PKRS_Infected"
+                         @bind-Value="@Pokemon.IsPokerusInfected"
                          @bind-Value:after="@RefreshService.Refresh"
-                         For="@(() => Pokemon.PKRS_Infected)" />
+                         For="@(() => Pokemon.IsPokerusInfected)" />
 
             <MudCheckBox Label="Cured"
-                         @bind-Value="@Pokemon.PKRS_Cured"
+                         @bind-Value="@Pokemon.IsPokerusCured"
                          @bind-Value:after="@RefreshService.Refresh"
-                         For="@(() => Pokemon.PKRS_Cured)" />
+                         For="@(() => Pokemon.IsPokerusCured)" />
             @*
     <MudCheckBox Label="N's Sparkle"
     @bind-Value="@Pokemon"
     @bind-Value:after="@RefreshService.Refresh"
-    For="@(() => Pokemon.PKRS_Cured)" />
+    For="@(() => Pokemon.IsPokerusCured)" />
     *@
 
             <MudCheckBox Label="Shiny"
