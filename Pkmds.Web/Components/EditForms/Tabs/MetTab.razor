@@ -14,23 +14,25 @@ EntityContext.MaxInvalid &&
                  For="@(() => Pokemon.IsNicknamed)" />
 
     <MudSelect Label="Origin Game"
+               T="@GameVersion"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Version"
-               ToStringFunc="@((version) => GameInfo.GetVersionName((GameVersion)version))"
+               ToStringFunc="@((version) => GameInfo.GetVersionName(version))"
                For="@(() => Pokemon.Version)">
         @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
         {
-            <MudSelectItem Value="@((int)(byte)version)" />
+            <MudSelectItem Value="@(version)" />
         }
     </MudSelect>
 
     <MudSelect Label="Ball"
+               T="@byte"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Ball"
                For="@(() => Pokemon.Ball)">
         @foreach (ComboItem ball in GameInfo.BallDataSource)
         {
-            <MudSelectItem Value="@ball.Value">
+            <MudSelectItem Value="@((byte)ball.Value)">
                 <MudStack Row="@true">
                     <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
                               ObjectFit="@ObjectFit.Contain"
