@@ -15,24 +15,21 @@ EntityContext.MaxInvalid &&
                      For="@(() => Pokemon.CurrentLevel)" />
 
     <MudSelect Label="Nature"
+               T="@Nature"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Nature"
                @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                For="@(() => Pokemon.Nature)">
-        @foreach (Nature nature in Enum.GetValues(typeof(Nature)))
+        @foreach (var nature in GameInfo.FilteredSources.Natures)
         {
-            if (nature == Nature.Random)
-            {
-                continue;
-            }
-            <MudSelectItem Value="@((int)nature)">
+            <MudSelectItem Value="@((Nature)nature.Value)">
                 <MudStack>
                     <MudText>
-                        @(nature.ToString())
+                        @nature.Text
                     </MudText>
                     @{
-                    var str = AppService.GetStatModifierString(nature);
-                }
+                        var str = AppService.GetStatModifierString((Nature)nature.Value);
+                    }
                 @if (str is { Length: > 0 })
                 {
                     <MudText>
