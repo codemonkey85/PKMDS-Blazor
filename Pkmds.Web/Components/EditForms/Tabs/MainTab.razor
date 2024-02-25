@@ -56,13 +56,14 @@ EntityContext.MaxInvalid &&
     @if (Pokemon.Generation >= 3)
     {
         <MudSelect Label="Nature"
+                   T="@Nature"
                    Variant="@Variant.Outlined"
                    @bind-Value="@Pokemon.Nature"
                    @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                    For="@(() => Pokemon.Nature)">
             @foreach (var nature in GameInfo.FilteredSources.Natures)
             {
-                <MudSelectItem Value="@(nature.Value)">
+                <MudSelectItem Value="@((Nature)nature.Value)">
                     <MudStack>
                         <MudText>
                             @nature.Text
