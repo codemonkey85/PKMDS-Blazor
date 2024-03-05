@@ -10165,7 +10165,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-68uqiklx2Vgp5x4SKJZbhFE0m3Jrc+WQHf1WJ3cjLjc=",
+      "hash": "sha256-Bv\/fNYT\/JF7jiSNGjMomrTsN4qYjB1mOgcpHgEx7CkU=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -10173,7 +10173,7 @@
       "url": "_framework\/dotnet.native.8.0.2.0rhgoi7107.js"
     },
     {
-      "hash": "sha256-ndGHcY1i\/4sUN7w6o3gU+YyzovFRnzdHW9Byw0BIACw=",
+      "hash": "sha256-X77M6M2p9qf+plvWbHUMZtmKPQQ9pJXGyt9PFCdfEhk=",
       "url": "_framework\/dotnet.native.wasm"
     },
     {
@@ -10269,7 +10269,7 @@
       "url": "_framework\/Microsoft.JSInterop.WebAssembly.wasm"
     },
     {
-      "hash": "sha256-ZXB0UwCRZ8nhoP6k22BurWUBXPVgolX1OpIDG+ValYo=",
+      "hash": "sha256-7PpuYTe0wnvMwZX6wNwZmCB\/H2NE0lsLdAJExRF0z04=",
       "url": "_framework\/MudBlazor.wasm"
     },
     {
@@ -10277,11 +10277,11 @@
       "url": "_framework\/PKHeX.Core.wasm"
     },
     {
-      "hash": "sha256-nXC0Li0FemdBm6vAb2p5CC6Nc7mF8V6auOtd8ZVSRVw=",
+      "hash": "sha256-4G++e+YzIeJ6Zxdq0IqtfLKAxdP\/xLNlMbhldRiU7ak=",
       "url": "_framework\/Pkmds.Web.wasm"
     },
     {
-      "hash": "sha256-SDRSk1FtQEXMDJrY33tRK0u7NA6KwMZt3GzA8Ynv3Wc=",
+      "hash": "sha256-w16cgqptUUZ6SR13HfCzD1Sgt5wjV5sKaabVUwm5axA=",
       "url": "_framework\/System.Collections.Concurrent.wasm"
     },
     {
@@ -10353,7 +10353,7 @@
       "url": "_framework\/System.ObjectModel.wasm"
     },
     {
-      "hash": "sha256-8o7cHClxFX0gSvL32ftE45TOvHy5u7t56I22Zj6Mg4U=",
+      "hash": "sha256-kQ4a8t4DrfG9yWhRoZglv6YWpLyXHirO9pDEI\/EsLmk=",
       "url": "_framework\/System.Private.CoreLib.wasm"
     },
     {
@@ -10429,13 +10429,13 @@
       "url": "_content\/KristofferStrube.Blazor.WebIDL\/KristofferStrube.Blazor.WebIDL.js"
     },
     {
-      "hash": "sha256-MXnAslXv\/m13NTzeHLO6gnidz\/j3w\/Wv6z8\/Tko7TbI=",
+      "hash": "sha256-muHLLnj7jgUyrRl7GPeKOTL1NY2POXwgotGwix6jwLw=",
       "url": "_content\/MudBlazor\/MudBlazor.min.css"
     },
     {
-      "hash": "sha256-hLL4l7QwYBfPgzLm1V7acLpkBhs7GiGNYL3W\/lftqj0=",
+      "hash": "sha256-0QqABFrsYV0Me2tkO\/OgrT88eoY\/iMhN8MSNsuHAPcE=",
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "Xj6gOaIl"
+  "version": "hW+NLrCG"
 };
