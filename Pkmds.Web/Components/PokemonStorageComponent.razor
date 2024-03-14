@@ -20,7 +20,7 @@
                        Class="box-select">
                 @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
                 {
-                    var boxName = AppState.SaveFile.GetBoxName(boxId);
+                    var boxName = AppState.SaveFile is IBoxDetailNameRead saveFile ? saveFile.GetBoxName(boxId) : string.Empty;
                     <MudSelectItem Value="@boxId">
                         @boxName
                     </MudSelectItem>

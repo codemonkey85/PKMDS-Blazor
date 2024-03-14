@@ -6,7 +6,6 @@ public partial class SaveFileNameDisplay
 {
     public static string FriendlyGameName(GameVersion gameVersion) => gameVersion switch
     {
-        Unknown => "Unknown",
         Invalid => "Invalid",
         S => "Sapphire",
         R => "Ruby",
