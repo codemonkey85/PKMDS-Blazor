@@ -58,8 +58,8 @@ EntityContext.MaxInvalid &&
         <MudSelect Label="Nature"
                    T="@Nature"
                    Variant="@Variant.Outlined"
-                   @bind-Value="@Pokemon.Nature"
-                   @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                   @bind-Value:get="@Pokemon.Nature"
+                   @bind-Value:set="@OnNatureSet"
                    For="@(() => Pokemon.Nature)">
             @foreach (var nature in GameInfo.FilteredSources.Natures)
             {

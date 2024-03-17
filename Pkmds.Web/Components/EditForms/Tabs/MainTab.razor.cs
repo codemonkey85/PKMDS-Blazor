@@ -18,4 +18,15 @@ public partial class MainTab : IDisposable
         FormSelect?.ForceRender(true);
         StateHasChanged();
     }
+
+    private void OnNatureSet(Nature nature)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.SetNature(nature);
+        AppService.LoadPokemonStats(Pokemon);
+    }
 }
