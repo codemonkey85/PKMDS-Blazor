@@ -21,12 +21,11 @@ public partial class MainLayout
         }
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    private async Task OnSystemPreferenceChanged(bool newValue)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    private Task OnSystemPreferenceChanged(bool newValue)
     {
         isDarkMode = newValue;
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private void DrawerToggle() => AppService.ToggleDrawer();

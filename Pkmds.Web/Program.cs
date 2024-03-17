@@ -7,10 +7,10 @@ var services = builder.Services;
 
 services
     .AddMudServices()
+    .AddFileSystemAccessService()
     .AddScoped<IAppState, AppState>()
     .AddScoped<IRefreshService, RefreshService>()
-    .AddScoped<IAppService, AppService>()
-    .AddFileSystemAccessService();
+    .AddScoped<IAppService, AppService>();
 
 var app = builder.Build();
 
