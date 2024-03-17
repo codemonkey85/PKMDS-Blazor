@@ -22,7 +22,7 @@ public partial class PartyGrid
     }
 
     private void ExportAsShowdown() =>
-        DialogService.Show<Dialogs.ShowdownExportDialog>(
+        DialogService.Show<ShowdownExportDialog>(
             "Showdown Export",
             new DialogOptions
             {

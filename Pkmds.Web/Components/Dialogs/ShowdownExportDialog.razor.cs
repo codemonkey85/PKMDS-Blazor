@@ -8,7 +8,7 @@ public partial class ShowdownExportDialog
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
 
-    private string? ShowdownExport => Pokemon is not null ? AppService.ExportPokemonAsShowdown(Pokemon) : AppService.ExportPartyAsShowdown();
+    private string ShowdownExport => Pokemon is not null ? AppService.ExportPokemonAsShowdown(Pokemon) : AppService.ExportPartyAsShowdown();
 
     private void Close() => MudDialog?.Close();
 }

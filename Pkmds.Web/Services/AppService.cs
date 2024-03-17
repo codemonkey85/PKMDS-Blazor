@@ -187,8 +187,9 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
             }
 
             sbShowdown.AppendLine(ShowdownParsing.GetShowdownText(pkm));
+            sbShowdown.AppendLine();
         }
 
-        return sbShowdown.ToString();
+        return sbShowdown.ToString().Trim();
     }
 }

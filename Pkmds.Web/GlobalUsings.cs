@@ -11,5 +11,6 @@ global using MudBlazor.Services;
 global using PKHeX.Core;
 global using Pkmds.Web;
 global using Pkmds.Web.Components;
+global using Pkmds.Web.Components.Dialogs;
 global using Pkmds.Web.Extensions;
 global using Pkmds.Web.Services;
