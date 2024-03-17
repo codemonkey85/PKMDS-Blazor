@@ -18,4 +18,15 @@ public partial class StatsTab : IDisposable
         characteristicIndex < characteristics.Length
             ? characteristics[characteristicIndex]
             : string.Empty;
+
+    private void OnNatureSet(Nature nature)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.SetNature(nature);
+        AppService.LoadPokemonStats(Pokemon);
+    }
 }
