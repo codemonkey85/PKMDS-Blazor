@@ -10,4 +10,16 @@ public partial class PokemonEditForm : IDisposable
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    private void ExportAsShowdown() =>
+        DialogService.Show<ShowdownExportDialog>(
+            "Showdown Export",
+            new DialogParameters
+            {
+                { nameof(ShowdownExportDialog.Pokemon), Pokemon }
+            },
+            new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+            });
 }
