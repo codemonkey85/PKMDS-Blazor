@@ -164,4 +164,31 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public void DeletePokemon()
     {
     }
+
+    public string ExportPokemonAsShowdown(PKM? pkm) => pkm is null
+        ? string.Empty
+        : ShowdownParsing.GetShowdownText(pkm);
+
+    public string ExportPartyAsShowdown()
+    {
+        if (AppState.SaveFile is not { HasParty: true, PartyCount: var partyCount } saveFile)
+        {
+            return string.Empty;
+        }
+
+        var sbShowdown = new StringBuilder();
+
+        for (var slot = 0; slot < partyCount; slot++)
+        {
+            var pkm = saveFile.GetPartySlotAtIndex(slot);
+            if (pkm is null)
+            {
+                continue;
+            }
+
+            sbShowdown.AppendLine(ShowdownParsing.GetShowdownText(pkm));
+        }
+
+        return sbShowdown.ToString();
+    }
 }

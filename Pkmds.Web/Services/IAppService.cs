@@ -45,4 +45,8 @@ public interface IAppService
     void SetSelectedBoxPokemon(PKM? pkm, int boxNumber, int slotNumber);
 
     void SetSelectedPartyPokemon(PKM? pkm, int slotNumber);
+
+    string ExportPokemonAsShowdown(PKM? pkm);
+
+    string ExportPartyAsShowdown();
 }

@@ -20,4 +20,12 @@ public partial class PartyGrid
         RefreshService.OnAppStateChanged -= StateHasChanged;
         RefreshService.OnPartyStateChanged -= StateHasChanged;
     }
+
+    private void ExportAsShowdown() =>
+        DialogService.Show<Dialogs.ShowdownExportDialog>(
+            "Showdown Export",
+            new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+            });
 }
