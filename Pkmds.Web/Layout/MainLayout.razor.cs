@@ -34,7 +34,12 @@ public partial class MainLayout
 
     private async Task ShowLoadSaveFileDialogAsync()
     {
-        var dialog = await DialogService.ShowAsync<FileUploadDialog>();
+        var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Save File", options: new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            DisableBackdropClick = true
+        });
+
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
         {
