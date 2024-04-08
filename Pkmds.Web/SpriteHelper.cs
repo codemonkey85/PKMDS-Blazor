@@ -13,6 +13,7 @@ public static class SpriteHelper
             { Form: > 0 } => pokemon.Species switch
             {
                 (ushort)Species.Scatterbug or (ushort)Species.Spewpa => pokemon.Species.ToString(),
+                (ushort)Species.Urshifu => pokemon.Species.ToString(),
                 _ => $"{pokemon.Species}-{pokemon.Form}",
             },
             { Species: > (ushort)Species.None and < (ushort)Species.MAX_COUNT } =>
