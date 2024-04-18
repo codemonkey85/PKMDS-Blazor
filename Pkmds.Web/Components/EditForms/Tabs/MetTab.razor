@@ -41,9 +41,9 @@ EntityContext.MaxInvalid &&
                               Height="22" />
                     <MudText>
                         @ball.Text
-                </MudText>
-            </MudStack>
-        </MudSelectItem>
+                    </MudText>
+                </MudStack>
+            </MudSelectItem>
         }
     </MudSelect>
 
@@ -58,15 +58,8 @@ EntityContext.MaxInvalid &&
     <MudPaper Elevation="0"
               Outlined="@true"
               Class="my-2">
-        <MudStack>
-            <MudInputLabel ForId="metDate">
-                Met Date
-            </MudInputLabel>
-            <InputDate @bind-Value="@Pokemon.MetDate"
-                       style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface);"
-                       id="metDate"
-                       DisplayName="Met Date" />
-        </MudStack>
+        <DateOnlyPicker @bind-Date="@Pokemon.MetDate"
+                        Label="Met Date" />
     </MudPaper>
 
     @*
@@ -86,14 +79,7 @@ EntityContext.MaxInvalid &&
     <MudPaper Elevation="0"
               Outlined="@true"
               Class="my-2">
-        <MudStack>
-            <MudInputLabel ForId="eggDate">
-                Egg Date
-            </MudInputLabel>
-            <InputDate @bind-Value="@Pokemon.EggMetDate"
-                       style="color: var(--mud-palette-text-primary); background-color: var(--mud-palette-surface);"
-                       id="eggDate"
-                       DisplayName="Egg Date" />
-        </MudStack>
+        <DateOnlyPicker @bind-Date="@Pokemon.EggMetDate"
+                        Label="Met Date" />
     </MudPaper>
 }
