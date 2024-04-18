@@ -55,12 +55,8 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation?.Text)" />
 
-    <MudPaper Elevation="0"
-              Outlined="@true"
-              Class="my-2">
-        <DateOnlyPicker @bind-Date="@Pokemon.MetDate"
-                        Label="Met Date" />
-    </MudPaper>
+    <DateOnlyPicker @bind-Date="@Pokemon.MetDate"
+                    Label="Met Date" />
 
     @*
         <MudCheckBox Label="Met as Egg"
@@ -76,10 +72,6 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
                      ToStringFunc="@((metLocation) => metLocation?.Text)" />
 
-    <MudPaper Elevation="0"
-              Outlined="@true"
-              Class="my-2">
-        <DateOnlyPicker @bind-Date="@Pokemon.EggMetDate"
-                        Label="Met Date" />
-    </MudPaper>
+    <DateOnlyPicker @bind-Date="@Pokemon.EggMetDate"
+                    Label="Met Date" />
 }

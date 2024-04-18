@@ -23,6 +23,12 @@ public partial class DateOnlyPicker
     [Parameter]
     public string? HelperText { get; set; }
 
+    [Parameter]
+    public Variant Variant { get; set; } = Variant.Outlined;
+
+    [Parameter]
+    public Color Color { get; set; } = Color.Default;
+
     private MudDatePicker? datePickerRef;
 
     private DateTime? DateBindTarget
