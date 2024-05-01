@@ -264,4 +264,4 @@ dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_qualification_for_event = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
-dotnet_style_prefer_collection_expression = true:suggestion
+dotnet_style_prefer_collection_expression = when_types_exactly_match:suggestion
