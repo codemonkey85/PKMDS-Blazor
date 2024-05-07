@@ -1,6 +1,6 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is not null)
+@if (AppState.SaveFile is { } saveFile)
 {
     <PartyGrid />
 
@@ -15,12 +15,12 @@
 
         <div class="select-container">
             <MudSelect T="@int"
-                       @bind-Value="@AppState.SaveFile.CurrentBox"
+                       @bind-Value="@saveFile.CurrentBox"
                        @bind-Value:after="@AppService.ClearSelection"
                        Class="box-select">
-                @for (var boxId = 0; boxId < AppState.SaveFile.BoxCount; boxId++)
+                @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
                 {
-                    var boxName = AppState.SaveFile is IBoxDetailNameRead saveFile ? saveFile.GetBoxName(boxId) : string.Empty;
+                    var boxName = saveFile is IBoxDetailNameRead boxDetailNameRead ? boxDetailNameRead.GetBoxName(boxId) : string.Empty;
                     <MudSelectItem Value="@boxId">
                         @boxName
                     </MudSelectItem>
@@ -37,5 +37,5 @@
         </MudIconButton>
     </div>
 
-    <BoxComponent BoxNumber="@AppState.SaveFile.CurrentBox" />
+    <BoxComponent BoxNumber="@saveFile.CurrentBox" />
 }

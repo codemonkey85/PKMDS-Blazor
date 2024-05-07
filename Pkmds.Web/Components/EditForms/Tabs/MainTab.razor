@@ -1,14 +1,14 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (Pokemon is not null &&
-AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+@if (Pokemon is { Generation: { } pokemonGeneration } &&
+AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 ((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
-    @if (Pokemon.Generation >= 3)
+    @if (pokemonGeneration >= 3)
     {
         <MudNumericField Label="PID"
                          Variant="@Variant.Outlined"
@@ -53,7 +53,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.CurrentLevel)" />
 
-    @if (Pokemon.Generation >= 3)
+    @if (pokemonGeneration >= 3)
     {
         <MudSelect Label="Nature"
                    T="@Nature"
@@ -152,7 +152,7 @@ EntityContext.MaxInvalid &&
         </ItemTemplate>
     </MudAutocomplete>
 
-    @if (Pokemon.Generation >= 3)
+    @if (pokemonGeneration >= 3)
     {
         <MudAutocomplete T="ComboItem"
                          Label="Ability"
@@ -163,7 +163,7 @@ EntityContext.MaxInvalid &&
                          ToStringFunc="@((ability) => ability?.Text)" />
     }
 
-    @if (Pokemon.Generation >= 4)
+    @if (pokemonGeneration >= 4)
     {
         <MudSelect Label="Language"
                    Variant="@Variant.Outlined"
@@ -178,7 +178,7 @@ EntityContext.MaxInvalid &&
         </MudSelect>
     }
 
-    @if (Pokemon.Generation >= 2)
+    @if (pokemonGeneration >= 2)
     {
         <MudNumericField Label="Friendship"
                          Variant="@Variant.Outlined"

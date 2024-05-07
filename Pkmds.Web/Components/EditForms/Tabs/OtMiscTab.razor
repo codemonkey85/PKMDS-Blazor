@@ -1,7 +1,7 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (Pokemon is not null &&
-AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+@if (Pokemon is { Generation: { } pokemonGeneration } &&
+AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
@@ -15,12 +15,15 @@ EntityContext.MaxInvalid &&
                      Format="@TrainerIDExtensions.TID16"
                      For="@(() => Pokemon.TID16)" />
 
-    <MudNumericField Label="SID"
-                     Variant="@Variant.Outlined"
-                     @bind-Value="Pokemon.SID16"
-                     @bind-Value:after="@(RefreshService.Refresh)"
-                     Format="@TrainerIDExtensions.SID16"
-                     For="@(() => Pokemon.SID16)" />
+    @if (pokemonGeneration >= 3)
+    {
+        <MudNumericField Label="SID"
+                         Variant="@Variant.Outlined"
+                         @bind-Value="Pokemon.SID16"
+                         @bind-Value:after="@(RefreshService.Refresh)"
+                         Format="@TrainerIDExtensions.SID16"
+                         For="@(() => Pokemon.SID16)" />
+    }
 
     <MudTextField Label="OT"
                   Variant="@Variant.Outlined"
