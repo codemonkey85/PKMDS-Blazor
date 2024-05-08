@@ -49,4 +49,6 @@ public interface IAppService
     string ExportPokemonAsShowdown(PKM? pkm);
 
     string ExportPartyAsShowdown();
+
+    string GetIdFormatString(bool isSid = false);
 }

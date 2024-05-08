@@ -15,7 +15,7 @@ EntityContext.MaxInvalid &&
             <MudNumericField Label="Trainer ID"
                             Variant="@Variant.Outlined"
                             @bind-Value="@Pokemon.TID16"
-                            Format="@GetIdFormatString()"
+                            Format="@AppService.GetIdFormatString()"
                             For="@(() => Pokemon.TID16)" />
 
             @if (pokemonGeneration >= 3)
@@ -23,7 +23,7 @@ EntityContext.MaxInvalid &&
                 <MudNumericField Label="Trainer SID"
                                 Variant="@Variant.Outlined"
                                 @bind-Value="@Pokemon.SID16"
-                                Format="@GetIdFormatString(true)"
+                                Format="@AppService.GetIdFormatString(true)"
                                 For="@(() => Pokemon.SID16)" />
             }
         }
@@ -34,7 +34,7 @@ EntityContext.MaxInvalid &&
             <MudNumericField Label="Trainer ID"
                             Variant="@Variant.Outlined"
                             @bind-Value="@Pokemon.TrainerTID7"
-                            Format="@GetIdFormatString()"
+                            Format="@AppService.GetIdFormatString()"
                             For="@(() => Pokemon.TrainerTID7)" />
 
             @if (pokemonGeneration >= 3)
@@ -42,7 +42,7 @@ EntityContext.MaxInvalid &&
                 <MudNumericField Label="Trainer SID"
                                 Variant="@Variant.Outlined"
                                 @bind-Value="@Pokemon.TrainerSID7"
-                                Format="@GetIdFormatString(true)"
+                                Format="@AppService.GetIdFormatString(true)"
                                 For="@(() => Pokemon.TrainerSID7)" />
             }
         }

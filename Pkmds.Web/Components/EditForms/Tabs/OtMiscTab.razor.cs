@@ -11,24 +11,6 @@ public partial class OtMiscTab : IDisposable
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
-    private string GetIdFormatString(bool isSid = false)
-    {
-        if (AppState.SaveFile is not { } saveFile)
-        {
-            return string.Empty;
-        }
-
-        var format = saveFile?.GetTrainerIDFormat();
-        return (format, isSid) switch
-        {
-            (TrainerIDFormat.SixteenBit, false) => TrainerIDExtensions.TID16,
-            (TrainerIDFormat.SixteenBit, true) => TrainerIDExtensions.SID16,
-            (TrainerIDFormat.SixDigit, false) => TrainerIDExtensions.TID7,
-            (TrainerIDFormat.SixDigit, true) => TrainerIDExtensions.SID7,
-            _ => "D"
-        };
-    }
-
     private void FillFromGame()
     {
         if (Pokemon is null || AppState.SaveFile is not { } saveFile)

@@ -8,11 +8,11 @@
 }
 
 @code {
-    private static RenderFragment Display(SaveFile saveFile, int gender) =>
+    private RenderFragment Display(SaveFile saveFile, int gender) =>
     @<MudStack Row="@true" Spacing="1">
         <span>@saveFile.OT </span>
         @GenderDisplayIcon(gender)
-        <span>(@saveFile.DisplayTID</span>
+        <span>(@saveFile.DisplayTID.ToString(AppService.GetIdFormatString())</span>
         <span>, @FriendlyGameName(saveFile.Version)</span>
         <span>, @saveFile.PlayTimeString)</span>
     </MudStack>;

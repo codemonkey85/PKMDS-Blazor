@@ -192,4 +192,22 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
 
         return sbShowdown.ToString().Trim();
     }
+
+    public string GetIdFormatString(bool isSid = false)
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return string.Empty;
+        }
+
+        var format = saveFile?.GetTrainerIDFormat();
+        return (format, isSid) switch
+        {
+            (TrainerIDFormat.SixteenBit, false) => TrainerIDExtensions.TID16,
+            (TrainerIDFormat.SixteenBit, true) => TrainerIDExtensions.SID16,
+            (TrainerIDFormat.SixDigit, false) => TrainerIDExtensions.TID7,
+            (TrainerIDFormat.SixDigit, true) => TrainerIDExtensions.SID7,
+            _ => "D"
+        };
+    }
 }
