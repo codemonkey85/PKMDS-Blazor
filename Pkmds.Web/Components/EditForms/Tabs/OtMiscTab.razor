@@ -8,39 +8,45 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 ((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
-    @if(saveFile.GetTrainerIDFormat() == TrainerIDFormat.SixteenBit)
+    switch (saveFile.GetTrainerIDFormat())
     {
-        <MudNumericField Label="TID"
-                        Variant="@Variant.Outlined"
-                        @bind-Value="@Pokemon.TID16"
-                        Format="@GetIdFormatString()"
-                        For="@(() => Pokemon.TID16)" />
-
-        @if (pokemonGeneration >= 3)
+        case TrainerIDFormat.SixteenBit:
         {
-            <MudNumericField Label="SID"
+            <MudNumericField Label="Trainer ID"
                             Variant="@Variant.Outlined"
-                            @bind-Value="@Pokemon.SID16"
-                            Format="@GetIdFormatString(true)"
-                            For="@(() => Pokemon.SID16)" />
-        }
-    }
-    @if(saveFile.GetTrainerIDFormat() == TrainerIDFormat.SixDigit)
-    {
-        <MudNumericField Label="TID"
-                        Variant="@Variant.Outlined"
-                        @bind-Value="@Pokemon.TrainerTID7"
-                        Format="@GetIdFormatString()"
-                        For="@(() => Pokemon.TrainerTID7)" />
+                            @bind-Value="@Pokemon.TID16"
+                            Format="@GetIdFormatString()"
+                            For="@(() => Pokemon.TID16)" />
 
-        @if (pokemonGeneration >= 3)
-        {
-            <MudNumericField Label="SID"
-                            Variant="@Variant.Outlined"
-                            @bind-Value="@Pokemon.TrainerSID7"
-                            Format="@GetIdFormatString(true)"
-                            For="@(() => Pokemon.TrainerSID7)" />
+            @if (pokemonGeneration >= 3)
+            {
+                <MudNumericField Label="Trainer SID"
+                                Variant="@Variant.Outlined"
+                                @bind-Value="@Pokemon.SID16"
+                                Format="@GetIdFormatString(true)"
+                                For="@(() => Pokemon.SID16)" />
+            }
         }
+        break;
+
+        case TrainerIDFormat.SixDigit:
+        {
+            <MudNumericField Label="Trainer ID"
+                            Variant="@Variant.Outlined"
+                            @bind-Value="@Pokemon.TrainerTID7"
+                            Format="@GetIdFormatString()"
+                            For="@(() => Pokemon.TrainerTID7)" />
+
+            @if (pokemonGeneration >= 3)
+            {
+                <MudNumericField Label="Trainer SID"
+                                Variant="@Variant.Outlined"
+                                @bind-Value="@Pokemon.TrainerSID7"
+                                Format="@GetIdFormatString(true)"
+                                For="@(() => Pokemon.TrainerSID7)" />
+            }
+        }
+        break;
     }
 
     <MudTextField Label="OT"
