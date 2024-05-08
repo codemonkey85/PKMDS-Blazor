@@ -11,57 +11,56 @@ EntityContext.MaxInvalid &&
     switch (saveFile.GetTrainerIDFormat())
     {
         case TrainerIDFormat.SixteenBit:
-        {
-            <MudNumericField Label="Trainer ID"
-                            Variant="@Variant.Outlined"
-                            @bind-Value="@Pokemon.TID16"
-                            Format="@AppService.GetIdFormatString()"
-                            For="@(() => Pokemon.TID16)" />
-
-            @if (pokemonGeneration >= 3)
             {
-                <MudNumericField Label="Trainer SID"
-                                Variant="@Variant.Outlined"
-                                @bind-Value="@Pokemon.SID16"
-                                Format="@AppService.GetIdFormatString(true)"
-                                For="@(() => Pokemon.SID16)" />
+                <MudNumericField Label="Trainer ID"
+                                 Variant="@Variant.Outlined"
+                                 @bind-Value="@Pokemon.TID16"
+                                 Format="@AppService.GetIdFormatString()"
+                                 For="@(() => Pokemon.TID16)" />
+
+                @if (pokemonGeneration >= 3)
+                {
+                    <MudNumericField Label="Trainer SID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@Pokemon.SID16"
+                                     Format="@AppService.GetIdFormatString(true)"
+                                     For="@(() => Pokemon.SID16)" />
+                }
             }
-        }
-        break;
+            break;
 
         case TrainerIDFormat.SixDigit:
-        {
-            <MudNumericField Label="Trainer ID"
-                            Variant="@Variant.Outlined"
-                            @bind-Value="@Pokemon.TrainerTID7"
-                            Format="@AppService.GetIdFormatString()"
-                            For="@(() => Pokemon.TrainerTID7)" />
-
-            @if (pokemonGeneration >= 3)
             {
-                <MudNumericField Label="Trainer SID"
-                                Variant="@Variant.Outlined"
-                                @bind-Value="@Pokemon.TrainerSID7"
-                                Format="@AppService.GetIdFormatString(true)"
-                                For="@(() => Pokemon.TrainerSID7)" />
+                <MudNumericField Label="Trainer ID"
+                                 Variant="@Variant.Outlined"
+                                 @bind-Value="@Pokemon.TrainerTID7"
+                                 Format="@AppService.GetIdFormatString()"
+                                 For="@(() => Pokemon.TrainerTID7)" />
+
+                @if (pokemonGeneration >= 3)
+                {
+                    <MudNumericField Label="Trainer SID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@Pokemon.TrainerSID7"
+                                     Format="@AppService.GetIdFormatString(true)"
+                                     For="@(() => Pokemon.TrainerSID7)" />
+                }
             }
-        }
-        break;
+            break;
     }
 
     <MudTextField Label="OT"
                   Variant="@Variant.Outlined"
-                  @bind-Value="Pokemon.OriginalTrainerName"
+                  @bind-Value="@Pokemon.OriginalTrainerName"
                   For="@(() => Pokemon.OriginalTrainerName)" />
 
     <MudSelect Label="OT Gender"
-               T="@byte"
                Variant="@Variant.Outlined"
-               @bind-Value="Pokemon.OriginalTrainerGender"
+               @bind-Value="@Pokemon.OriginalTrainerGender"
                For="@(() => Pokemon.OriginalTrainerGender)">
 
         <MudSelectItem Value="@((byte)Gender.Male)">
-            <MudStack Row="@true">
+            <MudStack Row>
                 <MudIcon Icon="@Icons.Material.Filled.Male"
                          Style="@($"color: {Colors.Blue.Default};")" />
                 <MudText Style="@($"color: {Colors.Blue.Default};")">
@@ -71,7 +70,7 @@ EntityContext.MaxInvalid &&
         </MudSelectItem>
 
         <MudSelectItem Value="@((byte)Gender.Female)">
-            <MudStack Row="@true">
+            <MudStack Row>
                 <MudIcon Icon="@Icons.Material.Filled.Female"
                          Style="@($"color: {Colors.Red.Default};")" />
                 <MudText Style="@($"color: {Colors.Red.Default};")">
@@ -82,7 +81,7 @@ EntityContext.MaxInvalid &&
 
     </MudSelect>
 
-    <MudButton OnClick="FillFromGame"
+    <MudButton OnClick="@FillFromGame"
                Variant="@Variant.Filled"
                Class="mt-2">
         Fill Trainer info from Game

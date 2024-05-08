@@ -9,7 +9,7 @@
 
 @code {
     private RenderFragment Display(SaveFile saveFile, int gender) =>
-    @<MudStack Row="@true" Spacing="1">
+    @<MudStack Row Spacing="1">
         <span>@saveFile.OT </span>
         @GenderDisplayIcon(gender)
         <span>(@saveFile.DisplayTID.ToString(AppService.GetIdFormatString())</span>

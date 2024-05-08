@@ -21,9 +21,9 @@
             @AppTitle
         </MudText>
         <MudSpacer />
-        <MudStack Row="@true">
+        <MudStack Row>
             <MudSwitch @bind-Value="@isDarkMode"
-                       Color="Color.Primary"
+                       Color="@Color.Primary"
                        Label="@(isDarkMode ? "Dark" : "Light")" />
             <MudButton Class="d-none d-md-flex"
                        EndIcon="@Icons.Custom.Brands.GitHub"

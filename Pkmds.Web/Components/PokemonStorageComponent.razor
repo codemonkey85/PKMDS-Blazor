@@ -14,8 +14,7 @@
         </MudIconButton>
 
         <div class="select-container">
-            <MudSelect T="@int"
-                       @bind-Value="@saveFile.CurrentBox"
+            <MudSelect @bind-Value="@saveFile.CurrentBox"
                        @bind-Value:after="@AppService.ClearSelection"
                        Class="box-select">
                 @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)

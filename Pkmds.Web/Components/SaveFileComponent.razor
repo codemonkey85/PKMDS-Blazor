@@ -4,15 +4,15 @@
 {
     @if (AppState.ShowProgressIndicator)
     {
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle"
+        <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
                      Width="210px"
                      Height="50px" />
         <br />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle"
+        <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
                      Width="210px"
                      Height="50px" />
         <br />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle"
+        <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
                      Width="480px"
                      Height="350px" />
     }
@@ -23,7 +23,7 @@ else
         PKMDS Save Editor - <SaveFileNameDisplay />
     </PageTitle>
 
-    <MudText Typo="Typo.h5">
+    <MudText Typo="@Typo.h5">
         <SaveFileNameDisplay />
     </MudText>
 

@@ -8,7 +8,7 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 ((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
-    <MudStack Row="@true"
+    <MudStack Row
               Spacing="3"
               Justify="@Justify.FlexStart">
 
@@ -42,9 +42,9 @@ EntityContext.MaxInvalid &&
 
     <div class="mb-2">
 
-        <MudTabs Outlined="true"
-                 Rounded="true"
-                 Border="true">
+        <MudTabs Outlined
+                 Rounded
+                 Border>
 
             <MudTabPanel Text="Main">
                 <MainTab Pokemon="@Pokemon" />

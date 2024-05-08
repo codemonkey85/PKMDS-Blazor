@@ -8,7 +8,7 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 ((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
 {
-    <MudAutocomplete T="ComboItem"
+    <MudAutocomplete T="@ComboItem"
                      Label="Move 1"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move1))"
@@ -16,7 +16,7 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
                      ToStringFunc="@((move) => move?.Text)" />
 
-    <MudAutocomplete T="ComboItem"
+    <MudAutocomplete T="@ComboItem"
                      Label="Move 2"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move2))"
@@ -24,7 +24,7 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
                      ToStringFunc="@((move) => move?.Text)" />
 
-    <MudAutocomplete T="ComboItem"
+    <MudAutocomplete T="@ComboItem"
                      Label="Move 3"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move3))"
@@ -32,7 +32,7 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMoves(searchString)))"
                      ToStringFunc="@((move) => move?.Text)" />
 
-    <MudAutocomplete T="ComboItem"
+    <MudAutocomplete T="@ComboItem"
                      Label="Move 4"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move4))"

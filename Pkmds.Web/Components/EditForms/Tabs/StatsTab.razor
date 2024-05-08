@@ -15,7 +15,6 @@ EntityContext.MaxInvalid &&
                      For="@(() => Pokemon.CurrentLevel)" />
 
     <MudSelect Label="Nature"
-               T="@Nature"
                Variant="@Variant.Outlined"
                @bind-Value:get="@Pokemon.Nature"
                @bind-Value:set="@OnNatureSet"
@@ -53,49 +52,49 @@ EntityContext.MaxInvalid &&
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.HP"
                                  For="@(() => Pokemon.IV_HP)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Attack"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.ATK"
                                  For="@(() => Pokemon.IV_ATK)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Defense"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.DEF"
                                  For="@(() => Pokemon.IV_DEF)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Sp. Atk"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.SPA"
                                  For="@(() => Pokemon.IV_SPA)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Sp. Def"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.SPD"
                                  For="@(() => Pokemon.IV_SPD)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Speed"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.SPE"
                                  For="@(() => Pokemon.IV_SPE)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Total"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.GetBaseStatTotal()"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
             </MudStack>
         </MudItem>
@@ -158,7 +157,7 @@ EntityContext.MaxInvalid &&
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.IVTotal"
                                  For="@(() => Pokemon.IVTotal)"
-                                 ReadOnly="@true" />
+                                 ReadOnly />
 
             </MudStack>
         </MudItem>
@@ -221,7 +220,7 @@ EntityContext.MaxInvalid &&
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.EVTotal"
                                  For="@(() => Pokemon.EVTotal)"
-                                 ReadOnly="@true" />
+                                 ReadOnly />
 
             </MudStack>
         </MudItem>
@@ -236,43 +235,43 @@ EntityContext.MaxInvalid &&
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_HPMax"
                                  For="@(() => Pokemon.IV_HP)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Attack"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_ATK"
                                  For="@(() => Pokemon.IV_ATK)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Defense"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_DEF"
                                  For="@(() => Pokemon.IV_DEF)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Sp. Atk"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_SPA"
                                  For="@(() => Pokemon.IV_SPA)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Sp. Def"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_SPD"
                                  For="@(() => Pokemon.IV_SPD)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudNumericField Label="Speed"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_SPE"
                                  For="@(() => Pokemon.IV_SPE)"
-                                 ReadOnly="@true"
-                                 HideSpinButtons="@true" />
+                                 ReadOnly
+                                 HideSpinButtons />
 
                 <MudText>
                     <MudText>
@@ -285,7 +284,7 @@ EntityContext.MaxInvalid &&
 
     </MudGrid>
 
-    <MudStack Row="@true"
+    <MudStack Row
               AlignItems="@AlignItems.Center">
         <MudSelect Label="Hidden Power Type"
                    @bind-Value:get="@Pokemon.HPType"

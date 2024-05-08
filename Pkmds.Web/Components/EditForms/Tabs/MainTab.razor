@@ -17,7 +17,7 @@ EntityContext.MaxInvalid &&
                          For="@(() => Pokemon.PID)" />
     }
 
-    <MudAutocomplete T="ComboItem"
+    <MudAutocomplete T="@ComboItem"
                      Label="Species"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
@@ -56,7 +56,6 @@ EntityContext.MaxInvalid &&
     @if (pokemonGeneration >= 3)
     {
         <MudSelect Label="Nature"
-                   T="@Nature"
                    Variant="@Variant.Outlined"
                    @bind-Value:get="@Pokemon.Nature"
                    @bind-Value:set="@OnNatureSet"
@@ -88,7 +87,7 @@ EntityContext.MaxInvalid &&
         var forms = FormConverter.GetFormList(Pokemon.Species, GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, Pokemon.Context);
         if (forms.AsEnumerable().Any(f => !string.IsNullOrEmpty(f)))
         {
-            <MudSelect T="byte"
+            <MudSelect T="@byte"
                        @ref="@FormSelect"
                        Label="Forme"
                        Variant="@Variant.Outlined"
@@ -106,7 +105,7 @@ EntityContext.MaxInvalid &&
 
             @if (Pokemon is IFormArgument && FormArgumentUtil.GetFormArgumentMax(Pokemon.Species, Pokemon.Form, Pokemon.Context) > 0 && FormConverter.GetFormArgumentIsNamedIndex(Pokemon.Species))
             {
-                <MudSelect T="uint?"
+                <MudSelect T="@(uint?)"
                            Label="Forme Arg"
                            Variant="@Variant.Outlined"
                            @bind-Value:get="@(Pokemon.GetFormArgument())"
@@ -126,7 +125,7 @@ EntityContext.MaxInvalid &&
         }
     }
 
-    <MudAutocomplete T="ComboItem"
+    <MudAutocomplete T="@ComboItem"
                      Label="Held Item"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetItemComboItem(Pokemon.HeldItem))"
@@ -134,7 +133,7 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@((searchString) => Task.FromResult(AppService.SearchItemNames(searchString)))"
                      ToStringFunc="@((item) => item?.Text)">
         <ItemTemplate Context="item">
-            <MudStack Row="@true">
+            <MudStack Row>
                 @if (item.Value != 0)
                 {
                     var pkm = Pokemon.Clone();
@@ -154,7 +153,7 @@ EntityContext.MaxInvalid &&
 
     @if (pokemonGeneration >= 3)
     {
-        <MudAutocomplete T="ComboItem"
+        <MudAutocomplete T="@ComboItem"
                          Label="Ability"
                          Variant="@Variant.Outlined"
                          @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
@@ -188,7 +187,7 @@ EntityContext.MaxInvalid &&
                          @bind-Value="@Pokemon.CurrentFriendship"
                          For="@(() => Pokemon.CurrentFriendship)" />
 
-        <MudStack Row="@true">
+        <MudStack Row>
 
             <MudCheckBox Label="Is Egg"
                          @bind-Value="@Pokemon.IsEgg"
@@ -213,7 +212,7 @@ EntityContext.MaxInvalid &&
 
             <MudCheckBox Label="Shiny"
                          Value="@Pokemon.IsShiny"
-                         ReadOnly="@true"
+                         ReadOnly
                          For="@(() => Pokemon.IsShiny)" />
 
         </MudStack>

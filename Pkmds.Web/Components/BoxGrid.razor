@@ -9,7 +9,7 @@
             var pkm = BoxEdit[slotNum];
 
             <BoxSlotComponent BoxNumber="@BoxNumber"
-                              SlotNumber="slotNum"
+                              SlotNumber="@slotNum"
                               Pokemon="@pkm"
                               OnSlotClick="@(() => SetSelectedPokemon(pkm, BoxNumber, slotNum))"
                               GetStyleFunction="@(() => GetStyle(slotNum))" />
