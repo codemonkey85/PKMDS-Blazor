@@ -1,6 +1,6 @@
-# PKMDS-Blazor
+# PKMDS for Web
 
-A Blazor app to edit your Pokemon save files.
+A web app to edit your Pokemon save files.
 
 Powered by PKHeX.Core: https://github.com/kwsch/PKHeX
 
