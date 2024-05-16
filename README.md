@@ -6,7 +6,7 @@ Powered by PKHeX.Core: https://github.com/kwsch/PKHeX
 
 Sprites from: https://github.com/msikma/pokesprite-spritesheet
 
-[![Deploy to GitHub Pages](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml)
+[![Azure Web App](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/server-hosted_pkmds.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/server-hosted_pkmds.yml)
 
 Deployed to: https://www.pkmds.app/
 
