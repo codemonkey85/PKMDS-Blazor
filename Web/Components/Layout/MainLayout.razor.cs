@@ -1,4 +1,4 @@
-namespace Pkmds.Web.Layout;
+namespace Pkmds.Web.Components.Layout;
 
 public partial class MainLayout
 {
