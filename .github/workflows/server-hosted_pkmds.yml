@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - pkmds
 on:
   push:
     branches:
-      - server-hosted
+      - main
   workflow_dispatch:
 
 jobs:
