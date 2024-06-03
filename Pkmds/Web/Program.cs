@@ -2,11 +2,11 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
-const string ApiRoot =
+string[] ApiRoots =
 #if DEBUG
-    "https://localhost:7102/";
+    ["https://localhost:7102/"];
 #else
-    "https://pkmds.azurewebsites.net/";
+    ["https://pkmds.azurewebsites.net/", "https://pkmds.app/"];
 #endif
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +25,7 @@ services
 
 services.AddCors(
     options => options.AddDefaultPolicy(
-        builder => builder.WithOrigins(ApiRoot)
+        builder => builder.WithOrigins(ApiRoots)
         .AllowAnyHeader()
         .AllowAnyMethod()));
 
