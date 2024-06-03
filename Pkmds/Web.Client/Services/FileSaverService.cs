@@ -6,7 +6,7 @@ public class FileSaverService(HttpClient httpClient) : IFileSaverService
 #if DEBUG
         "https://localhost:7102/";
 #else
-        "https://pkmds.azurewebsites.net/";
+        "https://pkmds.app/";
 #endif
 
     private const string SaveFileEndpoint = $"{ApiRoot}api/savefile";
