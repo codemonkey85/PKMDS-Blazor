@@ -262,6 +262,32 @@ public partial class MainLayout
         // Programmatically click the download link
         await element.InvokeVoidAsync("click");
     }
+
+    [Inject] private HttpClient? HttpClient { get; set; }
+
+    private const string ApiRoot =
+#if DEBUG
+        "https://localhost:7102/";
+#else
+        "https://pkmds.app/";
+#endif
+
+    private async Task Test()
+    {
+        if (HttpClient is null)
+        {
+            return;
+        }
+
+        Console.WriteLine($"{nameof(ApiRoot)}: '{ApiRoot}'");
+
+        var response = await HttpClient.GetAsync($"{ApiRoot}api/test");
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(result);
+        }
+    }
 }
 
 //private MudTheme myTheme = new()

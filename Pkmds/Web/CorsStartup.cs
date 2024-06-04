@@ -15,12 +15,10 @@ public static class CorsStartup
                 "https://pkmds.app"
             ];
 
-        services
+        return services
             .AddCors(options => options.AddPolicy(CorsPolicyName, policy => policy
             .WithOrigins(corsAllowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()));
-
-        return services;
     }
 }
