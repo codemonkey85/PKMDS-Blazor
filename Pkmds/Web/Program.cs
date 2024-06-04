@@ -1,12 +1,13 @@
-string[] ApiRoots =
-#if DEBUG
-    ["https://localhost:7102/"];
-#else
-    ["https://pkmds.azurewebsites.net/", "https://pkmds.app/"];
-#endif
-
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
+
+services
+    .AddOptions<ServerAppSettings>()
+    .BindConfiguration(nameof(ServerAppSettings))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+var appSettings = builder.Configuration.Get<ServerAppSettings>() ?? new();
 
 services
     .AddMudServices()
@@ -19,11 +20,8 @@ services
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-services.AddCors(
-    options => options.AddDefaultPolicy(
-        builder => builder.WithOrigins(ApiRoots)
-        .AllowAnyHeader()
-        .AllowAnyMethod()));
+services
+    .ConfigureCors(appSettings.CorsPolicies.AllowedOrigins, builder.Environment.IsDevelopment());
 
 var app = builder.Build();
 
@@ -42,7 +40,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.UseCors();
+app.UseCors(CorsStartup.CorsPolicyName);
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
