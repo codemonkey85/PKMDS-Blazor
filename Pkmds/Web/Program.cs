@@ -1,7 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
-
 string[] ApiRoots =
 #if DEBUG
     ["https://localhost:7102/"];
@@ -59,8 +55,6 @@ apiGroup.MapPost("savefile", async (HttpRequest request) =>
     byte[] returnData = [];
 
     using var reader = new StreamReader(request.Body);
-
-    //var saveFileData = Convert.FromBase64String(await reader.ReadToEndAsync());
 
     using var memoryStream = new MemoryStream();
     await reader.BaseStream.CopyToAsync(memoryStream);

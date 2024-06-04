@@ -1,5 +1,4 @@
-﻿
-namespace Pkmds.Web.Services;
+﻿namespace Pkmds.Web.Services;
 
 public class ServerFileSaverService : IFileSaverService
 {
