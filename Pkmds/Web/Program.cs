@@ -12,7 +12,6 @@ var appSettings = builder.Configuration.Get<ServerAppSettings>() ?? new();
 services
     .AddMudServices()
     .AddFileSystemAccessService()
-    .AddScoped(sp => new HttpClient())
     .AddScoped<IAppState, AppState>()
     .AddScoped<IRefreshService, RefreshService>()
     .AddScoped<IAppService, AppService>()
@@ -73,10 +72,5 @@ apiGroup.MapPost("savefile", async (HttpRequest request) =>
         SaveFileData = returnData
     };
 }).Accepts<byte[]>("application/octet-stream");
-
-apiGroup.MapGet("test", () => 
-{
-    return new { Message = "Hello, World!" };
-});
 
 app.Run();
