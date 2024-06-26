@@ -43,4 +43,3 @@ public partial class BoxComponent : IDisposable
         RefreshService.Refresh();
     }
 }
-

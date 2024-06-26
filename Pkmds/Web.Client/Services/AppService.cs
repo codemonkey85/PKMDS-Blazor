@@ -3,7 +3,7 @@
 public record AppService(IAppState AppState, IRefreshService RefreshService) : IAppService
 {
     private const string EnglishLang = "en";
-    private const string defaultPkmFileName = "pkm.bin";
+    private const string DefaultPkmFileName = "pkm.bin";
 
     private PKM? editFormPokemon;
     private bool isDrawerOpen;
@@ -129,12 +129,12 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
 
     public string GetCleanFileName(PKM pkm) => pkm.Context switch
     {
-        EntityContext.SplitInvalid or EntityContext.MaxInvalid => defaultPkmFileName,
+        EntityContext.SplitInvalid or EntityContext.MaxInvalid => DefaultPkmFileName,
         EntityContext.Gen1 or EntityContext.Gen2 => pkm switch
         {
             PK1 pk1 => $"{GameInfo.GetStrings(EnglishLang).Species[pk1.Species]}_{pk1.DV16}.{pk1.Extension}",
             PK2 pk2 => $"{GameInfo.GetStrings(EnglishLang).Species[pk2.Species]}_{pk2.DV16}.{pk2.Extension}",
-            _ => defaultPkmFileName,
+            _ => DefaultPkmFileName,
         },
         _ => $"{GameInfo.GetStrings(EnglishLang).Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}",
     };
@@ -181,10 +181,6 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         for (var slot = 0; slot < partyCount; slot++)
         {
             var pkm = saveFile.GetPartySlotAtIndex(slot);
-            if (pkm is null)
-            {
-                continue;
-            }
 
             sbShowdown.AppendLine(ShowdownParsing.GetShowdownText(pkm));
             sbShowdown.AppendLine();
@@ -200,7 +196,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
             return string.Empty;
         }
 
-        var format = saveFile?.GetTrainerIDFormat();
+        var format = saveFile.GetTrainerIDFormat();
         return (format, isSid) switch
         {
             (TrainerIDFormat.SixteenBit, false) => TrainerIDExtensions.TID16,

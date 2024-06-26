@@ -4,7 +4,7 @@ namespace Pkmds.Web.Client.Components;
 
 public partial class SaveFileNameDisplay
 {
-    public static string FriendlyGameName(GameVersion gameVersion) => gameVersion switch
+    private static string FriendlyGameName(GameVersion gameVersion) => gameVersion switch
     {
         Invalid => "Invalid",
         S => "Sapphire",

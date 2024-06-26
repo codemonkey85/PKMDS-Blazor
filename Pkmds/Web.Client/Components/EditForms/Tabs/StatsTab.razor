@@ -1,12 +1,10 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (Pokemon is { Generation: { } pokemonGeneration } &&
-AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } &&
-saveFileEntityContext is not
-EntityContext.None or
-EntityContext.SplitInvalid or
-EntityContext.MaxInvalid &&
-((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
+@if (Pokemon is not null 
+     && AppState.SaveFile is { Context: not EntityContext.None}
+     && (AppState.SelectedBoxNumber is not null 
+         && AppState.SelectedBoxSlotNumber is not null 
+         || AppState.SelectedPartySlotNumber is not null))
 {
     <MudNumericField Label="Level"
                      Variant="@Variant.Outlined"

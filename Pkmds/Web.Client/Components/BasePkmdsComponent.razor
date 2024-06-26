@@ -1,5 +1,6 @@
 ﻿@code {
-    public static RenderFragment TypeSummary(byte type1, byte type2) =>
+
+    private static RenderFragment TypeSummary(byte type1, byte type2) =>
     @<MudStack Row
                Class="my-2"
                AlignItems="@AlignItems.Center">
@@ -21,10 +22,10 @@
     }
     </MudStack>;
 
-    public static RenderFragment TypeSummary((byte Type1, byte Type2) types) =>
+    protected static RenderFragment TypeSummary((byte Type1, byte Type2) types) =>
     TypeSummary(types.Type1, types.Type2);
 
-    public static RenderFragment TeraTypeSummary(byte type) =>
+    protected static RenderFragment TeraTypeSummary(byte type) =>
     @<MudStack Row
                    Class="my-2"
                    AlignItems="@AlignItems.Center">
@@ -39,7 +40,7 @@
                   Width="30" />
     </MudStack>;
 
-    public static RenderFragment GenderDisplayIcon(int gender)
+    protected static RenderFragment GenderDisplayIcon(int gender)
     {
         var icon = gender switch
         {
@@ -56,7 +57,7 @@
         return @<MudIcon Icon="@icon" Style="@($"color: {color};")" />;
     }
 
-    public static RenderFragment GenderDisplayAscii(int gender)
+    private static RenderFragment GenderDisplayAscii(int gender)
     {
         var color = gender switch
         {

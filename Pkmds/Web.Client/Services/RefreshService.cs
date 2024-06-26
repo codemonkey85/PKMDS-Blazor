@@ -1,6 +1,6 @@
 ﻿namespace Pkmds.Web.Client.Services;
 
-public record RefreshService(IAppState AppState) : IRefreshService
+public record RefreshService : IRefreshService
 {
     public event Action? OnAppStateChanged;
     public event Action? OnBoxStateChanged;

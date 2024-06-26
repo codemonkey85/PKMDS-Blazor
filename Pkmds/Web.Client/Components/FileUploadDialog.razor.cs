@@ -7,7 +7,7 @@ public partial class FileUploadDialog
 
     private IBrowserFile? browserFile;
 
-    private void HandleFile(IBrowserFile file) => browserFile = file;
+    private void HandleFile(IBrowserFile? file) => browserFile = file;
 
     private void Cancel() => MudDialog.Close(DialogResult.Cancel());
 

@@ -13,7 +13,7 @@ public partial class MainTab : IDisposable
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= Refresh;
 
-    public void Refresh()
+    private void Refresh()
     {
         FormSelect?.ForceRender(true);
         StateHasChanged();

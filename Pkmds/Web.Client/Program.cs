@@ -4,7 +4,7 @@ var services = builder.Services;
 services
     .AddMudServices()
     .AddFileSystemAccessService()
-    .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+    .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddScoped<IAppState, AppState>()
     .AddScoped<IRefreshService, RefreshService>()
     .AddScoped<IAppService, AppService>()

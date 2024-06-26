@@ -20,6 +20,11 @@ public partial class PokemonSlotComponent
     private string GetStyle() =>
         GetStyleFunction?.Invoke() ?? string.Empty;
 
+    private static string GetPokemonSpriteAlt(PKM? pokemon) =>
+        pokemon is { Species: var species, Nickname: { Length: > 0 } nickname } 
+            ? $"{nickname} - {species}"
+            : "Empty slot";
+
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
 

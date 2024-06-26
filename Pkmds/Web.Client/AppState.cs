@@ -2,10 +2,7 @@
 
 public record AppState : IAppState
 {
-    public AppState()
-    {
-        LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
-    }
+    public AppState() => LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
 
     private string currentLanguage = GameLanguage.DefaultLanguage;
     private SaveFile? saveFile;

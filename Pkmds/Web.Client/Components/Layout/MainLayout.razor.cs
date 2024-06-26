@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Client.Components.Layout;
 
-public partial class MainLayout
+public partial class MainLayout : IDisposable
 {
     private const string AppTitle = "PKMDS Save Editor";
 
@@ -80,6 +80,7 @@ public partial class MainLayout
         {
             return;
         }
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (AppState.SaveFile.Version)
         {
             case GameVersion.BD:
@@ -112,7 +113,7 @@ public partial class MainLayout
         AppState.ShowProgressIndicator = false;
     }
 
-    private bool IsWebAssembly() => JSRuntime is IJSInProcessRuntime;
+    private bool IsWebAssembly() => JsRuntime is IJSInProcessRuntime;
 
     private const string UnsupportedSaveFileExportMessage =
         "Save export not supported for BDSP, Sun / Moon, or Ultra Sun / Moon at this time. " +
@@ -187,13 +188,13 @@ public partial class MainLayout
 
         var saveFileData = await FileSaverService.ExportSaveFileAsync(new ExportSaveFileRequest { SaveFileData = AppState.SaveFile.Data });
 
-        if (saveFileData is { Length: > 0 })
+        if (saveFileData is not { Length: > 0 })
         {
-            await WriteFile(saveFileData, browserLoadSaveFile?.Name ?? "save.sav");
-            return Success();
+            return Failure();
         }
 
-        return Failure();
+        await WriteFile(saveFileData, browserLoadSaveFile?.Name ?? "save.sav");
+        return Success();
 
         bool Success()
         {
@@ -237,7 +238,7 @@ public partial class MainLayout
         try
         {
             // Ensure that the FilePicker API is invoked correctly within a user gesture context
-            await JSRuntime.InvokeVoidAsync("showSaveFilePickerAndWrite", fileName, data);
+            await JsRuntime.InvokeVoidAsync("showSaveFilePickerAndWrite", fileName, data);
         }
         catch (JSException ex)
         {
@@ -251,7 +252,7 @@ public partial class MainLayout
         var base64String = Convert.ToBase64String(data);
 
         // Create a download link element
-        var element = await JSRuntime.InvokeAsync<IJSObjectReference>("eval", "document.createElement('a')");
+        var element = await JsRuntime.InvokeAsync<IJSObjectReference>("eval", "document.createElement('a')");
 
         // Set the download link properties
         await element.InvokeVoidAsync("setAttribute", "href", "data:application/octet-stream;base64," + base64String);

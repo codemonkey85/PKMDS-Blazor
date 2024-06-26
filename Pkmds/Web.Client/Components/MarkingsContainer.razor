@@ -1,4 +1,4 @@
-﻿@if (Pokemon is { Generation: { } pokemonGeneration } && pokemonGeneration >= 3)
+﻿@if (Pokemon is { Generation: { } pokemonGeneration and >= 3 })
 {
     <div class="@ContainerClass">
         <MarkingComponent Pokemon="@Pokemon"

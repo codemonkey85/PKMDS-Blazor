@@ -18,10 +18,11 @@ public partial class OtMiscTab : IDisposable
             return;
         }
 
-        Pokemon.OriginalTrainerName = saveFile?.OT ?? string.Empty;
-        Pokemon.OriginalTrainerGender = saveFile?.Gender ?? (byte)Gender.Male;
+        Pokemon.OriginalTrainerName = saveFile.OT;
+        Pokemon.OriginalTrainerGender = saveFile.Gender;
 
         var format = saveFile?.GetTrainerIDFormat();
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (format)
         {
             case TrainerIDFormat.SixteenBitSingle: // Gen 1-2
@@ -36,7 +37,7 @@ public partial class OtMiscTab : IDisposable
                 Pokemon.SetTrainerSID7(saveFile?.TrainerSID7 ?? 0U);
                 break;
             default:
-                break;
+                throw new ArgumentOutOfRangeException();
         }
     }
 }
