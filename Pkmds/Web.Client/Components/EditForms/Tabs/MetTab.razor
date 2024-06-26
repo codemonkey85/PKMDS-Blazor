@@ -6,7 +6,7 @@ saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
+(AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null || AppState.SelectedPartySlotNumber is not null))
 {
     <MudCheckBox Label="Nicknamed"
                  @bind-Value="@Pokemon.IsNicknamed"
@@ -16,7 +16,7 @@ EntityContext.MaxInvalid &&
     <MudSelect Label="Origin Game"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Version"
-               ToStringFunc="@((version) => GameInfo.GetVersionName(version))"
+               ToStringFunc="@(version => GameInfo.GetVersionName(version))"
                For="@(() => Pokemon.Version)">
         @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
         {
@@ -53,9 +53,9 @@ EntityContext.MaxInvalid &&
                      Label="Met Location"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.MetLocation))"
-                     @bind-Value:set="@((metLocation) => Pokemon.MetLocation = (ushort)metLocation.Value)"
-                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
-                     ToStringFunc="@((metLocation) => metLocation?.Text)" />
+                     @bind-Value:set="@(metLocation => Pokemon.MetLocation = (ushort)metLocation.Value)"
+                     SearchFunc="@(searchString => Task.FromResult(AppService.SearchMetLocations(searchString)))"
+                     ToStringFunc="@(metLocation => metLocation?.Text)" />
 
     <DateOnlyPicker @bind-Date="@Pokemon.MetDate"
                     Label="Met Date" />
@@ -70,9 +70,9 @@ EntityContext.MaxInvalid &&
                      Label="Egg Location"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
-                     @bind-Value:set="@((metLocation) => Pokemon.EggLocation = (ushort)metLocation.Value)"
-                     SearchFunc="@((searchString) => Task.FromResult(AppService.SearchMetLocations(searchString)))"
-                     ToStringFunc="@((metLocation) => metLocation?.Text)" />
+                     @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
+                     SearchFunc="@(searchString => Task.FromResult(AppService.SearchMetLocations(searchString)))"
+                     ToStringFunc="@(metLocation => metLocation?.Text)" />
 
     <DateOnlyPicker @bind-Date="@Pokemon.EggMetDate"
                     Label="Met Date" />

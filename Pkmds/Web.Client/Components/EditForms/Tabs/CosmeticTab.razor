@@ -6,7 +6,7 @@ saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
-((AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null) || (AppState.SelectedPartySlotNumber is not null)))
+(AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null || AppState.SelectedPartySlotNumber is not null))
 {
     <MarkingsContainer Pokemon="@Pokemon" />
 }
