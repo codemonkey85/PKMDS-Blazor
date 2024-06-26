@@ -2,8 +2,10 @@
 
 public static class SpriteHelper
 {
+    private const string SpritesRoot = "sprites/";
+    
     public static string GetPokemonSpriteFilename(PKM? pokemon) =>
-        new StringBuilder("sprites/a/a_")
+        new StringBuilder($"{SpritesRoot}a/a_")
         .Append(pokemon switch
         {
             null => "unknown",
@@ -24,22 +26,22 @@ public static class SpriteHelper
         .ToString();
 
     public static string GetBallSpriteFilename(int ball) =>
-        $"sprites/b/_ball{ball}.png";
+        $"{SpritesRoot}b/_ball{ball}.png";
 
     public static string GetBigItemSpriteFilename(int item) =>
-        $"sprites/bi/bitem_{item}.png";
+        $"{SpritesRoot}bi/bitem_{item}.png";
 
     public static string GetArtworkItemSpriteFilename(int item) =>
-        $"sprites/ai/aitem_{item}.png";
+        $"{SpritesRoot}ai/aitem_{item}.png";
 
     public static string GetTypeGemSpriteFileName(byte type) =>
-        $"sprites/t/g/gem_{type:00}.png";
+        $"{SpritesRoot}t/g/gem_{type:00}.png";
 
     public static string GetTypeSquareSpriteFileName(byte type) =>
-        $"sprites/t/s/type_icon_{type:00}.png";
+        $"{SpritesRoot}t/s/type_icon_{type:00}.png";
 
     public static string GetTypeWideSpriteFileName(byte type) =>
-        $"sprites/t/w/type_wide_{type:00}.png";
+        $"{SpritesRoot}t/w/type_wide_{type:00}.png";
 
     public static string GetSpriteCssClass(PKM? pkm) =>
         $"d-flex align-items-center justify-center {(pkm is { Species: > 0 } ? "slot-fill" : string.Empty)}";
