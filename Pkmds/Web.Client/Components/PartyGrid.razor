@@ -8,7 +8,7 @@
             @for (var i = 0; i < 6; i++)
             {
                 var slotNum = i;
-                var pkm = i < saveFile.PartyCount ? saveFile.PartyData[slotNum] : null;
+                PKM? pkm = i < saveFile.PartyCount ? saveFile.PartyData[slotNum] : null;
                 <MudItem xs="2">
                     <PokemonSlotComponent Pokemon="@pkm"
                                           SlotNumber="@slotNum"

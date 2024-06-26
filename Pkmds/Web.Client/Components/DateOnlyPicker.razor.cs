@@ -36,13 +36,11 @@ public partial class DateOnlyPicker
         get => Date?.ToDateTime(TimeOnly.MinValue);
         set
         {
-            if (value is null)
+            if (value is not null)
             {
-                return;
+                Date = DateOnly.FromDateTime((DateTime)value);
+                DateChanged.InvokeAsync(Date);
             }
-
-            Date = DateOnly.FromDateTime((DateTime)value);
-            DateChanged.InvokeAsync(Date);
         }
     }
 

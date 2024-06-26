@@ -58,7 +58,6 @@ apiGroup.MapPost("savefile", async (HttpRequest request) =>
     await reader.BaseStream.CopyToAsync(memoryStream);
     var saveFileData = memoryStream.ToArray();
 
-    // ReSharper disable once InvertIf
     if (saveFileData is { Length: > 0 })
     {
         var saveFile = SaveUtil.GetVariantSAV(saveFileData);

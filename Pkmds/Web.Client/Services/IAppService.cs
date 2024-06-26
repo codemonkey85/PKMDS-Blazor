@@ -38,7 +38,7 @@ public interface IAppService
 
     ComboItem GetMoveComboItem(int moveId);
 
-    public void SavePokemon(PKM? selectedPokemon);
+    public void SavePokemon(PKM? SelectedPokemon);
 
     string GetCleanFileName(PKM pkm);
 

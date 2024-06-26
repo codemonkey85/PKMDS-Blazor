@@ -23,13 +23,12 @@ public class FileSaverService(HttpClient httpClient) : IFileSaverService
         try
         {
             var response = await httpClient.PostAsync(SaveFileEndpoint, content);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                return [];
+                var result = await response.Content.ReadFromJsonAsync<ExportSaveFileResponse>();
+                return result?.SaveFileData ?? [];
             }
-
-            var result = await response.Content.ReadFromJsonAsync<ExportSaveFileResponse>();
-            return result?.SaveFileData ?? [];
+            return [];
         }
         catch (Exception ex)
         {

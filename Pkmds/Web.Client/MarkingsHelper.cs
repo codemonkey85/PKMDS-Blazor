@@ -15,7 +15,7 @@ public static class MarkingsHelper
     public const string Circle = "●";
     public const string Triangle = "▲";
     public const string Square = "■";
-    public const string Heart = "♥";
+    public const string Heart = "♥︎";
     public const string Star = "★";
-    public const string Diamond = "♦";
+    public const string Diamond = "♦︎";
 }

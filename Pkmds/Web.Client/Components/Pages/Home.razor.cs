@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Client.Components.Pages;
 
-public partial class Home : IDisposable
+public partial class Home
 {
     protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
 
