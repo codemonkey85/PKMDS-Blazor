@@ -54,7 +54,7 @@ EntityContext.MaxInvalid &&
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.MetLocation))"
                      @bind-Value:set="@(metLocation => Pokemon.MetLocation = (ushort)metLocation.Value)"
-                     SearchFunc="@(searchString => Task.FromResult(AppService.SearchMetLocations(searchString)))"
+                     SearchFunc="@SearchMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
 
     <DateOnlyPicker @bind-Date="@Pokemon.MetDate"
@@ -71,7 +71,7 @@ EntityContext.MaxInvalid &&
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
                      @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
-                     SearchFunc="@(searchString => Task.FromResult(AppService.SearchMetLocations(searchString)))"
+                     SearchFunc="@SearchMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
 
     <DateOnlyPicker @bind-Date="@Pokemon.EggMetDate"

@@ -29,4 +29,13 @@ public partial class MainTab : IDisposable
         Pokemon.SetNature(nature);
         AppService.LoadPokemonStats(Pokemon);
     }
+
+    private Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString, CancellationToken token) =>
+        Task.FromResult(AppService.SearchPokemonNames(searchString));
+
+    private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
+        Task.FromResult(AppService.SearchItemNames(searchString));
+
+    private Task<IEnumerable<ComboItem>> SearchAbilityNames(string searchString, CancellationToken token) =>
+        Task.FromResult(AppService.SearchAbilityNames(searchString));
 }

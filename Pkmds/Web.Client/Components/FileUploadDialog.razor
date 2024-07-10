@@ -4,13 +4,13 @@
     <DialogContent>
         <MudFileUpload T="@IBrowserFile"
                        FilesChanged="@HandleFile">
-            <ButtonTemplate>
-                <MudButton HtmlTag="label"
-                           Variant="@Variant.Filled"
-                           for="@context">
+            <ActivatorContent>
+                <MudButton Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           StartIcon="@Icons.Material.Filled.CloudUpload">
                     Choose a save file
                 </MudButton>
-            </ButtonTemplate>
+            </ActivatorContent>
             <SelectedTemplate>
                 @if (context != null)
                 {

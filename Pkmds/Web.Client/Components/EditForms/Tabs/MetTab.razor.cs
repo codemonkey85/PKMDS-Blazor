@@ -10,4 +10,7 @@ public partial class MetTab : IDisposable
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    private Task<IEnumerable<ComboItem>> SearchMetLocations(string searchString, CancellationToken token) =>
+        Task.FromResult(AppService.SearchMetLocations(searchString));
 }

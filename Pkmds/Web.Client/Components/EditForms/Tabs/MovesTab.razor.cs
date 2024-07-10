@@ -10,4 +10,7 @@ public partial class MovesTab : IDisposable
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    private Task<IEnumerable<ComboItem>> SearchMoves(string searchString, CancellationToken token) =>
+        Task.FromResult(AppService.SearchMoves(searchString));
 }

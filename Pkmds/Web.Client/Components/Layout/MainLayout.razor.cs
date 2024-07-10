@@ -37,7 +37,7 @@ public partial class MainLayout
         var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Save File", options: new DialogOptions
         {
             CloseOnEscapeKey = true,
-            DisableBackdropClick = true
+            BackdropClick = false,
         });
 
         var result = await dialog.Result;
