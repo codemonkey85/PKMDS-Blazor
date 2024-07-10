@@ -13,4 +13,7 @@ public partial class MetTab : IDisposable
 
     private Task<IEnumerable<ComboItem>> SearchMetLocations(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchMetLocations(searchString));
+
+    private Task<IEnumerable<ComboItem>> SearchEggMetLocations(string searchString, CancellationToken token) =>
+        Task.FromResult(AppService.SearchMetLocations(searchString, isEggLocation: true));
 }

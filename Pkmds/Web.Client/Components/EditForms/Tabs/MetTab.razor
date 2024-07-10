@@ -73,7 +73,7 @@ EntityContext.MaxInvalid &&
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
                      @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
-                     SearchFunc="@SearchMetLocations"
+                     SearchFunc="@SearchEggMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
 
     <DateOnlyPicker Label="Met Date"
