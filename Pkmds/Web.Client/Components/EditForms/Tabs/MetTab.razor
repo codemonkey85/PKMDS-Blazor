@@ -57,8 +57,10 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@SearchMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
 
-    <DateOnlyPicker @bind-Date="@Pokemon.MetDate"
-                    Label="Met Date" />
+    <DateOnlyPicker Label="Met Date"
+                    @bind-Date="@Pokemon.MetDate"
+                    Variant="@Variant.Outlined"
+                    Color="@Color.Default" />
 
     @*
         <MudCheckBox Label="Met as Egg"
@@ -74,6 +76,8 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@SearchMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
 
-    <DateOnlyPicker @bind-Date="@Pokemon.EggMetDate"
-                    Label="Met Date" />
+    <DateOnlyPicker Label="Met Date"
+                    @bind-Date="@Pokemon.EggMetDate"
+                    Variant="@Variant.Outlined"
+                    Color="@Color.Default" />
 }
