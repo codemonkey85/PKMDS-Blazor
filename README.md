@@ -8,7 +8,7 @@ Sprites from: https://github.com/msikma/pokesprite-spritesheet
 
 [![Azure Web App](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/server-hosted_pkmds.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/server-hosted_pkmds.yml)
 
-Deployed to: https://www.pkmds.app/
+Deployed to: [pkmds.app](https://pkmds.app/)
 
 Special thanks to Kaphotics, as well as [all the contributors to PKHeX and PKHeX.Core](https://github.com/kwsch/PKHeX/graphs/contributors).
 
