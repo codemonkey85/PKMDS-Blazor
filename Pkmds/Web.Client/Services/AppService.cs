@@ -59,12 +59,6 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public ComboItem GetItemComboItem(int itemId) => GameInfo.FilteredSources.Items
         .FirstOrDefault(item => item.Value == itemId) ?? default!;
 
-    public IEnumerable<ComboItem> SearchAbilityNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
-        ? []
-        : GameInfo.FilteredSources.Abilities
-            .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(ability => ability.Text);
-
     public ComboItem GetAbilityComboItem(int abilityId) => GameInfo.FilteredSources.Abilities
         .FirstOrDefault(ability => ability.Value == abilityId) ?? default!;
 

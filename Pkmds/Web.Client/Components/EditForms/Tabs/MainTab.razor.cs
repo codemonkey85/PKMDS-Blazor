@@ -1,3 +1,5 @@
+using PKHeX.Core;
+
 namespace Pkmds.Web.Client.Components.EditForms.Tabs;
 
 public partial class MainTab : IDisposable
@@ -36,6 +38,6 @@ public partial class MainTab : IDisposable
     private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchItemNames(searchString));
 
-    private Task<IEnumerable<ComboItem>> SearchAbilityNames(string searchString, CancellationToken token) =>
-        Task.FromResult(AppService.SearchAbilityNames(searchString));
+    private void SetAbility(int ability) =>
+        Pokemon?.SetAbility(ability);
 }

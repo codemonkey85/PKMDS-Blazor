@@ -1,6 +1,6 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (Pokemon is { Generation: { } pokemonGeneration } &&
+@if (Pokemon is not null &&
 AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } &&
 saveFileEntityContext is not
 EntityContext.None or
@@ -8,7 +8,7 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 (AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null || AppState.SelectedPartySlotNumber is not null))
 {
-    @if (pokemonGeneration >= 3)
+    @if (saveGeneration >= 3)
     {
         <MudNumericField Label="PID"
                          Variant="@Variant.Outlined"
@@ -53,7 +53,7 @@ EntityContext.MaxInvalid &&
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.CurrentLevel)" />
 
-    @if (pokemonGeneration >= 3)
+    @if (saveGeneration >= 3)
     {
         <MudSelect Label="Nature"
                    Variant="@Variant.Outlined"
@@ -151,18 +151,25 @@ EntityContext.MaxInvalid &&
         </ItemTemplate>
     </MudAutocomplete>
 
-    @if (pokemonGeneration >= 3)
+    @if (saveGeneration >= 3)
     {
-        <MudAutocomplete T="@ComboItem"
-                         Label="Ability"
-                         Variant="@Variant.Outlined"
-                         @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
-                         @bind-Value:set="@(ability => Pokemon.Ability = ability.Value)"
-                         SearchFunc="@SearchAbilityNames"
-                         ToStringFunc="@(ability => ability?.Text)" />
+        <MudSelect Label="Ability"
+                   Variant="@Variant.Outlined"
+                   T="@int"
+                   @bind-Value:get="@((int)Pokemon.Ability)"
+                   @bind-Value:set="@(ability => SetAbility(ability))"
+                   For="@(() => Pokemon.Ability)">
+            @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon))
+            {
+                <MudSelectItem Value="@ability.Value"
+                T="@int">
+                    @ability.Text
+                </MudSelectItem>
+            }
+        </MudSelect>
     }
 
-    @if (pokemonGeneration >= 4)
+    @if (saveGeneration >= 4)
     {
         <MudSelect Label="Language"
                    Variant="@Variant.Outlined"
@@ -177,7 +184,7 @@ EntityContext.MaxInvalid &&
         </MudSelect>
     }
 
-    @if (pokemonGeneration >= 2)
+    @if (saveGeneration >= 2)
     {
         <MudNumericField Label="Friendship"
                          Variant="@Variant.Outlined"
