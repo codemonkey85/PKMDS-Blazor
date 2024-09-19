@@ -37,7 +37,4 @@ public partial class MainTab : IDisposable
 
     private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchItemNames(searchString));
-
-    private void SetAbility(int ability) =>
-        Pokemon?.SetAbility(ability);
 }

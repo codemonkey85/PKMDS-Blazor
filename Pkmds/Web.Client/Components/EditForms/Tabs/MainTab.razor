@@ -155,14 +155,12 @@ EntityContext.MaxInvalid &&
     {
         <MudSelect Label="Ability"
                    Variant="@Variant.Outlined"
-                   T="@int"
                    @bind-Value:get="@((int)Pokemon.Ability)"
-                   @bind-Value:set="@(ability => SetAbility(ability))"
+                   @bind-Value:set="@(ability => Pokemon.SetAbility(ability))"
                    For="@(() => Pokemon.Ability)">
             @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon))
             {
-                <MudSelectItem Value="@ability.Value"
-                T="@int">
+                <MudSelectItem Value="@ability.Value">
                     @ability.Text
                 </MudSelectItem>
             }
