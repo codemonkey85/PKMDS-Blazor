@@ -216,8 +216,8 @@ EntityContext.MaxInvalid &&
     *@
 
             <MudCheckBox Label="Shiny"
-                         Value="@Pokemon.IsShiny"
-                         ReadOnly
+                         @bind-Value:get="@Pokemon.IsShiny"
+                         @bind-Value:set="@(isShiny => OnShinySet(isShiny))"
                          For="@(() => Pokemon.IsShiny)" />
 
         </MudStack>

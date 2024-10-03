@@ -37,4 +37,6 @@ public partial class MainTab : IDisposable
 
     private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchItemNames(searchString));
+
+    private bool? OnShinySet(bool shiny) => Pokemon?.SetIsShiny(shiny);
 }
