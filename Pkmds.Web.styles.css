@@ -1,0 +1,98 @@
+/* /Components/BoxGrid.razor.rz.scp.css */
+.box-grid-30[b-evy0qrb5bv] {
+    width: 480px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(6, 80px);
+    grid-template-rows: repeat(5, 80px);
+}
+
+.box-grid-20[b-evy0qrb5bv] {
+    width: 320px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    grid-template-rows: repeat(5, 80px);
+}
+/* /Components/Layout/MainLayout.razor.rz.scp.css */
+#blazor-error-ui[b-89m6tus79e] {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss[b-89m6tus79e] {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+/* /Components/MarkingComponent.razor.rz.scp.css */
+.marking[b-81h5kesae7] {
+    max-width: 68.63px;
+    font-size: 3.0rem;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+}
+
+.gray-mark[b-81h5kesae7] {
+    color: gray;
+}
+
+.black-mark[b-81h5kesae7] {
+    color: black;
+}
+
+.blue-mark[b-81h5kesae7] {
+    color: blue;
+}
+
+.red-mark[b-81h5kesae7] {
+    color: red;
+}
+/* /Components/MarkingsContainer.razor.rz.scp.css */
+.markings-container[b-wq5bilj2g5] {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-gap: 25px;
+    padding-top: 3px;
+}
+
+.gen-3[b-wq5bilj2g5] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+/* /Components/PokemonStorageComponent.razor.rz.scp.css */
+.select-container[b-nory1ms4jj] {
+    width: 300px;
+    margin: 6px;
+    padding: 6px;
+}
+
+.controls-container[b-nory1ms4jj] {
+    display: flex;
+    margin: 5px;
+    padding: 5px;
+    align-items: center;
+    height: 50px;
+}
+
+.box-select[b-nory1ms4jj] {
+    margin: 6px;
+    padding: 6px;
+}
+
+.navigate-button[b-nory1ms4jj] {
+    margin: 6px;
+    padding: 6px;
+}
