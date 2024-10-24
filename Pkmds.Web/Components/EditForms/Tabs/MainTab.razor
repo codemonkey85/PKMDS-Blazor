@@ -218,12 +218,14 @@ EntityContext.MaxInvalid &&
                          @bind-Value="@Pokemon.IsPokerusCured"
                          @bind-Value:after="@RefreshService.Refresh"
                          For="@(() => Pokemon.IsPokerusCured)" />
-            @*
-    <MudCheckBox Label="N's Sparkle"
-    @bind-Value="@Pokemon"
-    @bind-Value:after="@RefreshService.Refresh"
-    For="@(() => Pokemon.IsPokerusCured)" />
-    *@
+
+            @if (Pokemon is PK5 pk5)
+            {
+                <MudCheckBox Label="N's Sparkle"
+                             @bind-Value="@pk5.NSparkle"
+                             @bind-Value:after="@RefreshService.Refresh"
+                             For="@(() => pk5.NSparkle)" />
+            }
 
             <MudCheckBox Label="Shiny"
                          @bind-Value:get="@Pokemon.IsShiny"
