@@ -28,6 +28,8 @@ public interface IAppService
 
     ComboItem GetAbilityComboItem(int abilityId);
 
+    IEnumerable<ComboItem> SearchAbilityNames(string searchString);
+
     IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false);
 
     ComboItem GetMetLocationComboItem(int metLocationId, bool isEggLocation = false);

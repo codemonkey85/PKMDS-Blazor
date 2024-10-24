@@ -62,6 +62,12 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public ComboItem GetAbilityComboItem(int abilityId) => GameInfo.FilteredSources.Abilities
         .FirstOrDefault(ability => ability.Value == abilityId) ?? default!;
 
+    public IEnumerable<ComboItem> SearchAbilityNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
+    ? []
+    : GameInfo.FilteredSources.Abilities
+        .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        .OrderBy(ability => ability.Text);
+
     public string GetStatModifierString(Nature nature)
     {
         var (up, down) = NatureAmp.GetNatureModification(nature);
@@ -85,8 +91,8 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
         : GameInfo.GetLocationList(AppState.SaveFile.Version, AppState.SaveFile.Context, isEggLocation)
-            .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(ability => ability.Text);
+            .Where(metLocation => metLocation.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(metLocation => metLocation.Text);
 
     public ComboItem GetMetLocationComboItem(int metLocationId, bool isEggLocation = false) => AppState.SaveFile is null
         ? default!

@@ -151,7 +151,7 @@ EntityContext.MaxInvalid &&
         </ItemTemplate>
     </MudAutocomplete>
 
-    @if (saveGeneration >= 3)
+    @if (saveGeneration == 3)
     {
         <MudSelect Label="Ability"
                    Variant="@Variant.Outlined"
@@ -165,6 +165,16 @@ EntityContext.MaxInvalid &&
                 </MudSelectItem>
             }
         </MudSelect>
+    }
+    else if (saveGeneration >= 4)
+    {
+        <MudAutocomplete T="@ComboItem"
+                         Label="Ability"
+                         Variant="@Variant.Outlined"
+                         @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
+                         @bind-Value:set="@(ability => Pokemon.Ability = ability.Value)"
+                         SearchFunc="@SearchAbilityNames"
+                         ToStringFunc="@(ability => ability?.Text)" />
     }
 
     @if (saveGeneration >= 4)
