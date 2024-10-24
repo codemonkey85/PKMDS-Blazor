@@ -109,4 +109,13 @@ Q: Can I use PKMDS on my Mac?
 
 A: Yes, you can use PKMDS on your Mac. The web app is designed to be used on any device that has a web browser, including Mac computers.
 
+Q: Can I run this locally?
+
+A: Yes, you can do with docker. 
+- Install Docker - [Instructions](https://docs.docker.com/get-started/get-docker/)
+- Clone the repo with `git clone`
+- cd into the PKMDS-Blazor folder
+- build the Dockerfile `docker build -t pkmds .`
+- run your new container `docker run --name pkmds -d -p 5002:8080`
+- access the application at `http://localhost:5002`
 </details>
