@@ -62,22 +62,24 @@ EntityContext.MaxInvalid &&
                     Variant="@Variant.Outlined"
                     Color="@Color.Default" />
 
-    @*
-        <MudCheckBox Label="Met as Egg"
-        @bind-Value="@Pokemon.WasEgg"
-        @bind-Value:after="@RefreshService.Refresh"
-        For="@(() => Pokemon.WasEgg)" />
-    *@
-    <MudAutocomplete T="@ComboItem"
-                     Label="Egg Location"
-                     Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
-                     @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
-                     SearchFunc="@SearchEggMetLocations"
-                     ToStringFunc="@(metLocation => metLocation?.Text)" />
+    @if (Pokemon is { WasEgg: true, IsEgg: false })
+    {
+        <MudText>
+            This Pokémon was met as an Egg.
+        </MudText>
 
-    <DateOnlyPicker Label="Met Date"
-                    @bind-Date="@Pokemon.EggMetDate"
-                    Variant="@Variant.Outlined"
-                    Color="@Color.Default" />
+
+        <MudAutocomplete T="@ComboItem"
+                         Label="Egg Met Location"
+                         Variant="@Variant.Outlined"
+                         @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
+                         @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
+                         SearchFunc="@SearchEggMetLocations"
+                         ToStringFunc="@(metLocation => metLocation?.Text)" />
+
+        <DateOnlyPicker Label="Egg Met Date"
+                        @bind-Date="@Pokemon.EggMetDate"
+                        Variant="@Variant.Outlined"
+                        Color="@Color.Default" />
+    }
 }
