@@ -10177,15 +10177,15 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-jK\/Z4+cFwvJfNZec2C+jvj6aYMyu24SUJocvzEPHuZM=",
+      "hash": "sha256-rNKD6MtvL\/hc5sdBSuxy3ccRper9apQhmlIYp9UDOZk=",
       "url": "_framework\/blazor.boot.json"
     },
     {
-      "hash": "sha256-X4KtcVkr4VNUjQfmr4CZpoMR4gNNbfpejFlZ1tHp7qk=",
+      "hash": "sha256-Os7bvNKUeFyTFNxcK6G0qoSH6Zji6uScZ8NAwBzGzig=",
       "url": "_framework\/dotnet.native.8.0.10.0rhgoi7107.js"
     },
     {
-      "hash": "sha256-Gw3mzqDlRknRPMsr2VQGdp2ion9D6GvzTTi7CrJ+bEw=",
+      "hash": "sha256-ULGx8CQAqdiZEmCtYVPR00wu0qOkfJKf+27Ba0WTQxs=",
       "url": "_framework\/dotnet.native.wasm"
     },
     {
@@ -10289,7 +10289,7 @@
       "url": "_framework\/PKHeX.Core.wasm"
     },
     {
-      "hash": "sha256-49LqhSsOAcSGn+yh9RY+OTBTZ3OFvctaKu7QMX7zB4E=",
+      "hash": "sha256-z3Wf8hBtMS5SGEcfeZrXH1\/XjYAfxujb2xfmUIalzag=",
       "url": "_framework\/Pkmds.Web.wasm"
     },
     {
@@ -10341,7 +10341,7 @@
       "url": "_framework\/System.Linq.Expressions.wasm"
     },
     {
-      "hash": "sha256-E74GxzmC92g7YzHLTysiV+0bm\/Pt+1FvkPPfsr64N4w=",
+      "hash": "sha256-mVLlakxXM6uj+MjbSSr1D5XUOfI4fw2uSU\/GGsCaKAI=",
       "url": "_framework\/System.Linq.wasm"
     },
     {
@@ -10369,7 +10369,7 @@
       "url": "_framework\/System.ObjectModel.wasm"
     },
     {
-      "hash": "sha256-fGYifBDK5+fYvd6LDzFUwXWPyvQvatSkQ7COPjrbwhs=",
+      "hash": "sha256-V1BcrpmAi2vcweIlceMRVkyjMyxjYo2adP4QZZ2UoMk=",
       "url": "_framework\/System.Private.CoreLib.wasm"
     },
     {
@@ -10397,7 +10397,7 @@
       "url": "_framework\/System.Security.Cryptography.wasm"
     },
     {
-      "hash": "sha256-UkgC79Ct8CiZ4nXy7ResG8MslLgqxUkRe57mHuM5Fik=",
+      "hash": "sha256-F2cgjxk9Y0LmJF9GWt2TQEYNfSYnzErNS7JX2oR8M1c=",
       "url": "_framework\/System.Text.Encodings.Web.wasm"
     },
     {
@@ -10453,5 +10453,5 @@
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "W3oiSzjN"
+  "version": "t8xodkPv"
 };
