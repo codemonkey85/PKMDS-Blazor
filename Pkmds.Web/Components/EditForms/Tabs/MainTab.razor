@@ -194,7 +194,7 @@ EntityContext.MaxInvalid &&
 
     @if (saveGeneration >= 2)
     {
-        <MudNumericField Label="Friendship"
+        <MudNumericField Label="@(Pokemon.IsEgg ? "Hatch Counter" : "Friendship")"
                          Variant="@Variant.Outlined"
                          T="@byte"
                          Min="0"
