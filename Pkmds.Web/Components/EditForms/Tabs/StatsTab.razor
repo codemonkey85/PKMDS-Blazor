@@ -27,8 +27,8 @@ EntityContext.MaxInvalid &&
                         @nature.Text
                     </MudText>
                     @{
-                        var str = AppService.GetStatModifierString((Nature)nature.Value);
-                    }
+                    var str = AppService.GetStatModifierString((Nature)nature.Value);
+                }
                 @if (str is { Length: > 0 })
                 {
                     <MudText>
@@ -162,69 +162,141 @@ EntityContext.MaxInvalid &&
             </MudStack>
         </MudItem>
 
-        <MudItem xs="3">
-            <MudStack>
-                <MudText>
-                    EVs
-                </MudText>
+        @if (Pokemon is IAwakened aPkm)
+       {
+            <MudItem xs="3">
+                <MudStack>
+                    <MudText>
+                        AVs
+                    </MudText>
 
-                <MudNumericField Label="HP"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="255"
-                                 @bind-Value="@Pokemon.EV_HP"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.EV_HP)" />
+                    <MudNumericField Label="HP"
+                                     T="@byte"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@AwakeningUtil.AwakeningMax"
+                                     @bind-Value="@aPkm.AV_HP"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => aPkm.AV_HP)" />
 
-                <MudNumericField Label="Attack"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="255"
-                                 @bind-Value="@Pokemon.EV_ATK"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.EV_ATK)" />
+                    <MudNumericField Label="Attack"
+                                     T="@byte"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@AwakeningUtil.AwakeningMax"
+                                     @bind-Value="@aPkm.AV_ATK"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => aPkm.AV_ATK)" />
 
-                <MudNumericField Label="Defense"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="255"
-                                 @bind-Value="@Pokemon.EV_DEF"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.EV_DEF)" />
+                    <MudNumericField Label="Defense"
+                                     T="@byte"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@AwakeningUtil.AwakeningMax"
+                                     @bind-Value="@aPkm.AV_DEF"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => aPkm.AV_DEF)" />
 
-                <MudNumericField Label="Sp. Atk"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="255"
-                                 @bind-Value="@Pokemon.EV_SPA"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.EV_SPA)" />
+                    <MudNumericField Label="Sp. Atk"
+                                     T="@byte"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@AwakeningUtil.AwakeningMax"
+                                     @bind-Value="@aPkm.AV_SPA"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => aPkm.AV_SPA)" />
 
-                <MudNumericField Label="Sp. Def"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="255"
-                                 @bind-Value="@Pokemon.EV_SPD"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.EV_SPD)" />
+                    <MudNumericField Label="Sp. Def"
+                                     T="@byte"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@AwakeningUtil.AwakeningMax"
+                                     @bind-Value="@aPkm.AV_SPD"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => aPkm.AV_SPD)" />
 
-                <MudNumericField Label="Speed"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="255"
-                                 @bind-Value="@Pokemon.EV_SPE"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.EV_SPE)" />
+                    <MudNumericField Label="Speed"
+                                     T="@byte"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@AwakeningUtil.AwakeningMax"
+                                     @bind-Value="@aPkm.AV_SPE"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => aPkm.AV_SPE)" />
 
-                <MudNumericField Label="Total"
-                                 Variant="@Variant.Outlined"
-                                 Value="@Pokemon.EVTotal"
-                                 For="@(() => Pokemon.EVTotal)"
-                                 ReadOnly />
+                    <MudNumericField Label="Total"
+                                     Variant="@Variant.Outlined"
+                                     Value="@aPkm.AwakeningSum()"
+                                     ReadOnly />
 
-            </MudStack>
-        </MudItem>
+                </MudStack>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="3">
+                <MudStack>
+                    <MudText>
+                        EVs
+                    </MudText>
 
+                    <MudNumericField Label="HP"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@GetEvMax(saveGeneration)"
+                                     @bind-Value="@Pokemon.EV_HP"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.EV_HP)" />
+
+                    <MudNumericField Label="Attack"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@GetEvMax(saveGeneration)"
+                                     @bind-Value="@Pokemon.EV_ATK"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.EV_ATK)" />
+
+                    <MudNumericField Label="Defense"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@GetEvMax(saveGeneration)"
+                                     @bind-Value="@Pokemon.EV_DEF"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.EV_DEF)" />
+
+                    <MudNumericField Label="Sp. Atk"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@GetEvMax(saveGeneration)"
+                                     @bind-Value="@Pokemon.EV_SPA"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.EV_SPA)" />
+
+                    <MudNumericField Label="Sp. Def"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@GetEvMax(saveGeneration)"
+                                     @bind-Value="@Pokemon.EV_SPD"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.EV_SPD)" />
+
+                    <MudNumericField Label="Speed"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@GetEvMax(saveGeneration)"
+                                     @bind-Value="@Pokemon.EV_SPE"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.EV_SPE)" />
+
+                    <MudNumericField Label="Total"
+                                     Variant="@Variant.Outlined"
+                                     Value="@Pokemon.EVTotal"
+                                     For="@(() => Pokemon.EVTotal)"
+                                     ReadOnly />
+
+                </MudStack>
+            </MudItem>
+        }
         <MudItem xs="3">
             <MudStack>
                 <MudText>
@@ -293,7 +365,7 @@ EntityContext.MaxInvalid &&
             {
                 <MudSelectItem Value="@type.Value">
                     @type.Text
-            </MudSelectItem>
+                </MudSelectItem>
             }
         </MudSelect>
         <MudText>

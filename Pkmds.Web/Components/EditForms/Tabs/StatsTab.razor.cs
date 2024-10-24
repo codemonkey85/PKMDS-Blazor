@@ -29,4 +29,11 @@ public partial class StatsTab : IDisposable
         Pokemon.SetNature(nature);
         AppService.LoadPokemonStats(Pokemon);
     }
+
+    private static int GetEvMax(int generation) => generation switch 
+    {
+        1 or 2 => EffortValues.Max12,
+        3 or 4 or 5 => EffortValues.Max255,
+        _ => EffortValues.Max252
+    };
 }
