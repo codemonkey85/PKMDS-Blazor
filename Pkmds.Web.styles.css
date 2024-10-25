@@ -35,7 +35,11 @@
     }
 /* /Components/MarkingComponent.razor.rz.scp.css */
 .marking[b-81h5kesae7] {
-    max-width: 68.63px;
+    width: 100px;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 3.0rem;
     text-align: center;
     cursor: pointer;
@@ -66,6 +70,8 @@
     grid-template-rows: repeat(2, 1fr);
     grid-gap: 25px;
     padding-top: 3px;
+    justify-items: center;
+    align-items: center;
 }
 
 .gen-3[b-wq5bilj2g5] {
