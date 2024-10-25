@@ -113,4 +113,13 @@ public static class PKMExtensions
                 break;
         }
     }
+
+    public static int GetMaxPP(this PKM pokemon, int moveIndex) 
+    {
+        var move = pokemon.GetMove(moveIndex);
+        var moveBasePP = MoveInfo.GetPP(pokemon.Context, move);
+        var ppUps = pokemon.GetPPUps()[moveIndex];
+
+        return moveBasePP + moveBasePP * ppUps / 5;
+    }
 }
