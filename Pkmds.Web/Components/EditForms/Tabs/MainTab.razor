@@ -133,31 +133,45 @@ EntityContext.MaxInvalid &&
 
     @if (saveGeneration > 1)
     {
-        <MudAutocomplete T="@ComboItem"
-                         Label="Held Item"
-                         Variant="@Variant.Outlined"
-                         @bind-Value:get="@(AppService.GetItemComboItem(Pokemon.HeldItem))"
-                         @bind-Value:set="@(item => { Pokemon.HeldItem = item.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
-                         SearchFunc="@SearchItemNames"
-                         ToStringFunc="@(item => item?.Text)">
-            <ItemTemplate Context="item">
-                <MudStack Row>
-                    @if (item.Value != 0)
-                    {
-                        var pkm = Pokemon.Clone();
-                        pkm.HeldItem = item.Value;
-                        <MudImage Src="@SpriteHelper.GetArtworkItemSpriteFilename(pkm.SpriteItem)"
-                                  ObjectFit="@ObjectFit.Contain"
-                                  ObjectPosition="@ObjectPosition.Center"
-                                  Width="22"
-                                  Height="22" />
-                    }
-                    <MudText>
-                        @item.Text
-                    </MudText>
-                </MudStack>
-            </ItemTemplate>
-        </MudAutocomplete>
+        <MudStack Row
+                  Spacing="1"
+                  AlignItems="@AlignItems.Center">
+
+            <MudAutocomplete T="@ComboItem"
+                             Label="Held Item"
+                             Variant="@Variant.Outlined"
+                             @bind-Value:get="@(AppService.GetItemComboItem(Pokemon.HeldItem))"
+                             @bind-Value:set="@(item => { Pokemon.HeldItem = item.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
+                             SearchFunc="@SearchItemNames"
+                             ToStringFunc="@(item => item?.Text)">
+                <ItemTemplate Context="item">
+                    <MudStack Row>
+                        @if (item.Value != 0)
+                        {
+                            <MudImage Src="@SpriteHelper.GetArtworkItemSpriteFilename(item.Value)"
+                                      title="@item.Text"
+                                      ObjectFit="@ObjectFit.Contain"
+                                      ObjectPosition="@ObjectPosition.Center"
+                                      Width="22"
+                                      Height="22" />
+                        }
+                        <MudText>
+                            @item.Text
+                        </MudText>
+                    </MudStack>
+                </ItemTemplate>
+            </MudAutocomplete>
+
+            @if (Pokemon.HeldItem != 0)
+            {
+                <MudImage Src="@SpriteHelper.GetArtworkItemSpriteFilename(Pokemon.HeldItem)"
+                          title="@item.Text"
+                          ObjectFit="@ObjectFit.Contain"
+                          ObjectPosition="@ObjectPosition.Center"
+                          Width="22"
+                          Height="22" />
+            }
+        </MudStack>
     }
 
     @if (saveGeneration == 3)

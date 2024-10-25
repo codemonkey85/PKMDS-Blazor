@@ -1,8 +1,8 @@
 ﻿@code {
     public static RenderFragment TypeSummary(byte type1, byte type2) =>
     @<MudStack Row
-                   Class="my-2"
-                   AlignItems="@AlignItems.Center">
+               Class="my-2"
+               AlignItems="@AlignItems.Center">
         <MudText>
             Type:
         </MudText>
@@ -26,8 +26,8 @@
 
     public static RenderFragment TeraTypeSummary(byte type) =>
     @<MudStack Row
-                   Class="my-2"
-                   AlignItems="@AlignItems.Center">
+               Class="my-2"
+               AlignItems="@AlignItems.Center">
         <MudText>
             Tera Type:
         </MudText>
@@ -49,11 +49,11 @@
 
     public static RenderFragment MoveCategorySummary(int categoryId) =>
     @<MudImage Src="@SpriteHelper.GetMoveCategorySpriteFileName(categoryId)"
-          Alt="@GameInfoExtensions.GetCategoryName(categoryId)"
-          title="@GameInfoExtensions.GetCategoryName(categoryId)"
-          ObjectFit="@ObjectFit.Contain"
-          ObjectPosition="@ObjectPosition.Center"
-          Width="30" />;
+               Alt="@GameInfoExtensions.GetCategoryName(categoryId)"
+               title="@GameInfoExtensions.GetCategoryName(categoryId)"
+               ObjectFit="@ObjectFit.Contain"
+               ObjectPosition="@ObjectPosition.Center"
+               Width="30" />;
 
     public static RenderFragment GenderDisplayIcon(int gender)
     {
