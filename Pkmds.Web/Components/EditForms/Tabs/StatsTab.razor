@@ -1,6 +1,6 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (Pokemon is { Generation: { } pokemonGeneration } &&
+@if (Pokemon is not null &&
 AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } &&
 saveFileEntityContext is not
 EntityContext.None or
@@ -14,31 +14,34 @@ EntityContext.MaxInvalid &&
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.CurrentLevel)" />
 
-    <MudSelect Label="Nature"
-               Variant="@Variant.Outlined"
-               @bind-Value:get="@Pokemon.Nature"
-               @bind-Value:set="@OnNatureSet"
-               For="@(() => Pokemon.Nature)">
-        @foreach (var nature in GameInfo.FilteredSources.Natures)
-        {
-            <MudSelectItem Value="@((Nature)nature.Value)">
-                <MudStack>
-                    <MudText>
-                        @nature.Text
-                    </MudText>
-                    @{
-                    var str = AppService.GetStatModifierString((Nature)nature.Value);
-                }
-                @if (str is { Length: > 0 })
-                {
-                    <MudText>
-                        @str
-                    </MudText>
-                }
-            </MudStack>
-        </MudSelectItem>
-        }
-    </MudSelect>
+    @if (saveGeneration > 2)
+    {
+        <MudSelect Label="Nature"
+                   Variant="@Variant.Outlined"
+                   @bind-Value:get="@Pokemon.Nature"
+                   @bind-Value:set="@OnNatureSet"
+                   For="@(() => Pokemon.Nature)">
+            @foreach (var nature in GameInfo.FilteredSources.Natures)
+            {
+                <MudSelectItem Value="@((Nature)nature.Value)">
+                    <MudStack>
+                        <MudText>
+                            @nature.Text
+                        </MudText>
+                        @{
+                        var str = AppService.GetStatModifierString((Nature)nature.Value);
+                    }
+                    @if (str is { Length: > 0 })
+                    {
+                        <MudText>
+                            @str
+                        </MudText>
+                    }
+                </MudStack>
+            </MudSelectItem>
+            }
+        </MudSelect>
+    }
 
     <MudGrid>
 
@@ -163,7 +166,7 @@ EntityContext.MaxInvalid &&
         </MudItem>
 
         @if (Pokemon is IAwakened aPkm)
-       {
+        {
             <MudItem xs="3">
                 <MudStack>
                     <MudText>
@@ -373,7 +376,10 @@ EntityContext.MaxInvalid &&
         </MudText>
     </MudStack>
 
-    <MudText>
-        Characteristic: @GetCharacteristic(Pokemon)
-    </MudText>
+    @if (saveGeneration > 3)
+    {
+        <MudText>
+            Characteristic: @GetCharacteristic(Pokemon)
+        </MudText>
+    }
 }

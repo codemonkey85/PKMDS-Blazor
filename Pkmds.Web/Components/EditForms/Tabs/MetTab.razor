@@ -1,6 +1,6 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (Pokemon is { Generation: { } pokemonGeneration } &&
+@if (Pokemon is not null &&
 AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } &&
 saveFileEntityContext is not
 EntityContext.None or
@@ -8,11 +8,6 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 (AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null || AppState.SelectedPartySlotNumber is not null))
 {
-    <MudCheckBox Label="Nicknamed"
-                 @bind-Value="@Pokemon.IsNicknamed"
-                 @bind-Value:after="@RefreshService.Refresh"
-                 For="@(() => Pokemon.IsNicknamed)" />
-
     <MudSelect Label="Origin Game"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Version"
@@ -24,30 +19,39 @@ EntityContext.MaxInvalid &&
         }
     </MudSelect>
 
-    <MudSelect Label="Ball"
-               Variant="@Variant.Outlined"
-               @bind-Value="@Pokemon.Ball"
-               For="@(() => Pokemon.Ball)">
-        @foreach (ComboItem ball in GameInfo.BallDataSource)
-        {
-            <MudSelectItem Value="@((byte)ball.Value)">
-                <MudStack Row>
-                    <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
-                              ObjectFit="@ObjectFit.Contain"
-                              ObjectPosition="@ObjectPosition.Center"
-                              Width="22"
-                              Height="22" />
-                    <MudText>
-                        @ball.Text
-                    </MudText>
-                </MudStack>
-            </MudSelectItem>
-        }
-    </MudSelect>
+    @if (saveGeneration > 2)
+    {
+        <MudSelect Label="Ball"
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@Pokemon.Ball"
+                   For="@(() => Pokemon.Ball)">
+            @foreach (ComboItem ball in GameInfo.BallDataSource)
+            {
+                <MudSelectItem Value="@((byte)ball.Value)">
+                    <MudStack Row>
+                        <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
+                                  ObjectFit="@ObjectFit.Contain"
+                                  ObjectPosition="@ObjectPosition.Center"
+                                  Width="22"
+                                  Height="22" />
+                        <MudText>
+                            @ball.Text
+                        </MudText>
+                    </MudStack>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    }
 
-    <MudCheckBox Label="Fateful Encounter"
-                 @bind-Value="@Pokemon.FatefulEncounter"
-                 For="@(() => Pokemon.FatefulEncounter)" />
+    @if (saveGeneration > 1)
+    {
+        <MudNumericField Label="Met Level"
+                         Variant="@Variant.Outlined"
+                         Value="@Pokemon.MetLevel"
+                         For="@(() => Pokemon.MetLevel)"
+                         ReadOnly
+                         HideSpinButtons />
+    }
 
     <MudAutocomplete T="@ComboItem"
                      Label="Met Location"
@@ -57,10 +61,28 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@SearchMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
 
-    <DateOnlyPicker Label="Met Date"
-                    @bind-Date="@Pokemon.MetDate"
-                    Variant="@Variant.Outlined"
-                    Color="@Color.Default" />
+    @if (saveGeneration == 2 && Pokemon is PK2 pk2)
+    {
+        <MudSelect Label="Time of Day"
+                   T="@MetTimeOfDay"
+                   Variant="@Variant.Outlined"
+                   Value="@GetMetTimeOfDay"
+                   ValueChanged="@SetMetTimeOfDay">
+            @foreach (var timeOfDay in Enum.GetValues<MetTimeOfDay>())
+            {
+                <MudSelectItem Value="@timeOfDay">
+                    @timeOfDay.ToString()
+                </MudSelectItem>
+            }
+        </MudSelect>
+    }
+    else if (saveGeneration > 2)
+    {
+        <DateOnlyPicker Label="Met Date"
+                        @bind-Date="@Pokemon.MetDate"
+                        Variant="@Variant.Outlined"
+                        Color="@Color.Default" />
+    }
 
     @if (Pokemon is { WasEgg: true, IsEgg: false })
     {
@@ -81,5 +103,12 @@ EntityContext.MaxInvalid &&
                         @bind-Date="@Pokemon.EggMetDate"
                         Variant="@Variant.Outlined"
                         Color="@Color.Default" />
+    }
+
+    @if (saveGeneration > 2)
+    {
+        <MudCheckBox Label="Fateful Encounter"
+                     @bind-Value="@Pokemon.FatefulEncounter"
+                     For="@(() => Pokemon.FatefulEncounter)" />
     }
 }

@@ -1,6 +1,6 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (Pokemon is { Generation: { } pokemonGeneration } &&
+@if (Pokemon is not null &&
 AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
 saveFileEntityContext is not
 EntityContext.None or
@@ -18,7 +18,7 @@ EntityContext.MaxInvalid &&
                                  Format="@AppService.GetIdFormatString()"
                                  For="@(() => Pokemon.TID16)" />
 
-                @if (pokemonGeneration >= 3)
+                @if (saveGeneration >= 3)
                 {
                     <MudNumericField Label="Trainer SID"
                                      Variant="@Variant.Outlined"
@@ -37,7 +37,7 @@ EntityContext.MaxInvalid &&
                                  Format="@AppService.GetIdFormatString()"
                                  For="@(() => Pokemon.TrainerTID7)" />
 
-                @if (pokemonGeneration >= 3)
+                @if (saveGeneration >= 3)
                 {
                     <MudNumericField Label="Trainer SID"
                                      Variant="@Variant.Outlined"
@@ -54,32 +54,35 @@ EntityContext.MaxInvalid &&
                   @bind-Value="@Pokemon.OriginalTrainerName"
                   For="@(() => Pokemon.OriginalTrainerName)" />
 
-    <MudSelect Label="OT Gender"
-               Variant="@Variant.Outlined"
-               @bind-Value="@Pokemon.OriginalTrainerGender"
-               For="@(() => Pokemon.OriginalTrainerGender)">
+    @if (saveGeneration > 1)
+    {
+        <MudSelect Label="OT Gender"
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@Pokemon.OriginalTrainerGender"
+                   For="@(() => Pokemon.OriginalTrainerGender)">
 
-        <MudSelectItem Value="@((byte)Gender.Male)">
-            <MudStack Row>
-                <MudIcon Icon="@Icons.Material.Filled.Male"
-                         Style="@($"color: {Colors.Blue.Default};")" />
-                <MudText Style="@($"color: {Colors.Blue.Default};")">
-                    @GameInfo.GenderSymbolASCII[(int)Gender.Male]
-                </MudText>
-            </MudStack>
-        </MudSelectItem>
+            <MudSelectItem Value="@((byte)Gender.Male)">
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.Male"
+                             Style="@($"color: {Colors.Blue.Default};")" />
+                    <MudText Style="@($"color: {Colors.Blue.Default};")">
+                        @GameInfo.GenderSymbolASCII[(int)Gender.Male]
+                    </MudText>
+                </MudStack>
+            </MudSelectItem>
 
-        <MudSelectItem Value="@((byte)Gender.Female)">
-            <MudStack Row>
-                <MudIcon Icon="@Icons.Material.Filled.Female"
-                         Style="@($"color: {Colors.Red.Default};")" />
-                <MudText Style="@($"color: {Colors.Red.Default};")">
-                    @GameInfo.GenderSymbolASCII[(int)Gender.Female]
-                </MudText>
-            </MudStack>
-        </MudSelectItem>
+            <MudSelectItem Value="@((byte)Gender.Female)">
+                <MudStack Row>
+                    <MudIcon Icon="@Icons.Material.Filled.Female"
+                             Style="@($"color: {Colors.Red.Default};")" />
+                    <MudText Style="@($"color: {Colors.Red.Default};")">
+                        @GameInfo.GenderSymbolASCII[(int)Gender.Female]
+                    </MudText>
+                </MudStack>
+            </MudSelectItem>
 
-    </MudSelect>
+        </MudSelect>
+    }
 
     <MudButton OnClick="@FillFromGame"
                Variant="@Variant.Filled"

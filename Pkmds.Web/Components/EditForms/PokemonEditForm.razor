@@ -1,7 +1,7 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-AppState.SaveFile?.Context is EntityContext saveFileEntityContext &&
+AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
@@ -51,9 +51,12 @@ EntityContext.MaxInvalid &&
                 <MainTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
-            <MudTabPanel Text="Met">
-                <MetTab Pokemon="@Pokemon" />
-            </MudTabPanel>
+            @if (saveGeneration > 1)
+            {
+                <MudTabPanel Text="Met">
+                    <MetTab Pokemon="@Pokemon" />
+                </MudTabPanel>
+            }
 
             <MudTabPanel Text="Stats">
                 <StatsTab Pokemon="@Pokemon" />
@@ -63,9 +66,12 @@ EntityContext.MaxInvalid &&
                 <MovesTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
-            <MudTabPanel Text="Cosmetic">
-                <CosmeticTab Pokemon="@Pokemon" />
-            </MudTabPanel>
+            @if (saveGeneration > 2)
+            {
+                <MudTabPanel Text="Cosmetic">
+                    <CosmeticTab Pokemon="@Pokemon" />
+                </MudTabPanel>
+            }
 
             <MudTabPanel Text="OT/Misc">
                 <OtMiscTab Pokemon="@Pokemon" />
