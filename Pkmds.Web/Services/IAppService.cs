@@ -16,6 +16,8 @@ public interface IAppService
 
     void DeletePokemon(int boxNumber, int boxSlotNumber);
 
+    string GetPokemonSpeciesName(ushort speciesId);
+
     IEnumerable<ComboItem> SearchPokemonNames(string searchString);
 
     ComboItem GetSpeciesComboItem(ushort speciesId);

@@ -7,5 +7,7 @@
           Height="68px"
           Class="@SpriteHelper.GetSpriteCssClass(Pokemon)"
           Style="@GetStyle()">
-    <img class="pkm-sprite" src="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)" />
+    <img class="pkm-sprite"
+         src="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)"
+         title="@(Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : null)" />
 </MudPaper>

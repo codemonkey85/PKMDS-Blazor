@@ -149,6 +149,7 @@ EntityContext.MaxInvalid &&
                         @if (item.Value != 0)
                         {
                             <MudImage Src="@SpriteHelper.GetArtworkItemSpriteFilename(item.Value)"
+                                      Alt="@item.Text"
                                       title="@item.Text"
                                       ObjectFit="@ObjectFit.Contain"
                                       ObjectPosition="@ObjectPosition.Center"
@@ -164,8 +165,10 @@ EntityContext.MaxInvalid &&
 
             @if (Pokemon.HeldItem != 0)
             {
+                var itemText = AppService.GetItemComboItem(Pokemon.HeldItem).Text;
                 <MudImage Src="@SpriteHelper.GetArtworkItemSpriteFilename(Pokemon.HeldItem)"
-                          title="@item.Text"
+                          Alt="@itemText"
+                          title="@itemText"
                           ObjectFit="@ObjectFit.Contain"
                           ObjectPosition="@ObjectPosition.Center"
                           Width="22"

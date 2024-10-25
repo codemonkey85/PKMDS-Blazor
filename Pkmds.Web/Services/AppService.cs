@@ -43,6 +43,8 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         RefreshService.Refresh();
     }
 
+    public string GetPokemonSpeciesName(ushort speciesId) => GetSpeciesComboItem(speciesId).Text;
+
     public IEnumerable<ComboItem> SearchPokemonNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
         : GameInfo.FilteredSources.Species
