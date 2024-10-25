@@ -96,9 +96,9 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
             .Where(metLocation => metLocation.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(metLocation => metLocation.Text);
 
-    public ComboItem GetMetLocationComboItem(int metLocationId, bool isEggLocation = false) => AppState.SaveFile is null
+    public ComboItem GetMetLocationComboItem(ushort metLocationId, bool isEggLocation = false) => AppState.SaveFile is null
         ? default!
-        : GameInfo.GetLocationList(AppState.SaveFile.Version, AppState.SaveFile.Context, isEggLocation)
+        : GameInfo.GetLocationList(AppState.SaveFile.Version.GetSingleVersion(), AppState.SaveFile.Context, isEggLocation)
             .FirstOrDefault(metLocation => metLocation.Value == metLocationId) ?? default!;
 
     public IEnumerable<ComboItem> SearchMoves(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
