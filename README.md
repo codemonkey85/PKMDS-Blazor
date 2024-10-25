@@ -95,7 +95,7 @@ A: You can support PKMDS by starring the project on GitHub, sharing it with your
 
 Q: What are the system requirements for PKMDS?
 
-A: PKMDS is a web app, so it can be used on any device that has a web browser. You can use PKMDS on a desktop computer, laptop, tablet, or smartphone.
+A: PKMDS is a web app, so it can be used on any device that has a web browser. You can use PKMDS on a desktop computer, laptop, tablet, or smartphone. Please note that the app runs best in Google Chrome or Chromium-based browsers - I've noticed some UI bugs in Safari for instance.
 
 Q: Can I use PKMDS on my mobile device?
 
