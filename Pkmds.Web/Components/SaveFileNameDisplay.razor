@@ -13,7 +13,7 @@
         <span>@saveFile.OT </span>
         @GenderDisplayIcon(gender)
         <span>(@saveFile.DisplayTID.ToString(AppService.GetIdFormatString())</span>
-        <span>, @FriendlyGameName(saveFile.Version)</span>
+        <span>, @FriendlyGameName(saveFile.Version.GetSingleVersion())</span>
         <span>, @saveFile.PlayTimeString)</span>
     </MudStack>;
 
