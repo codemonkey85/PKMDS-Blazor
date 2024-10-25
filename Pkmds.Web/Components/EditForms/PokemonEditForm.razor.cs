@@ -27,8 +27,8 @@ public partial class PokemonEditForm : IDisposable
     {
         var parameters = new DialogParameters
         {
-            { nameof(ConfirmActionDialog.Title), "Delete Pokémon" },
-            { nameof(ConfirmActionDialog.Message), "Are you sure you want to delete this Pokémon?" },
+            { nameof(ConfirmActionDialog.Title), "Delete PokÃ©mon" },
+            { nameof(ConfirmActionDialog.Message), "Are you sure you want to delete this PokÃ©mon?" },
             { nameof(ConfirmActionDialog.ConfirmText), "Delete" },
             { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.Delete },
             { nameof(ConfirmActionDialog.ConfirmColor), Color.Default },
