@@ -210,7 +210,8 @@ EntityContext.MaxInvalid &&
                          @bind-Value="@Pokemon.CurrentFriendship"
                          For="@(() => Pokemon.CurrentFriendship)" />
 
-        <MudStack Row>
+        <MudStack Row 
+                  Wrap="@Wrap.Wrap">
 
             <MudCheckBox Label="Is Egg"
                          @bind-Value="@Pokemon.IsEgg"

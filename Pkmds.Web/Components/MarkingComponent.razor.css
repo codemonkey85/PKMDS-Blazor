@@ -1,5 +1,9 @@
 ﻿.marking {
-    max-width: 68.63px;
+    width: 100px;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 3.0rem;
     text-align: center;
     cursor: pointer;

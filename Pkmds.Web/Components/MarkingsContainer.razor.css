@@ -4,6 +4,8 @@
     grid-template-rows: repeat(2, 1fr);
     grid-gap: 25px;
     padding-top: 3px;
+    justify-items: center;
+    align-items: center;
 }
 
 .gen-3 {
