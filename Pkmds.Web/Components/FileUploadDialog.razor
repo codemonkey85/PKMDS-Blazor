@@ -29,13 +29,16 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@Cancel"
-                   Variant="@Variant.Filled">
+                   Variant="@Variant.Filled"
+                   Color="@Color.Default"
+                   StartIcon="@Icons.Material.Filled.Clear">
             Cancel
         </MudButton>
         <MudButton OnClick="@Ok"
                    Variant="@Variant.Filled"
                    Color="@Color.Primary"
-                   Disabled=@(browserFile is null)>
+                   Disabled=@(browserFile is null)
+                   StartIcon="@Icons.Material.Filled.Check">
             Ok
         </MudButton>
     </DialogActions>

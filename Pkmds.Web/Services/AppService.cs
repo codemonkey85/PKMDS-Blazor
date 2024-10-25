@@ -1,4 +1,6 @@
-﻿namespace Pkmds.Web.Services;
+﻿using PKHeX.Core;
+
+namespace Pkmds.Web.Services;
 
 public record AppService(IAppState AppState, IRefreshService RefreshService) : IAppService
 {
@@ -161,8 +163,33 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         RefreshService.Refresh();
     }
 
-    public void DeletePokemon()
+    public void DeletePokemon(int partySlotNumber)
     {
+        if (AppState is not { SaveFile: { } saveFile })
+        {
+            return;
+        }
+
+        saveFile.DeletePartySlot(partySlotNumber);
+        
+        AppState.SelectedPartySlotNumber = null;
+
+        RefreshService.RefreshPartyState();
+    }
+
+    public void DeletePokemon(int boxNumber, int boxSlotNumber)
+    {
+        if (AppState is not { SaveFile: { } saveFile } )
+        {
+            return;
+        }
+
+        saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, boxNumber, boxSlotNumber);
+
+        AppState.SelectedBoxNumber = null;
+        AppState.SelectedBoxSlotNumber = null;
+
+        RefreshService.RefreshBoxState();
     }
 
     public string ExportPokemonAsShowdown(PKM? pkm) => pkm is null

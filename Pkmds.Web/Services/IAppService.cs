@@ -12,7 +12,9 @@ public interface IAppService
 
     void ClearSelection();
 
-    void DeletePokemon();
+    void DeletePokemon(int partySlotNumber);
+
+    void DeletePokemon(int boxNumber, int boxSlotNumber);
 
     IEnumerable<ComboItem> SearchPokemonNames(string searchString);
 
