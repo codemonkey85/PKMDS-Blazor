@@ -38,4 +38,31 @@ public partial class MetTab : IDisposable
         Day,
         Night
     }
+
+    private bool PokemonMetAsEgg => Pokemon is not null && (Pokemon.IsEgg || Pokemon.WasEgg || Pokemon.WasTradedEgg);
+
+    private void MetAsEggChanged(bool newValue)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+
+        if (newValue == false)
+        {
+            if (Pokemon.IsEgg)
+            {
+                Pokemon.IsEgg = false;
+            }
+            Pokemon.EggDay = Pokemon.EggMonth = Pokemon.EggYear = 0;
+            Pokemon.EggLocation = 0;
+        }
+
+        if (newValue == true) 
+        {
+            Pokemon.SetEggMetData(Pokemon.Version, Pokemon.Version);
+        }
+
+    }
 }

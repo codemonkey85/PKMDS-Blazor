@@ -17,7 +17,8 @@ EntityContext.MaxInvalid &&
                    Color="@Color.Error"
                    Variant="@Variant.Filled"
                    Class="my-2"
-                   StartIcon="@Icons.Material.Filled.Delete">
+                   StartIcon="@Icons.Material.Filled.Delete"
+                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
             Delete Pokémon
         </MudButton>
 
@@ -26,7 +27,8 @@ EntityContext.MaxInvalid &&
                    Variant="@Variant.Filled"
                    StartIcon="@Icons.Material.Filled.Save"
                    Class="my-2"
-                   Color="@Color.Primary">
+                   Color="@Color.Primary"
+                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
             Save
         </MudButton>
 
@@ -35,7 +37,8 @@ EntityContext.MaxInvalid &&
                    Variant="@Variant.Filled"
                    StartIcon="@Icons.Material.Filled.Share"
                    Class="my-2"
-                   Color="@Color.Default">
+                   Color="@Color.Default"
+                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
             Export as Showdown
         </MudButton>
 

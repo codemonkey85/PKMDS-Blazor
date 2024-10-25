@@ -420,6 +420,7 @@ EntityContext.MaxInvalid &&
     <MudStack Row
               AlignItems="@AlignItems.Center">
         <MudSelect Label="Hidden Power Type"
+                   Variant="@Variant.Outlined"
                    @bind-Value:get="@Pokemon.HPType"
                    @bind-Value:set="@((int type) => Pokemon.SetHiddenPower(type))">
             @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)))
