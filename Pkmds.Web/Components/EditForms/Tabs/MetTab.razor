@@ -110,6 +110,7 @@ EntityContext.MaxInvalid &&
                              Variant="@Variant.Outlined"
                              @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
                              @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
+                             DebounceInterval="200"
                              SearchFunc="@SearchEggMetLocations"
                              ToStringFunc="@(metLocation => metLocation?.Text)" />
 
