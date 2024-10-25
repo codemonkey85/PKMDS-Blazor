@@ -15,7 +15,8 @@ EntityContext.MaxInvalid &&
                For="@(() => Pokemon.Version)">
         @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
         {
-            <MudSelectItem Value="@version" />
+            <MudSelectItem Value="@version"
+                           @key="@version" />
         }
     </MudSelect>
 
@@ -35,7 +36,8 @@ EntityContext.MaxInvalid &&
                    For="@(() => Pokemon.Ball)">
             @foreach (ComboItem ball in GameInfo.BallDataSource)
             {
-                <MudSelectItem Value="@((byte)ball.Value)">
+                <MudSelectItem Value="@((byte)ball.Value)"
+                               @key="@ball.Value">
                     <MudStack Row>
                         <MudImage Src="@SpriteHelper.GetBallSpriteFilename(ball.Value)"
                                   ObjectFit="@ObjectFit.Contain"
@@ -70,7 +72,8 @@ EntityContext.MaxInvalid &&
                    ValueChanged="@SetMetTimeOfDay">
             @foreach (var timeOfDay in Enum.GetValues<MetTimeOfDay>())
             {
-                <MudSelectItem Value="@timeOfDay">
+                <MudSelectItem Value="@timeOfDay"
+                               @key="@timeOfDay">
                     @timeOfDay.ToString()
                 </MudSelectItem>
             }

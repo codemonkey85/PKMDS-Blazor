@@ -62,7 +62,8 @@ EntityContext.MaxInvalid &&
                    For="@(() => Pokemon.Nature)">
             @foreach (var nature in GameInfo.FilteredSources.Natures)
             {
-                <MudSelectItem Value="@((Nature)nature.Value)">
+                <MudSelectItem Value="@((Nature)nature.Value)"
+                               @key="@nature.Value">
                     <MudStack>
                         <MudText>
                             @nature.Text
@@ -97,7 +98,8 @@ EntityContext.MaxInvalid &&
                 @for (byte i = 0; i < forms.Length; i++)
                 {
                     var formId = i;
-                    <MudSelectItem Value="@formId">
+                    <MudSelectItem Value="@formId"
+                                   @key="@formId">
                         @forms[formId]
                     </MudSelectItem>
                 }
@@ -116,7 +118,8 @@ EntityContext.MaxInvalid &&
                     @for (uint? i = 0; i < formArgs.Length; i++)
                     {
                         var formArg = i;
-                        <MudSelectItem Value="@(formArg)">
+                        <MudSelectItem Value="@formArg"
+                                       @key="@formArg.Value">
                             @formArgs[formArg ?? 0]
                         </MudSelectItem>
                     }
@@ -163,7 +166,8 @@ EntityContext.MaxInvalid &&
                    For="@(() => Pokemon.Ability)">
             @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon))
             {
-                <MudSelectItem Value="@ability.Value">
+                <MudSelectItem Value="@ability.Value"
+                               @key="@ability.Value">
                     @ability.Text
                 </MudSelectItem>
             }
@@ -188,7 +192,8 @@ EntityContext.MaxInvalid &&
                    For="@(() => Pokemon.Language)">
             @foreach (var language in GameInfo.FilteredSources.Languages)
             {
-                <MudSelectItem Value="language.Value">
+                <MudSelectItem Value="@language.Value"
+                               @key="@language.Value">
                     @language.Text
             </MudSelectItem>
             }

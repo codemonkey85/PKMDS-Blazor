@@ -61,7 +61,8 @@ EntityContext.MaxInvalid &&
                    @bind-Value="@Pokemon.OriginalTrainerGender"
                    For="@(() => Pokemon.OriginalTrainerGender)">
 
-            <MudSelectItem Value="@((byte)Gender.Male)">
+            <MudSelectItem Value="@((byte)Gender.Male)"
+                           @key="@Gender.Male">
                 <MudStack Row>
                     <MudIcon Icon="@Icons.Material.Filled.Male"
                              Style="@($"color: {Colors.Blue.Default};")" />
@@ -71,7 +72,8 @@ EntityContext.MaxInvalid &&
                 </MudStack>
             </MudSelectItem>
 
-            <MudSelectItem Value="@((byte)Gender.Female)">
+            <MudSelectItem Value="@((byte)Gender.Female)"
+                           @key="@Gender.Female">
                 <MudStack Row>
                     <MudIcon Icon="@Icons.Material.Filled.Female"
                              Style="@($"color: {Colors.Red.Default};")" />

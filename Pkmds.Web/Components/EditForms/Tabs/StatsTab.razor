@@ -23,7 +23,8 @@ EntityContext.MaxInvalid &&
                    For="@(() => Pokemon.Nature)">
             @foreach (var nature in GameInfo.FilteredSources.Natures)
             {
-                <MudSelectItem Value="@((Nature)nature.Value)">
+                <MudSelectItem Value="@((Nature)nature.Value)"
+                               @key="@nature.Value">
                     <MudStack>
                         <MudText>
                             @nature.Text
@@ -425,7 +426,8 @@ EntityContext.MaxInvalid &&
                    @bind-Value:set="@((int type) => Pokemon.SetHiddenPower(type))">
             @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)))
             {
-                <MudSelectItem Value="@type.Value">
+                <MudSelectItem Value="@type.Value"
+                               @key="@type.Value">
                     @type.Text
                 </MudSelectItem>
             }

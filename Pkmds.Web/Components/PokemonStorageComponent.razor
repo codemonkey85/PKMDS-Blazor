@@ -20,7 +20,8 @@
                 @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
                 {
                     var boxName = saveFile is IBoxDetailNameRead boxDetailNameRead ? boxDetailNameRead.GetBoxName(boxId) : string.Empty;
-                    <MudSelectItem Value="@boxId">
+                    <MudSelectItem Value="@boxId"
+                                   @key="@boxId">
                         @boxName
                     </MudSelectItem>
                 }
