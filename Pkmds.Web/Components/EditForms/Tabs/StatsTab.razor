@@ -54,50 +54,61 @@ EntityContext.MaxInvalid &&
                 <MudNumericField Label="HP"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.HP"
-                                 For="@(() => Pokemon.IV_HP)"
                                  ReadOnly
                                  HideSpinButtons />
 
                 <MudNumericField Label="Attack"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.ATK"
-                                 For="@(() => Pokemon.IV_ATK)"
                                  ReadOnly
                                  HideSpinButtons />
 
                 <MudNumericField Label="Defense"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.DEF"
-                                 For="@(() => Pokemon.IV_DEF)"
                                  ReadOnly
                                  HideSpinButtons />
 
-                <MudNumericField Label="Sp. Atk"
-                                 Variant="@Variant.Outlined"
-                                 Value="@Pokemon.PersonalInfo.SPA"
-                                 For="@(() => Pokemon.IV_SPA)"
-                                 ReadOnly
-                                 HideSpinButtons />
+                @if (saveGeneration == 1 && Pokemon is PK1 pk1)
+                {
+                    <MudNumericField Label="Speed"
+                                     Variant="@Variant.Outlined"
+                                     Value="@pk1.PersonalInfo.SPE"
+                                     ReadOnly
+                                     HideSpinButtons />
 
-                <MudNumericField Label="Sp. Def"
-                                 Variant="@Variant.Outlined"
-                                 Value="@Pokemon.PersonalInfo.SPD"
-                                 For="@(() => Pokemon.IV_SPD)"
-                                 ReadOnly
-                                 HideSpinButtons />
+                    <MudNumericField Label="Special"
+                                     Variant="@Variant.Outlined"
+                                     Value="@pk1.PersonalInfo.SPC"
+                                     ReadOnly
+                                     HideSpinButtons />
+                }
+                else
+                {
+                    <MudNumericField Label="Sp. Atk"
+                                     Variant="@Variant.Outlined"
+                                     Value="@Pokemon.PersonalInfo.SPA"
+                                     ReadOnly
+                                     HideSpinButtons />
 
-                <MudNumericField Label="Speed"
-                                 Variant="@Variant.Outlined"
-                                 Value="@Pokemon.PersonalInfo.SPE"
-                                 For="@(() => Pokemon.IV_SPE)"
-                                 ReadOnly
-                                 HideSpinButtons />
+                    <MudNumericField Label="Sp. Def"
+                                     Variant="@Variant.Outlined"
+                                     Value="@Pokemon.PersonalInfo.SPD"
+                                     ReadOnly
+                                     HideSpinButtons />
 
-                <MudNumericField Label="Total"
-                                 Variant="@Variant.Outlined"
-                                 Value="@Pokemon.PersonalInfo.GetBaseStatTotal()"
-                                 ReadOnly
-                                 HideSpinButtons />
+                    <MudNumericField Label="Speed"
+                                     Variant="@Variant.Outlined"
+                                     Value="@Pokemon.PersonalInfo.SPE"
+                                     ReadOnly
+                                     HideSpinButtons />
+
+                    <MudNumericField Label="Total"
+                                     Variant="@Variant.Outlined"
+                                     Value="@Pokemon.PersonalInfo.GetBaseStatTotal()"
+                                     ReadOnly
+                                     HideSpinButtons />
+                }
 
             </MudStack>
         </MudItem>
@@ -114,7 +125,9 @@ EntityContext.MaxInvalid &&
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_HP"
                                  @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.IV_HP)" />
+                                 For="@(() => Pokemon.IV_HP)"
+                                 ReadOnly="@(saveGeneration == 1 && Pokemon is PK1)"
+                                 HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)" />
 
                 <MudNumericField Label="Attack"
                                  Variant="@Variant.Outlined"
@@ -132,35 +145,53 @@ EntityContext.MaxInvalid &&
                                  @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_DEF)" />
 
-                <MudNumericField Label="Sp. Atk"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="31"
-                                 @bind-Value="@Pokemon.IV_SPA"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.IV_SPA)" />
 
-                <MudNumericField Label="Sp. Def"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="31"
-                                 @bind-Value="@Pokemon.IV_SPD"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.IV_SPD)" />
+                @if (saveGeneration == 1 && Pokemon is PK1 pk1)
+                {
+                    <MudNumericField Label="Speed"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@pk1.IV_SPE"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => pk1.IV_SPE)" />
 
-                <MudNumericField Label="Speed"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="31"
-                                 @bind-Value="@Pokemon.IV_SPE"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.IV_SPE)" />
+                    <MudNumericField Label="Special"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@pk1.IV_SPC"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => pk1.IV_SPC)" />
+                }
+                else
+                {
+                    <MudNumericField Label="Sp. Atk"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="31"
+                                     @bind-Value="@Pokemon.IV_SPA"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.IV_SPA)" />
 
-                <MudNumericField Label="Total"
-                                 Variant="@Variant.Outlined"
-                                 Value="@Pokemon.IVTotal"
-                                 For="@(() => Pokemon.IVTotal)"
-                                 ReadOnly />
+                    <MudNumericField Label="Sp. Def"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="31"
+                                     @bind-Value="@Pokemon.IV_SPD"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.IV_SPD)" />
+
+                    <MudNumericField Label="Speed"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="31"
+                                     @bind-Value="@Pokemon.IV_SPE"
+                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     For="@(() => Pokemon.IV_SPE)" />
+
+                    <MudNumericField Label="Total"
+                                     Variant="@Variant.Outlined"
+                                     Value="@Pokemon.IVTotal"
+                                     For="@(() => Pokemon.IVTotal)"
+                                     ReadOnly />
+                }
 
             </MudStack>
         </MudItem>
@@ -267,6 +298,22 @@ EntityContext.MaxInvalid &&
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                      For="@(() => Pokemon.EV_DEF)" />
 
+                    @if (saveGeneration == 1 && Pokemon is PK1 pk1)
+                    {
+                        <MudNumericField Label="Speed"
+                                         Variant="@Variant.Outlined"
+                                         @bind-Value="@pk1.EV_SPE"
+                                         @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                         For="@(() => pk1.EV_SPE)" />
+
+                        <MudNumericField Label="Special"
+                                         Variant="@Variant.Outlined"
+                                         @bind-Value="@pk1.EV_SPC"
+                                         @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                         For="@(() => pk1.EV_SPC)" />
+                    }
+                    else
+                    {
                     <MudNumericField Label="Sp. Atk"
                                      Variant="@Variant.Outlined"
                                      Min="0"
@@ -294,8 +341,8 @@ EntityContext.MaxInvalid &&
                     <MudNumericField Label="Total"
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.EVTotal"
-                                     For="@(() => Pokemon.EVTotal)"
                                      ReadOnly />
+                    }
 
                 </MudStack>
             </MudItem>
@@ -309,44 +356,55 @@ EntityContext.MaxInvalid &&
                 <MudNumericField Label="HP"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_HPMax"
-                                 For="@(() => Pokemon.IV_HP)"
                                  ReadOnly
                                  HideSpinButtons />
 
                 <MudNumericField Label="Attack"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_ATK"
-                                 For="@(() => Pokemon.IV_ATK)"
                                  ReadOnly
                                  HideSpinButtons />
 
                 <MudNumericField Label="Defense"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_DEF"
-                                 For="@(() => Pokemon.IV_DEF)"
                                  ReadOnly
                                  HideSpinButtons />
 
+                @if (saveGeneration == 1 && Pokemon is PK1 pk1)
+                {
+                    <MudNumericField Label="Speed"
+                                     Variant="@Variant.Outlined"
+                                     Value="@pk1.Stat_SPE"
+                                     ReadOnly
+                                     HideSpinButtons />
+
+                    <MudNumericField Label="Special"
+                                     Variant="@Variant.Outlined"
+                                     Value="@pk1.Stat_SPC"
+                                     ReadOnly
+                                     HideSpinButtons />
+                }
+                else
+                {
                 <MudNumericField Label="Sp. Atk"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_SPA"
-                                 For="@(() => Pokemon.IV_SPA)"
                                  ReadOnly
                                  HideSpinButtons />
 
                 <MudNumericField Label="Sp. Def"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_SPD"
-                                 For="@(() => Pokemon.IV_SPD)"
                                  ReadOnly
                                  HideSpinButtons />
 
                 <MudNumericField Label="Speed"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_SPE"
-                                 For="@(() => Pokemon.IV_SPE)"
                                  ReadOnly
                                  HideSpinButtons />
+                }
 
                 <MudText>
                     <MudText>
