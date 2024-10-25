@@ -1,7 +1,7 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } &&
+AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
@@ -25,7 +25,10 @@ EntityContext.MaxInvalid &&
                      SearchFunc="@SearchPokemonNames"
                      ToStringFunc="@(species => species?.Text)" />
 
-    @TypeSummary(Pokemon.GetGenerationTypes())
+    if (Pokemon != saveFile.BlankPKM && Pokemon.Species != (ushort)Species.None)
+    {
+        @TypeSummary(Pokemon.GetGenerationTypes())
+    }
 
     @if (Pokemon is PK9 pK9)
     {
@@ -67,8 +70,8 @@ EntityContext.MaxInvalid &&
                     <MudStack>
                         <MudText>
                             @nature.Text
-                    </MudText>
-                    @{
+                        </MudText>
+                        @{
                         var str = AppService.GetStatModifierString((Nature)nature.Value);
                     }
                     @if (str is { Length: > 0 })
@@ -195,7 +198,7 @@ EntityContext.MaxInvalid &&
                 <MudSelectItem Value="@language.Value"
                                @key="@language.Value">
                     @language.Text
-            </MudSelectItem>
+                </MudSelectItem>
             }
         </MudSelect>
     }
@@ -210,7 +213,7 @@ EntityContext.MaxInvalid &&
                          @bind-Value="@Pokemon.CurrentFriendship"
                          For="@(() => Pokemon.CurrentFriendship)" />
 
-        <MudStack Row 
+        <MudStack Row
                   Wrap="@Wrap.Wrap">
 
             <MudCheckBox Label="Is Egg"

@@ -1,8 +1,8 @@
 ﻿@code {
     public static RenderFragment TypeSummary(byte type1, byte type2) =>
     @<MudStack Row
-               Class="my-2"
-               AlignItems="@AlignItems.Center">
+                   Class="my-2"
+                   AlignItems="@AlignItems.Center">
         <MudText>
             Type:
         </MudText>
@@ -22,7 +22,7 @@
     </MudStack>;
 
     public static RenderFragment TypeSummary((byte Type1, byte Type2) types) =>
-    TypeSummary(types.Type1, types.Type2);
+        TypeSummary(types.Type1, types.Type2);
 
     public static RenderFragment TeraTypeSummary(byte type) =>
     @<MudStack Row

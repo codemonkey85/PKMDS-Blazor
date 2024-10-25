@@ -159,6 +159,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         AppState.SelectedBoxSlotNumber = slotNumber;
         EditFormPokemon = pkm;
 
+        HandleNullOrEmptyPokemon();
         RefreshService.Refresh();
     }
 
@@ -170,7 +171,23 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         AppState.SelectedPartySlotNumber = slotNumber;
         EditFormPokemon = pkm;
 
+        HandleNullOrEmptyPokemon();
         RefreshService.Refresh();
+    }
+
+    private void HandleNullOrEmptyPokemon()
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return;
+        }
+
+        EditFormPokemon ??= saveFile.BlankPKM;
+
+        if (EditFormPokemon is { Species: (ushort)Species.None })
+        {
+            EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
+        }
     }
 
     public void DeletePokemon(int partySlotNumber)
@@ -181,7 +198,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         }
 
         saveFile.DeletePartySlot(partySlotNumber);
-        
+
         AppState.SelectedPartySlotNumber = null;
 
         RefreshService.RefreshPartyState();
@@ -189,7 +206,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
 
     public void DeletePokemon(int boxNumber, int boxSlotNumber)
     {
-        if (AppState is not { SaveFile: { } saveFile } )
+        if (AppState is not { SaveFile: { } saveFile })
         {
             return;
         }
