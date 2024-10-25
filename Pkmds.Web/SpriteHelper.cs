@@ -43,6 +43,10 @@ public static class SpriteHelper
     public static string GetTypeWideSpriteFileName(byte type) =>
         $"{SpritesRoot}t/w/type_wide_{type:00}.png";
 
+    // TODO: Implement
+    public static string GetMoveCategorySpriteFileName(int categoryId) =>
+        string.Empty;
+
     public static string GetSpriteCssClass(PKM? pkm) =>
         $"d-flex align-items-center justify-center {(pkm is { Species: > 0 } ? "slot-fill" : string.Empty)}";
 }

@@ -39,6 +39,22 @@
                   Width="30" />
     </MudStack>;
 
+    public static RenderFragment MoveTypeSummary(byte type) =>
+    @<MudImage Src="@SpriteHelper.GetTypeSquareSpriteFileName(type)"
+               Alt="@GameInfo.Strings.Types[type]"
+               title="@GameInfo.Strings.Types[type]"
+               ObjectFit="@ObjectFit.Contain"
+               ObjectPosition="@ObjectPosition.Center"
+               Width="30"/>;
+
+    public static RenderFragment MoveCategorySummary(int categoryId) =>
+    @<MudImage Src="@SpriteHelper.GetMoveCategorySpriteFileName(categoryId)"
+          Alt="@GameInfoExtensions.GetCategoryName(categoryId)"
+          title="@GameInfoExtensions.GetCategoryName(categoryId)"
+          ObjectFit="@ObjectFit.Contain"
+          ObjectPosition="@ObjectPosition.Center"
+          Width="30" />;
+
     public static RenderFragment GenderDisplayIcon(int gender)
     {
         var icon = gender switch

@@ -8,35 +8,73 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 (AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null || AppState.SelectedPartySlotNumber is not null))
 {
-    <MudAutocomplete T="@ComboItem"
-                     Label="Move 1"
-                     Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move1))"
-                     @bind-Value:set="@(move => { Pokemon.Move1 = (ushort)move.Value; RefreshService.Refresh(); })"
-                     SearchFunc="@SearchMoves"
-                     ToStringFunc="@(move => move?.Text)" />
+    <MudStack>
+        @{
+            var pp = Pokemon.GetPP();
+            var ppUps = Pokemon.GetPPUps();
+        }
+        @for (var counter = 0; counter < Pokemon.Moves.Length; counter++)
+        {
+            var i = counter;
+            var displayNumber = i + 1;
+            var moveId = Pokemon.Moves[i];
 
-    <MudAutocomplete T="@ComboItem"
-                     Label="Move 2"
-                     Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move2))"
-                     @bind-Value:set="@(move => { Pokemon.Move2 = (ushort)move.Value; RefreshService.Refresh(); })"
-                     SearchFunc="@SearchMoves"
-                     ToStringFunc="@(move => move?.Text)" />
+            <MudGrid>
+                <MudItem xs="1"
+                         Class="@ColumnClass">
+                    @if (moveId != 0)
+                    {
+                        @MoveTypeSummary(MoveInfo.GetType(moveId, saveFileEntityContext))
+                    }
+                    else
+                    {
+                        <span style="width: 30px" />
+                    }
+                </MudItem>
 
-    <MudAutocomplete T="@ComboItem"
-                     Label="Move 3"
-                     Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move3))"
-                     @bind-Value:set="@(move => { Pokemon.Move3 = (ushort)move.Value; RefreshService.Refresh(); })"
-                     SearchFunc="@SearchMoves"
-                     ToStringFunc="@(move => move?.Text)" />
+                @* TODO: Add back in when we have the data
+                @if (saveGeneration > 3)
+                {
+                    <MudItem xs="1"
+                             Class="@ColumnClass">
+                        @MoveCategorySummary(MoveInfo.GetCategory(moveId, saveFileEntityContext))
+                    </MudItem>
+                })
+                *@
 
-    <MudAutocomplete T="@ComboItem"
-                     Label="Move 4"
-                     Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMoveComboItem(Pokemon.Move4))"
-                     @bind-Value:set="@(move => { Pokemon.Move4 = (ushort)move.Value; RefreshService.Refresh(); })"
-                     SearchFunc="@SearchMoves"
-                     ToStringFunc="@(move => move?.Text)" />
+                <MudItem xs="7"
+                         Class="@ColumnClass">
+                    <MudAutocomplete T="@ComboItem"
+                                     Label="@($"Move {displayNumber}")"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value:get="@(AppService.GetMoveComboItem(moveId))"
+                                     @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))"
+                                     SearchFunc="@SearchMoves"
+                                     ToStringFunc="@(move => move?.Text)" />
+                </MudItem>
+
+                <MudItem xs="2"
+                         Class="@ColumnClass">
+                    <MudNumericField Label="PP"
+                                     T="@int"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     @bind-Value:get="@GetPokemonPP(i)"
+                                     @bind-Value:set="@(newValue => SetPokemonPP(i, newValue))"/>
+
+                </MudItem>
+
+                <MudItem xs="2"
+                         Class="@ColumnClass">
+                    <MudNumericField Label="Ups"
+                                     T="@int"
+                                     Variant="@Variant.Outlined"
+                                     Max="3"
+                                     Min="0"
+                                     @bind-Value:get="@GetPokemonPPUps(i)"
+                                     @bind-Value:set="@(newValue => SetPokemonPPUps(i, newValue))"/>
+                </MudItem>
+            </MudGrid>
+        }
+    </MudStack>
 }
