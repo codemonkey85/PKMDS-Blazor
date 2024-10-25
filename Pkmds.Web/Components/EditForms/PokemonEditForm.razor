@@ -24,6 +24,7 @@ EntityContext.MaxInvalid &&
         <MudButton OnClick="@(() => AppService.SavePokemon(Pokemon))"
                    ButtonType="@ButtonType.Button"
                    Variant="@Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Save"
                    Class="my-2"
                    Color="@Color.Primary">
             Save
@@ -32,6 +33,7 @@ EntityContext.MaxInvalid &&
         <MudButton OnClick="@ExportAsShowdown"
                    ButtonType="@ButtonType.Button"
                    Variant="@Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Share"
                    Class="my-2"
                    Color="@Color.Default">
             Export as Showdown
