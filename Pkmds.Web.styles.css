@@ -75,8 +75,8 @@
 }
 
 .gen-3[b-wq5bilj2g5] {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 0px;
 }
 /* /Components/PokemonStorageComponent.razor.rz.scp.css */
 .select-container[b-nory1ms4jj] {
