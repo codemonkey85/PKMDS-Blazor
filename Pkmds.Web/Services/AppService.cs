@@ -93,12 +93,14 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
         : GameInfo.GetLocationList(AppState.SaveFile.Version.GetSingleVersion(), AppState.SaveFile.Context, isEggLocation)
+            .DistinctBy(l => l.Value)
             .Where(metLocation => metLocation.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(metLocation => metLocation.Text);
 
     public ComboItem GetMetLocationComboItem(ushort metLocationId, bool isEggLocation = false) => AppState.SaveFile is null
         ? default!
         : GameInfo.GetLocationList(AppState.SaveFile.Version.GetSingleVersion(), AppState.SaveFile.Context, isEggLocation)
+            .DistinctBy(l => l.Value)
             .FirstOrDefault(metLocation => metLocation.Value == metLocationId) ?? default!;
 
     public IEnumerable<ComboItem> SearchMoves(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
