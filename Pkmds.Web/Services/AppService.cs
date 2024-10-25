@@ -92,7 +92,7 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
 
     public IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
-        : GameInfo.GetLocationList(AppState.SaveFile.Version, AppState.SaveFile.Context, isEggLocation)
+        : GameInfo.GetLocationList(AppState.SaveFile.Version.GetSingleVersion(), AppState.SaveFile.Context, isEggLocation)
             .Where(metLocation => metLocation.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(metLocation => metLocation.Text);
 
