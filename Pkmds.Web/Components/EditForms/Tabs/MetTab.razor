@@ -34,7 +34,7 @@ EntityContext.MaxInvalid &&
                    Variant="@Variant.Outlined"
                    @bind-Value="@Pokemon.Ball"
                    For="@(() => Pokemon.Ball)">
-            @foreach (ComboItem ball in GameInfo.BallDataSource)
+            @foreach (ComboItem ball in GameInfo.BallDataSource.DistinctBy(ball => ball.Value))
             {
                 <MudSelectItem Value="@((byte)ball.Value)"
                                @key="@ball.Value">

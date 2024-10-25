@@ -46,27 +46,33 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public IEnumerable<ComboItem> SearchPokemonNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
         : GameInfo.FilteredSources.Species
+            .DistinctBy(species => species.Value)
             .Where(species => species.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(species => species.Text);
 
     public ComboItem GetSpeciesComboItem(ushort speciesId) => GameInfo.FilteredSources.Species
+        .DistinctBy(species => species.Value)
         .FirstOrDefault(species => species.Value == speciesId) ?? default!;
 
     public IEnumerable<ComboItem> SearchItemNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
         : GameInfo.FilteredSources.Items
+            .DistinctBy(item => item.Value)
             .Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(item => item.Text);
 
     public ComboItem GetItemComboItem(int itemId) => GameInfo.FilteredSources.Items
+        .DistinctBy(item => item.Value)
         .FirstOrDefault(item => item.Value == itemId) ?? default!;
 
     public ComboItem GetAbilityComboItem(int abilityId) => GameInfo.FilteredSources.Abilities
+        .DistinctBy(ability => ability.Value)
         .FirstOrDefault(ability => ability.Value == abilityId) ?? default!;
 
     public IEnumerable<ComboItem> SearchAbilityNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
     ? []
     : GameInfo.FilteredSources.Abilities
+        .DistinctBy(ability => ability.Value)
         .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
         .OrderBy(ability => ability.Text);
 
@@ -106,10 +112,12 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
     public IEnumerable<ComboItem> SearchMoves(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
         : GameInfo.FilteredSources.Moves
+            .DistinctBy(move => move.Value)
             .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(move => move.Text);
 
     public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
+        .DistinctBy(move => move.Value)
         .FirstOrDefault(metLocation => metLocation.Value == moveId) ?? default!;
 
     public void SavePokemon(PKM? pokemon)

@@ -60,7 +60,7 @@ EntityContext.MaxInvalid &&
                    @bind-Value:get="@Pokemon.Nature"
                    @bind-Value:set="@OnNatureSet"
                    For="@(() => Pokemon.Nature)">
-            @foreach (var nature in GameInfo.FilteredSources.Natures)
+            @foreach (var nature in GameInfo.FilteredSources.Natures.DistinctBy(nature => nature.Value))
             {
                 <MudSelectItem Value="@((Nature)nature.Value)"
                                @key="@nature.Value">
@@ -164,7 +164,7 @@ EntityContext.MaxInvalid &&
                    @bind-Value:get="@((int)Pokemon.Ability)"
                    @bind-Value:set="@(ability => Pokemon.SetAbility(ability))"
                    For="@(() => Pokemon.Ability)">
-            @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon))
+            @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon).DistinctBy(ability => ability.Value))
             {
                 <MudSelectItem Value="@ability.Value"
                                @key="@ability.Value">
@@ -190,7 +190,7 @@ EntityContext.MaxInvalid &&
                    Variant="@Variant.Outlined"
                    @bind-Value="@Pokemon.Language"
                    For="@(() => Pokemon.Language)">
-            @foreach (var language in GameInfo.FilteredSources.Languages)
+            @foreach (var language in GameInfo.FilteredSources.Languages.DistinctBy(language => language.Value))
             {
                 <MudSelectItem Value="@language.Value"
                                @key="@language.Value">
