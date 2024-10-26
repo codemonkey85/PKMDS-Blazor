@@ -2,5 +2,5 @@
 
 public interface IFileSaverService
 {
-    Task<byte[]> ExportSaveFileAsync(ExportSaveFileRequest request);
+    Task<byte[]> ExportSaveFile(ExportSaveFileRequest request);
 }

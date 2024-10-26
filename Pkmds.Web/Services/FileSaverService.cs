@@ -11,7 +11,7 @@ public class FileSaverService(HttpClient httpClient) : IFileSaverService
 
     private const string SaveFileEndpoint = $"{ApiRoot}api/savefile";
 
-    public async Task<byte[]> ExportSaveFileAsync(ExportSaveFileRequest request)
+    public async Task<byte[]> ExportSaveFile(ExportSaveFileRequest request)
     {
         if (request is not { SaveFileData: not null })
         {

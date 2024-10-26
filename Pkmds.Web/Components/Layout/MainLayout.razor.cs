@@ -34,7 +34,7 @@ public partial class MainLayout
 
     private IBrowserFile? browserLoadSaveFile;
 
-    private async Task ShowLoadSaveFileDialogAsync()
+    private async Task ShowLoadSaveFileDialog()
     {
         var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Save File", options: new DialogOptions
         {
@@ -46,14 +46,15 @@ public partial class MainLayout
         if (result is { Data: IBrowserFile selectedFile })
         {
             browserLoadSaveFile = selectedFile;
-            await LoadSaveFileAsync();
+            await LoadSaveFile();
         }
     }
 
-    private async Task LoadSaveFileAsync()
+    private async Task LoadSaveFile()
     {
         if (browserLoadSaveFile is null)
         {
+            DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
             return;
         }
 
@@ -62,12 +63,24 @@ public partial class MainLayout
         AppState.SelectedBoxSlotNumber = null;
         AppState.ShowProgressIndicator = true;
 
-        await using var fileStream = browserLoadSaveFile.OpenReadStream(Constants.MaxFileSize);
-        using var memoryStream = new MemoryStream();
-        await fileStream.CopyToAsync(memoryStream);
-        var data = memoryStream.ToArray();
-        AppState.SaveFile = SaveUtil.GetVariantSAV(data);
-        AppState.ShowProgressIndicator = false;
+        try
+        {
+
+            await using var fileStream = browserLoadSaveFile.OpenReadStream(Constants.MaxFileSize);
+            using var memoryStream = new MemoryStream();
+            await fileStream.CopyToAsync(memoryStream);
+            var data = memoryStream.ToArray();
+            AppState.SaveFile = SaveUtil.GetVariantSAV(data);
+        }
+        catch (Exception ex)
+        {
+            DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+        }
+        finally
+        {
+            AppState.ShowProgressIndicator = false;
+        }
+
         if (AppState.SaveFile is null)
         {
             return;
@@ -76,13 +89,13 @@ public partial class MainLayout
         RefreshService.Refresh();
     }
 
-    private async Task ExportSaveFileAsync()
+    private async Task ExportSaveFile()
     {
         if (AppState.SaveFile is null)
         {
             return;
         }
-        
+
         await ExportSupportedSaveFile();
     }
 
@@ -97,7 +110,7 @@ public partial class MainLayout
         AppState.ShowProgressIndicator = false;
     }
 
-    private async Task ExportSelectedPokemonAsync()
+    private async Task ExportSelectedPokemon()
     {
         if (AppService.EditFormPokemon is null)
         {

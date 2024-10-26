@@ -47,20 +47,20 @@
     <MudDrawer @bind-Open="@AppService.IsDrawerOpen">
         <MudStack Spacing="3"
                   Class="my-3">
-            <MudButton OnClick="@ShowLoadSaveFileDialogAsync"
+            <MudButton OnClick="@ShowLoadSaveFileDialog"
                        Variant="@Variant.Filled"
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;">
                 Load Save File...
             </MudButton>
-            <MudButton OnClick="@ExportSaveFileAsync"
+            <MudButton OnClick="@ExportSaveFile"
                        Variant="@Variant.Filled"
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;"
                        Disabled="@(AppState.SaveFile is null)">
                 Export Save File...
             </MudButton>
-            <MudButton OnClick="@ExportSelectedPokemonAsync"
+            <MudButton OnClick="@ExportSelectedPokemon"
                        Variant="@Variant.Filled"
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;"
