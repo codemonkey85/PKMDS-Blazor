@@ -12,7 +12,6 @@ services
     .AddScoped<IAppState, AppState>()
     .AddScoped<IRefreshService, RefreshService>()
     .AddScoped<IAppService, AppService>()
-    .AddScoped<IFileSaverService, FileSaverService>()
     .AddScoped<JsService>()
     .AddScoped<BlazorAesProvider>()
     .AddScoped<BlazorMd5Provider>();
