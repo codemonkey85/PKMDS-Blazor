@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-
 namespace Pkmds.Web.Components.Layout;
 
 public partial class MainLayout
@@ -54,7 +52,7 @@ public partial class MainLayout
     {
         if (browserLoadSaveFile is null)
         {
-            DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
+            await DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
             return;
         }
 
@@ -74,7 +72,7 @@ public partial class MainLayout
         }
         catch (Exception ex)
         {
-            DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+            await DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
         }
         finally
         {
