@@ -10177,7 +10177,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-uz8K\/wFYtXBv4gI5\/cVeHtjIzcKIR9mpsA5vRYv34KM=",
+      "hash": "sha256-FNRBdA\/Frds6Dx5Mr2ESO2FYG\/ILzFxivaHRP8QVJO8=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -10185,7 +10185,7 @@
       "url": "_framework\/dotnet.native.8.0.10.0rhgoi7107.js"
     },
     {
-      "hash": "sha256-bYMw+iVAgfN\/WnA+H61qRSlGJlc7GqkMmVIDnt6MpOI=",
+      "hash": "sha256-ayxeHmucQaICIffVYyReBxjrDI6FDbf3r6rrB63Nmjs=",
       "url": "_framework\/dotnet.native.wasm"
     },
     {
@@ -10289,7 +10289,7 @@
       "url": "_framework\/PKHeX.Core.wasm"
     },
     {
-      "hash": "sha256-1cq2pGCgv5w8pO\/A0qxGiVTk43gd2ObDmDyJZqV5ptg=",
+      "hash": "sha256-hBkV5ocqIWqCr\/qzMa\/Jk4ixDI3U22Fd3pKZGqntVzg=",
       "url": "_framework\/Pkmds.Web.wasm"
     },
     {
@@ -10349,11 +10349,7 @@
       "url": "_framework\/System.Memory.wasm"
     },
     {
-      "hash": "sha256-WrrOdCDuZJbZbUZiZ1qqs36KXAVLBdsalmFpPfvmyhA=",
-      "url": "_framework\/System.Net.Http.Json.wasm"
-    },
-    {
-      "hash": "sha256-HaGg9wO\/xsjfwq4u6xynU1z\/\/rlzgvGAzxhczWpQgkk=",
+      "hash": "sha256-jfKueJDIt8uzVVNSpMYS+T5Di0AHtbyWQ4usy13gohg=",
       "url": "_framework\/System.Net.Http.wasm"
     },
     {
@@ -10369,7 +10365,7 @@
       "url": "_framework\/System.ObjectModel.wasm"
     },
     {
-      "hash": "sha256-++AumJJFEgurlYR0GDsU0gkRtXaS8XV19NGfnEvwGZQ=",
+      "hash": "sha256-yL2aRjiiGP7vcLYg5j9xfEgGakxsuhCrr1S8cE8Qj9w=",
       "url": "_framework\/System.Private.CoreLib.wasm"
     },
     {
@@ -10401,7 +10397,7 @@
       "url": "_framework\/System.Text.Encodings.Web.wasm"
     },
     {
-      "hash": "sha256-bm3r4kzKF7W9EDhmYRlN4w\/ciQ2OIl4iFgv7G4ss+vY=",
+      "hash": "sha256-6WoosaNeGOtUAA5trUca+Q+KAdaU0aa0f2BofCHrSuM=",
       "url": "_framework\/System.Text.Json.wasm"
     },
     {
@@ -10453,5 +10449,5 @@
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "WjdZN3o5"
+  "version": "d7b6iPCU"
 };
