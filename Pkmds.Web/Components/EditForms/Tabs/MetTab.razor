@@ -91,36 +91,28 @@ EntityContext.MaxInvalid &&
 
     @if (saveGeneration > 3)
     {
-        <MudCheckBox Label="As Egg"
+        <MudCheckBox Label="This Pokémon was met as an Egg"
                      T="@bool"
                      Value="@PokemonMetAsEgg"
                      ValueChanged="@MetAsEggChanged"
                      For="@(() => Pokemon.FatefulEncounter)" />
     }
 
-    @if (PokemonMetAsEgg)
+    @if (saveGeneration > 3 && PokemonMetAsEgg)
     {
-        <MudText>
-            This Pokémon was met as an Egg.
-        </MudText>
+        <MudAutocomplete T="@ComboItem"
+                         Label="Egg Met Location"
+                         Variant="@Variant.Outlined"
+                         @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
+                         @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
+                         DebounceInterval="200"
+                         SearchFunc="@SearchEggMetLocations"
+                         ToStringFunc="@(metLocation => metLocation?.Text)" />
 
-
-        @if (saveGeneration > 3)
-        {
-            <MudAutocomplete T="@ComboItem"
-                             Label="Egg Met Location"
-                             Variant="@Variant.Outlined"
-                             @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
-                             @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
-                             DebounceInterval="200"
-                             SearchFunc="@SearchEggMetLocations"
-                             ToStringFunc="@(metLocation => metLocation?.Text)" />
-
-            <DateOnlyPicker Label="Egg Met Date"
-                            @bind-Date="@Pokemon.EggMetDate"
-                            Variant="@Variant.Outlined"
-                            Color="@Color.Default" />
-        }
+        <DateOnlyPicker Label="Egg Met Date"
+                        @bind-Date="@Pokemon.EggMetDate"
+                        Variant="@Variant.Outlined"
+                        Color="@Color.Default" />
     }
 
     <MudCheckBox Label="Is Egg"
