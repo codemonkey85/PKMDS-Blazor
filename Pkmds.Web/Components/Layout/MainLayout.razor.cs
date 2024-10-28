@@ -63,12 +63,17 @@ public partial class MainLayout
 
         try
         {
-
             await using var fileStream = browserLoadSaveFile.OpenReadStream(Constants.MaxFileSize);
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
             AppState.SaveFile = SaveUtil.GetVariantSAV(data);
+
+            if (AppState.SaveFile is null)
+            {
+                await DialogService.ShowMessageBox("Error", "The file is not a supported save file.");
+                return;
+            }
         }
         catch (Exception ex)
         {
