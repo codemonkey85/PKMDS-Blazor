@@ -57,6 +57,7 @@ A: PKMDS currently supports the following games:
 - Pokémon XD: Gale of Darkness
 - Pokémon Emerald
 - Pokémon FireRed and LeafGreen
+- Pokémon Box: Ruby and Sapphire
 - Pokémon Colosseum
 - Pokémon Ruby and Sapphire
 - Pokémon Crystal
