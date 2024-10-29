@@ -30,10 +30,37 @@ public partial class StatsTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
     }
 
-    private static int GetEvMax(int generation) => generation switch 
+    private static int GetEvMax(int generation) => generation switch
     {
         1 or 2 => EffortValues.Max12,
         3 or 4 or 5 => EffortValues.Max255,
         _ => EffortValues.Max252
     };
+
+    private string GetStatClass(Stats stat)
+    {
+        if (Pokemon is null)
+        {
+            return string.Empty;
+        }
+
+        var pkm = Pokemon.Nickname;
+
+        var (up, dn) = NatureAmp.GetNatureModification(Pokemon.Nature);
+
+        return up == (int)stat
+            ? "plus-nature"
+            : dn == (int)stat
+                ? "minus-nature"
+                : string.Empty;
+    }
+
+    private enum Stats
+    {
+        Attack,
+        Defense,
+        Speed,
+        SpecialAttack,
+        SpecialDefense
+    }
 }

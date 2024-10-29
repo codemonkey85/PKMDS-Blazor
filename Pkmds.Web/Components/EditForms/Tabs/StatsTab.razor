@@ -70,6 +70,7 @@ AppState.SelectedSlotsAreValid)
                                  HideSpinButtons />
 
                 <MudNumericField Label="Atk"
+                                 Class="@GetStatClass(Stats.Attack)"
                                  title="Attack Base Stat"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.ATK"
@@ -77,6 +78,7 @@ AppState.SelectedSlotsAreValid)
                                  HideSpinButtons />
 
                 <MudNumericField Label="Def"
+                                 Class="@GetStatClass(Stats.Defense)"
                                  title="Defense Base Stat"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.DEF"
@@ -102,6 +104,7 @@ AppState.SelectedSlotsAreValid)
                 else
                 {
                     <MudNumericField Label="Spa"
+                                     Class="@GetStatClass(Stats.SpecialAttack)"
                                      title="Special Attack Base Stat"
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.PersonalInfo.SPA"
@@ -109,6 +112,7 @@ AppState.SelectedSlotsAreValid)
                                      HideSpinButtons />
 
                     <MudNumericField Label="Spd"
+                                     Class="@GetStatClass(Stats.SpecialDefense)"
                                      title="Special Defense Base Stat"
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.PersonalInfo.SPD"
@@ -116,6 +120,7 @@ AppState.SelectedSlotsAreValid)
                                      HideSpinButtons />
 
                     <MudNumericField Label="Spe"
+                                     Class="@GetStatClass(Stats.Speed)"
                                      title="Speed Base Stat"
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.PersonalInfo.SPE"
