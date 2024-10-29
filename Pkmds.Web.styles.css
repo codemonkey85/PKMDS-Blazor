@@ -14,6 +14,10 @@
     grid-template-columns: repeat(4, 80px);
     grid-template-rows: repeat(5, 80px);
 }
+/* /Components/EditForms/Tabs/MainTab.razor.rz.scp.css */
+.current-tera-type-image[b-uh790x9xne] {
+    align-self: center;
+}
 /* /Components/Layout/MainLayout.razor.rz.scp.css */
 #blazor-error-ui[b-89m6tus79e] {
     background: lightyellow;
