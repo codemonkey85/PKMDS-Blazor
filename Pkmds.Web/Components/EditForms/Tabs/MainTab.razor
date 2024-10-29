@@ -32,8 +32,110 @@ AppState.SelectedSlotsAreValid)
 
     @if (Pokemon is ITeraType tt)
     {
-        @TeraTypeSummary((byte)tt.TeraTypeOriginal, "Original Tera Type:")
-        @TeraTypeSummary((byte)tt.TeraType)
+        <MudGrid>
+            <MudItem xs="9">
+                <MudStack>
+                    @{
+                        var defaultTeraTypeId = (byte)tt.TeraTypeOriginal;
+                    }
+                    <MudSelect Label="Original Tera Type"
+                               Variant="@Variant.Outlined"
+                               @bind-Value="@tt.TeraTypeOriginal"
+                               For="@(() => tt.TeraTypeOriginal)">
+                        <MudSelectItem Value="@((MoveType)tt.TeraTypeOriginal)"
+                                       @key="@("none")">
+                            <MudStack Row
+                                      Class="my-2"
+                                      AlignItems="@AlignItems.Center">
+                                <MudText>
+                                    @GetTeraTypeDisplayName(defaultTeraTypeId) (default original)
+                                </MudText>
+                                @RenderTeraTypeImage(defaultTeraTypeId)
+                            </MudStack>
+                        </MudSelectItem>
+                        @foreach (var teraType in Enum.GetValues<MoveType>().Where(m => m != MoveType.Any))
+                        {
+                            var teraTypeId = (byte)teraType;
+                            <MudSelectItem Value="@teraType"
+                                           @key="@teraType">
+                                <MudStack Row
+                                          Class="my-2"
+                                          AlignItems="@AlignItems.Center">
+                                    <MudText>
+                                        @GetTeraTypeDisplayName(teraTypeId)
+                                    </MudText>
+                                    @RenderTeraTypeImage(teraTypeId)
+                                </MudStack>
+                            </MudSelectItem>
+                        }
+                        <MudSelectItem Value="@((MoveType)TeraTypeUtil.Stellar)"
+                                       @key="@((MoveType)TeraTypeUtil.Stellar)">
+                            <MudStack Row
+                                      Class="my-2"
+                                      AlignItems="@AlignItems.Center">
+                                <MudText>
+                                    @GetTeraTypeDisplayName(TeraTypeUtil.Stellar)
+                                </MudText>
+                                @RenderTeraTypeImage(TeraTypeUtil.Stellar)
+                            </MudStack>
+                        </MudSelectItem>
+                    </MudSelect>
+                    <MudSelect Label="Override Tera Type"
+                               Variant="@Variant.Outlined"
+                               @bind-Value="@tt.TeraTypeOverride"
+                               For="@(() => tt.TeraTypeOverride)">
+                        <MudSelectItem Value="@((MoveType)tt.TeraTypeOriginal)"
+                                       @key="@("none")">
+                            <MudStack Row
+                                      Class="my-2"
+                                      AlignItems="@AlignItems.Center">
+                                <MudText>
+                                    @GetTeraTypeDisplayName(defaultTeraTypeId) (default original)
+                                </MudText>
+                                @RenderTeraTypeImage(defaultTeraTypeId)
+                            </MudStack>
+                        </MudSelectItem>
+                        @foreach (var teraType in Enum.GetValues<MoveType>().Where(m => m != MoveType.Any))
+                        {
+                            var teraTypeId = (byte)teraType;
+                            <MudSelectItem Value="@teraType"
+                                           @key="@teraType">
+                                <MudStack Row
+                                          Class="my-2"
+                                          AlignItems="@AlignItems.Center">
+                                    <MudText>
+                                        @GetTeraTypeDisplayName(teraTypeId)
+                                    </MudText>
+                                    @RenderTeraTypeImage(teraTypeId)
+                                </MudStack>
+                            </MudSelectItem>
+                        }
+                        <MudSelectItem Value="@((MoveType)TeraTypeUtil.Stellar)"
+                                       @key="@((MoveType)TeraTypeUtil.Stellar)">
+                            <MudStack Row
+                                      Class="my-2"
+                                      AlignItems="@AlignItems.Center">
+                                <MudText>
+                                    @GetTeraTypeDisplayName(TeraTypeUtil.Stellar)
+                                </MudText>
+                                @RenderTeraTypeImage(TeraTypeUtil.Stellar)
+                            </MudStack>
+                        </MudSelectItem>
+                    </MudSelect>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="3"
+                     Style="align-self: center;">
+                <MudStack>
+                    <MudText Align="@Align.Center">
+                        Current Tera Type: @GetTeraTypeDisplayName((byte)tt.TeraType)
+                    </MudText>
+                    <div class="current-tera-type-image">
+                    @RenderTeraTypeImage((byte)tt.TeraType, 60)
+                    </div>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
     }
 
     <MudStack Row>
@@ -307,19 +409,12 @@ AppState.SelectedSlotsAreValid)
     }
 }
 
-@code{
-    public static RenderFragment TeraTypeSummary(byte teraTypeId, string summaryText = "Tera Type:") =>
-    @<MudStack Row
-                   Class="my-2"
-                   AlignItems="@AlignItems.Center">
-        <MudText>
-            @summaryText
-        </MudText>
-        <MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(teraTypeId)"
-                  Alt="@GetTeraTypeDisplayName(teraTypeId)"
-                  title="@GetTeraTypeDisplayName(teraTypeId)"
-                  ObjectFit="@ObjectFit.Contain"
-                  ObjectPosition="@ObjectPosition.Center"
-                  Width="30" />
-    </MudStack>;
+@code {
+    private RenderFragment RenderTeraTypeImage(byte teraTypeid, int width = 30) =>
+    @<MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(teraTypeid)"
+               Alt="@GetTeraTypeDisplayName(teraTypeid)"
+               title="@GetTeraTypeDisplayName(teraTypeid)"
+               ObjectFit="@ObjectFit.Contain"
+               ObjectPosition="@ObjectPosition.Center"
+               Width="@width" />;
 }
