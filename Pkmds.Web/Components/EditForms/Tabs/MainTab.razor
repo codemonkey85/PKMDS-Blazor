@@ -172,7 +172,7 @@ AppState.SelectedSlotsAreValid)
         }
     }
 
-    @if (saveGeneration > 1)
+    @if (saveGeneration > 1 && saveFile.HeldItems.Length > 0)
     {
         <MudStack Row
                   Spacing="1"
