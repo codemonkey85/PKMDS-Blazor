@@ -30,9 +30,10 @@ AppState.SelectedSlotsAreValid)
         @TypeSummary(Pokemon.GetGenerationTypes())
     }
 
-    @if (Pokemon is PK9 pK9)
+    @if (Pokemon is ITeraType tt)
     {
-        @TeraTypeSummary((byte)pK9.TeraType)
+        @TeraTypeSummary((byte)tt.TeraTypeOriginal, "Original Tera Type:")
+        @TeraTypeSummary((byte)tt.TeraType)
     }
 
     <MudStack Row>
@@ -304,4 +305,21 @@ AppState.SelectedSlotsAreValid)
 
         </MudStack>
     }
+}
+
+@code{
+    public static RenderFragment TeraTypeSummary(byte teraTypeId, string summaryText = "Tera Type:") =>
+    @<MudStack Row
+                   Class="my-2"
+                   AlignItems="@AlignItems.Center">
+        <MudText>
+            @summaryText
+        </MudText>
+        <MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(teraTypeId)"
+                  Alt="@GetTeraTypeDisplayName(teraTypeId)"
+                  title="@GetTeraTypeDisplayName(teraTypeId)"
+                  ObjectFit="@ObjectFit.Contain"
+                  ObjectPosition="@ObjectPosition.Center"
+                  Width="30" />
+    </MudStack>;
 }

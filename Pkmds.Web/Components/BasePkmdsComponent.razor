@@ -24,21 +24,6 @@
     public static RenderFragment TypeSummary((byte Type1, byte Type2) types) =>
         TypeSummary(types.Type1, types.Type2);
 
-    public static RenderFragment TeraTypeSummary(byte type) =>
-    @<MudStack Row
-               Class="my-2"
-               AlignItems="@AlignItems.Center">
-        <MudText>
-            Tera Type:
-        </MudText>
-        <MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(type)"
-                  Alt="@GameInfo.Strings.Types[type]"
-                  title="@GameInfo.Strings.Types[type]"
-                  ObjectFit="@ObjectFit.Contain"
-                  ObjectPosition="@ObjectPosition.Center"
-                  Width="30" />
-    </MudStack>;
-
     public static RenderFragment MoveTypeSummary(byte type) =>
     @<MudImage Src="@SpriteHelper.GetTypeSquareSpriteFileName(type)"
                Alt="@GameInfo.Strings.Types[type]"

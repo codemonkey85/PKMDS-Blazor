@@ -67,4 +67,8 @@ public partial class MainTab : IDisposable
         Pokemon.IsNicknamed = false;
         Pokemon.ClearNickname();
     }
+
+    private static string GetTeraTypeDisplayName(byte teraTypeId) => teraTypeId == TeraTypeUtil.Stellar
+        ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
+        : GameInfo.Strings.Types[teraTypeId];
 }
