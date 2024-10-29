@@ -54,38 +54,4 @@
                ObjectFit="@ObjectFit.Contain"
                ObjectPosition="@ObjectPosition.Center"
                Width="30" />;
-
-    public static RenderFragment GenderDisplayIcon(int gender)
-    {
-        var icon = gender switch
-        {
-            0 => Icons.Material.Filled.Male,
-            1 => Icons.Material.Filled.Female,
-            _ => string.Empty,
-        };
-        var color = gender switch
-        {
-            0 => Colors.Blue.Default,
-            1 => Colors.Red.Default,
-            _ => string.Empty,
-        };
-        return @<MudIcon Icon="@icon" Style="@($"color: {color};")" />;
-    }
-
-    public static RenderFragment GenderDisplayAscii(int gender)
-    {
-        var color = gender switch
-        {
-            0 => Colors.Blue.Default,
-            1 => Colors.Red.Default,
-            _ => string.Empty,
-        };
-        return @<MudText Style="@($"color: { color}; ")">@GameInfo.GenderSymbolASCII[gender]</MudText>;
-    }
-
-    public static RenderFragment GenderDisplay(int gender) =>
-    @<MudStack Row>
-        @GenderDisplayIcon(gender)
-        @GenderDisplayAscii(gender)
-    </MudStack>;
 }

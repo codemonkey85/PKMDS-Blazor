@@ -35,14 +35,55 @@ EntityContext.MaxInvalid &&
         @TeraTypeSummary((byte)pK9.TeraType)
     }
 
-    <MudCheckBox Label="Is Nicknamed"
-                 @bind-Value="@Pokemon.IsNicknamed"
-                 For="@(() => Pokemon.IsNicknamed)" />
+    <MudStack Row>
+
+        <MudCheckBox Label="Is Nicknamed"
+                     @bind-Value="@Pokemon.IsNicknamed"
+                     For="@(() => Pokemon.IsNicknamed)" />
+
+        <MudButton OnClick="@RevertNickname"
+                   ButtonType="@ButtonType.Button"
+                   Variant="@Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Note"
+                   Color="@Color.Default"
+                   Disabled="@(!Pokemon.IsNicknamed)">
+            Revert Nickname
+        </MudButton>
+
+    </MudStack>
 
     <MudTextField Label="Nickname"
                   Variant="@Variant.Outlined"
                   @bind-Value="@Pokemon.Nickname"
                   For="@(() => Pokemon.Nickname)" />
+
+    @if (saveGeneration > 1)
+    {
+        <MudPaper Outlined
+                  Height="48px"
+                  Class="d-flex align-center">
+
+            <MudStack Row
+                      Spacing="1"
+                      Class="@($"d-flex align-center")"
+                      Style="@(Pokemon.PersonalInfo.IsDualGender ? string.Empty : "padding-left: 12px")">
+
+                <GenderDisplayComponent Gender="@((Gender)Pokemon.Gender)"
+                                        OnClick="@OnGenderToggle"
+                                        Disabled="@(!Pokemon.PersonalInfo.IsDualGender)" />
+
+                @GenderDisplayComponent.GenderDisplayAscii((Gender)Pokemon.Gender)
+
+                @if (!Pokemon.PersonalInfo.IsDualGender)
+                {
+                    <MudText>
+                        - Gender cannot be changed for this Pokémon.
+                    </MudText>
+                }
+
+            </MudStack>
+        </MudPaper>
+    }
 
     <MudNumericField Label="EXP"
                      Variant="@Variant.Outlined"

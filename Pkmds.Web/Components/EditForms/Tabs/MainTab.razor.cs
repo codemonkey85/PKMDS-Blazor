@@ -42,4 +42,25 @@ public partial class MainTab : IDisposable
         Task.FromResult(AppService.SearchAbilityNames(searchString));
 
     private bool? OnShinySet(bool shiny) => Pokemon?.SetIsShiny(shiny);
+
+    private void OnGenderToggle()
+    {
+        if (Pokemon is not { PersonalInfo.IsDualGender: true, Gender: { } gender } pkm)
+        {
+            return;
+        }
+
+        pkm.SetGender(gender is (byte)Gender.Male ? (byte)Gender.Female : (byte)Gender.Male);
+    }
+
+    private void RevertNickname()
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.IsNicknamed = false;
+        Pokemon.SetDefaultNickname();
+    }
 }

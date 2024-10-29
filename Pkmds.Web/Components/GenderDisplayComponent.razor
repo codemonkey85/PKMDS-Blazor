@@ -1,0 +1,54 @@
+﻿@GenderDisplayIcon(Gender)
+
+@code {
+    [Parameter]
+    public Gender Gender { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    public RenderFragment GenderDisplayIcon(Gender gender)
+    {
+        var icon = gender switch
+        {
+            Gender.Male => Icons.Material.Filled.Male,
+            Gender.Female => Icons.Material.Filled.Female,
+            Gender.Genderless => Icons.Material.Filled.Block,
+            _ => string.Empty,
+        };
+        var color = gender switch
+        {
+            Gender.Male => Colors.Blue.Default,
+            Gender.Female => Colors.Red.Default,
+            _ => string.Empty,
+        };
+
+        if (!Disabled && OnClick.HasDelegate)
+        {
+            return @<MudIconButton Icon="@icon" Style="@($"color: {color};")" OnClick="@OnClick" />;
+        }
+
+        return @<MudIcon Icon="@icon" Style="@($"color: {color};")" />;
+    }
+
+    public static RenderFragment GenderDisplayAscii(Gender gender)
+    {
+        var text = gender switch
+        {
+            Gender.Male => "Male",
+            Gender.Female => "Female",
+            Gender.Genderless => "Genderless",
+            _ => string.Empty,
+        };
+        var color = gender switch
+        {
+            Gender.Male => Colors.Blue.Default,
+            Gender.Female => Colors.Red.Default,
+            _ => string.Empty,
+        };
+        return @<MudText Style="@($"color: { color}; ")">@text</MudText>;
+    }
+}

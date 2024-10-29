@@ -11,7 +11,7 @@
     private RenderFragment Display(SaveFile saveFile, int gender) =>
     @<MudStack Row Spacing="1">
         <span>@saveFile.OT </span>
-        @GenderDisplayIcon(gender)
+        <GenderDisplayComponent Gender="@((Gender)gender)" />
         <span>(@saveFile.DisplayTID.ToString(AppService.GetIdFormatString())</span>
         <span>, @FriendlyGameName(saveFile.Version.GetSingleVersion())</span>
         <span>, @saveFile.PlayTimeString)</span>
