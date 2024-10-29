@@ -13,4 +13,6 @@ public interface IRefreshService
     void RefreshBoxState();
 
     void RefreshPartyState();
+
+    void RefreshBoxAndPartyState();
 }

@@ -11,4 +11,10 @@ public record RefreshService(IAppState AppState) : IRefreshService
     public void RefreshBoxState() => OnBoxStateChanged?.Invoke();
 
     public void RefreshPartyState() => OnPartyStateChanged?.Invoke();
+
+    public void RefreshBoxAndPartyState()
+    {
+        RefreshBoxState();
+        RefreshPartyState();
+    }
 }

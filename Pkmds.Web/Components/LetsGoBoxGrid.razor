@@ -1,0 +1,21 @@
+﻿@inherits BasePkmdsComponent
+
+@if (AppState.SaveFile is SAV7b { } saveFile)
+{
+    <div class="box-grid-lets-go">
+        @{
+            var count = 0;
+        }
+        @foreach (var pkm in saveFile.BoxData)
+        {
+            var slotNum = count;
+
+            <LetsGoBoxSlotComponent SlotNumber="@slotNum"
+                                    Pokemon="@pkm"
+                                    OnSlotClick="@(() => SetSelectedPokemon(pkm, slotNum))"
+                                    GetStyleFunction="@(() => GetStyle(slotNum))" />
+
+            count++;
+        }
+    </div>
+}

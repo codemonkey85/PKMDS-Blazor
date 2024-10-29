@@ -4,38 +4,45 @@
 {
     <PartyGrid />
 
-    <div class="controls-container">
-        <MudIconButton OnClick="@NavigateLeft"
-                       title="Navigate Left"
-                       ButtonType="@ButtonType.Button"
-                       Icon="@Icons.Material.Filled.ArrowLeft"
-                       Variant="@Variant.Filled"
-                       Class="navigate-button">
-        </MudIconButton>
+    @if (saveFile.Version is GameVersion.LG or GameVersion.GP or GameVersion.GE)
+    {
+        <LetsGoBoxComponent />
+    }
+    else
+    {
+        <div class="controls-container">
+            <MudIconButton OnClick="@NavigateLeft"
+                           title="Navigate Left"
+                           ButtonType="@ButtonType.Button"
+                           Icon="@Icons.Material.Filled.ArrowLeft"
+                           Variant="@Variant.Filled"
+                           Class="navigate-button">
+            </MudIconButton>
 
-        <div class="select-container">
-            <MudSelect @bind-Value="@saveFile.CurrentBox"
-                       @bind-Value:after="@AppService.ClearSelection"
-                       Class="box-select">
-                @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
-                {
-                    var boxName = saveFile is IBoxDetailNameRead boxDetailNameRead ? boxDetailNameRead.GetBoxName(boxId) : string.Empty;
-                    <MudSelectItem Value="@boxId"
-                                   @key="@boxId">
-                        @boxName
-                    </MudSelectItem>
-                }
-            </MudSelect>
+            <div class="select-container">
+                <MudSelect @bind-Value="@saveFile.CurrentBox"
+                           @bind-Value:after="@AppService.ClearSelection"
+                           Class="box-select">
+                    @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
+                    {
+                        var boxName = saveFile is IBoxDetailNameRead boxDetailNameRead ? boxDetailNameRead.GetBoxName(boxId) : string.Empty;
+                        <MudSelectItem Value="@boxId"
+                                       @key="@boxId">
+                            @boxName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <MudIconButton OnClick="@NavigateRight"
+                           title="Navigate Right"
+                           ButtonType="@ButtonType.Button"
+                           Icon="@Icons.Material.Filled.ArrowRight"
+                           Variant="@Variant.Filled"
+                           Class="navigate-button">
+            </MudIconButton>
         </div>
 
-        <MudIconButton OnClick="@NavigateRight"
-                       title="Navigate Right"
-                       ButtonType="@ButtonType.Button"
-                       Icon="@Icons.Material.Filled.ArrowRight"
-                       Variant="@Variant.Filled"
-                       Class="navigate-button">
-        </MudIconButton>
-    </div>
-
-    <BoxComponent BoxNumber="@saveFile.CurrentBox" />
+        <BoxComponent BoxNumber="@saveFile.CurrentBox" />
+    }
 }

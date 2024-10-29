@@ -26,6 +26,6 @@ public partial class PartyGrid
             "Showdown Export",
             new DialogOptions
             {
-                CloseOnEscapeKey = true,
+                CloseOnEscapeKey = true
             });
 }

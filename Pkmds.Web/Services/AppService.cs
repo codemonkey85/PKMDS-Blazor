@@ -132,12 +132,25 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         if (AppState.SelectedPartySlotNumber is not null)
         {
             AppState.SaveFile.SetPartySlotAtIndex(pokemon, AppState.SelectedPartySlotNumber.Value);
-            RefreshService.RefreshPartyState();
+
+            if (AppState.SaveFile is SAV7b)
+            {
+                RefreshService.RefreshBoxAndPartyState();
+            }
+            else
+            {
+                RefreshService.RefreshPartyState();
+            }
         }
         else if (AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null)
         {
             AppState.SaveFile.SetBoxSlotAtIndex(pokemon, AppState.SelectedBoxNumber.Value, AppState.SelectedBoxSlotNumber.Value);
             RefreshService.RefreshBoxState();
+        }
+        else if (AppState.SelectedBoxNumber is null && AppState.SelectedBoxSlotNumber is not null && AppState.SaveFile is SAV7b)
+        {
+            AppState.SaveFile.SetBoxSlotAtIndex(pokemon, AppState.SelectedBoxSlotNumber.Value);
+            RefreshService.RefreshBoxAndPartyState();
         }
     }
 
@@ -152,6 +165,17 @@ public record AppService(IAppState AppState, IRefreshService RefreshService) : I
         },
         _ => $"{GameInfo.GetStrings(EnglishLang).Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}",
     };
+
+    public void SetSelectedLetsGoPokemon(PKM? pkm, int slotNumber)
+    {
+        AppState.SelectedPartySlotNumber = null;
+
+        AppState.SelectedBoxSlotNumber = slotNumber;
+        EditFormPokemon = pkm;
+
+        HandleNullOrEmptyPokemon();
+        RefreshService.Refresh();
+    }
 
     public void SetSelectedBoxPokemon(PKM? pkm, int boxNumber, int slotNumber)
     {

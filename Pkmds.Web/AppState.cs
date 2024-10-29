@@ -36,4 +36,9 @@ public record AppState : IAppState
     public int? SelectedPartySlotNumber { get; set; }
 
     public bool ShowProgressIndicator { get; set; }
+
+    public bool SelectedSlotsAreValid =>
+        SelectedBoxNumber is null && SelectedBoxSlotNumber is not null && SaveFile is SAV7b
+        || SelectedBoxNumber is not null && SelectedBoxSlotNumber is not null
+        || SelectedPartySlotNumber is not null;
 }

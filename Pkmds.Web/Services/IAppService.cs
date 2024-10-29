@@ -46,6 +46,8 @@ public interface IAppService
 
     string GetCleanFileName(PKM pkm);
 
+    void SetSelectedLetsGoPokemon(PKM? pkm, int slotNumber);
+
     void SetSelectedBoxPokemon(PKM? pkm, int boxNumber, int slotNumber);
 
     void SetSelectedPartyPokemon(PKM? pkm, int slotNumber);
