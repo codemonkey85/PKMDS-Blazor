@@ -59,10 +59,11 @@ public partial class MetTab : IDisposable
             Pokemon.EggLocation = 0;
         }
 
-        if (newValue == true) 
+        if (newValue == true)
         {
+            var currentMetDate = Pokemon.MetDate;
             Pokemon.SetEggMetData(Pokemon.Version, Pokemon.Version);
+            Pokemon.EggMetDate = Pokemon.MetDate = currentMetDate;
         }
-
     }
 }
