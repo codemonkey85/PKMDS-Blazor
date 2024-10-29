@@ -33,6 +33,13 @@
         right: 0.75rem;
         top: 0.5rem;
     }
+/* /Components/LetsGoBoxGrid.razor.rz.scp.css */
+.box-grid-lets-go[b-807wpm749n] {
+    width: 480px;
+    display: grid;
+    grid-template-columns: repeat(5, 80px);
+    grid-template-rows: repeat(200, 80px);
+}
 /* /Components/MarkingComponent.razor.rz.scp.css */
 .marking[b-81h5kesae7] {
     width: 100px;
