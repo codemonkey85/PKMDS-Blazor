@@ -67,7 +67,7 @@ AppState.SelectedSlotsAreValid)
                     <MudIcon Icon="@Icons.Material.Filled.Male"
                              Style="@($"color: {Colors.Blue.Default};")" />
                     <MudText Style="@($"color: {Colors.Blue.Default};")">
-                        @GameInfo.GenderSymbolASCII[(int)Gender.Male]
+                        @GenderDisplayComponent.GenderDisplayAscii(Gender.Male)
                     </MudText>
                 </MudStack>
             </MudSelectItem>
@@ -78,7 +78,7 @@ AppState.SelectedSlotsAreValid)
                     <MudIcon Icon="@Icons.Material.Filled.Female"
                              Style="@($"color: {Colors.Red.Default};")" />
                     <MudText Style="@($"color: {Colors.Red.Default};")">
-                        @GameInfo.GenderSymbolASCII[(int)Gender.Female]
+                        @GenderDisplayComponent.GenderDisplayAscii(Gender.Female)
                     </MudText>
                 </MudStack>
             </MudSelectItem>

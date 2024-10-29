@@ -47,10 +47,10 @@ AppState.SelectedSlotsAreValid)
                             <MudStack Row
                                       Class="my-2"
                                       AlignItems="@AlignItems.Center">
+                                @RenderTeraTypeImage(defaultTeraTypeId)
                                 <MudText>
                                     @GetTeraTypeDisplayName(defaultTeraTypeId) (default original)
                                 </MudText>
-                                @RenderTeraTypeImage(defaultTeraTypeId)
                             </MudStack>
                         </MudSelectItem>
                         @foreach (var teraType in Enum.GetValues<MoveType>().Where(m => m != MoveType.Any))
@@ -61,10 +61,10 @@ AppState.SelectedSlotsAreValid)
                                 <MudStack Row
                                           Class="my-2"
                                           AlignItems="@AlignItems.Center">
+                                    @RenderTeraTypeImage(teraTypeId)
                                     <MudText>
                                         @GetTeraTypeDisplayName(teraTypeId)
                                     </MudText>
-                                    @RenderTeraTypeImage(teraTypeId)
                                 </MudStack>
                             </MudSelectItem>
                         }
@@ -73,10 +73,10 @@ AppState.SelectedSlotsAreValid)
                             <MudStack Row
                                       Class="my-2"
                                       AlignItems="@AlignItems.Center">
+                                @RenderTeraTypeImage(TeraTypeUtil.Stellar)
                                 <MudText>
                                     @GetTeraTypeDisplayName(TeraTypeUtil.Stellar)
                                 </MudText>
-                                @RenderTeraTypeImage(TeraTypeUtil.Stellar)
                             </MudStack>
                         </MudSelectItem>
                     </MudSelect>
@@ -89,10 +89,10 @@ AppState.SelectedSlotsAreValid)
                             <MudStack Row
                                       Class="my-2"
                                       AlignItems="@AlignItems.Center">
+                                @RenderTeraTypeImage(defaultTeraTypeId)
                                 <MudText>
                                     @GetTeraTypeDisplayName(defaultTeraTypeId) (default original)
                                 </MudText>
-                                @RenderTeraTypeImage(defaultTeraTypeId)
                             </MudStack>
                         </MudSelectItem>
                         @foreach (var teraType in Enum.GetValues<MoveType>().Where(m => m != MoveType.Any))
@@ -103,10 +103,10 @@ AppState.SelectedSlotsAreValid)
                                 <MudStack Row
                                           Class="my-2"
                                           AlignItems="@AlignItems.Center">
+                                    @RenderTeraTypeImage(teraTypeId)
                                     <MudText>
                                         @GetTeraTypeDisplayName(teraTypeId)
                                     </MudText>
-                                    @RenderTeraTypeImage(teraTypeId)
                                 </MudStack>
                             </MudSelectItem>
                         }
@@ -115,10 +115,10 @@ AppState.SelectedSlotsAreValid)
                             <MudStack Row
                                       Class="my-2"
                                       AlignItems="@AlignItems.Center">
+                                @RenderTeraTypeImage(TeraTypeUtil.Stellar)
                                 <MudText>
                                     @GetTeraTypeDisplayName(TeraTypeUtil.Stellar)
                                 </MudText>
-                                @RenderTeraTypeImage(TeraTypeUtil.Stellar)
                             </MudStack>
                         </MudSelectItem>
                     </MudSelect>
@@ -131,7 +131,7 @@ AppState.SelectedSlotsAreValid)
                         Current Tera Type: @GetTeraTypeDisplayName((byte)tt.TeraType)
                     </MudText>
                     <div class="current-tera-type-image">
-                    @RenderTeraTypeImage((byte)tt.TeraType, 60)
+                        @RenderTeraTypeImage((byte)tt.TeraType, 60)
                     </div>
                 </MudStack>
             </MudItem>
@@ -412,9 +412,9 @@ AppState.SelectedSlotsAreValid)
 @code {
     private RenderFragment RenderTeraTypeImage(byte teraTypeid, int width = 30) =>
     @<MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(teraTypeid)"
-               Alt="@GetTeraTypeDisplayName(teraTypeid)"
-               title="@GetTeraTypeDisplayName(teraTypeid)"
-               ObjectFit="@ObjectFit.Contain"
-               ObjectPosition="@ObjectPosition.Center"
-               Width="@width" />;
+          Alt="@GetTeraTypeDisplayName(teraTypeid)"
+          title="@GetTeraTypeDisplayName(teraTypeid)"
+          ObjectFit="@ObjectFit.Contain"
+          ObjectPosition="@ObjectPosition.Center"
+          Width="@width" />;
 }
