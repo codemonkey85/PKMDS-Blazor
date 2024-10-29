@@ -61,6 +61,6 @@ public partial class MainTab : IDisposable
         }
 
         Pokemon.IsNicknamed = false;
-        Pokemon.SetDefaultNickname();
+        Pokemon.ClearNickname();
     }
 }
