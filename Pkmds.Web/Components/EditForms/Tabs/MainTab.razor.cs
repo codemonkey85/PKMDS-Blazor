@@ -45,12 +45,16 @@ public partial class MainTab : IDisposable
 
     private void OnGenderToggle()
     {
-        if (Pokemon is not { PersonalInfo.IsDualGender: true, Gender: { } gender } pkm)
+        if (Pokemon is not { PersonalInfo.IsDualGender: true, Gender: var gender } pkm)
         {
             return;
         }
 
-        pkm.SetGender(gender is (byte)Gender.Male ? (byte)Gender.Female : (byte)Gender.Male);
+        pkm.SetGender((byte)((Gender)gender switch 
+        {
+            Gender.Male => Gender.Female,
+            _ => Gender.Male
+        }));
     }
 
     private void RevertNickname()
