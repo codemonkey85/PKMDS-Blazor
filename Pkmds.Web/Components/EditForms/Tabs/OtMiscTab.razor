@@ -54,7 +54,7 @@ AppState.SelectedSlotsAreValid)
                   @bind-Value="@Pokemon.OriginalTrainerName"
                   For="@(() => Pokemon.OriginalTrainerName)" />
 
-    @if (saveGeneration > 1)
+    @if (saveGeneration >= 2)
     {
         <MudSelect Label="OT Gender"
                    Variant="@Variant.Outlined"

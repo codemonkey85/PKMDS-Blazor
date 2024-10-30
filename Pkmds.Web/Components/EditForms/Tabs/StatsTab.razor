@@ -24,7 +24,7 @@ AppState.SelectedSlotsAreValid)
                          For="@(() => pb.Stat_CP)" />
     }
 
-    @if (saveGeneration > 2)
+    @if (saveGeneration >= 3)
     {
         <MudSelect Label="Nature"
                    Variant="@Variant.Outlined"
@@ -590,7 +590,7 @@ AppState.SelectedSlotsAreValid)
         </MudStack>
     }
 
-    @if (saveGeneration > 3)
+    @if (saveGeneration >= 4)
     {
         <MudText>
             Characteristic: @GetCharacteristic(Pokemon)

@@ -53,7 +53,7 @@ AppState.SelectedSlotsAreValid)
                 <MainTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
-            @if (saveGeneration > 1)
+            @if (saveGeneration >= 2)
             {
                 <MudTabPanel Text="Met">
                     <MetTab Pokemon="@Pokemon" />
@@ -68,7 +68,7 @@ AppState.SelectedSlotsAreValid)
                 <MovesTab Pokemon="@Pokemon" />
             </MudTabPanel>
 
-            @if (saveGeneration > 2)
+            @if (saveGeneration >= 3)
             {
                 <MudTabPanel Text="Cosmetic">
                     <CosmeticTab Pokemon="@Pokemon" />

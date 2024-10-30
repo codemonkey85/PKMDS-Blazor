@@ -28,7 +28,7 @@ AppState.SelectedSlotsAreValid)
                      SearchFunc="@SearchMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
 
-    @if (saveGeneration > 2)
+    @if (saveGeneration >= 3)
     {
         <MudSelect Label="Ball"
                    Variant="@Variant.Outlined"
@@ -55,7 +55,7 @@ AppState.SelectedSlotsAreValid)
         </MudSelect>
     }
 
-    @if (saveGeneration > 1)
+    @if (saveGeneration >= 2)
     {
         <MudNumericField Label="Met Level"
                          Variant="@Variant.Outlined"
@@ -81,7 +81,7 @@ AppState.SelectedSlotsAreValid)
             }
         </MudSelect>
     }
-    else if (saveGeneration > 3)
+    else if (saveGeneration >= 4)
     {
         <DateOnlyPicker Label="Met Date"
                         @bind-Date="@Pokemon.MetDate"
@@ -89,7 +89,7 @@ AppState.SelectedSlotsAreValid)
                         Color="@Color.Default" />
     }
 
-    @if (saveGeneration > 3)
+    @if (saveGeneration >= 4)
     {
         <MudCheckBox Label="This Pokémon was met as an Egg"
                      T="@bool"
@@ -98,7 +98,7 @@ AppState.SelectedSlotsAreValid)
                      For="@(() => Pokemon.FatefulEncounter)" />
     }
 
-    @if (saveGeneration > 3 && PokemonMetAsEgg)
+    @if (saveGeneration >= 4 && PokemonMetAsEgg)
     {
         <MudAutocomplete T="@ComboItem"
                          Label="Egg Met Location"
@@ -120,7 +120,7 @@ AppState.SelectedSlotsAreValid)
                  @bind-Value:after="@RefreshService.Refresh"
                  For="@(() => Pokemon.IsEgg)" />
 
-    @if (saveGeneration > 2)
+    @if (saveGeneration >= 3)
     {
         <MudCheckBox Label="Fateful Encounter"
                      @bind-Value="@Pokemon.FatefulEncounter"

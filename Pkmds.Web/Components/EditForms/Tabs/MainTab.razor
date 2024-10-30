@@ -160,7 +160,7 @@ AppState.SelectedSlotsAreValid)
                   @bind-Value="@Pokemon.Nickname"
                   For="@(() => Pokemon.Nickname)" />
 
-    @if (saveGeneration > 1)
+    @if (saveGeneration >= 2)
     {
         <MudPaper Outlined
                   Height="48px"
@@ -269,7 +269,7 @@ AppState.SelectedSlotsAreValid)
         }
     }
 
-    @if (saveGeneration > 1 && saveFile.HeldItems.Length > 0)
+    @if (saveGeneration >= 2 && saveFile.HeldItems.Length > 0)
     {
         <MudStack Row
                   Spacing="1"
