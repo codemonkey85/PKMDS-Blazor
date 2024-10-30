@@ -23,6 +23,14 @@ pkm-sprite {
     }
 }
 
+.plus-nature > div > div {
+    color: red;
+}
+
+.minus-nature > div > div {
+    color: blue;
+}
+
 .loading-progress {
     position: relative;
     display: block;
