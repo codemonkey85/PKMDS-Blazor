@@ -26,7 +26,18 @@ public partial class StatsTab : IDisposable
             return;
         }
 
-        Pokemon.SetNature(nature);
+        Pokemon.Nature = nature;
+        AppService.LoadPokemonStats(Pokemon);
+    }
+
+    private void OnStatNatureSet(Nature statNature)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.StatNature = statNature;
         AppService.LoadPokemonStats(Pokemon);
     }
 
@@ -39,12 +50,14 @@ public partial class StatsTab : IDisposable
 
     private string GetStatClass(Stats stat)
     {
-        if (Pokemon is not INature { } iNature)
+        if (Pokemon is not INature)
         {
             return string.Empty;
         }
 
-        var (up, dn) = NatureAmp.GetNatureModification(iNature.Nature);
+        var nature = Pokemon.Format >= 8 ? Pokemon.StatNature : Pokemon.Nature;
+
+        var (up, dn) = NatureAmp.GetNatureModification(nature);
 
         return up == dn
             ? string.Empty

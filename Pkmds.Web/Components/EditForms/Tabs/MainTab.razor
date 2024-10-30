@@ -224,6 +224,30 @@ AppState.SelectedSlotsAreValid)
         </MudSelect>
     }
 
+    @if (saveGeneration >= 8)
+    {
+        <MudSelect Label="Stat Nature"
+                   Variant="@Variant.Outlined"
+                   @bind-Value:get="@Pokemon.StatNature"
+                   @bind-Value:set="@OnStatNatureSet"
+                   For="@(() => Pokemon.StatNature)">
+            @foreach (var nature in GameInfo.FilteredSources.Natures.DistinctBy(nature => nature.Value))
+            {
+                <MudSelectItem Value="@((Nature)nature.Value)"
+                               @key="@nature.Value">
+                    <MudStack Row>
+                        <MudText>
+                            @nature.Text
+                        </MudText>
+                        <MudText>
+                            @AppService.GetStatModifierString((Nature)nature.Value)
+                        </MudText>
+                    </MudStack>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    }
+
     @if (Pokemon is IFormArgument && (Pokemon is { PersonalInfo.HasForms: true } || Pokemon is { Species: (ushort)Species.Unown }))
     {
         var forms = FormConverter.GetFormList(Pokemon.Species, GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, Pokemon.Context);

@@ -28,7 +28,18 @@ public partial class MainTab : IDisposable
             return;
         }
 
-        Pokemon.SetNature(nature);
+        Pokemon.Nature = nature;
+        AppService.LoadPokemonStats(Pokemon);
+    }
+
+    private void OnStatNatureSet(Nature statNature) 
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.StatNature = statNature;
         AppService.LoadPokemonStats(Pokemon);
     }
 
