@@ -23,12 +23,11 @@ pkm-sprite {
     }
 }
 
-.plus-nature {
+.plus-nature > div > div {
     color: red;
-    visibility: hidden;
 }
 
-.minus-nature {
+.minus-nature > div > div {
     color: blue;
 }
 
