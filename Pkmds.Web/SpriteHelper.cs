@@ -37,7 +37,7 @@ public static class SpriteHelper
     public static string GetBallSpriteFilename(int ball) =>
         $"{SpritesRoot}b/_ball{ball}.png";
 
-    public static string GetItemSpriteFilename(int item, EntityContext context) => context switch 
+    public static string GetItemSpriteFilename(int item, EntityContext context) => context switch
     {
         EntityContext.Gen9 => GetArtworkItemSpriteFilename(item, context),
         _ => GetBigItemSpriteFilename(item, context)
@@ -69,7 +69,7 @@ public static class SpriteHelper
     private static readonly int[] Gen3MailIds = [121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132];
     private static readonly int[] Gen45MailIds = [137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148];
 
-    private static bool IsItemMail(int item, EntityContext context) => context switch 
+    private static bool IsItemMail(int item, EntityContext context) => context switch
     {
         EntityContext.Gen2 when Gen2MailIds.Contains(item) => true,
         EntityContext.Gen3 when Gen3MailIds.Contains(item) => true,
@@ -77,13 +77,11 @@ public static class SpriteHelper
         _ => false
     };
 
-    private static bool IsItemTM(int item, EntityContext context) => false;
-
-    private static bool IsItemTR(int item, EntityContext context) => false;
-
     private static string GetItemIdString(int item, EntityContext context) =>
-        IsItemMail(item, context) ? "unk" :
-        IsItemTM(item, context) ? "tm" :
-        IsItemTR(item, context) ? "tr" :
-        item.ToString();
+        HeldItemLumpUtil.GetIsLump(item, context) switch
+        {
+            HeldItemLumpImage.TechnicalMachine => "tm",
+            HeldItemLumpImage.TechnicalRecord => "tr",
+            _ => IsItemMail(item, context) ? "unk" : item.ToString(),
+        };
 }
