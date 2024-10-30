@@ -6,6 +6,8 @@ public static class SpriteHelper
     private const int PikachuStarterForm = 8;
     private const int EeveeStarterForm = 1;
 
+    public const string PokemonFallbackImageFileName = $"{SpritesRoot}a/a_unknown.png";
+
     public static string GetPokemonSpriteFilename(PKM? pokemon) =>
         new StringBuilder($"{SpritesRoot}a/a_")
         .Append(pokemon switch

@@ -7,7 +7,12 @@
           Height="68px"
           Class="@SpriteHelper.GetSpriteCssClass(Pokemon)"
           Style="@GetStyle()">
-    <img class="pkm-sprite"
-         src="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)"
-         title="@(Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : null)" />
+    <object class="pkm-sprite"
+            type="image/png"
+            data="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)"
+            title="@(Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : "Unknown")">
+        <img class="pkm-sprite"
+             src="@SpriteHelper.PokemonFallbackImageFileName"
+             title="@(Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : "Unknown")">
+    </object>
 </MudPaper>
