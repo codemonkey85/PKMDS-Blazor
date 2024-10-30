@@ -1,7 +1,7 @@
 ﻿self.assetsManifest = {
   "assets": [
     {
-      "hash": "sha256-csfmG3AozVX8V9AXyJFdIJlUJKFIQEv4WCWOZPgjACQ=",
+      "hash": "sha256-rFncCepjBZMwtuv50iMLJRCtVIFY5eOEYh3J4POY2ms=",
       "url": "css\/app.css"
     },
     {
@@ -10177,7 +10177,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-S0+ZY16tk5dxSTfkmwKieRcg3uqdiLnO\/VSYY9j5VyU=",
+      "hash": "sha256-6eIaMxcguZjoeyUfvg14fez\/bnaoeXeXshHcywqwfyI=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -10289,7 +10289,7 @@
       "url": "_framework\/PKHeX.Core.wasm"
     },
     {
-      "hash": "sha256-9pWywsPhCILnHdn3x6XRBwere8tzigpbNBrfDyqYhMs=",
+      "hash": "sha256-RxVJPel9+MC81oy1XI5TPiq4DswhJn5Gff7akrBBpgM=",
       "url": "_framework\/Pkmds.Web.wasm"
     },
     {
@@ -10449,5 +10449,5 @@
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "vwOsffQW"
+  "version": "vyjbsSUt"
 };

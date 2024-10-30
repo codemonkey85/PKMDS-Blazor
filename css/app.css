@@ -25,10 +25,12 @@ pkm-sprite {
 
 .plus-nature > div > div {
     color: red;
+    font-weight: bold;
 }
 
 .minus-nature > div > div {
     color: blue;
+    font-weight: bold;
 }
 
 .loading-progress {
