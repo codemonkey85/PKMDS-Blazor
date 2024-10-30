@@ -184,7 +184,13 @@ public partial class MainLayout
             AppState.SaveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
             AppState.SaveFile.SetBoxSlotAtIndex(pkm, index);
 
-            await DialogService.ShowMessageBox("Load Pokémon File", $"The Pokémon has been imported and stored in Box {box + 1}, Slot {slot + 1}.");
+            var message = AppState.SaveFile is IBoxDetailNameRead boxDetail
+                ? $"The Pokémon has been imported and stored in '{boxDetail.GetBoxName(box)}' (Box {box + 1}), Slot {slot + 1}."
+                : $"The Pokémon has been imported and stored in Box {box + 1}, Slot {slot + 1}.";
+
+            await DialogService.ShowMessageBox(
+                "Load Pokémon File",
+                message);
         }
         catch (Exception ex)
         {
