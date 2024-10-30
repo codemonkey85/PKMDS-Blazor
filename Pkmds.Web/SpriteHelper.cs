@@ -3,14 +3,16 @@
 public static class SpriteHelper
 {
     private const string SpritesRoot = "sprites/";
-    
+
     public static string GetPokemonSpriteFilename(PKM? pokemon) =>
         new StringBuilder($"{SpritesRoot}a/a_")
         .Append(pokemon switch
         {
             null => "unknown",
+            { Context: EntityContext.Gen7b } and ({ Species: (ushort)Species.Pikachu, Form: 8 } or { Species: (ushort)Species.Eevee, Form: 1 }) => $"{pokemon.Species}-{pokemon.Form}p",
             { Species: (ushort)Species.Manaphy, IsEgg: true } => "490-e",
             { IsEgg: true } => "egg",
+            { Species: (ushort)Species.Frillish or (ushort)Species.Jellicent, Gender: (byte)Gender.Female } => $"{pokemon.Species}f",
             { Species: (ushort)Species.Alcremie } => $"{pokemon.Species}-{pokemon.Form}-{pokemon.GetFormArgument(0)}",
             { Form: > 0 } => pokemon.Species switch
             {
