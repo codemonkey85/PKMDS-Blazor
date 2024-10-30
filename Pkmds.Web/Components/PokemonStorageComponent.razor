@@ -11,8 +11,8 @@
     else
     {
         <div class="controls-container">
-            <MudIconButton OnClick="@NavigateLeft"
-                           title="Navigate Left"
+            <MudIconButton OnClick="@GoToPreviousBox"
+                           title="Previous Box"
                            ButtonType="@ButtonType.Button"
                            Icon="@Icons.Material.Filled.ArrowLeft"
                            Variant="@Variant.Filled"
@@ -34,8 +34,8 @@
                 </MudSelect>
             </div>
 
-            <MudIconButton OnClick="@NavigateRight"
-                           title="Navigate Right"
+            <MudIconButton OnClick="@GoToNextBox"
+                           title="Next Box"
                            ButtonType="@ButtonType.Button"
                            Icon="@Icons.Material.Filled.ArrowRight"
                            Variant="@Variant.Filled"

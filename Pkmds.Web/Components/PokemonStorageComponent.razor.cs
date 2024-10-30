@@ -6,7 +6,7 @@ public partial class PokemonStorageComponent : IDisposable
 
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
 
-    private void NavigateRight()
+    private void GoToNextBox()
     {
         if (AppState.SaveFile is null)
         {
@@ -26,7 +26,7 @@ public partial class PokemonStorageComponent : IDisposable
         AppState.SelectedBoxSlotNumber = null;
     }
 
-    private void NavigateLeft()
+    private void GoToPreviousBox()
     {
         if (AppState.SaveFile is null)
         {

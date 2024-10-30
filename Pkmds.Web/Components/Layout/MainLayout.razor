@@ -49,12 +49,15 @@
                   Class="my-3">
             <MudButton OnClick="@ShowLoadSaveFileDialog"
                        Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       StartIcon="@Icons.Material.Filled.CloudUpload"
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;">
                 Load Save File...
             </MudButton>
             <MudButton OnClick="@ExportSaveFile"
                        Variant="@Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Share"
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;"
                        Disabled="@(AppState.SaveFile is null)">
@@ -62,6 +65,7 @@
             </MudButton>
             <MudButton OnClick="@ExportSelectedPokemon"
                        Variant="@Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Share"
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;"
                        Disabled="@(AppService.EditFormPokemon is null)">
