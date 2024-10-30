@@ -13,6 +13,10 @@ pkm-sprite {
     width: 462px; /* (68 + 4 + 5) * 30 */
 }
 
+.current-tera-type-image {
+    align-self: center;
+}
+
 @keyframes bounce {
     0%, 100% {
         transform: translateY(0);
