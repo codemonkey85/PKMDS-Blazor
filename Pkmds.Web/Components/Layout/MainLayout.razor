@@ -53,7 +53,7 @@
                        StartIcon="@Icons.Material.Filled.CloudUpload"
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;">
-                Load Save File...
+                Load Save File
             </MudButton>
             <MudButton OnClick="@ExportSaveFile"
                        Variant="@Variant.Filled"
@@ -61,7 +61,7 @@
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;"
                        Disabled="@(AppState.SaveFile is null)">
-                Export Save File...
+                Export Save File
             </MudButton>
             <MudButton OnClick="@ShowLoadPokemonFileDialog"
                        Variant="@Variant.Filled"
@@ -69,7 +69,7 @@
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;"
                        Disabled="@(AppState.SaveFile is null)">
-                Load Pokémon File...
+                Load Pokémon File
             </MudButton>
             <MudButton OnClick="@ExportSelectedPokemon"
                        Variant="@Variant.Filled"
@@ -77,7 +77,7 @@
                        FullWidth="@false"
                        Style="width: 80%; align-self: center;"
                        Disabled="@(AppService.EditFormPokemon is null)">
-                Export Selected Pokémon...
+                Export Selected Pokémon
             </MudButton>
         </MudStack>
         <MudSpacer />
