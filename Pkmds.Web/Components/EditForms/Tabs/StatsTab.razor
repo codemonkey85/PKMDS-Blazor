@@ -620,4 +620,30 @@ AppState.SelectedSlotsAreValid)
             Characteristic: @GetCharacteristic(Pokemon)
         </MudText>
     }
+
+    @if (Pokemon is IDynamaxLevel d)
+    {
+        <MudGrid Spacing="1">
+            <MudItem xs="4"
+                     xl="3"
+                     Class="@ColumnClass">
+                <MudNumericField Label="Dynamax Level"
+                                 T="@byte"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="10"
+                                 @bind-Value="@d.DynamaxLevel" />
+
+            </MudItem>
+            @if (Pokemon is IGigantamax c)
+            {
+                <MudItem xs="3"
+                         Class="@ColumnClass">
+                    <MudCheckBox Label="Gigantamax"
+                                 @bind-Value="@c.CanGigantamax"
+                                 For="@(() => c.CanGigantamax)" />
+                </MudItem>
+            }
+        </MudGrid>
+    }
 }
