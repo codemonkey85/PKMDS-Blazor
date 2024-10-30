@@ -28,7 +28,21 @@ public partial class MainTab : IDisposable
             return;
         }
 
-        Pokemon.Nature = nature;
+        if (!nature.IsFixed())
+        {
+            nature = 0; // default valid
+        }
+
+        switch (Pokemon.Format)
+        {
+            case 3 or 4:
+                Pokemon.SetPIDNature(nature);
+                break;
+            default:
+                Pokemon.Nature = nature;
+                break;
+        }
+
         AppService.LoadPokemonStats(Pokemon);
     }
 
