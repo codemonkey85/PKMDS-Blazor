@@ -211,21 +211,15 @@ AppState.SelectedSlotsAreValid)
             {
                 <MudSelectItem Value="@((Nature)nature.Value)"
                                @key="@nature.Value">
-                    <MudStack>
+                    <MudStack Row>
                         <MudText>
                             @nature.Text
                         </MudText>
-                        @{
-                        var str = AppService.GetStatModifierString((Nature)nature.Value);
-                    }
-                    @if (str is { Length: > 0 })
-                    {
                         <MudText>
-                            @str
+                            @AppService.GetStatModifierString((Nature)nature.Value)
                         </MudText>
-                    }
-                </MudStack>
-            </MudSelectItem>
+                    </MudStack>
+                </MudSelectItem>
             }
         </MudSelect>
     }

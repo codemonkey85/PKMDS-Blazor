@@ -39,18 +39,20 @@ public partial class StatsTab : IDisposable
 
     private string GetStatClass(Stats stat)
     {
-        if (Pokemon is not INature { } iNature )
+        if (Pokemon is not INature { } iNature)
         {
             return string.Empty;
         }
 
         var (up, dn) = NatureAmp.GetNatureModification(iNature.Nature);
 
-        return up == (int)stat
-            ? "plus-nature"
-            : dn == (int)stat
-                ? "minus-nature"
-                : string.Empty;
+        return up == dn
+            ? string.Empty
+            : up == (int)stat
+                ? "plus-nature"
+                : dn == (int)stat
+                    ? "minus-nature"
+                    : string.Empty;
     }
 
     private enum Stats
