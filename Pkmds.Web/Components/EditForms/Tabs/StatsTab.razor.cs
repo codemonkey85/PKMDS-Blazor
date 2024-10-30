@@ -39,14 +39,12 @@ public partial class StatsTab : IDisposable
 
     private string GetStatClass(Stats stat)
     {
-        if (Pokemon is null)
+        if (Pokemon is not INature { } iNature )
         {
             return string.Empty;
         }
 
-        var pkm = Pokemon.Nickname;
-
-        var (up, dn) = NatureAmp.GetNatureModification(Pokemon.Nature);
+        var (up, dn) = NatureAmp.GetNatureModification(iNature.Nature);
 
         return up == (int)stat
             ? "plus-nature"
