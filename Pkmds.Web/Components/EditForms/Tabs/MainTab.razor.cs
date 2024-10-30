@@ -93,7 +93,7 @@ public partial class MainTab : IDisposable
         Pokemon.ClearNickname();
     }
 
-    private void AfterFormeChanged()
+    private void AfterFormChanged()
     {
         if (Pokemon is { Species: (ushort)Species.Indeedee })
         {

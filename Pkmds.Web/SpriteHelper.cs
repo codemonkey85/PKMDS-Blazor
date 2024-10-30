@@ -14,6 +14,7 @@ public static class SpriteHelper
             { IsEgg: true } => "egg",
             { Species: (ushort)Species.Frillish or (ushort)Species.Jellicent, Gender: (byte)Gender.Female } => $"{pokemon.Species}f",
             { Species: (ushort)Species.Alcremie } => $"{pokemon.Species}-{pokemon.Form}-{pokemon.GetFormArgument(0)}",
+            { Form: var form, Species: var species } when form > 0 && FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) => $"{species}-{FormInfo.GetTotemBaseForm(species, form)}",
             { Form: > 0 } => pokemon.Species switch
             {
                 (ushort)Species.Scatterbug or (ushort)Species.Spewpa => pokemon.Species.ToString(),

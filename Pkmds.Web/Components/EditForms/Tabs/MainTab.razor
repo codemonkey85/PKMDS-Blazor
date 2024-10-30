@@ -144,10 +144,10 @@ AppState.SelectedSlotsAreValid)
         {
             <MudSelect T="@byte"
                        @ref="@FormSelect"
-                       Label="Forme"
+                       Label="Form"
                        Variant="@Variant.Outlined"
                        @bind-Value="@Pokemon.Form"
-                       @bind-Value:after="@AfterFormeChanged"
+                       @bind-Value:after="@AfterFormChanged"
                        For="@(() => Pokemon.Form)">
                 @for (byte i = 0; i < forms.Length; i++)
                 {
@@ -162,7 +162,7 @@ AppState.SelectedSlotsAreValid)
             @if (Pokemon is IFormArgument && FormArgumentUtil.GetFormArgumentMax(Pokemon.Species, Pokemon.Form, Pokemon.Context) > 0 && FormConverter.GetFormArgumentIsNamedIndex(Pokemon.Species))
             {
                 <MudSelect T="@(uint?)"
-                           Label="Forme Arg"
+                           Label="Form Arg"
                            Variant="@Variant.Outlined"
                            @bind-Value:get="@(Pokemon.GetFormArgument())"
                            @bind-Value:set="@(formArg => { Pokemon.ChangeFormArgument(formArg ?? 0); AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })">
