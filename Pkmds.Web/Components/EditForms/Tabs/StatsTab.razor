@@ -145,7 +145,6 @@ AppState.SelectedSlotsAreValid)
                 </MudText>
 
                 <MudNumericField Label="HP"
-                                 Class="@GetStatClass(Stats.SpecialAttack)"
                                  title="HP IV"
                                  Variant="@Variant.Outlined"
                                  Min="0"
@@ -157,7 +156,7 @@ AppState.SelectedSlotsAreValid)
                                  HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)" />
 
                 <MudNumericField Label="Atk"
-                                 Class="@GetStatClass(Stats.SpecialAttack)"
+                                 Class="@GetStatClass(Stats.Attack)"
                                  title="Attack IV"
                                  Variant="@Variant.Outlined"
                                  Min="0"
@@ -167,7 +166,7 @@ AppState.SelectedSlotsAreValid)
                                  For="@(() => Pokemon.IV_ATK)" />
 
                 <MudNumericField Label="Def"
-                                 Class="@GetStatClass(Stats.SpecialAttack)"
+                                 Class="@GetStatClass(Stats.Defense)"
                                  title="Defense IV"
                                  Variant="@Variant.Outlined"
                                  Min="0"
@@ -206,7 +205,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => Pokemon.IV_SPA)" />
 
                     <MudNumericField Label="Spd"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.SpecialDefense)"
                                      title="Special Defense IV"
                                      Variant="@Variant.Outlined"
                                      Min="0"
@@ -216,7 +215,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => Pokemon.IV_SPD)" />
 
                     <MudNumericField Label="Spe"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Speed)"
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
                                      Min="0"
@@ -246,7 +245,6 @@ AppState.SelectedSlotsAreValid)
                     </MudText>
 
                     <MudNumericField Label="HP"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
                                      T="@byte"
                                      title="HP AV"
                                      Variant="@Variant.Outlined"
@@ -257,7 +255,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => aPkm.AV_HP)" />
 
                     <MudNumericField Label="Atk"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Attack)"
                                      T="@byte"
                                      title="Attack AV"
                                      Variant="@Variant.Outlined"
@@ -268,7 +266,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => aPkm.AV_ATK)" />
 
                     <MudNumericField Label="Def"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Defense)"
                                      T="@byte"
                                      title="Defense AV"
                                      Variant="@Variant.Outlined"
@@ -290,7 +288,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => aPkm.AV_SPA)" />
 
                     <MudNumericField Label="Spd"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.SpecialDefense)"
                                      T="@byte"
                                      title="Special Defense AV"
                                      Variant="@Variant.Outlined"
@@ -301,7 +299,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => aPkm.AV_SPD)" />
 
                     <MudNumericField Label="Spe"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Speed)"
                                      T="@byte"
                                      title="Speed AV"
                                      Variant="@Variant.Outlined"
@@ -330,7 +328,6 @@ AppState.SelectedSlotsAreValid)
                     </MudText>
 
                     <MudNumericField Label="HP"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
                                      T="@byte"
                                      title="HP GV"
                                      Variant="@Variant.Outlined"
@@ -341,7 +338,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => gPkm.GV_HP)" />
 
                     <MudNumericField Label="Atk"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Attack)"
                                      T="@byte"
                                      title="Attack GV"
                                      Variant="@Variant.Outlined"
@@ -352,7 +349,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => gPkm.GV_ATK)" />
 
                     <MudNumericField Label="Def"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Defense)"
                                      T="@byte"
                                      title="Defense GV"
                                      Variant="@Variant.Outlined"
@@ -374,7 +371,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => gPkm.GV_SPA)" />
 
                     <MudNumericField Label="Spd"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.SpecialDefense)"
                                      T="@byte"
                                      title="Special Defense GV"
                                      Variant="@Variant.Outlined"
@@ -385,7 +382,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => gPkm.GV_SPD)" />
 
                     <MudNumericField Label="Spe"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Speed)"
                                      T="@byte"
                                      title="Speed GV"
                                      Variant="@Variant.Outlined"
@@ -407,7 +404,6 @@ AppState.SelectedSlotsAreValid)
                     </MudText>
 
                     <MudNumericField Label="HP"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
                                      title="HP EV"
                                      Variant="@Variant.Outlined"
                                      Min="0"
@@ -417,7 +413,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => Pokemon.EV_HP)" />
 
                     <MudNumericField Label="Atk"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Attack)"
                                      title="Attack EV"
                                      Variant="@Variant.Outlined"
                                      Min="0"
@@ -427,7 +423,7 @@ AppState.SelectedSlotsAreValid)
                                      For="@(() => Pokemon.EV_ATK)" />
 
                     <MudNumericField Label="Def"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Defense)"
                                      title="Defense EV"
                                      Variant="@Variant.Outlined"
                                      Min="0"
@@ -465,7 +461,7 @@ AppState.SelectedSlotsAreValid)
                                          For="@(() => Pokemon.EV_SPA)" />
 
                         <MudNumericField Label="Spd"
-                                         Class="@GetStatClass(Stats.SpecialAttack)"
+                                         Class="@GetStatClass(Stats.SpecialDefense)"
                                          title="Special Defense EV"
                                          Variant="@Variant.Outlined"
                                          Min="0"
@@ -475,7 +471,7 @@ AppState.SelectedSlotsAreValid)
                                          For="@(() => Pokemon.EV_SPD)" />
 
                         <MudNumericField Label="Spe"
-                                         Class="@GetStatClass(Stats.SpecialAttack)"
+                                         Class="@GetStatClass(Stats.Speed)"
                                          title="Speed EV"
                                          Variant="@Variant.Outlined"
                                          Min="0"
@@ -502,7 +498,6 @@ AppState.SelectedSlotsAreValid)
                 </MudText>
 
                 <MudNumericField Label="HP"
-                                 Class="@GetStatClass(Stats.SpecialAttack)"
                                  title="Max HP Stat"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_HPMax"
@@ -510,7 +505,7 @@ AppState.SelectedSlotsAreValid)
                                  HideSpinButtons />
 
                 <MudNumericField Label="Atk"
-                                 Class="@GetStatClass(Stats.SpecialAttack)"
+                                 Class="@GetStatClass(Stats.Attack)"
                                  title="Attack Stat"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_ATK"
@@ -518,7 +513,7 @@ AppState.SelectedSlotsAreValid)
                                  HideSpinButtons />
 
                 <MudNumericField Label="Def"
-                                 Class="@GetStatClass(Stats.SpecialAttack)"
+                                 Class="@GetStatClass(Stats.Defense)"
                                  title="Defense Stat"
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_DEF"
@@ -552,7 +547,7 @@ AppState.SelectedSlotsAreValid)
                                      HideSpinButtons />
 
                     <MudNumericField Label="Spd"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.SpecialDefense)"
                                      title="Special Defense Stat"
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.Stat_SPD"
@@ -560,7 +555,7 @@ AppState.SelectedSlotsAreValid)
                                      HideSpinButtons />
 
                     <MudNumericField Label="Spe"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetStatClass(Stats.Speed)"
                                      title="Speed Stat"
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.Stat_SPE"
