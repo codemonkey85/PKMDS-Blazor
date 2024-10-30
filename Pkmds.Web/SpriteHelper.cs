@@ -6,6 +6,7 @@ public static class SpriteHelper
     private const int PikachuStarterForm = 8;
     private const int EeveeStarterForm = 1;
 
+    public const string ItemFallbackImageFileName = $"{SpritesRoot}bi/bitem_unk.png";
     public const string PokemonFallbackImageFileName = $"{SpritesRoot}a/a_unknown.png";
 
     public static string GetPokemonSpriteFilename(PKM? pokemon) =>
@@ -36,11 +37,17 @@ public static class SpriteHelper
     public static string GetBallSpriteFilename(int ball) =>
         $"{SpritesRoot}b/_ball{ball}.png";
 
-    public static string GetBigItemSpriteFilename(int item) =>
-        $"{SpritesRoot}bi/bitem_{item}.png";
+    public static string GetItemSpriteFilename(int item, EntityContext context) => context switch 
+    {
+        EntityContext.Gen9 => GetArtworkItemSpriteFilename(item, context),
+        _ => GetBigItemSpriteFilename(item, context)
+    };
 
-    public static string GetArtworkItemSpriteFilename(int item) =>
-        $"{SpritesRoot}ai/aitem_{item}.png";
+    public static string GetBigItemSpriteFilename(int item, EntityContext context) =>
+        $"{SpritesRoot}bi/bitem_{GetItemIdString(item, context)}.png";
+
+    public static string GetArtworkItemSpriteFilename(int item, EntityContext context) =>
+        $"{SpritesRoot}ai/aitem_{GetItemIdString(item, context)}.png";
 
     public static string GetTypeGemSpriteFileName(byte type) =>
         $"{SpritesRoot}t/g/gem_{type:00}.png";
@@ -57,4 +64,26 @@ public static class SpriteHelper
 
     public static string GetSpriteCssClass(PKM? pkm) =>
         $"d-flex align-items-center justify-center {(pkm is { Species: > (ushort)Species.None } ? "slot-fill" : string.Empty)}";
+
+    private static readonly int[] Gen2MailIds = [0x9E, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD];
+    private static readonly int[] Gen3MailIds = [121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132];
+    private static readonly int[] Gen45MailIds = [137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148];
+
+    private static bool IsItemMail(int item, EntityContext context) => context switch 
+    {
+        EntityContext.Gen2 when Gen2MailIds.Contains(item) => true,
+        EntityContext.Gen3 when Gen3MailIds.Contains(item) => true,
+        EntityContext.Gen4 or EntityContext.Gen5 when Gen45MailIds.Contains(item) => true,
+        _ => false
+    };
+
+    private static bool IsItemTM(int item, EntityContext context) => false;
+
+    private static bool IsItemTR(int item, EntityContext context) => false;
+
+    private static string GetItemIdString(int item, EntityContext context) =>
+        IsItemMail(item, context) ? "unk" :
+        IsItemTM(item, context) ? "tm" :
+        IsItemTR(item, context) ? "tr" :
+        item.ToString();
 }

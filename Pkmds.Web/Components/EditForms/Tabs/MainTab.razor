@@ -199,7 +199,7 @@ AppState.SelectedSlotsAreValid)
                     <MudStack Row>
                         @if (item.Value != 0)
                         {
-                            <MudImage Src="@SpriteHelper.GetBigItemSpriteFilename(item.Value)"
+                            <MudImage Src="@SpriteHelper.GetItemSpriteFilename(item.Value, Pokemon.Context)"
                                       Alt="@item.Text"
                                       title="@item.Text"
                                       ObjectFit="@ObjectFit.Contain"
@@ -217,7 +217,7 @@ AppState.SelectedSlotsAreValid)
             @if (Pokemon.HeldItem != 0)
             {
                 var itemText = AppService.GetItemComboItem(Pokemon.HeldItem).Text;
-                <MudImage Src="@SpriteHelper.GetBigItemSpriteFilename(Pokemon.HeldItem)"
+                <MudImage Src="@SpriteHelper.GetItemSpriteFilename(Pokemon.HeldItem, Pokemon.Context)"
                           Alt="@itemText"
                           title="@itemText"
                           ObjectFit="@ObjectFit.Contain"
