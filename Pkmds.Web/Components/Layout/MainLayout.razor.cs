@@ -34,11 +34,20 @@ public partial class MainLayout
 
     private async Task ShowLoadSaveFileDialog()
     {
-        var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Save File", options: new DialogOptions
+        const string message = "Choose a save file";
+
+        var dialogParameters = new DialogParameters
         {
-            CloseOnEscapeKey = true,
-            BackdropClick = false,
-        });
+            { nameof(FileUploadDialog.Message), message }
+        };
+
+        var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Save File",
+            parameters: dialogParameters,
+            options: new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                BackdropClick = false,
+            });
 
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
@@ -109,8 +118,84 @@ public partial class MainLayout
             return;
         }
         AppState.ShowProgressIndicator = true;
-        await WriteFile(AppState.SaveFile.Write(), browserLoadSaveFile?.Name ?? "save.sav");
+        await WriteFile(AppState.SaveFile.Write(), browserLoadSaveFile?.Name ?? "save.sav", ".sav", "Save File");
         AppState.ShowProgressIndicator = false;
+    }
+
+    private async Task ShowLoadPokemonFileDialog()
+    {
+        const string message = "Choose a Pokémon file";
+
+        var dialogParameters = new DialogParameters
+        {
+            { nameof(FileUploadDialog.Message), message }
+        };
+
+        var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Pokémon File",
+            parameters: dialogParameters,
+            options: new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                BackdropClick = false,
+            });
+
+        var result = await dialog.Result;
+        if (result is { Data: IBrowserFile selectedFile })
+        {
+            var browserLoadPokemonFile = selectedFile;
+            await LoadPokemonFile(browserLoadPokemonFile);
+        }
+    }
+
+    private async Task LoadPokemonFile(IBrowserFile browserLoadPokemonFile)
+    {
+        if (browserLoadPokemonFile is null)
+        {
+            await DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
+            return;
+        }
+
+        AppState.ShowProgressIndicator = false;
+
+        try
+        {
+            await using var fileStream = browserLoadPokemonFile.OpenReadStream(Constants.MaxFileSize);
+            using var memoryStream = new MemoryStream();
+            await fileStream.CopyToAsync(memoryStream);
+            var data = memoryStream.ToArray();
+
+            if (!FileUtil.TryGetPKM(data, out var pkm, ".pkm", AppState.SaveFile))
+            {
+                await DialogService.ShowMessageBox("Error", "The file is not a supported Pokémon file.");
+                return;
+            }
+
+            if (AppState.SaveFile is null)
+            {
+                return;
+            }
+
+            var index = AppState.SaveFile.NextOpenBoxSlot();
+            if (index < 0)
+            {
+                return;
+            }
+
+            AppState.SaveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
+            AppState.SaveFile.SetBoxSlotAtIndex(pkm, index);
+
+            await DialogService.ShowMessageBox("Load Pokémon File", $"The Pokémon has been imported and stored in Box {box + 1}, Slot {slot + 1}.");
+        }
+        catch (Exception ex)
+        {
+            await DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+        }
+        finally
+        {
+            AppState.ShowProgressIndicator = false;
+        }
+
+        RefreshService.RefreshBoxState();
     }
 
     private async Task ExportSelectedPokemon()
@@ -126,12 +211,12 @@ public partial class MainLayout
 
         pkm.RefreshChecksum();
         var cleanFileName = AppService.GetCleanFileName(pkm);
-        await WriteFile(pkm.Data, cleanFileName);
+        await WriteFile(pkm.Data, cleanFileName, $".{pkm.Extension}", "Pokémon File");
 
         AppState.ShowProgressIndicator = false;
     }
 
-    private async Task WriteFile(byte[] data, string fileName)
+    private async Task WriteFile(byte[] data, string fileName, string fileTypeExtension, string fileTypeDescription)
     {
         if (await FileSystemAccessService.IsSupportedAsync() == false)
         {
@@ -142,7 +227,7 @@ public partial class MainLayout
         try
         {
             // Ensure that the FilePicker API is invoked correctly within a user gesture context
-            await JSRuntime.InvokeVoidAsync("showSaveFilePickerAndWrite", fileName, data);
+            await JSRuntime.InvokeVoidAsync("showSaveFilePickerAndWrite", fileName, data, fileTypeExtension, fileTypeDescription);
         }
         catch (JSException ex)
         {
