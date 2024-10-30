@@ -124,14 +124,14 @@ public partial class MainLayout
 
     private async Task ShowLoadPokemonFileDialog()
     {
-        const string message = "Choose a Pokémon file";
+        const string message = "Choose a PokÃ©mon file";
 
         var dialogParameters = new DialogParameters
         {
             { nameof(FileUploadDialog.Message), message }
         };
 
-        var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Pokémon File",
+        var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load PokÃ©mon File",
             parameters: dialogParameters,
             options: new DialogOptions
             {
@@ -166,7 +166,7 @@ public partial class MainLayout
 
             if (!FileUtil.TryGetPKM(data, out var pkm, ".pkm", AppState.SaveFile))
             {
-                await DialogService.ShowMessageBox("Error", "The file is not a supported Pokémon file.");
+                await DialogService.ShowMessageBox("Error", "The file is not a supported PokÃ©mon file.");
                 return;
             }
 
@@ -184,12 +184,14 @@ public partial class MainLayout
             AppState.SaveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
             AppState.SaveFile.SetBoxSlotAtIndex(pkm, index);
 
+            const string messageStart = "The PokÃ©mon has been imported and stored in";
+
             var message = AppState.SaveFile is IBoxDetailNameRead boxDetail
-                ? $"The Pokémon has been imported and stored in '{boxDetail.GetBoxName(box)}' (Box {box + 1}), Slot {slot + 1}."
-                : $"The Pokémon has been imported and stored in Box {box + 1}, Slot {slot + 1}.";
+                ? $"{messageStart} '{boxDetail.GetBoxName(box)}' (Box {box + 1}), Slot {slot + 1}."
+                : $"{messageStart} Box {box + 1}, Slot {slot + 1}.";
 
             await DialogService.ShowMessageBox(
-                "Load Pokémon File",
+                "Load PokÃ©mon File",
                 message);
         }
         catch (Exception ex)
@@ -217,7 +219,7 @@ public partial class MainLayout
 
         pkm.RefreshChecksum();
         var cleanFileName = AppService.GetCleanFileName(pkm);
-        await WriteFile(pkm.Data, cleanFileName, $".{pkm.Extension}", "Pokémon File");
+        await WriteFile(pkm.Data, cleanFileName, $".{pkm.Extension}", "PokÃ©mon File");
 
         AppState.ShowProgressIndicator = false;
     }
@@ -233,7 +235,7 @@ public partial class MainLayout
         try
         {
             // Ensure that the FilePicker API is invoked correctly within a user gesture context
-            await JSRuntime.InvokeVoidAsync("showSaveFilePickerAndWrite", fileName, data, fileTypeExtension, fileTypeDescription);
+            await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite", fileName, data, fileTypeExtension, fileTypeDescription);
         }
         catch (JSException ex)
         {
