@@ -39,6 +39,8 @@ public static class SpriteHelper
 
     public static string GetItemSpriteFilename(int item, EntityContext context) => context switch
     {
+        EntityContext.Gen1 or EntityContext.Gen2 => ItemFallbackImageFileName, // TODO: Fix Gen I and II item sprites
+        EntityContext.Gen3 => ItemFallbackImageFileName, // TODO: Fix Gen III item sprites
         EntityContext.Gen9 => GetArtworkItemSpriteFilename(item, context),
         _ => GetBigItemSpriteFilename(item, context)
     };
