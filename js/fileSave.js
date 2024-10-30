@@ -1,10 +1,10 @@
-﻿window.showSaveFilePickerAndWrite = async function (fileName, byteArray) {
+﻿window.showSaveFilePickerAndWrite = async function (fileName, byteArray, extension, description) {
     try {
         const opts = {
             suggestedName: fileName,
             types: [{
-                description: 'Save File',
-                accept: { 'application/octet-stream': ['.sav'] }
+                description: description,
+                accept: { 'application/octet-stream': [extension] }
             }]
         };
 
