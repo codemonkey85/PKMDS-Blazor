@@ -51,7 +51,18 @@ AppState.SelectedSlotsAreValid)
                                      @bind-Value:get="@(AppService.GetMoveComboItem(moveId))"
                                      @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))"
                                      SearchFunc="@SearchMoves"
-                                     ToStringFunc="@(move => move?.Text)" />
+                                     ToStringFunc="@(move => move?.Text)">
+
+                        <ItemTemplate Context="move">
+                            <MudStack Row>
+                                @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
+                                <MudText>
+                                    @move.Text
+                                </MudText>
+                            </MudStack>
+                        </ItemTemplate>
+
+                    </MudAutocomplete>
                 </MudItem>
 
                 <MudItem xs="2"
@@ -62,7 +73,7 @@ AppState.SelectedSlotsAreValid)
                                      Min="0"
                                      Margin="@Margin.Dense"
                                      @bind-Value:get="@GetPokemonPP(i)"
-                                     @bind-Value:set="@(newValue => SetPokemonPP(i, newValue))"/>
+                                     @bind-Value:set="@(newValue => SetPokemonPP(i, newValue))" />
 
                 </MudItem>
 
@@ -75,7 +86,7 @@ AppState.SelectedSlotsAreValid)
                                      Min="0"
                                      Margin="@Margin.Dense"
                                      @bind-Value:get="@GetPokemonPPUps(i)"
-                                     @bind-Value:set="@(newValue => SetPokemonPPUps(i, newValue))"/>
+                                     @bind-Value:set="@(newValue => SetPokemonPPUps(i, newValue))" />
                 </MudItem>
 
                 <MudItem xs="2"
@@ -86,7 +97,7 @@ AppState.SelectedSlotsAreValid)
                                      Value="@Pokemon.GetMaxPP(i)"
                                      ReadOnly
                                      Margin="@Margin.Dense"
-                                     HideSpinButtons/>
+                                     HideSpinButtons />
                 </MudItem>
             </MudGrid>
         }
