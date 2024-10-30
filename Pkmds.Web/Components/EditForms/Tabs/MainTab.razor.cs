@@ -50,7 +50,7 @@ public partial class MainTab : IDisposable
             return;
         }
 
-        pkm.SetGender((byte)((Gender)gender switch 
+        pkm.SetGender((byte)((Gender)gender switch
         {
             Gender.Male => Gender.Female,
             _ => Gender.Male
@@ -71,4 +71,15 @@ public partial class MainTab : IDisposable
     private static string GetTeraTypeDisplayName(byte teraTypeId) => teraTypeId == TeraTypeUtil.Stellar
         ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
         : GameInfo.Strings.Types[teraTypeId];
+
+    private void AfterFormeChanged()
+    {
+        if (Pokemon is { Species: (ushort)Species.Indeedee }) 
+        {
+            Pokemon.SetGender(Pokemon.Form);
+        }
+
+        AppService.LoadPokemonStats(Pokemon);
+        RefreshService.Refresh();
+    }
 }

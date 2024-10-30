@@ -234,7 +234,7 @@ AppState.SelectedSlotsAreValid)
                        Label="Forme"
                        Variant="@Variant.Outlined"
                        @bind-Value="@Pokemon.Form"
-                       @bind-Value:after="@(() => { AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
+                       @bind-Value:after="@AfterFormeChanged"
                        For="@(() => Pokemon.Form)">
                 @for (byte i = 0; i < forms.Length; i++)
                 {
