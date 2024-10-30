@@ -21,7 +21,7 @@
       "url": "index.html"
     },
     {
-      "hash": "sha256-QX9ASbe9iKZYfhAy6Av1uoyiEsSounXgdWBk7zAgQGc=",
+      "hash": "sha256-FxOuskBB\/Bf1l3xFM78xh2lVy95o+ZA6Iik6FTQya0k=",
       "url": "js\/fileSave.js"
     },
     {
@@ -10177,7 +10177,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-oK9wmWZXaw2nosuvIbz8NbGuOhx\/36K9weUs+Biu6fo=",
+      "hash": "sha256-Lklav6NPrv0aetKueLjMy0AYAFDEiziC9wM\/WcUVUx8=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -10289,7 +10289,7 @@
       "url": "_framework\/PKHeX.Core.wasm"
     },
     {
-      "hash": "sha256-hG12of0jGK5GrWFj99v45zSQjFD2kFLc5kt6ujBC5Bw=",
+      "hash": "sha256-W0kEtBXfBjtE21+dRzHK08b1joBc9GGcI5OU2lMT8Yc=",
       "url": "_framework\/Pkmds.Web.wasm"
     },
     {
@@ -10449,5 +10449,5 @@
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "S6awKsYK"
+  "version": "d07O9th1"
 };

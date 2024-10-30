@@ -1,4 +1,4 @@
-﻿window.showSaveFilePickerAndWrite = async function (fileName, byteArray, extension, description) {
+﻿window.showFilePickerAndWrite = async function (fileName, byteArray, extension, description) {
     try {
         const opts = {
             suggestedName: fileName,
