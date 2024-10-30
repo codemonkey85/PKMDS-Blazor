@@ -1,5 +1,3 @@
-using PKHeX.Core;
-
 namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class OtMiscTab : IDisposable

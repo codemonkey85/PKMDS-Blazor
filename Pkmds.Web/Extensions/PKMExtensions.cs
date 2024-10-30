@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace Pkmds.Web.Extensions;
+﻿namespace Pkmds.Web.Extensions;
 
 public static class PKMExtensions
 {

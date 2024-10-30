@@ -1,6 +1,4 @@
-﻿using PKHeX.Core;
-
-namespace Pkmds.Web.Services;
+﻿namespace Pkmds.Web.Services;
 
 public record AppService(IAppState AppState, IRefreshService RefreshService) : IAppService
 {
