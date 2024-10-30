@@ -92,4 +92,8 @@ public partial class StatsTab : IDisposable
         SpecialAttack,
         SpecialDefense
     }
+
+    private static string GetTeraTypeDisplayName(byte teraTypeId) => teraTypeId == TeraTypeUtil.Stellar
+        ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
+        : GameInfo.Strings.Types[teraTypeId];
 }

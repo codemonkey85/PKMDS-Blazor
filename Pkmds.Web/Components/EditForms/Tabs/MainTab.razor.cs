@@ -46,7 +46,7 @@ public partial class MainTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
     }
 
-    private void OnStatNatureSet(Nature statNature) 
+    private void OnStatNatureSet(Nature statNature)
     {
         if (Pokemon is null)
         {
@@ -93,13 +93,9 @@ public partial class MainTab : IDisposable
         Pokemon.ClearNickname();
     }
 
-    private static string GetTeraTypeDisplayName(byte teraTypeId) => teraTypeId == TeraTypeUtil.Stellar
-        ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
-        : GameInfo.Strings.Types[teraTypeId];
-
     private void AfterFormeChanged()
     {
-        if (Pokemon is { Species: (ushort)Species.Indeedee }) 
+        if (Pokemon is { Species: (ushort)Species.Indeedee })
         {
             Pokemon.SetGender(Pokemon.Form);
         }
