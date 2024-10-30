@@ -3,13 +3,16 @@
 public static class SpriteHelper
 {
     private const string SpritesRoot = "sprites/";
+    private const int PikachuStarterForm = 8;
+    private const int EeveeStarterForm = 1;
 
     public static string GetPokemonSpriteFilename(PKM? pokemon) =>
         new StringBuilder($"{SpritesRoot}a/a_")
         .Append(pokemon switch
         {
             null => "unknown",
-            { Context: EntityContext.Gen7b } and ({ Species: (ushort)Species.Pikachu, Form: 8 } or { Species: (ushort)Species.Eevee, Form: 1 }) => $"{pokemon.Species}-{pokemon.Form}p",
+            { Context: EntityContext.Gen7b } and ({ Species: (ushort)Species.Pikachu, Form: PikachuStarterForm }
+                or { Species: (ushort)Species.Eevee, Form: EeveeStarterForm }) => $"{pokemon.Species}-{pokemon.Form}p",
             { Species: (ushort)Species.Manaphy, IsEgg: true } => "490-e",
             { IsEgg: true } => "egg",
             { Species: (ushort)Species.Frillish or (ushort)Species.Jellicent, Gender: (byte)Gender.Female } => $"{pokemon.Species}f",
@@ -51,5 +54,5 @@ public static class SpriteHelper
         string.Empty;
 
     public static string GetSpriteCssClass(PKM? pkm) =>
-        $"d-flex align-items-center justify-center {(pkm is { Species: > 0 } ? "slot-fill" : string.Empty)}";
+        $"d-flex align-items-center justify-center {(pkm is { Species: > (ushort)Species.None } ? "slot-fill" : string.Empty)}";
 }
