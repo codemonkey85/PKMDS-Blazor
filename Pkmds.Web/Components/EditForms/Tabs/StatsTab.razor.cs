@@ -2,8 +2,6 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class StatsTab : IDisposable
 {
-    private const string ColumnClass = "d-flex align-center justify-center";
-
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 

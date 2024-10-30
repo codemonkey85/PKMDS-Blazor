@@ -54,9 +54,8 @@ AppState.SelectedSlotsAreValid)
 
     @if (saveGeneration >= 2)
     {
-        <MudPaper Outlined
-                  Height="48px"
-                  Class="d-flex align-center">
+        <div style="height: 48px;"
+             class="d-flex align-center">
 
             <MudStack Row
                       Spacing="1"
@@ -67,8 +66,6 @@ AppState.SelectedSlotsAreValid)
                                         OnClick="@OnGenderToggle"
                                         Disabled="@(!Pokemon.PersonalInfo.IsDualGender)" />
 
-                @GenderDisplayComponent.GenderDisplayAscii((Gender)Pokemon.Gender)
-
                 @if (!Pokemon.PersonalInfo.IsDualGender)
                 {
                     <MudText>
@@ -77,7 +74,7 @@ AppState.SelectedSlotsAreValid)
                 }
 
             </MudStack>
-        </MudPaper>
+        </div>
     }
 
     <MudNumericField Label="EXP"

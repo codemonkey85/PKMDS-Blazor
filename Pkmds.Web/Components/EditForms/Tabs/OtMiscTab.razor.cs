@@ -1,3 +1,5 @@
+using PKHeX.Core;
+
 namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class OtMiscTab : IDisposable
@@ -38,5 +40,19 @@ public partial class OtMiscTab : IDisposable
             default:
                 break;
         }
+    }
+
+    private void OnGenderToggle()
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.OriginalTrainerGender = (byte)((Gender)Pokemon.OriginalTrainerGender switch
+        {
+            Gender.Male => Gender.Female,
+            _ => Gender.Male
+        });
     }
 }
