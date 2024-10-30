@@ -67,7 +67,8 @@
                        Variant="@Variant.Filled"
                        StartIcon="@Icons.Material.Filled.CloudUpload"
                        FullWidth="@false"
-                       Style="width: 80%; align-self: center;">
+                       Style="width: 80%; align-self: center;"
+                       Disabled="@(AppState.SaveFile is null)">
                 Load Pokémon File...
             </MudButton>
             <MudButton OnClick="@ExportSelectedPokemon"

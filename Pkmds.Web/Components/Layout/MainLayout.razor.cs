@@ -149,13 +149,18 @@ public partial class MainLayout
 
     private async Task LoadPokemonFile(IBrowserFile browserLoadPokemonFile)
     {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return;
+        }
+
         if (browserLoadPokemonFile is null)
         {
             await DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
             return;
         }
 
-        AppState.ShowProgressIndicator = false;
+        AppState.ShowProgressIndicator = true;
 
         try
         {
@@ -164,29 +169,24 @@ public partial class MainLayout
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
 
-            if (!FileUtil.TryGetPKM(data, out var pkm, ".pkm", AppState.SaveFile))
+            if (!FileUtil.TryGetPKM(data, out var pkm, ".pkm", saveFile))
             {
                 await DialogService.ShowMessageBox("Error", "The file is not a supported Pokémon file.");
                 return;
             }
 
-            if (AppState.SaveFile is null)
-            {
-                return;
-            }
-
-            var index = AppState.SaveFile.NextOpenBoxSlot();
+            var index = saveFile.NextOpenBoxSlot();
             if (index < 0)
             {
                 return;
             }
 
-            AppState.SaveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
-            AppState.SaveFile.SetBoxSlotAtIndex(pkm, index);
+            saveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
+            saveFile.SetBoxSlotAtIndex(pkm, index);
 
             const string messageStart = "The Pokémon has been imported and stored in";
 
-            var message = AppState.SaveFile is IBoxDetailNameRead boxDetail
+            var message = saveFile is IBoxDetailNameRead boxDetail
                 ? $"{messageStart} '{boxDetail.GetBoxName(box)}' (Box {box + 1}), Slot {slot + 1}."
                 : $"{messageStart} Box {box + 1}, Slot {slot + 1}.";
 
