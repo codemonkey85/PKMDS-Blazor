@@ -3,8 +3,7 @@
 
 @if (AppState.SaveFile is { Gender: 0 or 1 } saveFile)
 {
-    var gender = saveFile.Gender;
-    @Display(saveFile, gender)
+    @Display(saveFile, saveFile.Gender)
 }
 
 @code {
@@ -13,7 +12,7 @@
         <span>@saveFile.OT </span>
         <GenderDisplayComponent Gender="@((Gender)gender)" />
         <span>(@saveFile.DisplayTID.ToString(AppService.GetIdFormatString())</span>
-        <span>, @FriendlyGameName(saveFile.Version.GetSingleVersion())</span>
+        <span>, @FriendlyGameName(saveFile.Version)</span>
         <span>, @saveFile.PlayTimeString)</span>
     </MudStack>;
 
