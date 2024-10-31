@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Pkmds.Web",
   "resources": {
-    "hash": "sha256-T+S50izgtawwEskuCds6R3c47qtiRcry4Al0x22lFf4=",
+    "hash": "sha256-WyRtSrDzQSPg/L5AosiSxrzMtgdCi54fXTt+rWpDpLg=",
     "jsModuleNative": {
       "dotnet.native.8.0.10.0rhgoi7107.js": "sha256-Os7bvNKUeFyTFNxcK6G0qoSH6Zji6uScZ8NAwBzGzig="
     },
@@ -9,7 +9,7 @@
       "dotnet.runtime.8.0.10.1v4nyb1010.js": "sha256-FjrgL9dY6dc2yUoXDWowSfachSgM8O29qUMWDQOJKRI="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-ayxeHmucQaICIffVYyReBxjrDI6FDbf3r6rrB63Nmjs="
+      "dotnet.native.wasm": "sha256-l5GC6H4lfQkZQqInIi/mANKiQYxCOCtGk5fappK9K7o="
     },
     "icu": {
       "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -42,7 +42,7 @@
       "Microsoft.JSInterop.WebAssembly.wasm": "sha256-r/+bWAAxKn2+Wu3MRYDXvKEbHjLNuptflgNuNhQdK6w=",
       "MudBlazor.wasm": "sha256-v/iEDn6X622E27bVpon+97KRoDIB5n4CGCXP3PebkM0=",
       "PKHeX.Core.wasm": "sha256-Dwtk4zQstIYCbDaHiaC7gHjPmhqcXhzmBbxs6/wmwpQ=",
-      "Pkmds.Web.wasm": "sha256-2lyI2dKEaMnja2eNf7mRjuY3rsBFt2O9/Plp1dquuCQ=",
+      "Pkmds.Web.wasm": "sha256-Y2SST+2NyCDCIWmupoau1aptrzhtszskPiK+YDw2s8I=",
       "System.Collections.Concurrent.wasm": "sha256-yO9q0kk5vy6tCd6cifOkGGlthKvrEqlwyxxOGQEl/sc=",
       "System.Collections.Immutable.wasm": "sha256-xuhx6OXr83OcuFI8iTCG5UxX5hmnQyOWL2aCRz5smMU=",
       "System.Collections.NonGeneric.wasm": "sha256-dGZtYykbFV0migmyluq9VbFcoEznoGDyqq2ouIuPUY0=",
