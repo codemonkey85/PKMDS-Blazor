@@ -7,6 +7,7 @@ Powered by PKHeX.Core: https://github.com/kwsch/PKHeX
 NOTE: for a list of supported save files / formats, see the PKHeX README: https://github.com/codemonkey85/PKHeX?tab=readme-ov-file#readme
 
 Sprites from: https://github.com/msikma/pokesprite-spritesheet
+Some images from: https://github.com/msikma/PokeDings
 
 [![Deploy to GitHub Pages](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml)
 
