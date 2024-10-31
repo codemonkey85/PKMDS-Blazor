@@ -20,27 +20,20 @@
 else
 {
     <PageTitle>
-        @SaveFileNameDisplayString()
+        @SaveFileNameDisplay.SaveFileNameDisplayString(AppState, AppService, true)
     </PageTitle>
 
     <MudText Typo="@Typo.h5">
-        <SaveFileNameDisplay />
+        @SaveFileNameDisplay.SaveFileNameDisplayString(AppState, AppService)
     </MudText>
 
-    <MudGrid Spacing="1"
-             Justify="@Justify.FlexStart">
-        <MudItem xs="12"
-                 lg="6"
-                 Style="max-width: 480px;">
-            <MudPaper Elevation="0">
-                <PokemonStorageComponent />
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12"
-                 lg="6">
-            <MudPaper Elevation="0">
-                <PokemonEditForm Pokemon="@AppService.EditFormPokemon" />
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
+    <MudTabs Outlined
+             Rounded
+             Border>
+
+        <MudTabPanel Text="Party / Box">
+            <PartyAndBoxTab />
+        </MudTabPanel>
+
+    </MudTabs>
 }

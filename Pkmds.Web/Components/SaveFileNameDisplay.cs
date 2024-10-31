@@ -2,9 +2,41 @@
 
 namespace Pkmds.Web.Components;
 
-public partial class SaveFileNameDisplay
+public static class SaveFileNameDisplay
 {
-    public static string FriendlyGameName(GameVersion gameVersion) => gameVersion switch
+    public static string SaveFileNameDisplayString(IAppState appState, IAppService appService, bool isPageTitle = false)
+    {
+        const string baseTitle = "PKMDS Save Editor";
+
+        if (appState.SaveFile is not { } saveFile)
+        {
+            return baseTitle;
+        }
+
+        var sbTitle = new StringBuilder(isPageTitle ? baseTitle : string.Empty);
+        if (isPageTitle)
+        {
+            sbTitle.Append(" - ");
+        }
+
+        sbTitle.Append($"{saveFile.OT} ");
+
+        if (saveFile.Context is not EntityContext.Gen1)
+        {
+            var genderDisplay = saveFile.Gender == (byte)Gender.Male ? Constants.MaleGenderUnicode : Constants.FemaleGenderUnicode;
+            sbTitle.Append($"{genderDisplay} ");
+        }
+
+        sbTitle.Append($"({saveFile.DisplayTID.ToString(appService.GetIdFormatString())}, ");
+
+        sbTitle.Append($"{FriendlyGameName(saveFile.Version)}, ");
+
+        sbTitle.Append($"{saveFile.PlayTimeString})");
+
+        return sbTitle.ToString();
+    }
+
+    private static string FriendlyGameName(GameVersion gameVersion) => gameVersion switch
     {
         Invalid => "Invalid",
         S => "Sapphire",
