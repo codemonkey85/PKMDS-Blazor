@@ -61,9 +61,12 @@ EntityContext.MaxInvalid)
     }
 
     <MudNumericField Label="Money"
+                     T="@uint"
                      Variant="@Variant.Outlined"
                      Adornment="@Adornment.Start"
                      AdornmentIcon="@Constants.PokeDollarSvg"
+                     Min="0"
+                     Max="@((uint)saveFile.MaxMoney)"
                      @bind-Value="@saveFile.Money"
                      For="@(() => saveFile.Money)" />
 }
