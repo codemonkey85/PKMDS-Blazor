@@ -73,8 +73,6 @@ EntityContext.MaxInvalid)
     <MudNumericField Label="Hours"
                      T="@int"
                      Variant="@Variant.Outlined"
-                     Adornment="@Adornment.Start"
-                     AdornmentIcon="@Constants.PokeDollarSvg"
                      Min="0"
                      @bind-Value="@saveFile.PlayedHours"
                      For="@(() => saveFile.PlayedHours)" />
@@ -82,8 +80,6 @@ EntityContext.MaxInvalid)
     <MudNumericField Label="Minutes"
                      T="@int"
                      Variant="@Variant.Outlined"
-                     Adornment="@Adornment.Start"
-                     AdornmentIcon="@Constants.PokeDollarSvg"
                      Min="0"
                      @bind-Value="@saveFile.PlayedMinutes"
                      For="@(() => saveFile.PlayedMinutes)" />
@@ -91,8 +87,6 @@ EntityContext.MaxInvalid)
     <MudNumericField Label="Seconds"
                      T="@int"
                      Variant="@Variant.Outlined"
-                     Adornment="@Adornment.Start"
-                     AdornmentIcon="@Constants.PokeDollarSvg"
                      Min="0"
                      @bind-Value="@saveFile.PlayedSeconds"
                      For="@(() => saveFile.PlayedSeconds)" />
