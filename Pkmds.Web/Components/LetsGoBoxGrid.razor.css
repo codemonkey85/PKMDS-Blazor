@@ -1,6 +1,13 @@
 ﻿.box-grid-lets-go {
-    width: 480px;
+    width: 420px;
+    height: 398px;
     display: grid;
     grid-template-columns: repeat(5, 80px);
     grid-template-rows: repeat(200, 80px);
+}
+
+@media (min-width: 1280px) {
+    .box-grid-lets-go {
+        height: 796px;
+    }
 }
