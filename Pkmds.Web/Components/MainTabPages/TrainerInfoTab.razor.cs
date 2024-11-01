@@ -1,7 +1,13 @@
 namespace Pkmds.Web.Components.MainTabPages;
 
-public partial class TrainerInfoTab
+public partial class TrainerInfoTab : IDisposable
 {
+    protected override void OnInitialized() =>
+        RefreshService.OnAppStateChanged += StateHasChanged;
+
+    public void Dispose() =>
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+
     private void OnGenderToggle()
     {
         if (AppState.SaveFile is not { } saveFile)

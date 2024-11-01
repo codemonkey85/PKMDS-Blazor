@@ -1,0 +1,13 @@
+﻿@inherits BasePkmdsComponent
+
+@{
+    var badges = GetSaveFileBadgesValue();
+}
+@for (var i = 0; i < badges.Count; i++)
+{
+    var badgeIndex = i;
+    <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
+                 T="@bool"
+                 Value="@badges[i]"
+                 ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
+}
