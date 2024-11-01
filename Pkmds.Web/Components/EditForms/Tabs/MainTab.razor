@@ -137,7 +137,7 @@ AppState.SelectedSlotsAreValid)
         </MudSelect>
     }
 
-    @if (Pokemon is IFormArgument && (Pokemon is { PersonalInfo.HasForms: true } || Pokemon is { Species: (ushort)Species.Unown }))
+    @if (Pokemon is ISpeciesForm && (Pokemon is { PersonalInfo.HasForms: true } || Pokemon is { Species: (ushort)Species.Unown }))
     {
         var forms = FormConverter.GetFormList(Pokemon.Species, GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, Pokemon.Context);
         if (forms.AsEnumerable().Any(f => !string.IsNullOrEmpty(f)))
