@@ -35,10 +35,17 @@
     }
 /* /Components/LetsGoBoxGrid.razor.rz.scp.css */
 .box-grid-lets-go[b-807wpm749n] {
-    width: 480px;
+    width: 420px;
+    height: 398px;
     display: grid;
     grid-template-columns: repeat(5, 80px);
     grid-template-rows: repeat(200, 80px);
+}
+
+@media (min-width: 1280px) {
+    .box-grid-lets-go[b-807wpm749n] {
+        height: 796px;
+    }
 }
 /* /Components/MarkingComponent.razor.rz.scp.css */
 .marking[b-81h5kesae7] {
