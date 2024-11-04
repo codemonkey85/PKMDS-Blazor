@@ -53,4 +53,4 @@ async function onFetch(event) {
 
     return cachedResponse || fetch(event.request);
 }
-/* Manifest version: LmgOrgu7 */
+/* Manifest version: /CtNP71O */

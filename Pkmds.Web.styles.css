@@ -38,6 +38,7 @@
     width: 420px;
     height: 398px;
     display: grid;
+    overflow: scroll;
     grid-template-columns: repeat(5, 80px);
     grid-template-rows: repeat(200, 80px);
 }
