@@ -12,6 +12,8 @@ AppState.SelectedSlotsAreValid)
     {
         <MudNumericField Label="PID"
                          Variant="@Variant.Outlined"
+                         Min="0U"
+                         Max="@uint.MaxValue"
                          @bind-Value:get="@Pokemon.PID"
                          @bind-Value:set="@(newPid => SetPokemonPid(newPid))"
                          For="@(() => Pokemon.PID)" />
