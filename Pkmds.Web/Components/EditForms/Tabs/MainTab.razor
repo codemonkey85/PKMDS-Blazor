@@ -12,10 +12,17 @@ AppState.SelectedSlotsAreValid)
     {
         <MudNumericField Label="PID"
                          Variant="@Variant.Outlined"
-                         @bind-Value="@Pokemon.PID"
-                         @bind-Value:after="@(() => { AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
+                         @bind-Value:get="@Pokemon.PID"
+                         @bind-Value:set="@(newPid => SetPokemonPid(newPid))"
                          For="@(() => Pokemon.PID)" />
     }
+
+    <MudTextField Label="PID (Hex)"
+                  Variant="@Variant.Outlined"
+                  MaxLength="8"
+                  Mask="@HexMask"
+                  @bind-Value:get="@Pokemon.PID.ToString("X8")"
+                  @bind-Value:set="@(newPidHex => SetPokemonPid(newPidHex))" />
 
     <MudAutocomplete T="@ComboItem"
                      Label="Species"

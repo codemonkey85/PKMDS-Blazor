@@ -101,4 +101,35 @@ public partial class MainTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
         RefreshService.Refresh();
     }
+
+    private void SetPokemonPid(uint newPid)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.PID = newPid;
+
+        AppService.LoadPokemonStats(Pokemon);
+        RefreshService.Refresh();
+    }
+
+    private void SetPokemonPid(string newPidHex)
+    {
+        if (Pokemon is null || !uint.TryParse(newPidHex, NumberStyles.HexNumber, null, out var parsedPid))
+        {
+            return;
+        }
+
+        Pokemon.PID = parsedPid;
+
+        AppService.LoadPokemonStats(Pokemon);
+        RefreshService.Refresh();
+    }
+
+    private readonly PatternMask HexMask = new("########")
+    {
+        MaskChars = [new MaskChar('#', @"[0-9a-fA-F]")]
+    };
 }
