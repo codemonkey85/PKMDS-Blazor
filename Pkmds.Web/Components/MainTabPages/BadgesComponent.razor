@@ -1,13 +1,17 @@
 ﻿@inherits BasePkmdsComponent
 
-@{
-    var badges = GetSaveFileBadgesValue();
-}
-@for (var i = 0; i < badges.Count; i++)
+@if (AppState.SaveFile is SAV7b { Context: EntityContext.Gen7b } or SAV9SV { Context: EntityContext.Gen9 })
 {
-    var badgeIndex = i;
-    <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
-                 T="@bool"
-                 Value="@badges[i]"
-                 ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
+}
+else
+{
+    var badges = GetSaveFileBadgesValue();
+    @for (var i = 0; i < badges.Count; i++)
+    {
+        var badgeIndex = i;
+        <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
+                     T="@bool"
+                     Value="@badges[i]"
+                     ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
+    }
 }
