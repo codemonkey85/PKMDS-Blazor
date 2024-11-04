@@ -8,6 +8,6 @@
 
 @media (min-width: 1280px) {
     .box-grid-lets-go {
-        height: 796px;
+        height: calc(100vh - 310px);
     }
 }
