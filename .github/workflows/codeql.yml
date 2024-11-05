@@ -42,8 +42,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        solution:
-          - ./Pkmds.sln
         include:
         - language: csharp
           build-mode: manual
@@ -91,11 +89,11 @@ jobs:
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
     - name: Dotnet Restore
       if: matrix.build-mode == 'manual' && matrix.language == 'csharp'
-      run: dotnet restore ${{ matrix.solution }}
+      run: dotnet restore Pkmds.Web/Pkmds.Web.csproj
 
     - name: Dotnet Build
       if: matrix.build-mode == 'manual' && matrix.language == 'csharp'
-      run: dotnet build ${{ matrix.solution }}
+      run: dotnet build Pkmds.Web/Pkmds.Web.csproj
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
