@@ -10,6 +10,10 @@ Sprites from: https://github.com/msikma/pokesprite-spritesheet
 
 Some images from: https://github.com/msikma/PokeDings
 
+[![CodeQL Advanced](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/codeql.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/codeql.yml)
+
+[![Dependabot Updates](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dependabot/dependabot-updates)
+
 [![Deploy to GitHub Pages](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml)
 
 [![pages-build-deployment](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/pages/pages-build-deployment)
