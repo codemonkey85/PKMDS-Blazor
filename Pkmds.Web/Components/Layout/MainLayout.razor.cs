@@ -2,8 +2,6 @@ namespace Pkmds.Web.Components.Layout;
 
 public partial class MainLayout
 {
-    private const string AppTitle = "PKMDS Save Editor";
-
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
 

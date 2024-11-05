@@ -6,14 +6,12 @@ public static class SaveFileNameDisplay
 {
     public static string SaveFileNameDisplayString(IAppState appState, IAppService appService, bool isPageTitle = false)
     {
-        const string baseTitle = "PKMDS Save Editor";
-
         if (appState.SaveFile is not { } saveFile)
         {
-            return baseTitle;
+            return Constants.AppTitle;
         }
 
-        var sbTitle = new StringBuilder(isPageTitle ? baseTitle : string.Empty);
+        var sbTitle = new StringBuilder(isPageTitle ? Constants.AppTitle : string.Empty);
         if (isPageTitle)
         {
             sbTitle.Append(" - ");

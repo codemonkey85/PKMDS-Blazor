@@ -1,6 +1,6 @@
 {
   "name": "PKMDS: Pokémon Save Editor for Web",
-  "short_name": "PKMDS Web",
+  "short_name": "PKMDS for Web",
   "id": "./",
   "start_url": "./",
   "display": "standalone",
