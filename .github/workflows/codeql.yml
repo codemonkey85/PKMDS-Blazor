@@ -44,7 +44,7 @@ jobs:
       matrix:
         include:
         - language: csharp
-          build-mode: build
+          build-mode: autobuild
         - language: javascript-typescript
           build-mode: none
         # CodeQL supports the following values keywords for 'language': 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
