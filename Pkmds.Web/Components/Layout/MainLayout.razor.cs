@@ -53,11 +53,11 @@ public partial class MainLayout
         if (result is { Data: IBrowserFile selectedFile })
         {
             browserLoadSaveFile = selectedFile;
-            await LoadSaveFile();
+            await LoadSaveFile(selectedFile);
         }
     }
 
-    private async Task LoadSaveFile()
+    private async Task LoadSaveFile(IBrowserFile selectedFile)
     {
         if (browserLoadSaveFile is null)
         {
@@ -76,7 +76,7 @@ public partial class MainLayout
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
-            AppState.SaveFile = SaveUtil.GetVariantSAV(data);
+            AppState.SaveFile = SaveUtil.GetVariantSAV(data, path: selectedFile.Name);
 
             if (AppState.SaveFile is null)
             {
