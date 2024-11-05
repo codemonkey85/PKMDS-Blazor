@@ -1,4 +1,4 @@
-# PKMDS for Web
+# PKMDS: Pokémon Save Editor for Web
 
 A web app to edit your Pokémon save files. Check it out at [pkmds.app](https://pkmds.app/)!
 
