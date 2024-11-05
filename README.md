@@ -1,21 +1,20 @@
 # PKMDS for Web
 
-A web app to edit your Pokémon save files.
+A web app to edit your Pokémon save files. Check it out at [pkmds.app](https://pkmds.app/)!
 
 Powered by PKHeX.Core: https://github.com/kwsch/PKHeX
 
-NOTE: for a list of supported save files / formats, see the PKHeX README: https://github.com/codemonkey85/PKHeX?tab=readme-ov-file#readme
+NOTE: for a list of supported save files / formats, [see the PKHeX README](https://github.com/codemonkey85/PKHeX?tab=readme-ov-file#readme).
 
 Sprites from: https://github.com/msikma/pokesprite-spritesheet
+
 Some images from: https://github.com/msikma/PokeDings
 
 [![Deploy to GitHub Pages](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml)
 
 [![pages-build-deployment](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/pages/pages-build-deployment)
 
-Deployed to: [pkmds.app](https://pkmds.app/)
-
-Special thanks to Kaphotics, as well as [all the contributors to PKHeX and PKHeX.Core](https://github.com/kwsch/PKHeX/graphs/contributors).
+Special thanks to [Kaphotics](https://github.com/kwsch/), as well as [all the contributors to PKHeX and PKHeX.Core](https://github.com/kwsch/PKHeX/graphs/contributors).
 
 PLEASE NOTE: PKMDS does not, and will never, support custom ROMs.
 
@@ -91,7 +90,7 @@ A: PKMDS was created by codemonkey85, who is a software developer with a passion
 
 Q: How can I contact the creator of PKMDS?
 
-A: You can contact the creator of PKMDS by sending an email to michael@bondcodes.com. You can also reach out to the creator on GitHub by opening an issue on the PKMDS repository.
+A: You can contact the creator of PKMDS by sending an email to [michael@bondcodes.com](mailto:michael@bondcodes.com?subject=PKMDS%20for%20Web). You can also reach out to the creator on GitHub by opening an issue on the PKMDS repository.
 
 Q: How can I support PKMDS?
 
