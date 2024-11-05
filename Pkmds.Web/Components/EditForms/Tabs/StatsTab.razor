@@ -694,7 +694,7 @@ AppState.SelectedSlotsAreValid)
                         <MudSelectItem Value="@((MoveType)TeraTypeUtil.OverrideNone)"
                                        @key="@TeraTypeUtil.OverrideNone">
                             <MudText>
-                                ---
+                                @Constants.EmptyIndex
                             </MudText>
                         </MudSelectItem>
                         @foreach (var teraType in Enum.GetValues<MoveType>().Where(m => m != MoveType.Any))
