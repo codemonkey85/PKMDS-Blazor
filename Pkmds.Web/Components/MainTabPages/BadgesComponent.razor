@@ -1,17 +1,44 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is SAV7b { Context: EntityContext.Gen7b } or SAV9SV { Context: EntityContext.Gen9 })
+@switch (AppState.SaveFile)
 {
-}
-else
-{
-    var badges = GetSaveFileBadgesValue();
-    @for (var i = 0; i < badges.Count; i++)
-    {
-        var badgeIndex = i;
-        <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
-                     T="@bool"
-                     Value="@badges[i]"
-                     ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
-    }
+    case SAV7b { Context: EntityContext.Gen7b }:
+        <MudText>
+            Badges are not supported for this save file. See <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues/59">issue #59</a> for more information.
+        </MudText>
+        break;
+    case SAV9SV { Context: EntityContext.Gen9 }:
+        <MudText>
+            Badges are not supported for this save file. See <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues/60">issue #60</a> for more information.
+        </MudText>
+        break;
+    case SAV1 { Context: EntityContext.Gen1 }:
+    case SAV2 { Context: EntityContext.Gen2 }:
+    case SAV3RS { Context: EntityContext.Gen3 }:
+    case SAV3FRLG { Context: EntityContext.Gen3 }:
+    case SAV3E { Context: EntityContext.Gen3 }:
+    case SAV4DP { Context: EntityContext.Gen4 }:
+    case SAV4Pt { Context: EntityContext.Gen4 }:
+    case SAV4HGSS { Context: EntityContext.Gen4 }:
+    case SAV5BW { Context: EntityContext.Gen5 }:
+    case SAV5B2W2 { Context: EntityContext.Gen5 }:
+    case SAV6XY { Context: EntityContext.Gen6 }:
+    case SAV6AO { Context: EntityContext.Gen6 }:
+    case SAV8SWSH { Context: EntityContext.Gen8 }:
+    case SAV8BS { Context: EntityContext.Gen8 }:
+        var badges = GetSaveFileBadgesValue();
+        @for (var i = 0; i < badges.Count; i++)
+        {
+            var badgeIndex = i;
+            <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
+                         T="@bool"
+                         Value="@badges[i]"
+                         ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
+        }
+        break;
+    case SAV1Stadium { Context: EntityContext.Gen1 }:
+    case SAV1StadiumJ { Context: EntityContext.Gen1 }:
+    case SAV2Stadium { Context: EntityContext.Gen2 }:
+    default:
+        break;
 }
