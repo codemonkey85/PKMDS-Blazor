@@ -59,10 +59,8 @@ AppState.SelectedSlotsAreValid)
     {
         <MudNumericField Label="Met Level"
                          Variant="@Variant.Outlined"
-                         Value="@Pokemon.MetLevel"
-                         For="@(() => Pokemon.MetLevel)"
-                         ReadOnly
-                         HideSpinButtons />
+                         @bind-Value="@Pokemon.MetLevel"
+                         For="@(() => Pokemon.MetLevel)" />
     }
 
     @if (saveGeneration == 2 && Pokemon is PK2 pk2)
