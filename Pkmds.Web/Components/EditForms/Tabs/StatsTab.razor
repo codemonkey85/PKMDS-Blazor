@@ -581,11 +581,14 @@ AppState.SelectedSlotsAreValid)
                                      HideSpinButtons />
                 }
 
-                <MudText>
+                @if (saveGeneration >= 3)
+                {
                     <MudText>
-                        @Pokemon.GetPotentialString()
+                        <MudText>
+                            @Pokemon.GetPotentialString()
+                        </MudText>
                     </MudText>
-                </MudText>
+                }
 
             </MudStack>
         </MudItem>
@@ -598,8 +601,7 @@ AppState.SelectedSlotsAreValid)
                   AlignItems="@AlignItems.Center">
             <MudSelect Label="Hidden Power Type"
                        Variant="@Variant.Outlined"
-                       @bind-Value:get="@Pokemon.HPType"
-                       @bind-Value:set="@((int type) => Pokemon.SetHiddenPower(type))">
+                       @bind-Value="@Pokemon.HPType">
                 @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)).DistinctBy(type => type.Value))
                 {
                     <MudSelectItem Value="@type.Value"
@@ -624,17 +626,19 @@ AppState.SelectedSlotsAreValid)
     @if (Pokemon is IDynamaxLevel d)
     {
         <MudGrid Spacing="1">
-            <MudItem xs="4"
-                     xl="3"
-                     Class="@ColumnClass">
-                <MudNumericField Label="Dynamax Level"
-                                 T="@byte"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="10"
-                                 @bind-Value="@d.DynamaxLevel" />
-
-            </MudItem>
+            @if (d.CanHaveDynamaxLevel(Pokemon))
+            {
+                <MudItem xs="4"
+                         xl="3"
+                         Class="@ColumnClass">
+                    <MudNumericField Label="Dynamax Level"
+                                     T="@byte"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="10"
+                                     @bind-Value="@d.DynamaxLevel" />
+                </MudItem>
+            }
             @if (Pokemon is IGigantamax c)
             {
                 <MudItem xs="3"
