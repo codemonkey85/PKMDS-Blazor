@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Components.Layout;
 
-public partial class MainLayout
+public partial class MainLayout : IDisposable
 {
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
