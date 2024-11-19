@@ -107,38 +107,7 @@ AppState.SelectedSlotsAreValid)
 
         @if (GameInfo.FilteredSources.Moves.Any(m => m.Value == (int)Move.HiddenPower) && Pokemon is not { Context: EntityContext.Gen8 or EntityContext.Gen9 })
         {
-            <MudStack Spacing="1">
-                <MudAlert Severity="@MudBlazor.Severity.Info">
-                    Changing Hidden Power type might change the IVs of the Pokémon.
-                </MudAlert>
-                <MudStack Row
-                          AlignItems="@AlignItems.Center">
-                    <MudSelect Label="Hidden Power Type"
-                               Variant="@Variant.Outlined"
-                               @bind-Value="@Pokemon.HPType">
-                        @foreach (var type in Util.GetCBList(GameInfo.Strings.Types.ToArray().AsSpan(1, 16)).DistinctBy(type => type.Value))
-                        {
-                            <MudSelectItem Value="@type.Value"
-                                           @key="@type.Value">
-                                <MudStack Row>
-                                    <MudImage Src="@SpriteHelper.GetTypeSquareSpriteFileName(type.Value + 1)"
-                                              Alt="@GameInfo.Strings.Types[type.Value + 1]"
-                                              title="@GameInfo.Strings.Types[type.Value + 1]"
-                                              ObjectFit="@ObjectFit.Contain"
-                                              ObjectPosition="@ObjectPosition.Center"
-                                              Width="30" />
-                                    <MudText>
-                                        @type.Text
-                                    </MudText>
-                                </MudStack>
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudText>
-                        @Pokemon.HPPower
-                    </MudText>
-                </MudStack>
-            </MudStack>
+            <HiddenPowerChooser Pokemon="@Pokemon" />
         }
 
     </MudStack>
