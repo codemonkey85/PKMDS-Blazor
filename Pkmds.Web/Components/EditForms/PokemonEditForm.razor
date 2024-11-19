@@ -31,6 +31,26 @@ AppState.SelectedSlotsAreValid)
             Save
         </MudButton>
 
+        <MudButton OnClick="@OnClickCopy"
+                   ButtonType="@ButtonType.Button"
+                   Variant="@Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ContentCopy"
+                   Class="my-2"
+                   Color="@Color.Default"
+                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
+            Copy
+        </MudButton>
+
+        <MudButton OnClick="@OnClickPaste"
+                   ButtonType="@ButtonType.Button"
+                   Variant="@Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.ContentPaste"
+                   Class="my-2"
+                   Color="@Color.Default"
+                   Disabled="@(CopiedPokemon is null)">
+            Paste
+        </MudButton>
+
         <MudButton OnClick="@ExportAsShowdown"
                    ButtonType="@ButtonType.Button"
                    Variant="@Variant.Filled"

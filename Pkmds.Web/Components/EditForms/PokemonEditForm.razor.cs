@@ -1,9 +1,13 @@
+using Microsoft.Extensions.Options;
+
 namespace Pkmds.Web.Components.EditForms;
 
 public partial class PokemonEditForm : IDisposable
 {
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
+
+    private PKM? CopiedPokemon { get; set; }
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
@@ -63,6 +67,77 @@ public partial class PokemonEditForm : IDisposable
             {
                 AppService.DeletePokemon(AppState.SelectedBoxNumber.Value, AppState.SelectedBoxSlotNumber.Value);
             }
+        }
+    }
+
+    private void OnClickCopy()
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        CopiedPokemon = Pokemon.Clone();
+
+        Snackbar.Add("The selected Pokémon has been copied.");
+    }
+
+    private void OnClickPaste()
+    {
+        if (CopiedPokemon is null)
+        {
+            return;
+        }
+
+        if (Pokemon is { Species: > (int)Species.None })
+        {
+            ShowPasteConfirmation();
+        }
+        else
+        {
+            PastePokemon();
+        }
+
+        void ShowPasteConfirmation()
+        {
+            var parameters = new DialogParameters
+            {
+                { nameof(ConfirmActionDialog.Title), "Paste Pokémon" },
+                { nameof(ConfirmActionDialog.Message), "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced." },
+                { nameof(ConfirmActionDialog.ConfirmText), "Paste" },
+                { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.Delete },
+                { nameof(ConfirmActionDialog.ConfirmColor), Color.Default },
+                { nameof(ConfirmActionDialog.CancelText), "Cancel" },
+                { nameof(ConfirmActionDialog.CancelIcon), Icons.Material.Filled.Clear },
+                { nameof(ConfirmActionDialog.CancelColor), Color.Primary},
+                { nameof(ConfirmActionDialog.OnConfirm), EventCallback.Factory.Create<bool>(this, OnPasteConfirm) }
+            };
+
+            DialogService.Show<ConfirmActionDialog>(
+                "Confirm Action",
+                parameters,
+                new DialogOptions
+                {
+                    CloseOnEscapeKey = true,
+                    MaxWidth = MaxWidth.Small,
+                });
+        }
+
+        void OnPasteConfirm(bool confirmed)
+        {
+            if (!confirmed)
+            {
+                return;
+            }
+
+            PastePokemon();
+        }
+
+        void PastePokemon()
+        {
+            Pokemon = CopiedPokemon.Clone();
+            AppService.SavePokemon(Pokemon);
+            Snackbar.Add("The copied Pokémon has been pasted.");
         }
     }
 }
