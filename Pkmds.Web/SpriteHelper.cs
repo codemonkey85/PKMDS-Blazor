@@ -45,10 +45,10 @@ public static class SpriteHelper
         _ => GetBigItemSpriteFilename(item, context)
     };
 
-    public static string GetBigItemSpriteFilename(int item, EntityContext context) =>
+    private static string GetBigItemSpriteFilename(int item, EntityContext context) =>
         $"{SpritesRoot}bi/bitem_{GetItemIdString(item, context)}.png";
 
-    public static string GetArtworkItemSpriteFilename(int item, EntityContext context) =>
+    private static string GetArtworkItemSpriteFilename(int item, EntityContext context) =>
         $"{SpritesRoot}ai/aitem_{GetItemIdString(item, context)}.png";
 
     public static string GetTypeGemSpriteFileName(byte type) =>
