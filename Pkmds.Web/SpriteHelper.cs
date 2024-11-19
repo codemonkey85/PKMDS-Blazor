@@ -57,6 +57,9 @@ public static class SpriteHelper
     public static string GetTypeSquareSpriteFileName(byte type) =>
         $"{SpritesRoot}t/s/type_icon_{type:00}.png";
 
+    public static string GetTypeSquareSpriteFileName(int type) =>
+        $"{SpritesRoot}t/s/type_icon_{type:00}.png";
+
     public static string GetTypeWideSpriteFileName(byte type) =>
         $"{SpritesRoot}t/w/type_wide_{type:00}.png";
 
