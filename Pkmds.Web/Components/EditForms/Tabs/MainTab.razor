@@ -59,6 +59,7 @@ AppState.SelectedSlotsAreValid)
     <MudTextField Label="Nickname"
                   Variant="@Variant.Outlined"
                   @bind-Value="@Pokemon.Nickname"
+                  MaxLength="@saveFile.MaxStringLengthNickname"
                   For="@(() => Pokemon.Nickname)" />
 
     @if (saveGeneration >= 2)

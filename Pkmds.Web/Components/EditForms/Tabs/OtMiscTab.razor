@@ -68,6 +68,7 @@ AppState.SelectedSlotsAreValid)
             <MudTextField Label="OT"
                           Variant="@Variant.Outlined"
                           @bind-Value="@Pokemon.OriginalTrainerName"
+                          MaxLength="@saveFile.MaxStringLengthTrainer"
                           For="@(() => Pokemon.OriginalTrainerName)" />
         </MudItem>
 

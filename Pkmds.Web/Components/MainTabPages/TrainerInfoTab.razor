@@ -8,6 +8,7 @@ EntityContext.MaxInvalid)
 {
     <MudTextField Label="Name"
                   Variant="@Variant.Outlined"
+                  MaxLength="@saveFile.MaxStringLengthTrainer"
                   @bind-Value="@saveFile.OT"
                   For="@(() => saveFile.OT)" />
 
