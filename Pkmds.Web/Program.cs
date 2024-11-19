@@ -5,10 +5,9 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 services
-    .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+    .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddMudServices()
     .AddFileSystemAccessService()
-    .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddScoped<IAppState, AppState>()
     .AddScoped<IRefreshService, RefreshService>()
     .AddScoped<IAppService, AppService>()
