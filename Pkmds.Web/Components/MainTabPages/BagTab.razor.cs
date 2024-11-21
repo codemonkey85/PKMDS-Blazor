@@ -5,11 +5,53 @@ public partial class BagTab
     [Parameter, EditorRequired]
     public IReadOnlyList<InventoryPouch>? Inventory { get; set; }
 
+    private string[] Itemlist { get; set; } = [];
+
+    private bool HasFreeSpace { get; set; }
+
+    private bool HasFreeSpaceIndex { get; set; }
+
+    private bool HasFavorite { get; set; }
+
+    private bool HasNew { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Inventory is null || AppState is not { SaveFile: { } saveFile })
+        {
+            return;
+        }
+
+        Itemlist = [.. GameInfo.Strings.GetItemStrings(saveFile.Context, saveFile.Version)];
+
+        for (var i = 0; i < Itemlist.Length; i++)
+        {
+            if (string.IsNullOrEmpty(Itemlist[i]))
+            {
+                Itemlist[i] = $"(Item #{i:000})";
+            }
+        }
+
+        var item0 = Inventory[0].Items[0];
+
+        HasFreeSpace = item0 is IItemFreeSpace;
+        HasFreeSpaceIndex = item0 is IItemFreeSpaceIndex;
+        HasFavorite = item0 is IItemFavorite;
+        HasNew = item0 is IItemNewFlag;
+    }
+
     private void SaveChanges()
     {
         if (AppState?.SaveFile is null || Inventory is null)
         {
             return;
+        }
+
+        foreach (var pouch in Inventory)
+        {
+            pouch.ClearCount0();
         }
 
         AppState.SaveFile.Inventory = Inventory;
@@ -21,7 +63,7 @@ public partial class BagTab
     private static void SetItem(CellContext<InventoryItem> context, ComboItem item) =>
         context.Item.Index = item.Value;
 
-    private void DeleteItem(CellContext<InventoryItem> context)
+    private void DeleteItem(CellContext<InventoryItem> context, InventoryPouch pouch)
     {
         if (Inventory is null)
         {
@@ -29,6 +71,7 @@ public partial class BagTab
         }
 
         context.Item.Clear();
+        pouch.ClearCount0();
     }
 
     private static string GetPouchName(InventoryPouch pouch) => pouch.Type switch
@@ -51,6 +94,24 @@ public partial class BagTab
         _ => pouch.Type.ToString()
     };
 
-    private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
-        Task.FromResult(AppService.SearchItemNames(searchString));
+    private string[] GetStringsForPouch(ReadOnlySpan<ushort> items, bool sort = true)
+    {
+        string[] res = new string[items.Length + 1];
+        for (int i = 0; i < res.Length - 1; i++)
+            res[i] = Itemlist[items[i]];
+        res[items.Length] = Itemlist[0];
+        if (sort)
+            Array.Sort(res);
+        return res;
+    }
+
+
+    private Task<IEnumerable<ComboItem>> SearchItemNames(InventoryPouch pouch, string searchString)
+    {
+        var itemsToSearch = GetStringsForPouch(pouch.GetAllItems());
+
+        return Task.FromResult(Itemlist
+            .Select((name, index) => new ComboItem(name, index))
+            .Where(x => itemsToSearch.Contains(x.Text) && x.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase)));
+    }
 }

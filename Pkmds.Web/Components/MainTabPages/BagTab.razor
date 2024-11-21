@@ -39,24 +39,30 @@
                                               Spacing="1"
                                               AlignItems="@AlignItems.Center">
                                         <MudAutocomplete T="@ComboItem"
-                                                         Label="Held Item"
-                                                         ShrinkLabel
                                                          Variant="@Variant.Outlined"
                                                          Value="@GetItem(context)"
                                                          ValueChanged="@(newItem => SetItem(context, newItem))"
-                                                         SearchFunc="@SearchItemNames"
-                                                         ToStringFunc="@(item => item?.Text ?? $"Item #{context.Item.Index}")">
+                                                         SearchFunc="@((string searchString, CancellationToken _) => SearchItemNames(pouch, searchString))"
+                                                         ToStringFunc="@(item => { return Itemlist[context.Item.Index]; })">
                                             <ItemTemplate Context="item">
                                                 <MudStack Row>
                                                     @if (item.Value != 0)
                                                     {
-                                                        <MudImage Src="@SpriteHelper.GetItemSpriteFilename(item.Value, saveFile.Context)"
-                                                                  Alt="@item.Text"
-                                                                  title="@item.Text"
-                                                                  ObjectFit="@ObjectFit.Contain"
-                                                                  ObjectPosition="@ObjectPosition.Center"
-                                                                  Width="22"
-                                                                  Height="22" />
+                                                        <object class="item-sprite"
+                                                                type="image/png"
+                                                                data="@SpriteHelper.GetItemSpriteFilename(item.Value, saveFile.Context)"
+                                                                title="@item.Text">
+                                                            <img class="pkm-sprite"
+                                                                 src="@SpriteHelper.ItemFallbackImageFileName"
+                                                                 title="@item.Text">
+                                                        </object>
+                                                        @* <MudImage Src="@SpriteHelper.GetItemSpriteFilename(item.Value, saveFile.Context)" *@
+                                                        @*           Alt="@item.Text" *@
+                                                        @*           title="@item.Text" *@
+                                                        @*           ObjectFit="@ObjectFit.Contain" *@
+                                                        @*           ObjectPosition="@ObjectPosition.Center" *@
+                                                        @*           Width="22" *@
+                                                        @*           Height="22" /> *@
                                                     }
                                                     <MudText>
                                                         @item.Text
@@ -67,13 +73,21 @@
                                         @if (context.Item.Index != 0)
                                         {
                                             var itemText = AppService.GetItemComboItem(context.Item.Index)?.Text;
-                                            <MudImage Src="@SpriteHelper.GetItemSpriteFilename(context.Item.Index, saveFile.Context)"
-                                                      Alt="@itemText"
-                                                      title="@itemText"
-                                                      ObjectFit="@ObjectFit.Contain"
-                                                      ObjectPosition="@ObjectPosition.Center"
-                                                      Width="22"
-                                                      Height="22" />
+                                            <object class="item-sprite"
+                                                    type="image/png"
+                                                    data="@SpriteHelper.GetItemSpriteFilename(context.Item.Index, saveFile.Context)"
+                                                    title="@itemText">
+                                                <img class="pkm-sprite"
+                                                     src="@SpriteHelper.ItemFallbackImageFileName"
+                                                     title="@itemText">
+                                            </object>
+                                            @* <MudImage Src="@SpriteHelper.GetItemSpriteFilename(context.Item.Index, saveFile.Context)" *@
+                                            @*           Alt="@itemText" *@
+                                            @*           title="@itemText" *@
+                                            @*           ObjectFit="@ObjectFit.Contain" *@
+                                            @*           ObjectPosition="@ObjectPosition.Center" *@
+                                            @*           Width="22" *@
+                                            @*           Height="22" /> *@
                                         }
                                     </MudStack>
                                 </EditTemplate>
@@ -87,9 +101,61 @@
                                                      @bind-Value="@context.Item.Count" />
                                 </EditTemplate>
                             </PropertyColumn>
+                            @if (HasFreeSpace)
+                            {
+                                <TemplateColumn Title="Free">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemFreeSpace freeSpaceItem)
+                                        {
+                                            <MudCheckBox Label="Free Space"
+                                                         Value="@freeSpaceItem.IsFreeSpace"
+                                                         ValueChanged="@((bool value) => freeSpaceItem.IsFreeSpace = value)" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
+                            @if (HasFreeSpaceIndex)
+                            {
+                                <TemplateColumn Title="Free">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemFreeSpaceIndex freeSpaceIndexItem)
+                                        {
+                                            <MudNumericField T="@uint"
+                                                             Variant="@Variant.Outlined"
+                                                             @bind-Value="@freeSpaceIndexItem.FreeSpaceIndex" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
+                            @if (HasFavorite)
+                            {
+                                <TemplateColumn Title="Favorite">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemFavorite favoriteItem)
+                                        {
+                                            <MudCheckBox Label="Favorite"
+                                                         Value="@favoriteItem.IsFavorite"
+                                                         ValueChanged="@((bool value) => favoriteItem.IsFavorite = value)" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
+                            @if (HasNew)
+                            {
+                                <TemplateColumn Title="New">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemNewFlag newFlagItem)
+                                        {
+                                            <MudCheckBox Label="New"
+                                                         Value="@newFlagItem.IsNew"
+                                                         ValueChanged="@((bool value) => newFlagItem.IsNew = value)" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
                             <TemplateColumn>
                                 <EditTemplate>
-                                    <MudIconButton OnClick="@(() => DeleteItem(context))"
+                                    <MudIconButton OnClick="@(() => DeleteItem(context, pouch))"
                                                    ButtonType="@ButtonType.Button"
                                                    Color="@Color.Error"
                                                    Variant="@Variant.Filled"
