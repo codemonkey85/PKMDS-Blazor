@@ -31,6 +31,26 @@ public partial class BagTab
         context.Item.Clear();
     }
 
+    private static string GetPouchName(InventoryPouch pouch) => pouch.Type switch
+    {
+        InventoryType.None => "None",
+        InventoryType.Items => "Items",
+        InventoryType.KeyItems => "Key Items",
+        InventoryType.TMHMs => "TMs/HMs",
+        InventoryType.Medicine => "Medicine",
+        InventoryType.Berries => "Berries",
+        InventoryType.Balls => "Balls",
+        InventoryType.BattleItems => "Battle Items",
+        InventoryType.MailItems => "Mail Items",
+        InventoryType.PCItems => "PC Items",
+        InventoryType.FreeSpace => "Free Space",
+        InventoryType.ZCrystals => "Z-Crystals",
+        InventoryType.Candy => "Candy",
+        InventoryType.Treasure => "Treasure",
+        InventoryType.Ingredients => "Ingredients",
+        _ => pouch.Type.ToString()
+    };
+
     private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchItemNames(searchString));
 }

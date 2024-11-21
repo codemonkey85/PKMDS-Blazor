@@ -7,14 +7,16 @@
              Border>
         @foreach (var pouch in Inventory)
         {
-            <MudTabPanel Text="@pouch.Type.ToString()">
+            <MudTabPanel Text="@GetPouchName(pouch)">
                 <MudStack Spacing="1">
-                    <MudButton OnClick="@SaveChanges"
-                               Color="@Color.Primary"
-                               Variant="@Variant.Filled"
-                               StartIcon="@Icons.Material.Filled.Save">
-                        Save
-                    </MudButton>
+                    <div>
+                        <MudButton OnClick="@SaveChanges"
+                                   Color="@Color.Primary"
+                                   Variant="@Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.Save">
+                            Save
+                        </MudButton>
+                    </div>
                     <MudDataGrid T="InventoryItem"
                                  Items="@pouch.Items"
                                  ReadOnly="@false"
