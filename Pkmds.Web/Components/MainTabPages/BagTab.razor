@@ -83,7 +83,7 @@
                                 <EditTemplate>
                                     <MudNumericField T="@int"
                                                      Variant="@Variant.Outlined"
-                                                     Max="@Inventory.First().MaxCount"
+                                                     Max="@pouch.MaxCount"
                                                      @bind-Value="@context.Item.Count" />
                                 </EditTemplate>
                             </PropertyColumn>
