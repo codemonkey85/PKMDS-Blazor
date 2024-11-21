@@ -14,11 +14,13 @@ AppState.SelectedSlotsAreValid)
         <MudButton OnClick="@DeletePokemon"
                    ButtonType="@ButtonType.Button"
                    Color="@Color.Error"
+                   Size="@Size.Small"
                    Variant="@Variant.Filled"
                    Class="my-2"
                    StartIcon="@Icons.Material.Filled.Delete"
+                   title="Delete Pokémon"
                    Disabled="@(Pokemon.Species == (ushort)Species.None)">
-            Delete Pokémon
+            Delete
         </MudButton>
 
         <MudButton OnClick="@(() => AppService.SavePokemon(Pokemon))"
@@ -27,6 +29,8 @@ AppState.SelectedSlotsAreValid)
                    StartIcon="@Icons.Material.Filled.Save"
                    Class="my-2"
                    Color="@Color.Primary"
+                   Size="@Size.Small"
+                   title="Save Pokémon"
                    Disabled="@(Pokemon.Species == (ushort)Species.None)">
             Save
         </MudButton>
@@ -37,6 +41,8 @@ AppState.SelectedSlotsAreValid)
                    StartIcon="@Icons.Material.Filled.ContentCopy"
                    Class="my-2"
                    Color="@Color.Default"
+                   Size="@Size.Small"
+                   title="Copy Pokémon"
                    Disabled="@(Pokemon.Species == (ushort)Species.None)">
             Copy
         </MudButton>
@@ -47,6 +53,8 @@ AppState.SelectedSlotsAreValid)
                    StartIcon="@Icons.Material.Filled.ContentPaste"
                    Class="my-2"
                    Color="@Color.Default"
+                   Size="@Size.Small"
+                   title="Paste Pokémon"
                    Disabled="@(CopiedPokemon is null)">
             Paste
         </MudButton>
@@ -57,8 +65,10 @@ AppState.SelectedSlotsAreValid)
                    StartIcon="@Icons.Material.Filled.Share"
                    Class="my-2"
                    Color="@Color.Default"
+                   Size="@Size.Small"
+                   title="Export Pokémon as Showdown"
                    Disabled="@(Pokemon.Species == (ushort)Species.None)">
-            Export as Showdown
+            Showdown
         </MudButton>
 
     </MudStack>
