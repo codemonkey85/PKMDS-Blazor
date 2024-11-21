@@ -1,6 +1,6 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
+@if (AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration, Inventory: { } inventory } saveFile &&
 saveFileEntityContext is not
 EntityContext.None or
 EntityContext.SplitInvalid or
@@ -11,11 +11,11 @@ EntityContext.MaxInvalid)
              Rounded
              Border>
 
-        <MudTabPanel Text="Items">
-        </MudTabPanel>
-
-        <MudTabPanel Text="PC Items">
-        </MudTabPanel>
+        @foreach (var pouch in inventory)
+        {
+            <MudTabPanel Text="@pouch.Type.ToString()">
+            </MudTabPanel>
+        }
 
     </MudTabs>
 }
