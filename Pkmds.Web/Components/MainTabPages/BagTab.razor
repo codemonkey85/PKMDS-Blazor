@@ -1,0 +1,21 @@
+﻿@inherits BasePkmdsComponent
+
+@if (AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
+saveFileEntityContext is not
+EntityContext.None or
+EntityContext.SplitInvalid or
+EntityContext.MaxInvalid)
+{
+
+    <MudTabs Outlined
+             Rounded
+             Border>
+
+        <MudTabPanel Text="Items">
+        </MudTabPanel>
+
+        <MudTabPanel Text="PC Items">
+        </MudTabPanel>
+
+    </MudTabs>
+}
