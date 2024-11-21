@@ -65,6 +65,8 @@
                                                     @if (item.Value != 0)
                                                     {
                                                         <object class="item-sprite"
+                                                                width="20"
+                                                                height="20"
                                                                 type="image/png"
                                                                 data="@SpriteHelper.GetItemSpriteFilename(item.Value, saveFile.Context)"
                                                                 title="@item.Text">
@@ -81,8 +83,10 @@
                                         </MudAutocomplete>
                                         @if (context.Item.Index != 0)
                                         {
-                                            var itemText = AppService.GetItemComboItem(context.Item.Index)?.Text;
+                                            var itemText = ItemList[context.Item.Index];
                                             <object class="item-sprite"
+                                                    width="20"
+                                                    height="20"
                                                     type="image/png"
                                                     data="@SpriteHelper.GetItemSpriteFilename(context.Item.Index, saveFile.Context)"
                                                     title="@itemText">
