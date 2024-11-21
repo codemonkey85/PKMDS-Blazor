@@ -25,6 +25,16 @@ public partial class BagTab
         context.Item.Index = item.Value;
     }
 
+    private void DeleteItem(CellContext<InventoryItem> context)
+    {
+        if (Inventory is null)
+        {
+            return;
+        }
+
+        context.Item.Clear();
+    }
+
     private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchItemNames(searchString));
 }

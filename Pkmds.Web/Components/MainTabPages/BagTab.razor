@@ -5,7 +5,7 @@
     <MudTabs Outlined
              Rounded
              Border>
-        @foreach (var pouch in Inventory.OrderBy(p => p.Type))
+        @foreach (var pouch in Inventory)
         {
             <MudTabPanel Text="@pouch.Type.ToString()">
                 <MudButton OnClick="@SaveChanges"
@@ -19,13 +19,15 @@
                              ReadOnly="@false"
                              EditMode="@DataGridEditMode.Cell"
                              SortMode="@SortMode.None"
+                             Filterable="@false"
+                             Groupable="@false"
                              Dense
                              Hover
                              Striped
                              EditTrigger="@DataGridEditTrigger.OnRowClick">
                     <Columns>
                         <PropertyColumn Property="@(item => item.Index)"
-                                        Title="Index">
+                                        Title="Item">
                             <EditTemplate>
                                 <MudStack Row
                                           Spacing="1"
@@ -79,6 +81,15 @@
                                                  @bind-Value="@context.Item.Count" />
                             </EditTemplate>
                         </PropertyColumn>
+                        <TemplateColumn>
+                            <EditTemplate>
+                                <MudIconButton OnClick="@(() => DeleteItem(context))"
+                                               ButtonType="@ButtonType.Button"
+                                               Color="@Color.Error"
+                                               Variant="@Variant.Filled"
+                                               Icon="@Icons.Material.Filled.Delete" />
+                            </EditTemplate>
+                        </TemplateColumn>
                     </Columns>
                 </MudDataGrid>
             </MudTabPanel>
