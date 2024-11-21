@@ -8,90 +8,95 @@
         @foreach (var pouch in Inventory)
         {
             <MudTabPanel Text="@pouch.Type.ToString()">
-                <MudButton OnClick="@SaveChanges"
-                           Color="@Color.Primary"
-                           Variant="@Variant.Filled"
-                           StartIcon="@Icons.Material.Filled.Save">
-                    Save
-                </MudButton>
-                <MudDataGrid T="InventoryItem"
-                             Items="@pouch.Items"
-                             ReadOnly="@false"
-                             EditMode="@DataGridEditMode.Cell"
-                             SortMode="@SortMode.None"
-                             Filterable="@false"
-                             Groupable="@false"
-                             Dense
-                             Hover
-                             Striped
-                             EditTrigger="@DataGridEditTrigger.OnRowClick">
-                    <Columns>
-                        <PropertyColumn Property="@(item => item.Index)"
-                                        Title="Item">
-                            <EditTemplate>
-                                <MudStack Row
-                                          Spacing="1"
-                                          AlignItems="@AlignItems.Center">
-                                    <MudAutocomplete T="@ComboItem"
-                                                     Label="Held Item"
-                                                     ShrinkLabel
+                <MudStack Spacing="1">
+                    <MudButton OnClick="@SaveChanges"
+                               Color="@Color.Primary"
+                               Variant="@Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Save">
+                        Save
+                    </MudButton>
+                    <MudDataGrid T="InventoryItem"
+                                 Items="@pouch.Items"
+                                 ReadOnly="@false"
+                                 EditMode="@DataGridEditMode.Cell"
+                                 SortMode="@SortMode.None"
+                                 Filterable="@false"
+                                 Groupable="@false"
+                                 Dense
+                                 Hover
+                                 Striped
+                                 FixedHeader
+                                 EditTrigger="@DataGridEditTrigger.OnRowClick"
+                                 Height="calc(100vh - 240px)"
+                                 Virtualize>
+                        <Columns>
+                            <PropertyColumn Property="@(item => item.Index)"
+                                            Title="Item">
+                                <EditTemplate>
+                                    <MudStack Row
+                                              Spacing="1"
+                                              AlignItems="@AlignItems.Center">
+                                        <MudAutocomplete T="@ComboItem"
+                                                         Label="Held Item"
+                                                         ShrinkLabel
+                                                         Variant="@Variant.Outlined"
+                                                         Value="@GetItem(context)"
+                                                         ValueChanged="@(newItem => SetItem(context, newItem))"
+                                                         SearchFunc="@SearchItemNames"
+                                                         ToStringFunc="@(item => item?.Text ?? $"Item #{context.Item.Index}")">
+                                            <ItemTemplate Context="item">
+                                                <MudStack Row>
+                                                    @if (item.Value != 0)
+                                                    {
+                                                        <MudImage Src="@SpriteHelper.GetItemSpriteFilename(item.Value, saveFile.Context)"
+                                                                  Alt="@item.Text"
+                                                                  title="@item.Text"
+                                                                  ObjectFit="@ObjectFit.Contain"
+                                                                  ObjectPosition="@ObjectPosition.Center"
+                                                                  Width="22"
+                                                                  Height="22" />
+                                                    }
+                                                    <MudText>
+                                                        @item.Text
+                                                    </MudText>
+                                                </MudStack>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
+                                        @if (context.Item.Index != 0)
+                                        {
+                                            var itemText = AppService.GetItemComboItem(context.Item.Index)?.Text;
+                                            <MudImage Src="@SpriteHelper.GetItemSpriteFilename(context.Item.Index, saveFile.Context)"
+                                                      Alt="@itemText"
+                                                      title="@itemText"
+                                                      ObjectFit="@ObjectFit.Contain"
+                                                      ObjectPosition="@ObjectPosition.Center"
+                                                      Width="22"
+                                                      Height="22" />
+                                        }
+                                    </MudStack>
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="@(item => item.Count)"
+                                            Title="Count">
+                                <EditTemplate>
+                                    <MudNumericField T="@int"
                                                      Variant="@Variant.Outlined"
-                                                     Value="@GetItem(context)"
-                                                     ValueChanged="@(newItem => SetItem(context, newItem))"
-                                                     SearchFunc="@SearchItemNames"
-                                                     ToStringFunc="@(item => item?.Text ?? $"Item #{context.Item.Index}")">
-                                        <ItemTemplate Context="item">
-                                            <MudStack Row>
-                                                @if (item.Value != 0)
-                                                {
-                                                    <MudImage Src="@SpriteHelper.GetItemSpriteFilename(item.Value, saveFile.Context)"
-                                                              Alt="@item.Text"
-                                                              title="@item.Text"
-                                                              ObjectFit="@ObjectFit.Contain"
-                                                              ObjectPosition="@ObjectPosition.Center"
-                                                              Width="22"
-                                                              Height="22" />
-                                                }
-                                                <MudText>
-                                                    @item.Text
-                                                </MudText>
-                                            </MudStack>
-                                        </ItemTemplate>
-                                    </MudAutocomplete>
-                                    @if (context.Item.Index != 0)
-                                    {
-                                        var itemText = AppService.GetItemComboItem(context.Item.Index)?.Text;
-                                        <MudImage Src="@SpriteHelper.GetItemSpriteFilename(context.Item.Index, saveFile.Context)"
-                                                  Alt="@itemText"
-                                                  title="@itemText"
-                                                  ObjectFit="@ObjectFit.Contain"
-                                                  ObjectPosition="@ObjectPosition.Center"
-                                                  Width="22"
-                                                  Height="22" />
-                                    }
-                                </MudStack>
-                            </EditTemplate>
-                        </PropertyColumn>
-                        <PropertyColumn Property="@(item => item.Count)"
-                                        Title="Count">
-                            <EditTemplate>
-                                <MudNumericField T="@int"
-                                                 Variant="@Variant.Outlined"
-                                                 Max="@Inventory.First().MaxCount"
-                                                 @bind-Value="@context.Item.Count" />
-                            </EditTemplate>
-                        </PropertyColumn>
-                        <TemplateColumn>
-                            <EditTemplate>
-                                <MudIconButton OnClick="@(() => DeleteItem(context))"
-                                               ButtonType="@ButtonType.Button"
-                                               Color="@Color.Error"
-                                               Variant="@Variant.Filled"
-                                               Icon="@Icons.Material.Filled.Delete" />
-                            </EditTemplate>
-                        </TemplateColumn>
-                    </Columns>
-                </MudDataGrid>
+                                                     Max="@Inventory.First().MaxCount"
+                                                     @bind-Value="@context.Item.Count" />
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <TemplateColumn>
+                                <EditTemplate>
+                                    <MudIconButton OnClick="@(() => DeleteItem(context))"
+                                                   ButtonType="@ButtonType.Button"
+                                                   Color="@Color.Error"
+                                                   Variant="@Variant.Filled"
+                                                   Icon="@Icons.Material.Filled.Delete" />
+                                </EditTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                    </MudDataGrid>
+                </MudStack>
             </MudTabPanel>
         }
     </MudTabs>
