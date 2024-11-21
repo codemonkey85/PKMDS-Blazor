@@ -4,6 +4,9 @@ pkm-sprite {
     align-self: center;
 }
 
+item-sprite {
+}
+
 .slot-fill :hover {
     transform-origin: center;
     animation: bounce 500ms linear infinite;

@@ -38,7 +38,15 @@ else
         </MudTabPanel>
 
         <MudTabPanel Text="Trainer">
-            <TrainerInfoTab />
+            <div class="mt-3">
+                <TrainerInfoTab />
+            </div>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Bag">
+            <div class="mt-3">
+                <BagTab Inventory="@AppState.SaveFile.Inventory" />
+            </div>
         </MudTabPanel>
 
     </MudTabs>

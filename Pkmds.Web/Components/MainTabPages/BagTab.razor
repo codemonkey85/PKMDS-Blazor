@@ -1,0 +1,173 @@
+﻿@inherits BasePkmdsComponent
+
+@if (AppState.SaveFile is { } saveFile && Inventory is not null)
+{
+    <MudTabs Outlined
+             Rounded
+             Border>
+        @foreach (var pouch in Inventory)
+        {
+            <MudTabPanel Text="@GetPouchName(pouch)">
+                <MudStack>
+                    <MudStack Row>
+                        <MudButton OnClick="@SaveChanges"
+                                   Color="@Color.Primary"
+                                   Variant="@Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.Save">
+                            Save
+                        </MudButton>
+                        <MudButton OnClick="@(() => SortByName(pouch))"
+                                   Color="@Color.Default"
+                                   Variant="@Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.SortByAlpha">
+                            Sort By Name
+                        </MudButton>
+                        <MudButton OnClick="@(() => SortByCount(pouch))"
+                                   Color="@Color.Default"
+                                   Variant="@Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.Sort">
+                            Sort By Count
+                        </MudButton>
+                        <MudButton OnClick="@(() => SortByIndex(pouch))"
+                                   Color="@Color.Default"
+                                   Variant="@Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.Sort">
+                            Sort By Index
+                        </MudButton>
+                    </MudStack>
+                    <MudDataGrid T="InventoryItem"
+                                 Items="@pouch.Items"
+                                 ReadOnly="@false"
+                                 EditMode="@DataGridEditMode.Cell"
+                                 SortMode="@SortMode.None"
+                                 Dense
+                                 Hover
+                                 Striped
+                                 FixedHeader
+                                 EditTrigger="@DataGridEditTrigger.OnRowClick"
+                                 Height="calc(100vh - 240px)"
+                                 Virtualize>
+                        <Columns>
+                            <PropertyColumn Property="@(item => item.Index)"
+                                            Title="Item">
+                                <EditTemplate>
+                                    <MudStack Row
+                                              Spacing="1"
+                                              AlignItems="@AlignItems.Center">
+                                        <MudAutocomplete T="@ComboItem"
+                                                         Variant="@Variant.Outlined"
+                                                         Value="@GetItem(context)"
+                                                         ValueChanged="@(newItem => SetItem(context, newItem))"
+                                                         SearchFunc="@((string searchString, CancellationToken _) => SearchItemNames(pouch, searchString))"
+                                                         ToStringFunc="@(item => { return ItemList[context.Item.Index]; })">
+                                            <ItemTemplate Context="item">
+                                                <MudStack Row>
+                                                    @if (item.Value != 0)
+                                                    {
+                                                        <object class="item-sprite"
+                                                                type="image/png"
+                                                                data="@SpriteHelper.GetItemSpriteFilename(item.Value, saveFile.Context)"
+                                                                title="@item.Text">
+                                                            <img class="pkm-sprite"
+                                                                 src="@SpriteHelper.ItemFallbackImageFileName"
+                                                                 title="@item.Text">
+                                                        </object>
+                                                    }
+                                                    <MudText>
+                                                        @item.Text
+                                                    </MudText>
+                                                </MudStack>
+                                            </ItemTemplate>
+                                        </MudAutocomplete>
+                                        @if (context.Item.Index != 0)
+                                        {
+                                            var itemText = AppService.GetItemComboItem(context.Item.Index)?.Text;
+                                            <object class="item-sprite"
+                                                    type="image/png"
+                                                    data="@SpriteHelper.GetItemSpriteFilename(context.Item.Index, saveFile.Context)"
+                                                    title="@itemText">
+                                                <img class="pkm-sprite"
+                                                     src="@SpriteHelper.ItemFallbackImageFileName"
+                                                     title="@itemText">
+                                            </object>
+                                        }
+                                    </MudStack>
+                                </EditTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="@(item => item.Count)"
+                                            Title="Count">
+                                <EditTemplate>
+                                    <MudNumericField T="@int"
+                                                     Variant="@Variant.Outlined"
+                                                     Max="@pouch.MaxCount"
+                                                     @bind-Value="@context.Item.Count" />
+                                </EditTemplate>
+                            </PropertyColumn>
+                            @if (HasFreeSpace)
+                            {
+                                <TemplateColumn Title="Free">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemFreeSpace freeSpaceItem)
+                                        {
+                                            <MudCheckBox Label="Free Space"
+                                                         Value="@freeSpaceItem.IsFreeSpace"
+                                                         ValueChanged="@((bool value) => freeSpaceItem.IsFreeSpace = value)" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
+                            @if (HasFreeSpaceIndex)
+                            {
+                                <TemplateColumn Title="Free">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemFreeSpaceIndex freeSpaceIndexItem)
+                                        {
+                                            <MudNumericField T="@uint"
+                                                             Variant="@Variant.Outlined"
+                                                             @bind-Value="@freeSpaceIndexItem.FreeSpaceIndex" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
+                            @if (HasFavorite)
+                            {
+                                <TemplateColumn Title="Favorite">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemFavorite favoriteItem)
+                                        {
+                                            <MudCheckBox Label="Favorite"
+                                                         Value="@favoriteItem.IsFavorite"
+                                                         ValueChanged="@((bool value) => favoriteItem.IsFavorite = value)" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
+                            @if (HasNew)
+                            {
+                                <TemplateColumn Title="New">
+                                    <EditTemplate>
+                                        @if (context.Item is IItemNewFlag newFlagItem)
+                                        {
+                                            <MudCheckBox Label="New"
+                                                         Value="@newFlagItem.IsNew"
+                                                         ValueChanged="@((bool value) => newFlagItem.IsNew = value)" />
+                                        }
+                                    </EditTemplate>
+                                </TemplateColumn>
+                            }
+                            <TemplateColumn>
+                                <EditTemplate>
+                                    <MudIconButton OnClick="@(() => DeleteItem(context, pouch))"
+                                                   ButtonType="@ButtonType.Button"
+                                                   Color="@Color.Error"
+                                                   Variant="@Variant.Filled"
+                                                   Icon="@Icons.Material.Filled.Delete" />
+                                </EditTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                    </MudDataGrid>
+                </MudStack>
+            </MudTabPanel>
+        }
+    </MudTabs>
+}
