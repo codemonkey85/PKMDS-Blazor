@@ -15,15 +15,11 @@ public partial class BagTab
         AppState.SaveFile.Inventory = Inventory;
     }
 
-    private ComboItem GetItem(CellContext<InventoryItem> context)
-    {
-        return AppService.GetItemComboItem(context.Item.Index);
-    }
+    private ComboItem GetItem(CellContext<InventoryItem> context) =>
+        AppService.GetItemComboItem(context.Item.Index);
 
-    private void SetItem(CellContext<InventoryItem> context, ComboItem item)
-    {
+    private static void SetItem(CellContext<InventoryItem> context, ComboItem item) =>
         context.Item.Index = item.Value;
-    }
 
     private void DeleteItem(CellContext<InventoryItem> context)
     {
