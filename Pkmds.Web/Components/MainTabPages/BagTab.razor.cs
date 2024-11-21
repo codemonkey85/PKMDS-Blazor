@@ -5,7 +5,7 @@ public partial class BagTab
     [Parameter, EditorRequired]
     public IReadOnlyList<InventoryPouch>? Inventory { get; set; }
 
-    private string[] Itemlist { get; set; } = [];
+    private string[] ItemList { get; set; } = [];
 
     private bool HasFreeSpace { get; set; }
 
@@ -14,6 +14,12 @@ public partial class BagTab
     private bool HasFavorite { get; set; }
 
     private bool HasNew { get; set; }
+
+    private bool IsSortedByName { get; set; } = true; // Set as true so first sort is ascending
+
+    private bool IsSortedByCount { get; set; } = true; // Set as true so first sort is ascending
+
+    private bool IsSortedByIndex { get; set; } = true; // Set as true so first sort is ascending
 
     protected override void OnParametersSet()
     {
@@ -24,13 +30,13 @@ public partial class BagTab
             return;
         }
 
-        Itemlist = [.. GameInfo.Strings.GetItemStrings(saveFile.Context, saveFile.Version)];
+        ItemList = [.. GameInfo.Strings.GetItemStrings(saveFile.Context, saveFile.Version)];
 
-        for (var i = 0; i < Itemlist.Length; i++)
+        for (var i = 0; i < ItemList.Length; i++)
         {
-            if (string.IsNullOrEmpty(Itemlist[i]))
+            if (string.IsNullOrEmpty(ItemList[i]))
             {
-                Itemlist[i] = $"(Item #{i:000})";
+                ItemList[i] = $"(Item #{i:000})";
             }
         }
 
@@ -98,19 +104,24 @@ public partial class BagTab
     {
         string[] res = new string[items.Length + 1];
         for (int i = 0; i < res.Length - 1; i++)
-            res[i] = Itemlist[items[i]];
-        res[items.Length] = Itemlist[0];
+            res[i] = ItemList[items[i]];
+        res[items.Length] = ItemList[0];
         if (sort)
             Array.Sort(res);
         return res;
     }
 
+    private void SortByName(InventoryPouch pouch) => pouch.SortByName(ItemList, reverse: IsSortedByName = !IsSortedByName);
+
+    private void SortByCount(InventoryPouch pouch) => pouch.SortByCount(reverse: IsSortedByCount = !IsSortedByCount);
+
+    private void SortByIndex(InventoryPouch pouch) => pouch.SortByIndex(reverse: IsSortedByIndex = !IsSortedByIndex);
 
     private Task<IEnumerable<ComboItem>> SearchItemNames(InventoryPouch pouch, string searchString)
     {
         var itemsToSearch = GetStringsForPouch(pouch.GetAllItems());
 
-        return Task.FromResult(Itemlist
+        return Task.FromResult(ItemList
             .Select((name, index) => new ComboItem(name, index))
             .Where(x => itemsToSearch.Contains(x.Text) && x.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase)));
     }
