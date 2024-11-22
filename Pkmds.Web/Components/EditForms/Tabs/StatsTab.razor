@@ -642,6 +642,15 @@ AppState.SelectedSlotsAreValid)
             </MudItem>
         }
 
+        @if (Pokemon is IAlphaReadOnly alphaReadOnly)
+        {
+            <MudItem xs="3">
+                <MudCheckBox Label="Alpha"
+                             Value="@alphaReadOnly.IsAlpha"
+                             Readonly />
+            </MudItem>
+        }
+
         @if (Pokemon is IAlpha alpha)
         {
             <MudItem xs="3">
