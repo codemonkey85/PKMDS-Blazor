@@ -1,6 +1,6 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is null)
+@if (AppState is not { SaveFile: { } saveFile })
 {
     @if (AppState.ShowProgressIndicator)
     {
@@ -49,11 +49,14 @@ else
             </div>
         </MudTabPanel>
 
-        <MudTabPanel Text="Mystery Gifts">
-            <div class="mt-3">
-                <MysteryGiftDatabaseTab />
-            </div>
-        </MudTabPanel>
+        @if (saveFile.Generation >= 4)
+        {
+            <MudTabPanel Text="Mystery Gifts">
+                <div class="mt-3">
+                    <MysteryGiftDatabaseTab />
+                </div>
+            </MudTabPanel>
+        }
 
     </MudTabs>
 }
