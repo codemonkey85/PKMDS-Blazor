@@ -51,7 +51,21 @@
 
     <!--prevent autostarting-->
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
-    <script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script>
+    <script>
+        navigator.serviceWorker.register('service-worker.published.js', { updateViaCache: 'none' }).then(registration => {
+            registration.onupdatefound = () => {
+                const installingWorker = registration.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // Notify the user about the update or reload the page
+                        if (confirm('A new version of this app is available. Reload to update?')) {
+                            window.location.reload();
+                        }
+                    }
+                };
+            };
+        });
+    </script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="js/lib/crypto-js/crypto-js.min.js"></script>
 
