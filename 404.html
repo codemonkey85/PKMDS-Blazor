@@ -57,10 +57,8 @@
                 const installingWorker = registration.installing;
                 installingWorker.onstatechange = () => {
                     if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // Notify the user about the update or reload the page
-                        if (confirm('A new version of this app is available. Reload to update?')) {
-                            window.location.reload();
-                        }
+                        // Notify Blazor about the update
+                        window.dispatchEvent(new CustomEvent('updateAvailable'));
                     }
                 };
             };
@@ -94,6 +92,14 @@
         else {
             window.location = window.location + "BrowserNotSupported.html";
         }
+    </script>
+
+    <script>
+        window.addUpdateListener = () => {
+            window.addEventListener('updateAvailable', () => {
+                DotNet.invokeMethodAsync('Pkmds.Web', 'ShowUpdateMessage');
+            });
+        };
     </script>
 
 </body>
