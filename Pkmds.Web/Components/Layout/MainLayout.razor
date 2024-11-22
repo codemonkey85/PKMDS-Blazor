@@ -44,7 +44,8 @@
                            Variant="@Variant.Outlined" />
         </MudStack>
     </MudAppBar>
-    <MudDrawer @bind-Open="@AppService.IsDrawerOpen">
+    <MudDrawer @bind-Open="@AppService.IsDrawerOpen"
+               Class="menu-container">
         <MudStack Spacing="3"
                   Class="my-3">
             <MudButton OnClick="@ShowLoadSaveFileDialog"

@@ -13,5 +13,9 @@ public partial class App()
     }
 
     [JSInvokable]
-    public void ShowUpdateMessage() => AppState.UpdateAvailable = true;
+    public void ShowUpdateMessage()
+    {
+        AppState.UpdateAvailable = true;
+        RefreshService.Refresh();
+    }
 }
