@@ -1,7 +1,7 @@
 body, html {
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom, 16px);
     padding-top: env(safe-area-inset-top);
-    padding-left: env(safe-area-inset-left);
+    padding-left: env(safe-area-inset-left, 8px);
     padding-right: env(safe-area-inset-right);
     box-sizing: border-box;
 }
