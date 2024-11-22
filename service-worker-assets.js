@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "r+Vyqz9Y",
+  "version": "hbILB43y",
   "assets": [
     {
       "hash": "sha256-RuXsJFsQyK92yMotd1V1TFN+QXJJobbWTT6gigaJFl8=",
@@ -138,8 +138,8 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.uu1dzvwyb3.wasm"
     },
     {
-      "hash": "sha256-MjWHvOvMDWIuUJUhbyiVqipIvVGxtUcqhF61fpbsfB4=",
-      "url": "_framework/Pkmds.Web.qqf6oiw8cf.wasm"
+      "hash": "sha256-5ZjywHn6lzhb8FNmg3XMEbGafLq9efIC1VuPp7hp7Fw=",
+      "url": "_framework/Pkmds.Web.tu593gf89u.wasm"
     },
     {
       "hash": "sha256-nmhUPBjB8ZbEN0U5j2acgnW4fkbSYlov7U3e30Lsp8A=",
@@ -274,7 +274,7 @@ self.assetsManifest = {
       "url": "_framework/System.Web.HttpUtility.v1a9l0tpd6.wasm"
     },
     {
-      "hash": "sha256-Z3DGBVcl+syIO/Ed+lvoZ6Of714vbCq8d7cT93wUDhk=",
+      "hash": "sha256-BqL8FYhZjggzlnTLtf0h8pMeMTeTJ5SZcckUrhpa1ZY=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -7854,16 +7854,16 @@ self.assetsManifest = {
       "url": "sprites/bag/Bag_PCItems.png"
     },
     {
+      "hash": "sha256-xIPhMs1hDs4acieHDoiZF/qRTva4IoeyucMpCGofOkE=",
+      "url": "sprites/bag/Bag_Tech.png"
+    },
+    {
       "hash": "sha256-UhlJen0PWDF4D1b3GT9iFoZ0Nbo7Y02wTTq2pD2TEbY=",
       "url": "sprites/bag/Bag_Treasure.png"
     },
     {
       "hash": "sha256-mkuttPXMa1AyywPPTLyUy1+1ElAQX+ZY5fRsKjAB5i8=",
       "url": "sprites/bag/Bag_Z.png"
-    },
-    {
-      "hash": "sha256-xIPhMs1hDs4acieHDoiZF/qRTva4IoeyucMpCGofOkE=",
-      "url": "sprites/bag/bag_tech.png"
     },
     {
       "hash": "sha256-LcaX3z3lUMzkSoy9lAtrI84k9gYgxj5h2sNKMYNIJJo=",
