@@ -5,6 +5,8 @@ public partial class MainLayout : IDisposable
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
 
+    private const string DeploymentId = "%%CACHE_VERSION%%";
+
     protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
