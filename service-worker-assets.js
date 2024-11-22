@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "kPQRQGSz",
+  "version": "r+Vyqz9Y",
   "assets": [
     {
       "hash": "sha256-RuXsJFsQyK92yMotd1V1TFN+QXJJobbWTT6gigaJFl8=",
@@ -138,8 +138,8 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.uu1dzvwyb3.wasm"
     },
     {
-      "hash": "sha256-PbIhBMJzlpRcSvHR3X+oqGjez8uz9IO2CKEDe0cmPXo=",
-      "url": "_framework/Pkmds.Web.xzrqa688sa.wasm"
+      "hash": "sha256-MjWHvOvMDWIuUJUhbyiVqipIvVGxtUcqhF61fpbsfB4=",
+      "url": "_framework/Pkmds.Web.qqf6oiw8cf.wasm"
     },
     {
       "hash": "sha256-nmhUPBjB8ZbEN0U5j2acgnW4fkbSYlov7U3e30Lsp8A=",
@@ -274,7 +274,7 @@ self.assetsManifest = {
       "url": "_framework/System.Web.HttpUtility.v1a9l0tpd6.wasm"
     },
     {
-      "hash": "sha256-NuvSpjztdqpy4oR/+W60JW978IoxSDfP0+tLRiXRaCQ=",
+      "hash": "sha256-Z3DGBVcl+syIO/Ed+lvoZ6Of714vbCq8d7cT93wUDhk=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -310,7 +310,7 @@ self.assetsManifest = {
       "url": "_framework/icudt_no_CJK.lfu7j35m59.dat"
     },
     {
-      "hash": "sha256-+m1nrPbbuS8rsV7+SxnIXRGFzr9Uxcr9nMimfcDcoU8=",
+      "hash": "sha256-WBsgVOMmPZ/zhE9lvt7yBywXuxMDG+Hhr/0DM6PE2bE=",
       "url": "css/app.css"
     },
     {
@@ -7808,6 +7808,62 @@ self.assetsManifest = {
     {
       "hash": "sha256-hVXbInIwiZPUFeyEnHNGdIeDIPK5HxP2xp3pDDselzY=",
       "url": "sprites/b/_ball9.png"
+    },
+    {
+      "hash": "sha256-MjpPiziPbBlESRVfjETbqJDO6Bli2crkqSdqV4TZCg8=",
+      "url": "sprites/bag/Bag_Balls.png"
+    },
+    {
+      "hash": "sha256-bk+EuAtMZ0x7Zo0jWNwOGzOkRlVoXku8DfT3shxZc6U=",
+      "url": "sprites/bag/Bag_Battle.png"
+    },
+    {
+      "hash": "sha256-49HI4suL/B5x9HgTTCsvqT+qKYZbd3bM9HpwGsdJw2o=",
+      "url": "sprites/bag/Bag_Berries.png"
+    },
+    {
+      "hash": "sha256-eit6skdxLOr2bXZDU9RQtajTgzjbd56KgkxdYlblTSc=",
+      "url": "sprites/bag/Bag_Candy.png"
+    },
+    {
+      "hash": "sha256-Vxb22lYmw3x3lI448fsR5fgzcy1bdjzdsOQTphyWBhk=",
+      "url": "sprites/bag/Bag_Free.png"
+    },
+    {
+      "hash": "sha256-empPLJu0QIFVC+4dQkVLxztZ953J/ibdyZwM6yMby9E=",
+      "url": "sprites/bag/Bag_Ingredient.png"
+    },
+    {
+      "hash": "sha256-ejrbF5akzVNEA2+q/VstMtk2m+GU9ewm7eWyADx7hXU=",
+      "url": "sprites/bag/Bag_Items.png"
+    },
+    {
+      "hash": "sha256-l0SyAryTDFGMkT8F2GEJfdbD9RZYaHr9aIybxQasuTQ=",
+      "url": "sprites/bag/Bag_Key.png"
+    },
+    {
+      "hash": "sha256-qha2UsWa5kGu6mM7hUb91OlTHyKHBmzF0GDcVUH3ZQE=",
+      "url": "sprites/bag/Bag_Mail.png"
+    },
+    {
+      "hash": "sha256-osSGBclig11wotu5/vXOgNrdqYa5c7IVqnkWZ143wl4=",
+      "url": "sprites/bag/Bag_Medicine.png"
+    },
+    {
+      "hash": "sha256-4esvbwlHgHvoegzj9fv/f728KON1IYAgHNQvgh8pTeY=",
+      "url": "sprites/bag/Bag_PCItems.png"
+    },
+    {
+      "hash": "sha256-UhlJen0PWDF4D1b3GT9iFoZ0Nbo7Y02wTTq2pD2TEbY=",
+      "url": "sprites/bag/Bag_Treasure.png"
+    },
+    {
+      "hash": "sha256-mkuttPXMa1AyywPPTLyUy1+1ElAQX+ZY5fRsKjAB5i8=",
+      "url": "sprites/bag/Bag_Z.png"
+    },
+    {
+      "hash": "sha256-xIPhMs1hDs4acieHDoiZF/qRTva4IoeyucMpCGofOkE=",
+      "url": "sprites/bag/bag_tech.png"
     },
     {
       "hash": "sha256-LcaX3z3lUMzkSoy9lAtrI84k9gYgxj5h2sNKMYNIJJo=",

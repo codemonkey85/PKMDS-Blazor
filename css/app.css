@@ -1,12 +1,10 @@
 pkm-sprite {
-    max-width: 68px;
-    max-height: 56px;
+    object-fit: contain;
     align-self: center;
 }
 
 item-sprite {
-    width: 20px;
-    height: 20px;
+    object-fit: contain;
     align-self: center;
 }
 
