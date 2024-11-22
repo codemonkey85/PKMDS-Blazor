@@ -6,6 +6,12 @@ body, html {
     box-sizing: border-box;
 }
 
+.menu-container {
+    padding-bottom: env(safe-area-inset-bottom, 16px); /* Fallback to 16px */
+    padding-left: env(safe-area-inset-left, 8px); /* Fallback to 8px */
+    box-sizing: border-box;
+}
+
 pkm-sprite {
     object-fit: contain;
     align-self: center;
