@@ -26,15 +26,22 @@
     case SAV6AO { Context: EntityContext.Gen6 }:
     case SAV8SWSH { Context: EntityContext.Gen8 }:
     case SAV8BS { Context: EntityContext.Gen8 }:
-        var badges = GetSaveFileBadgesValue();
-        @for (var i = 0; i < badges.Count; i++)
-        {
-            var badgeIndex = i;
-            <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
-                         T="@bool"
-                         Value="@badges[i]"
-                         ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
-        }
+        <MudGrid Justify="@Justify.Center">
+            @{
+                var badges = GetSaveFileBadgesValue();
+            }
+            @for (var i = 0; i < badges.Count; i++)
+            {
+                var badgeIndex = i;
+                <MudItem xs="6"
+                         sm="3">
+                    <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
+                                 T="@bool"
+                                 Value="@badges[badgeIndex]"
+                                 ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
+                </MudItem>
+            }
+        </MudGrid>
         break;
     case SAV1Stadium { Context: EntityContext.Gen1 }:
     case SAV1StadiumJ { Context: EntityContext.Gen1 }:
