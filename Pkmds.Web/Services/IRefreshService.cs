@@ -8,6 +8,8 @@ public interface IRefreshService
 
     event Action? OnPartyStateChanged;
 
+    event Action? OnUpdateAvailable;
+
     void Refresh();
 
     void RefreshBoxState();
@@ -15,4 +17,6 @@ public interface IRefreshService
     void RefreshPartyState();
 
     void RefreshBoxAndPartyState();
+
+    void ShowUpdateMessage();
 }

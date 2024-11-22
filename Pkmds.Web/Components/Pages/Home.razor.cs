@@ -4,13 +4,14 @@ public partial class Home
 {
     private bool IsUpdateAvailable { get; set; } = false;
 
-    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
+    protected override void OnInitialized()
+    {
+        RefreshService.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnUpdateAvailable += ShowUpdateMessage;
+    }
 
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
 
-    private async Task RefreshApp() => await JSRuntime.InvokeVoidAsync("location.reload");
-
-    [JSInvokable(nameof(ShowUpdateMessage))]
     public void ShowUpdateMessage()
     {
         // Display the alert when an update is available
