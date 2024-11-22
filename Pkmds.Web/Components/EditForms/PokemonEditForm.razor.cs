@@ -7,8 +7,6 @@ public partial class PokemonEditForm : IDisposable
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    private PKM? CopiedPokemon { get; set; }
-
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
 
@@ -77,14 +75,14 @@ public partial class PokemonEditForm : IDisposable
             return;
         }
 
-        CopiedPokemon = Pokemon.Clone();
+        AppState.CopiedPokemon = Pokemon.Clone();
 
         Snackbar.Add("The selected Pokémon has been copied.");
     }
 
     private void OnClickPaste()
     {
-        if (CopiedPokemon is null)
+        if (AppState.CopiedPokemon is null)
         {
             return;
         }
@@ -135,7 +133,7 @@ public partial class PokemonEditForm : IDisposable
 
         void PastePokemon()
         {
-            Pokemon = CopiedPokemon.Clone();
+            Pokemon = AppState.CopiedPokemon.Clone();
             AppService.SavePokemon(Pokemon);
             Snackbar.Add("The copied Pokémon has been pasted.");
         }
