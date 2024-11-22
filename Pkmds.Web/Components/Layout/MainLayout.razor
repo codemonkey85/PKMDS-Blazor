@@ -44,8 +44,7 @@
                            Variant="@Variant.Outlined" />
         </MudStack>
     </MudAppBar>
-    <MudDrawer @bind-Open="@AppService.IsDrawerOpen"
-               Class="menu-container">
+    <MudDrawer @bind-Open="@AppService.IsDrawerOpen">
         <MudStack Spacing="3"
                   Class="my-3">
             <MudButton OnClick="@ShowLoadSaveFileDialog"
@@ -82,35 +81,38 @@
             </MudButton>
         </MudStack>
         <MudSpacer />
-        <MudStack Spacing="1"
-                  Class="mx-1 my-3 mb-1">
-            <MudText Typo="@Typo.subtitle2">
-                Version @IAppState.AppVersion
-            </MudText>
-            <MudText Typo="@Typo.subtitle2">
-                Created by <MudLink Href="https://codemonkey85.github.io/aboutme/"
-                                    Target="_blank">
-                    codemonkey85
-                </MudLink>
-            </MudText>
-            <MudText Typo="@Typo.subtitle2">
-                Based on <MudLink Href="https://github.com/kwsch/PKHeX/tree/master/PKHeX.Core"
-                                  Target="_blank">
-                    PKHeX.Core
-                </MudLink> by <MudLink Href="https://github.com/kwsch/"
-                                       Target="_blank">
-                    Kaphotics
-                </MudLink> (version @IAppState.PkhexVersion)
-            </MudText>
-            <MudText>
-                Special thanks to Kaphotics, as well as <MudLink Href="https://github.com/kwsch/PKHeX/graphs/contributors"
-                                                                 Target="_blank">all the contributors to PKHeX and PKHeX.Core</MudLink>.
-            </MudText>
-            <MudText>
-                Deployment ID: <MudLink Href="@($"https://github.com/codemonkey85/PKMDS-Blazor/actions/runs/{DeploymentId}")"
-                                        Target="_blank">@DeploymentId</MudLink>
-            </MudText>
-        </MudStack>
+        <MudPaper Elevation="0"
+                  Class="menu-container">
+            <MudStack Spacing="1"
+                      Class="mx-1 my-3 mb-1">
+                <MudText Typo="@Typo.subtitle2">
+                    Version @IAppState.AppVersion
+                </MudText>
+                <MudText Typo="@Typo.subtitle2">
+                    Created by <MudLink Href="https://codemonkey85.github.io/aboutme/"
+                                        Target="_blank">
+                        codemonkey85
+                    </MudLink>
+                </MudText>
+                <MudText Typo="@Typo.subtitle2">
+                    Based on <MudLink Href="https://github.com/kwsch/PKHeX/tree/master/PKHeX.Core"
+                                      Target="_blank">
+                        PKHeX.Core
+                    </MudLink> by <MudLink Href="https://github.com/kwsch/"
+                                           Target="_blank">
+                        Kaphotics
+                    </MudLink> (version @IAppState.PkhexVersion)
+                </MudText>
+                <MudText>
+                    Special thanks to Kaphotics, as well as <MudLink Href="https://github.com/kwsch/PKHeX/graphs/contributors"
+                                                                     Target="_blank">all the contributors to PKHeX and PKHeX.Core</MudLink>.
+                </MudText>
+                <MudText>
+                    Deployment ID: <MudLink Href="@($"https://github.com/codemonkey85/PKMDS-Blazor/actions/runs/{DeploymentId}")"
+                                            Target="_blank">@DeploymentId</MudLink>
+                </MudText>
+            </MudStack>
+        </MudPaper>
     </MudDrawer>
     <MudMainContent>
         <MudContainer MaxWidth="@MaxWidth.False">
