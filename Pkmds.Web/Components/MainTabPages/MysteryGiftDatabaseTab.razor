@@ -29,20 +29,26 @@
                          md="4"
                          lg="3"
                          xl="2"
-                         xxl="2"
                          Class="@ColumnClass">
                     <MudCard>
                         <MudCardHeader>
                             <CardHeaderContent>
+                                @{
+                                    var pokemonName = AppService.GetPokemonSpeciesName(mysteryGift.Species);
+                                    if (string.IsNullOrEmpty(pokemonName))
+                                    {
+                                        pokemonName = "Unknown";
+                                    }
+                                }
                                 <div>
                                     <object class="pkm-sprite"
                                             type="image/png"
                                             style="object-fit: contain;"
                                             data="@SpriteHelper.GetMysteryGiftSpriteFileName(mysteryGift)"
-                                            title="@mysteryGift.Name">
+                                            title="@pokemonName">
                                         <img class="pkm-sprite"
                                              src="@(mysteryGift.IsItem ? SpriteHelper.ItemFallbackImageFileName : SpriteHelper.PokemonFallbackImageFileName)"
-                                             title="">
+                                             title="@pokemonName">
                                     </object>
                                 </div>
                                 <MudText>
