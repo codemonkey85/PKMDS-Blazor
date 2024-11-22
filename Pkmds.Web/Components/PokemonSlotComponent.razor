@@ -9,6 +9,7 @@
           Style="@GetStyle()">
     <object class="pkm-sprite"
             type="image/png"
+            style="object-fit: contain;"
             data="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)"
             title="@(Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : "Unknown")">
         <img class="pkm-sprite"

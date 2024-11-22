@@ -1,11 +1,11 @@
 pkm-sprite {
-    max-width: 68px;
-    max-height: 56px;
+    object-fit: contain;
     align-self: center;
 }
 
 item-sprite {
     object-fit: contain;
+    align-self: center;
 }
 
 .slot-fill :hover {
