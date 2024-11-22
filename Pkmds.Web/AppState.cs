@@ -7,6 +7,8 @@ public record AppState : IAppState
     private string currentLanguage = GameLanguage.DefaultLanguage;
     private SaveFile? saveFile;
 
+    public bool UpdateAvailable { get; set; }
+
     public string CurrentLanguage
     {
         get => currentLanguage;

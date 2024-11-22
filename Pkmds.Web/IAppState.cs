@@ -21,4 +21,6 @@ public interface IAppState
     static string? PkhexVersion => Assembly.GetAssembly(typeof(PKM))?.GetName().Version?.ToString();
 
     bool SelectedSlotsAreValid { get; }
+
+    bool UpdateAvailable { get; set; }
 }

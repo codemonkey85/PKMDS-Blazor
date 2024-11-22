@@ -4,6 +4,18 @@
     @Constants.AppTitle
 </PageTitle>
 
+@if (AppState.UpdateAvailable)
+{
+    <MudAlert Severity="@MudBlazor.Severity.Info"
+              Elevation="1">
+        A new version of the app is available.
+        <MudButton Variant="@Variant.Text"
+                   OnClick="@RefreshApp">
+            Click here to refresh
+        </MudButton>
+    </MudAlert>
+}
+
 @if (AppState.SaveFile is null)
 {
     <MudButton Variant="@Variant.Text"
