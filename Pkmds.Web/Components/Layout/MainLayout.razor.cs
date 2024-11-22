@@ -5,7 +5,6 @@ public partial class MainLayout : IDisposable
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
 
-    private bool IsUpdateAvailable { get; set; } = false;
 
     private const string DeploymentId = "%%CACHE_VERSION%%";
 
@@ -15,33 +14,15 @@ public partial class MainLayout : IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (!firstRender || mudThemeProvider is null)
         {
             return;
         }
 
-        await JSRuntime.InvokeVoidAsync("addUpdateListener");
-
-        if (mudThemeProvider is not null)
-        {
-            isDarkMode = await mudThemeProvider.GetSystemPreference();
-            await mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
-            StateHasChanged();
-        }
-    }
-
-    [JSInvokable(nameof(ShowUpdateMessage))]
-    public void ShowUpdateMessage()
-    {
-        // Display the alert when an update is available
-        IsUpdateAvailable = true;
+        isDarkMode = await mudThemeProvider.GetSystemPreference();
+        await mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
         StateHasChanged();
     }
-
-    private async Task ReloadApp() =>
-        await JSRuntime.InvokeVoidAsync("location.reload");
-
-    private static string HiddenWhen(bool condition) => condition ? "hidden" : string.Empty;
 
     private Task OnSystemPreferenceChanged(bool newValue)
     {
