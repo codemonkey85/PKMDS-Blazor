@@ -33,8 +33,7 @@
 	</ItemGroup>
 
 	<Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
-		<Copy SourceFiles="wwwroot\service-worker.published.js"
-			  DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js" />
+		<Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js" />
 	</Target>
 
 </Project>
