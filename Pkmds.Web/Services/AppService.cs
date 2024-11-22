@@ -1,7 +1,11 @@
 ﻿namespace Pkmds.Web.Services;
 
-public record AppService(IAppState AppState, IRefreshService RefreshService) : IAppService
+public class AppService(IAppState appState, IRefreshService refreshService) : IAppService
 {
+    private IAppState AppState { get; } = appState;
+
+    private IRefreshService RefreshService { get; } = refreshService;
+
     private const string EnglishLang = "en";
     private const string DefaultPkmFileName = "pkm.bin";
 
