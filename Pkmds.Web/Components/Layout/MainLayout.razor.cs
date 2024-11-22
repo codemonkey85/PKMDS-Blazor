@@ -5,7 +5,7 @@ public partial class MainLayout : IDisposable
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
 
-    private bool IsUpdateAvailable = false;
+    private bool IsUpdateAvailable { get; set; } = false;
 
     private const string DeploymentId = "%%CACHE_VERSION%%";
 
@@ -38,10 +38,8 @@ public partial class MainLayout : IDisposable
         StateHasChanged();
     }
 
-    private async Task ReloadApp()
-    {
+    private async Task ReloadApp() =>
         await JSRuntime.InvokeVoidAsync("location.reload");
-    }
 
     private static string HiddenWhen(bool condition) => condition ? "hidden" : string.Empty;
 
