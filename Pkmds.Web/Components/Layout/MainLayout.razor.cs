@@ -127,6 +127,7 @@ public partial class MainLayout : IDisposable
 
     private async Task ShowLoadPokemonFileDialog()
     {
+        const string title = "Load Pokémon File";
         const string message = "Choose a Pokémon file";
 
         var dialogParameters = new DialogParameters
@@ -134,7 +135,8 @@ public partial class MainLayout : IDisposable
             { nameof(FileUploadDialog.Message), message }
         };
 
-        var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Pokémon File",
+        var dialog = await DialogService.ShowAsync<FileUploadDialog>(
+            title,
             parameters: dialogParameters,
             options: new DialogOptions
             {
@@ -146,11 +148,38 @@ public partial class MainLayout : IDisposable
         if (result is { Data: IBrowserFile selectedFile })
         {
             var browserLoadPokemonFile = selectedFile;
-            await LoadPokemonFile(browserLoadPokemonFile);
+            await LoadPokemonFile(browserLoadPokemonFile, title);
         }
     }
 
-    private async Task LoadPokemonFile(IBrowserFile browserLoadPokemonFile)
+    private async Task ShowLoadMysteryGiftFileDialog()
+    {
+        const string title = "Load Mystery Gift file";
+        const string message = "Choose a Mystery Gift file";
+
+        var dialogParameters = new DialogParameters
+        {
+            { nameof(FileUploadDialog.Message), message }
+        };
+
+        var dialog = await DialogService.ShowAsync<FileUploadDialog>(
+            title,
+            parameters: dialogParameters,
+            options: new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                BackdropClick = false,
+            });
+
+        var result = await dialog.Result;
+        if (result is { Data: IBrowserFile selectedFile })
+        {
+            var browserLoadPokemonFile = selectedFile;
+            await LoadMysteryGiftFile(browserLoadPokemonFile, title);
+        }
+    }
+
+    private async Task LoadPokemonFile(IBrowserFile browserLoadPokemonFile, string title)
     {
         if (AppState.SaveFile is not { } saveFile)
         {
@@ -172,7 +201,7 @@ public partial class MainLayout : IDisposable
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
 
-            if (!FileUtil.TryGetPKM(data, out var pkm, ".pkm", saveFile))
+            if (!FileUtil.TryGetPKM(data, out var pkm, Path.GetExtension(browserLoadPokemonFile.Name), saveFile))
             {
                 await DialogService.ShowMessageBox("Error", "The file is not a supported Pokémon file.");
                 return;
@@ -208,7 +237,87 @@ public partial class MainLayout : IDisposable
                 : $"{messageStart} Box {box + 1}, Slot {slot + 1}.";
 
             await DialogService.ShowMessageBox(
-                "Load Pokémon File",
+                title,
+                message);
+        }
+        catch (Exception ex)
+        {
+            await DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+        }
+        finally
+        {
+            AppState.ShowProgressIndicator = false;
+        }
+
+        RefreshService.RefreshBoxState();
+    }
+
+    private async Task LoadMysteryGiftFile(IBrowserFile browserLoadMysteryGiftFile, string title)
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return;
+        }
+
+        if (browserLoadMysteryGiftFile is null)
+        {
+            await DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
+            return;
+        }
+
+        AppState.ShowProgressIndicator = true;
+
+        try
+        {
+            await using var fileStream = browserLoadMysteryGiftFile.OpenReadStream(Constants.MaxFileSize);
+            using var memoryStream = new MemoryStream();
+            await fileStream.CopyToAsync(memoryStream);
+            var data = memoryStream.ToArray();
+
+            if (!FileUtil.TryGetMysteryGift(data, out var mysteryGift, Path.GetExtension(browserLoadMysteryGiftFile.Name)))
+            {
+                await DialogService.ShowMessageBox("Error", "The file is not a supported Mystery Gift file.");
+                return;
+            }
+
+            if (mysteryGift.Species == (ushort)Species.None)
+            {
+                return;
+            }
+
+            var temp = mysteryGift.ConvertToPKM(saveFile);
+            var pokemon = temp.Clone();
+
+            if (temp.GetType() != saveFile.PKMType)
+            {
+                pokemon = EntityConverter.ConvertToType(temp, saveFile.PKMType, out var c);
+
+                if (!c.IsSuccess() || pokemon is null)
+                {
+                    await DialogService.ShowMessageBox("Error", c.GetDisplayString(temp, saveFile.PKMType));
+                    return;
+                }
+            }
+
+            saveFile.AdaptPKM(pokemon);
+
+            var index = saveFile.NextOpenBoxSlot();
+            if (index < 0)
+            {
+                return;
+            }
+
+            saveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
+            saveFile.SetBoxSlotAtIndex(pokemon, index);
+
+            const string messageStart = "The Pokémon has been imported and stored in";
+
+            var message = saveFile is IBoxDetailNameRead boxDetail
+                ? $"{messageStart} '{boxDetail.GetBoxName(box)}' (Box {box + 1}), Slot {slot + 1}."
+                : $"{messageStart} Box {box + 1}, Slot {slot + 1}.";
+
+            await DialogService.ShowMessageBox(
+                title,
                 message);
         }
         catch (Exception ex)

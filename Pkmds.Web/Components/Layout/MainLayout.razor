@@ -71,6 +71,14 @@
                        Disabled="@(AppState.SaveFile is null)">
                 Load Pokémon File
             </MudButton>
+            <MudButton OnClick="@ShowLoadMysteryGiftFileDialog"
+                       Variant="@Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                       FullWidth="@false"
+                       Style="width: 80%; align-self: center;"
+                       Disabled="@(AppState.SaveFile is null)">
+                Load Mystery Gift File
+            </MudButton>
             <MudButton OnClick="@ExportSelectedPokemon"
                        Variant="@Variant.Filled"
                        StartIcon="@Icons.Material.Filled.Share"
