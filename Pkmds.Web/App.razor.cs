@@ -12,7 +12,7 @@ public partial class App()
         await JSRuntime.InvokeVoidAsync("addUpdateListener");
     }
 
-    [JSInvokable]
+    [JSInvokable(nameof(ShowUpdateMessage))]
     public void ShowUpdateMessage()
     {
         AppState.UpdateAvailable = true;
