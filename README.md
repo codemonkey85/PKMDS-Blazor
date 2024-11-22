@@ -2,6 +2,8 @@
 
 A web app to edit your Pokémon save files. Check it out at [pkmds.app](https://pkmds.app/)!
 
+**The app should fully work while offline, after initially caching everything it needs.**
+
 Powered by PKHeX.Core: https://github.com/kwsch/PKHeX
 
 NOTE: for a list of supported save files / formats, [see the PKHeX README](https://github.com/codemonkey85/PKHeX?tab=readme-ov-file#readme).
