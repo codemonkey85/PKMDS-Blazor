@@ -51,8 +51,7 @@
 
     <!--prevent autostarting-->
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
-    <!--<script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script>-->
+    <script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="js/lib/crypto-js/crypto-js.min.js"></script>
 
