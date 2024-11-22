@@ -12,14 +12,14 @@ services
     });
 
 services
-    .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+    .AddSingleton(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddFileSystemAccessService()
-    .AddScoped<IAppState, AppState>()
-    .AddScoped<IRefreshService, RefreshService>()
-    .AddScoped<IAppService, AppService>()
-    .AddScoped<JsService>()
-    .AddScoped<BlazorAesProvider>()
-    .AddScoped<BlazorMd5Provider>();
+    .AddSingleton<IAppState, AppState>()
+    .AddSingleton<IRefreshService, RefreshService>()
+    .AddSingleton<IAppService, AppService>()
+    .AddSingleton<JsService>()
+    .AddSingleton<BlazorAesProvider>()
+    .AddSingleton<BlazorMd5Provider>();
 
 var app = builder.Build();
 

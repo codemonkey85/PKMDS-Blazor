@@ -10,7 +10,11 @@ public partial class Home
         RefreshService.OnUpdateAvailable += ShowUpdateMessage;
     }
 
-    public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
+    public void Dispose()
+    {
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnUpdateAvailable -= ShowUpdateMessage;
+    }
 
     public void ShowUpdateMessage()
     {
