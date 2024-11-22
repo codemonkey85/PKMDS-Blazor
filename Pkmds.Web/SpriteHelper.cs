@@ -23,8 +23,11 @@ public static class SpriteHelper
             { Form: var form, Species: var species } when form > 0 && FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) => $"{species}-{FormInfo.GetTotemBaseForm(species, form)}",
             { Form: > 0 } => pokemon.Species switch
             {
+                (ushort)Species.Rockruff => pokemon.Species.ToString(),
+                (ushort)Species.Sinistea or (ushort)Species.Polteageist => pokemon.Species.ToString(),
                 (ushort)Species.Scatterbug or (ushort)Species.Spewpa => pokemon.Species.ToString(),
                 (ushort)Species.Urshifu => pokemon.Species.ToString(),
+                (ushort)Species.Dudunsparce => pokemon.Species.ToString(),
                 _ => $"{pokemon.Species}-{pokemon.Form}",
             },
             { Species: > (ushort)Species.None and < (ushort)Species.MAX_COUNT } =>
