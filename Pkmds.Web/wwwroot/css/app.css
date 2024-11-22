@@ -5,9 +5,7 @@ pkm-sprite {
 }
 
 item-sprite {
-    width: 20px;
-    height: 20px;
-    align-self: center;
+    object-fit: contain;
 }
 
 .slot-fill :hover {

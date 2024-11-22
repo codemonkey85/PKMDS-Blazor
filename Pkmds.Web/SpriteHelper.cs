@@ -63,6 +63,28 @@ public static class SpriteHelper
     public static string GetTypeWideSpriteFileName(byte type) =>
         $"{SpritesRoot}t/w/type_wide_{type:00}.png";
 
+    public static string GetBagPouchSpriteFileName(InventoryType type) =>
+        $"{SpritesRoot}bag/bag_{GetBagPouchSpriteName(type)}.png";
+
+    private static string GetBagPouchSpriteName(InventoryType type) => type switch
+    {
+        InventoryType.Items => "items",
+        InventoryType.KeyItems => "key",
+        InventoryType.TMHMs => "tech",
+        InventoryType.Medicine => "medicine",
+        InventoryType.Berries => "berries",
+        InventoryType.Balls => "balls",
+        InventoryType.BattleItems => "battle",
+        InventoryType.MailItems => "mail",
+        InventoryType.PCItems => "pcitems",
+        InventoryType.FreeSpace => "free",
+        InventoryType.ZCrystals => "z",
+        InventoryType.Candy => "candy",
+        InventoryType.Treasure => "treasure",
+        InventoryType.Ingredients => "ingredient",
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
+    };
+
     // TODO: Implement
     public static string GetMoveCategorySpriteFileName(int categoryId) =>
         string.Empty;

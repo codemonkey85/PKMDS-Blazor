@@ -5,6 +5,8 @@ public partial class BagTab
     [Parameter, EditorRequired]
     public IReadOnlyList<InventoryPouch>? Inventory { get; set; }
 
+    private MudTabs? PouchTabs { get; set; }
+
     private string[] ItemList { get; set; } = [];
 
     private bool HasFreeSpace { get; set; }
