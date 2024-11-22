@@ -75,12 +75,17 @@ public partial class MysteryGiftDatabaseTab
         }
 
         var temp = gift.ConvertToPKM(saveFile);
-        var pokemon = EntityConverter.ConvertToType(temp, saveFile.PKMType, out var c);
+        var pokemon = temp.Clone();
 
-        if (!c.IsSuccess() || pokemon is null)
+        if (temp.GetType() != saveFile.PKMType) 
         {
-            await DialogService.ShowMessageBox("Error", c.GetDisplayString(temp, saveFile.PKMType));
-            return;
+            pokemon = EntityConverter.ConvertToType(temp, saveFile.PKMType, out var c);
+
+            if (!c.IsSuccess() || pokemon is null)
+            {
+                await DialogService.ShowMessageBox("Error", c.GetDisplayString(temp, saveFile.PKMType));
+                return;
+            }
         }
 
         saveFile.AdaptPKM(pokemon);
