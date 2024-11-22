@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "BH8dn5mX",
+  "version": "dYM42BAu",
   "assets": [
     {
       "hash": "sha256-RuXsJFsQyK92yMotd1V1TFN+QXJJobbWTT6gigaJFl8=",
@@ -138,8 +138,8 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.uu1dzvwyb3.wasm"
     },
     {
-      "hash": "sha256-64IvzqlCABYcUwvDNryRedirFCfBvYOj6ZwvxAE5c5U=",
-      "url": "_framework/Pkmds.Web.3qk0ymy2pi.wasm"
+      "hash": "sha256-PdwqPZjFV4hBvjfebdGpZ9kNK8eVvUXMuDVOVjoMvEs=",
+      "url": "_framework/Pkmds.Web.dgn2pww37g.wasm"
     },
     {
       "hash": "sha256-nmhUPBjB8ZbEN0U5j2acgnW4fkbSYlov7U3e30Lsp8A=",
@@ -274,7 +274,7 @@ self.assetsManifest = {
       "url": "_framework/System.Web.HttpUtility.v1a9l0tpd6.wasm"
     },
     {
-      "hash": "sha256-pDmRUodHgZJa8Kn+p4U9OvtzlG4V/5elivZfZ/Zh/HA=",
+      "hash": "sha256-vE07jz9BXp0A2DBAx7OVEbqmaRwnkT3tZQZNcnSqFhI=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -338,7 +338,7 @@ self.assetsManifest = {
       "url": "js/lib/crypto-js/crypto-js.min.js"
     },
     {
-      "hash": "sha256-C61TNThfzEkkVNVcgdxoK75Gi3Kw8MfcDpGCivGI+Uo=",
+      "hash": "sha256-w8Pspj1BEEaZbdP8e6zP6AlPLPzuEgBfEVPU9GcFeCo=",
       "url": "manifest.webmanifest"
     },
     {
