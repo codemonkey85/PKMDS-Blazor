@@ -178,6 +178,14 @@ public partial class MainLayout : IDisposable
                 return;
             }
 
+            var pokemon = EntityConverter.ConvertToType(pkm, saveFile.PKMType, out var c);
+            if (!c.IsSuccess() || pokemon is null)
+            {
+                await DialogService.ShowMessageBox("Error", c.GetDisplayString(pkm, saveFile.PKMType));
+                return;
+            }
+            saveFile.AdaptPKM(pokemon);
+
             var index = saveFile.NextOpenBoxSlot();
             if (index < 0)
             {
@@ -185,7 +193,7 @@ public partial class MainLayout : IDisposable
             }
 
             saveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
-            saveFile.SetBoxSlotAtIndex(pkm, index);
+            saveFile.SetBoxSlotAtIndex(pokemon, index);
 
             const string messageStart = "The Pokémon has been imported and stored in";
 
