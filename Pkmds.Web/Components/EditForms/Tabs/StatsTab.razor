@@ -598,7 +598,7 @@ AppState.SelectedSlotsAreValid)
 
     @if (GameInfo.FilteredSources.Moves.Any(m => m.Value == (int)Move.HiddenPower) && Pokemon is not { Context: EntityContext.Gen8 or EntityContext.Gen9 })
     {
-        <HiddenPowerChooser Pokemon="@Pokemon"/>
+        <HiddenPowerChooser Pokemon="@Pokemon" />
     }
 
     @if (saveGeneration >= 4)
@@ -608,14 +608,13 @@ AppState.SelectedSlotsAreValid)
         </MudText>
     }
 
-    @if (Pokemon is IDynamaxLevel d)
-    {
-        <MudGrid Spacing="1">
+    <MudGrid Spacing="1">
+        @if (Pokemon is IDynamaxLevel d)
+        {
             @if (d.CanHaveDynamaxLevel(Pokemon))
             {
                 <MudItem xs="4"
-                         xl="3"
-                         Class="@ColumnClass">
+                         xl="3">
                     <MudNumericField Label="Dynamax Level"
                                      T="@byte"
                                      Variant="@Variant.Outlined"
@@ -623,18 +622,35 @@ AppState.SelectedSlotsAreValid)
                                      Max="10"
                                      @bind-Value="@d.DynamaxLevel" />
                 </MudItem>
+                @if (Pokemon is IGigantamax c)
+                {
+                    <MudItem xs="3">
+                        <MudCheckBox Label="Gigantamax"
+                                     @bind-Value="@c.CanGigantamax"
+                                     For="@(() => c.CanGigantamax)" />
+                    </MudItem>
+                }
             }
-            @if (Pokemon is IGigantamax c)
-            {
-                <MudItem xs="3"
-                         Class="@ColumnClass">
-                    <MudCheckBox Label="Gigantamax"
-                                 @bind-Value="@c.CanGigantamax"
-                                 For="@(() => c.CanGigantamax)" />
-                </MudItem>
-            }
-        </MudGrid>
-    }
+        }
+
+        @if (Pokemon is INoble noble)
+        {
+            <MudItem xs="3">
+                <MudCheckBox Label="Noble"
+                             @bind-Value="@noble.IsNoble"
+                             For="@(() => noble.IsNoble)" />
+            </MudItem>
+        }
+
+        @if (Pokemon is IAlpha alpha)
+        {
+            <MudItem xs="3">
+                <MudCheckBox Label="Alpha"
+                             @bind-Value="@alpha.IsAlpha"
+                             For="@(() => alpha.IsAlpha)" />
+            </MudItem>
+        }
+    </MudGrid>
 
     @if (Pokemon is ITeraType tt)
     {
