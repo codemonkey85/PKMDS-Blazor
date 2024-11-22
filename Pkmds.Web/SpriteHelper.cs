@@ -9,6 +9,10 @@ public static class SpriteHelper
     public const string ItemFallbackImageFileName = $"{SpritesRoot}bi/bitem_unk.png";
     public const string PokemonFallbackImageFileName = $"{SpritesRoot}a/a_unknown.png";
 
+    public static string GetMysteryGiftSpriteFileName(MysteryGift gift) => gift.IsItem
+            ? GetItemSpriteFilename(gift.ItemID, gift.Context)
+            : GetPokemonSpriteFilename(gift.Species, gift.Context, gift.IsEgg, gift.Form, 0, gift.Gender);
+
     public static string GetPokemonSpriteFilename(PKM? pokemon) => pokemon is null
             ? PokemonFallbackImageFileName
             : GetPokemonSpriteFilename(pokemon.Species, pokemon.Context, pokemon.IsEgg, pokemon.Form, pokemon.GetFormArgument(0), pokemon.Gender);

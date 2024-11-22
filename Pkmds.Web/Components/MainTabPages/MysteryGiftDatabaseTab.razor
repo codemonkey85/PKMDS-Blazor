@@ -1,0 +1,70 @@
+﻿@inherits BasePkmdsComponent
+
+@if (AppState is { SaveFile: { } saveFile } && MysteryGiftsList.Count > 0)
+{
+    <MudPagination @bind-Selected="@CurrentPage"
+                   @bind-Selected:after="@GoToPage"
+                   Count="@TotalPages"
+                   ShowNextButton />
+
+    <MudSelect T="int"
+               @bind-Value="PageSize"
+               @bind-Value:after="OnPageSizeChange"
+               Label="Items per page">
+        <MudSelectItem Value="10">10</MudSelectItem>
+        <MudSelectItem Value="20">20</MudSelectItem>
+        <MudSelectItem Value="50">50</MudSelectItem>
+    </MudSelect>
+
+    <div class="overflow-scroll"
+         style="height: calc(100vh - 240px);">
+        <MudGrid Spacing="1">
+            @foreach (var mysteryGift in PaginatedItems)
+            {
+                <MudItem xs="12"
+                         sm="6"
+                         md="4"
+                         lg="3"
+                         xl="2"
+                         xxl="2"
+                         Class="@ColumnClass">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <div>
+                                    <object class="pkm-sprite"
+                                            type="image/png"
+                                            style="object-fit: contain;"
+                                            data="@SpriteHelper.GetMysteryGiftSpriteFileName(mysteryGift)"
+                                            title="@mysteryGift.Name">
+                                        <img class="pkm-sprite"
+                                             src="@(mysteryGift.IsItem ? SpriteHelper.ItemFallbackImageFileName : SpriteHelper.PokemonFallbackImageFileName)"
+                                             title="">
+                                    </object>
+                                </div>
+                                <MudText>
+                                    @mysteryGift.CardHeader
+                                </MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            @((MarkupString)RenderListAsHtml(mysteryGift.GetTextLines()))
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton OnClick="@(() => OnClickCopy(mysteryGift))"
+                                       ButtonType="@ButtonType.Button"
+                                       Variant="@Variant.Filled"
+                                       StartIcon="@Icons.Material.Filled.ContentCopy"
+                                       Color="@Color.Default"
+                                       Size="@Size.Small"
+                                       title="Copy Pokémon"
+                                       Disabled="@(mysteryGift.Species == (ushort)Species.None)">
+                                Copy
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </div>
+}

@@ -2,6 +2,7 @@
 global using System.Collections.ObjectModel;
 global using System.Globalization;
 global using System.Linq.Expressions;
+global using System.Net;
 global using System.Reflection;
 global using System.Security.Cryptography;
 global using System.Text;
