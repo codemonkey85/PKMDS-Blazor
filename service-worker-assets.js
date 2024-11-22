@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "L3qvGhqt",
+  "version": "6l6dITA+",
   "assets": [
     {
       "hash": "sha256-RuXsJFsQyK92yMotd1V1TFN+QXJJobbWTT6gigaJFl8=",
@@ -138,8 +138,8 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.uu1dzvwyb3.wasm"
     },
     {
-      "hash": "sha256-WFftmY5DIXkuFNaX0oLsudTXVgtb1Ky2hMAEvM9EYus=",
-      "url": "_framework/Pkmds.Web.k51i9mgry7.wasm"
+      "hash": "sha256-A6K6Y64Hcras8q50sm2vPhI+R5JyJdR6eFKHe7eryVI=",
+      "url": "_framework/Pkmds.Web.91dsdkf9xz.wasm"
     },
     {
       "hash": "sha256-nmhUPBjB8ZbEN0U5j2acgnW4fkbSYlov7U3e30Lsp8A=",
@@ -274,7 +274,7 @@ self.assetsManifest = {
       "url": "_framework/System.Web.HttpUtility.v1a9l0tpd6.wasm"
     },
     {
-      "hash": "sha256-lhxWyivP9Z+mjvXUPv/zhX73/hogDTZKFh5zLspy5NY=",
+      "hash": "sha256-aP8RgA63FsSkmFR8motlsJybB+CYXUYZ/StlnI/gfEc=",
       "url": "_framework/blazor.boot.json"
     },
     {
