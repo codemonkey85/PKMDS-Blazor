@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
@@ -9,6 +9,15 @@
 
 	<PropertyGroup>
 		<WasmEnableSIMD>false</WasmEnableSIMD>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
+		<BlazorEnableCompression>true</BlazorEnableCompression>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GenerateServiceWorkerAssetsManifest>true</GenerateServiceWorkerAssetsManifest>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,5 +31,10 @@
 	<ItemGroup>
 		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
+
+	<Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
+		<Copy SourceFiles="wwwroot\service-worker.published.js"
+			  DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js" />
+	</Target>
 
 </Project>
