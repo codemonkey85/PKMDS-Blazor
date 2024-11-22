@@ -10,6 +10,7 @@ public partial class MysteryGiftDatabaseTab
     private List<MysteryGift> PaginatedItems = [];
     private int CurrentPage = 1;
     private int PageSize = 20; // Number of items per page
+    private readonly int[] PagesSizes = [10, 20, 50, 100];
 
     private int TotalPages => (int)Math.Ceiling((double)MysteryGiftsList.Count / PageSize);
 
@@ -77,7 +78,7 @@ public partial class MysteryGiftDatabaseTab
         var temp = gift.ConvertToPKM(saveFile);
         var pokemon = temp.Clone();
 
-        if (temp.GetType() != saveFile.PKMType) 
+        if (temp.GetType() != saveFile.PKMType)
         {
             pokemon = EntityConverter.ConvertToType(temp, saveFile.PKMType, out var c);
 

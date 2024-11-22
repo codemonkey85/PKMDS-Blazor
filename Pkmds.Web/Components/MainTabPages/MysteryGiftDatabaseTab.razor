@@ -11,9 +11,12 @@
                @bind-Value="PageSize"
                @bind-Value:after="OnPageSizeChange"
                Label="Items per page">
-        <MudSelectItem Value="10">10</MudSelectItem>
-        <MudSelectItem Value="20">20</MudSelectItem>
-        <MudSelectItem Value="50">50</MudSelectItem>
+        @foreach (var pageSize in PagesSizes)
+        {
+            <MudSelectItem Value="pageSize">
+                @pageSize
+            </MudSelectItem>
+        }
     </MudSelect>
 
     <div class="overflow-scroll"
