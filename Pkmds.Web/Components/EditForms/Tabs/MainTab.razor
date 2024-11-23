@@ -300,16 +300,7 @@ AppState.SelectedSlotsAreValid)
                          @bind-Value:after="@RefreshService.Refresh"
                          For="@(() => Pokemon.IsEgg)" />
 
-            <MudCheckBox Label="Infected"
-                         @bind-Value="@Pokemon.IsPokerusInfected"
-                         @bind-Value:after="@RefreshService.Refresh"
-                         For="@(() => Pokemon.IsPokerusInfected)" />
-
-            <MudCheckBox Label="Cured"
-                         @bind-Value="@Pokemon.IsPokerusCured"
-                         @bind-Value:after="@RefreshService.Refresh"
-                         For="@(() => Pokemon.IsPokerusCured)" />
-
+            <PokerusComponent Pokemon="Pokemon" />
         }
 
         @if (Pokemon is PK5 pk5)
