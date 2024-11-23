@@ -97,24 +97,6 @@ AppState.SelectedSlotsAreValid)
 
     @if (saveGeneration >= 3)
     {
-        <MudSelect Label="Language"
-                   Variant="@Variant.Outlined"
-                   @bind-Value="@Pokemon.Language"
-                   For="@(() => Pokemon.Language)">
-            @foreach (var language in GameInfo.FilteredSources.Languages.DistinctBy(language => language.Value))
-            {
-                <MudSelectItem Value="@language.Value"
-                               @key="@language.Value">
-                    <MudText>
-                        @language.Text
-                    </MudText>
-                </MudSelectItem>
-            }
-        </MudSelect>
-    }
-
-    @if (saveGeneration >= 3)
-    {
         <MudSelect Label="Nature"
                    Variant="@Variant.Outlined"
                    @bind-Value:get="@Pokemon.Nature"
@@ -279,7 +261,7 @@ AppState.SelectedSlotsAreValid)
                          ToStringFunc="@(ability => ability?.Text)" />
     }
 
-    @if (saveGeneration >= 4)
+    @if (saveGeneration >= 3)
     {
         <MudSelect Label="Language"
                    Variant="@Variant.Outlined"
@@ -289,7 +271,9 @@ AppState.SelectedSlotsAreValid)
             {
                 <MudSelectItem Value="@language.Value"
                                @key="@language.Value">
-                    @language.Text
+                    <MudText>
+                        @language.Text
+                    </MudText>
                 </MudSelectItem>
             }
         </MudSelect>
