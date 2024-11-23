@@ -87,7 +87,7 @@
                              For="@(() => saveFile.Money)" />
         </div>
 
-        @if (saveGeneration <= 2)
+        @if (saveGeneration <= 3)
         {
             <div class="form-field">
                 <MudNumericField Label="Coins"
@@ -105,6 +105,7 @@
                              T="@int"
                              Variant="@Variant.Outlined"
                              Min="0"
+                             Max="@ushort.MaxValue"
                              @bind-Value="@saveFile.PlayedHours"
                              For="@(() => saveFile.PlayedHours)" />
         </div>
@@ -114,6 +115,7 @@
                              T="@int"
                              Variant="@Variant.Outlined"
                              Min="0"
+                             Max="59"
                              @bind-Value="@saveFile.PlayedMinutes"
                              For="@(() => saveFile.PlayedMinutes)" />
         </div>
@@ -123,17 +125,18 @@
                              T="@int"
                              Variant="@Variant.Outlined"
                              Min="0"
+                             Max="59"
                              @bind-Value="@saveFile.PlayedSeconds"
                              For="@(() => saveFile.PlayedSeconds)" />
         </div>
 
-        @if (saveFile is SAV1 sav1)
+        @if (saveFile is SAV1 sav)
         {
             <div class="form-field">
                 <MudSelect Label="Battle Style"
                            Variant="@Variant.Outlined"
-                           @bind-Value="@sav1.BattleStyleSwitch"
-                           For="@(() => sav1.BattleStyleSwitch)">
+                           @bind-Value="@sav.BattleStyleSwitch"
+                           For="@(() => sav.BattleStyleSwitch)">
                     <MudSelectItem Value="@true"
                                    @key="@true">
                         Switch
@@ -148,8 +151,8 @@
             <div class="form-field">
                 <MudSelect Label="Text Speed"
                            Variant="@Variant.Outlined"
-                           @bind-Value="@sav1.TextSpeed"
-                           For="@(() => sav1.TextSpeed)">
+                           @bind-Value="@sav.TextSpeed"
+                           For="@(() => sav.TextSpeed)">
                     <MudSelectItem Value="0"
                                    @key="0">
                         0 (Instant)
@@ -187,8 +190,8 @@
 
             <div class="form-field">
                 <MudCheckBox Label="Use Battle Effects"
-                             @bind-Value="@sav1.BattleEffects"
-                             For="@(() => sav1.BattleEffects)" />
+                             @bind-Value="@sav.BattleEffects"
+                             For="@(() => sav.BattleEffects)" />
             </div>
         }
 

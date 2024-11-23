@@ -22,6 +22,7 @@ public partial class TrainerInfoTab : IDisposable
     {
         SAV1 sav => sav.Coin,
         SAV2 sav => sav.Coin,
+        SAV3 sav => sav.Coin,
         _ => 0U,
     };
 
@@ -38,6 +39,9 @@ public partial class TrainerInfoTab : IDisposable
                 sav.Coin = value;
                 break;
             case SAV2 sav:
+                sav.Coin = value;
+                break;
+            case SAV3 sav:
                 sav.Coin = value;
                 break;
         }

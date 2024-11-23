@@ -8,70 +8,6 @@ EntityContext.SplitInvalid or
 EntityContext.MaxInvalid &&
 AppState.SelectedSlotsAreValid)
 {
-    <MudNumericField Label="Level"
-                     Variant="@Variant.Outlined"
-                     @bind-Value="@Pokemon.CurrentLevel"
-                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                     For="@(() => Pokemon.CurrentLevel)" />
-
-    @if (Pokemon is ICombatPower pb)
-    {
-        <MudNumericField Label="CP"
-                         Variant="@Variant.Outlined"
-                         ReadOnly
-                         HideSpinButtons
-                         Value="@pb.Stat_CP"
-                         For="@(() => pb.Stat_CP)" />
-    }
-
-    @if (saveGeneration >= 3)
-    {
-        <MudSelect Label="Nature"
-                   Variant="@Variant.Outlined"
-                   @bind-Value:get="@Pokemon.Nature"
-                   @bind-Value:set="@OnNatureSet"
-                   For="@(() => Pokemon.Nature)">
-            @foreach (var nature in GameInfo.FilteredSources.Natures.DistinctBy(nature => nature.Value))
-            {
-                <MudSelectItem Value="@((Nature)nature.Value)"
-                               @key="@nature.Value">
-                    <MudStack Row>
-                        <MudText>
-                            @nature.Text
-                        </MudText>
-                        <MudText>
-                            @AppService.GetStatModifierString((Nature)nature.Value)
-                        </MudText>
-                    </MudStack>
-                </MudSelectItem>
-            }
-        </MudSelect>
-    }
-
-    @if (saveGeneration >= 8)
-    {
-        <MudSelect Label="Stat Nature"
-                   Variant="@Variant.Outlined"
-                   @bind-Value:get="@Pokemon.StatNature"
-                   @bind-Value:set="@OnStatNatureSet"
-                   For="@(() => Pokemon.StatNature)">
-            @foreach (var nature in GameInfo.FilteredSources.Natures.DistinctBy(nature => nature.Value))
-            {
-                <MudSelectItem Value="@((Nature)nature.Value)"
-                               @key="@nature.Value">
-                    <MudStack Row>
-                        <MudText>
-                            @nature.Text
-                        </MudText>
-                        <MudText>
-                            @AppService.GetStatModifierString((Nature)nature.Value)
-                        </MudText>
-                    </MudStack>
-                </MudSelectItem>
-            }
-        </MudSelect>
-    }
-
     <MudGrid>
 
         <MudItem xs="3">
@@ -595,6 +531,70 @@ AppState.SelectedSlotsAreValid)
         </MudItem>
 
     </MudGrid>
+
+    <MudNumericField Label="Level"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@Pokemon.CurrentLevel"
+                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                     For="@(() => Pokemon.CurrentLevel)" />
+
+    @if (Pokemon is ICombatPower pb)
+    {
+        <MudNumericField Label="CP"
+                         Variant="@Variant.Outlined"
+                         ReadOnly
+                         HideSpinButtons
+                         Value="@pb.Stat_CP"
+                         For="@(() => pb.Stat_CP)" />
+    }
+
+    @if (saveGeneration >= 3)
+    {
+        <MudSelect Label="Nature"
+                   Variant="@Variant.Outlined"
+                   @bind-Value:get="@Pokemon.Nature"
+                   @bind-Value:set="@OnNatureSet"
+                   For="@(() => Pokemon.Nature)">
+            @foreach (var nature in GameInfo.FilteredSources.Natures.DistinctBy(nature => nature.Value))
+            {
+                <MudSelectItem Value="@((Nature)nature.Value)"
+                               @key="@nature.Value">
+                    <MudStack Row>
+                        <MudText>
+                            @nature.Text
+                        </MudText>
+                        <MudText>
+                            @AppService.GetStatModifierString((Nature)nature.Value)
+                        </MudText>
+                    </MudStack>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    }
+
+    @if (saveGeneration >= 8)
+    {
+        <MudSelect Label="Stat Nature"
+                   Variant="@Variant.Outlined"
+                   @bind-Value:get="@Pokemon.StatNature"
+                   @bind-Value:set="@OnStatNatureSet"
+                   For="@(() => Pokemon.StatNature)">
+            @foreach (var nature in GameInfo.FilteredSources.Natures.DistinctBy(nature => nature.Value))
+            {
+                <MudSelectItem Value="@((Nature)nature.Value)"
+                               @key="@nature.Value">
+                    <MudStack Row>
+                        <MudText>
+                            @nature.Text
+                        </MudText>
+                        <MudText>
+                            @AppService.GetStatModifierString((Nature)nature.Value)
+                        </MudText>
+                    </MudStack>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    }
 
     @if (GameInfo.FilteredSources.Moves.Any(m => m.Value == (int)Move.HiddenPower) && Pokemon is not { Context: EntityContext.Gen8 or EntityContext.Gen9 })
     {

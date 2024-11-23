@@ -12,6 +12,7 @@ AppState.SelectedSlotsAreValid)
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Version"
                ToStringFunc="@(version => GameInfo.GetVersionName(version))"
+               Disabled="@(saveGeneration <= 2)"
                For="@(() => Pokemon.Version)">
         @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
         {
