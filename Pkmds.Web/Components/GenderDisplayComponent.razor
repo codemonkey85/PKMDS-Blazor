@@ -1,21 +1,41 @@
 ﻿@GenderDisplayIcon(Gender)
 
-@code{
+@code {
     private static RenderFragment GenderText(string text, string? color) =>
     @<MudText Style="@($"color: {color}; ")">
         @text
     </MudText>;
 
-    private RenderFragment GenderButton(Gender gender, string? icon, string? color) =>
-    @<MudButton StartIcon="@icon"
-                Variant="@Variant.Outlined"
-                Style="@($"color: {color};")"
-                OnClick="@OnClick"
-                title="Click or tap to swap gender.">
-        @GenderDisplayAscii(gender)
-    </MudButton>;
+    private RenderFragment GenderButton(Gender gender, bool includeGenderless) =>
+    @<MudSelect T="@Gender"
+                    Label="Gender"
+                    Variant="@Variant.Outlined"
+                    Value="@gender"
+                    ValueChanged="@OnChange"
+                    Dense>
+        <MudSelectItem Value="@Gender.Male">
+            <MudStack Row>
+                <MudIcon Icon="@Icons.Material.Filled.Male" />
+                @GenderDisplayAscii(Gender.Male)
+            </MudStack>
+        </MudSelectItem>
+        <MudSelectItem Value="@Gender.Female">
+            <MudStack Row>
+                <MudIcon Icon="@Icons.Material.Filled.Female" />
+                @GenderDisplayAscii(Gender.Female)
+            </MudStack>
+        </MudSelectItem>
+        @if (includeGenderless)
+    {
+        <MudSelectItem Value="@Gender.Genderless">
+            <MudStack Row>
+                @GenderDisplayAscii(Gender.Genderless)
+            </MudStack>
+        </MudSelectItem>
+    }
+    </MudSelect>;
 
-    private static RenderFragment GenderIconOnly(string? icon, string? color) =>
-    @<MudIcon Icon="@icon"
-              Style="@($"color: {color};")" />;
+    private static RenderFragment GenderIconOnly(Gender gender) =>
+    @<MudIcon Icon="@GetGenderIcon(gender)"
+         Style="@($"color: {GetGenderColor(gender)};")" />;
 }

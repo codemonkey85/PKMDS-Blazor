@@ -5,39 +5,21 @@ public partial class GenderDisplayComponent
     public Gender Gender { get; set; }
 
     [Parameter]
-    public EventCallback OnClick { get; set; }
+    public EventCallback<Gender> OnChange { get; set; }
 
     [Parameter]
     public bool Disabled { get; set; }
 
-    public RenderFragment GenderDisplayIcon(Gender gender)
-    {
-        var icon = gender switch
-        {
-            Gender.Male => Icons.Material.Filled.Male,
-            Gender.Female => Icons.Material.Filled.Female,
-            Gender.Genderless => Icons.Material.Filled.Block,
-            _ => string.Empty,
-        };
-        var color = GetGenderColor(gender);
+    [Parameter]
+    public bool IncludeGenderless { get; set; }
 
-        return !Disabled && OnClick.HasDelegate
-            ? GenderButton(gender, icon, color)
-            : GenderIconOnly(icon, color);
-    }
-
-    public static RenderFragment GenderDisplayAscii(Gender gender)
+    private static string GetGenderIcon(Gender gender) => gender switch
     {
-        var text = gender switch
-        {
-            Gender.Male => "Male",
-            Gender.Female => "Female",
-            Gender.Genderless => "Genderless",
-            _ => string.Empty,
-        };
-        var color = GetGenderColor(gender);
-        return GenderText(text, color);
-    }
+        Gender.Male => Icons.Material.Filled.Male,
+        Gender.Female => Icons.Material.Filled.Female,
+        Gender.Genderless => Icons.Material.Filled.Block,
+        _ => string.Empty,
+    };
 
     private static string GetGenderColor(Gender gender) => gender switch
     {
@@ -45,4 +27,11 @@ public partial class GenderDisplayComponent
         Gender.Female => Colors.Red.Default,
         _ => string.Empty,
     };
+
+    public RenderFragment GenderDisplayIcon(Gender gender) => !Disabled && OnChange.HasDelegate
+            ? GenderButton(gender, IncludeGenderless)
+            : GenderIconOnly(gender);
+
+    public static RenderFragment GenderDisplayAscii(Gender gender) =>
+        GenderText(gender.ToString(), GetGenderColor(gender));
 }

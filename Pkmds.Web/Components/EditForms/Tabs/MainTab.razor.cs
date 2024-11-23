@@ -66,18 +66,14 @@ public partial class MainTab : IDisposable
 
     private bool? OnShinySet(bool shiny) => Pokemon?.SetIsShiny(shiny);
 
-    private void OnGenderToggle()
+    private void OnGenderToggle(Gender newGender)
     {
         if (Pokemon is not { PersonalInfo.IsDualGender: true, Gender: var gender } pkm)
         {
             return;
         }
 
-        pkm.SetGender((byte)((Gender)gender switch
-        {
-            Gender.Male => Gender.Female,
-            _ => Gender.Male
-        }));
+        pkm.SetGender((byte)newGender);
     }
 
     private void RevertNickname()

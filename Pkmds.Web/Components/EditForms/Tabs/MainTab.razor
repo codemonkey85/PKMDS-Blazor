@@ -64,27 +64,23 @@ AppState.SelectedSlotsAreValid)
 
     @if (saveGeneration >= 2)
     {
-        <div style="height: 48px;"
-             class="d-flex align-center">
+        <MudStack Row
+                  Spacing="1"
+                  Class="d-flex align-center"
+                  Style="@(Pokemon.PersonalInfo.IsDualGender ? string.Empty : "padding-left: 12px;")">
 
-            <MudStack Row
-                      Spacing="1"
-                      Class="d-flex align-center"
-                      Style="@(Pokemon.PersonalInfo.IsDualGender ? string.Empty : "padding-left: 12px;")">
+            <GenderDisplayComponent Gender="@((Gender)Pokemon.Gender)"
+                                    OnChange="@OnGenderToggle"
+                                    Disabled="@(!Pokemon.PersonalInfo.IsDualGender)" />
 
-                <GenderDisplayComponent Gender="@((Gender)Pokemon.Gender)"
-                                        OnClick="@OnGenderToggle"
-                                        Disabled="@(!Pokemon.PersonalInfo.IsDualGender)" />
+            @if (!Pokemon.PersonalInfo.IsDualGender)
+            {
+                <MudText>
+                    - Gender cannot be changed for this Pokémon.
+                </MudText>
+            }
 
-                @if (!Pokemon.PersonalInfo.IsDualGender)
-                {
-                    <MudText>
-                        - Gender cannot be changed for this Pokémon.
-                    </MudText>
-                }
-
-            </MudStack>
-        </div>
+        </MudStack>
     }
 
     <MudNumericField Label="EXP"

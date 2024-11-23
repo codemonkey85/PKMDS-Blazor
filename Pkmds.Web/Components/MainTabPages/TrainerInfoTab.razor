@@ -1,96 +1,211 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
-saveFileEntityContext is not
-EntityContext.None or
-EntityContext.SplitInvalid or
-EntityContext.MaxInvalid)
-{
-    <MudTextField Label="Name"
-                  Variant="@Variant.Outlined"
-                  MaxLength="@saveFile.MaxStringLengthTrainer"
-                  @bind-Value="@saveFile.OT"
-                  For="@(() => saveFile.OT)" />
+<div class="form-grid">
 
-    @switch (saveFile.GetTrainerIDFormat())
+    @if (AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
+    saveFileEntityContext is not
+    EntityContext.None or
+    EntityContext.SplitInvalid or
+    EntityContext.MaxInvalid)
     {
-        case TrainerIDFormat.SixteenBit:
-            {
-                <MudNumericField Label="ID"
-                                 Variant="@Variant.Outlined"
-                                 @bind-Value="@saveFile.TID16"
-                                 Format="@AppService.GetIdFormatString()"
-                                 For="@(() => saveFile.TID16)" />
+        <div class="form-field">
+            <MudTextField Label="Name"
+                          Variant="@Variant.Outlined"
+                          MaxLength="@saveFile.MaxStringLengthTrainer"
+                          @bind-Value="@saveFile.OT"
+                          For="@(() => saveFile.OT)" />
+        </div>
 
-                @if (saveGeneration >= 3)
+        @switch (saveFile.GetTrainerIDFormat())
+        {
+            case TrainerIDFormat.SixteenBit:
                 {
-                    <MudNumericField Label="SID"
-                                     Variant="@Variant.Outlined"
-                                     @bind-Value="@saveFile.SID16"
-                                     Format="@AppService.GetIdFormatString(true)"
-                                     For="@(() => saveFile.SID16)" />
+                    <div class="form-field">
+                        <MudNumericField Label="ID"
+                                         Variant="@Variant.Outlined"
+                                         @bind-Value="@saveFile.TID16"
+                                         Format="@AppService.GetIdFormatString()"
+                                         For="@(() => saveFile.TID16)" />
+                    </div>
+
+                    @if (saveGeneration >= 3)
+                    {
+                        <div class="form-field">
+                            <MudNumericField Label="SID"
+                                             Variant="@Variant.Outlined"
+                                             @bind-Value="@saveFile.SID16"
+                                             Format="@AppService.GetIdFormatString(true)"
+                                             For="@(() => saveFile.SID16)" />
+                        </div>
+                    }
+
                 }
+                break;
 
-            }
-            break;
-
-        case TrainerIDFormat.SixDigit:
-            {
-                <MudNumericField Label="ID"
-                                 Variant="@Variant.Outlined"
-                                 @bind-Value="@saveFile.TrainerTID7"
-                                 Format="@AppService.GetIdFormatString()"
-                                 For="@(() => saveFile.TrainerTID7)" />
-
-                @if (saveGeneration >= 3)
+            case TrainerIDFormat.SixDigit:
                 {
-                    <MudNumericField Label="SID"
-                                     Variant="@Variant.Outlined"
-                                     @bind-Value="@saveFile.TrainerSID7"
-                                     Format="@AppService.GetIdFormatString(true)"
-                                     For="@(() => saveFile.TrainerSID7)" />
-                }
+                    <div class="form-field">
+                        <MudNumericField Label="ID"
+                                         Variant="@Variant.Outlined"
+                                         @bind-Value="@saveFile.TrainerTID7"
+                                         Format="@AppService.GetIdFormatString()"
+                                         For="@(() => saveFile.TrainerTID7)" />
+                    </div>
 
-            }
-            break;
+                    @if (saveGeneration >= 3)
+                    {
+                        <div class="form-field">
+                            <MudNumericField Label="SID"
+                                             Variant="@Variant.Outlined"
+                                             @bind-Value="@saveFile.TrainerSID7"
+                                             Format="@AppService.GetIdFormatString(true)"
+                                             For="@(() => saveFile.TrainerSID7)" />
+                        </div>
+                    }
+
+                }
+                break;
+        }
+
+        @if (saveGeneration >= 2)
+        {
+            <div class="form-field">
+                <GenderDisplayComponent Gender="@((Gender)saveFile.Gender)"
+                                        OnChange="@OnGenderToggle" />
+            </div>
+        }
+
+        <div class="form-field">
+            <MudNumericField Label="Money"
+                             T="@uint"
+                             Variant="@Variant.Outlined"
+                             Adornment="@Adornment.Start"
+                             AdornmentIcon="@Constants.PokeDollarSvg"
+                             Min="0"
+                             Max="@((uint)saveFile.MaxMoney)"
+                             @bind-Value="@saveFile.Money"
+                             For="@(() => saveFile.Money)" />
+        </div>
+
+        @if (saveGeneration <= 2)
+        {
+            <div class="form-field">
+                <MudNumericField Label="Coins"
+                                 T="@uint"
+                                 Value="@GetCoins()"
+                                 ValueChanged="@SetCoins"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="@((uint)saveFile.MaxCoins)" />
+            </div>
+        }
+
+        <div class="form-field">
+            <MudNumericField Label="Hours"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             @bind-Value="@saveFile.PlayedHours"
+                             For="@(() => saveFile.PlayedHours)" />
+        </div>
+
+        <div class="form-field">
+            <MudNumericField Label="Minutes"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             @bind-Value="@saveFile.PlayedMinutes"
+                             For="@(() => saveFile.PlayedMinutes)" />
+        </div>
+
+        <div class="form-field">
+            <MudNumericField Label="Seconds"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             @bind-Value="@saveFile.PlayedSeconds"
+                             For="@(() => saveFile.PlayedSeconds)" />
+        </div>
+
+        @if (saveFile is SAV1 sav1)
+        {
+            <div class="form-field">
+                <MudSelect Label="Battle Style"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav1.BattleStyleSwitch"
+                           For="@(() => sav1.BattleStyleSwitch)">
+                    <MudSelectItem Value="@true"
+                                   @key="@true">
+                        Switch
+                    </MudSelectItem>
+                    <MudSelectItem Value="@false"
+                                   @key="@false">
+                        Set
+                    </MudSelectItem>
+                </MudSelect>
+            </div>
+
+            <div class="form-field">
+                <MudSelect Label="Text Speed"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav1.TextSpeed"
+                           For="@(() => sav1.TextSpeed)">
+                    <MudSelectItem Value="0"
+                                   @key="0">
+                        0 (Instant)
+                    </MudSelectItem>
+                    <MudSelectItem Value="1"
+                                   @key="1">
+                        1 (Fast)
+                    </MudSelectItem>
+                    <MudSelectItem Value="2"
+                                   @key="2">
+                        2
+                    </MudSelectItem>
+                    <MudSelectItem Value="3"
+                                   @key="3">
+                        3 (Normal)
+                    </MudSelectItem>
+                    <MudSelectItem Value="4"
+                                   @key="4">
+                        4
+                    </MudSelectItem>
+                    <MudSelectItem Value="5"
+                                   @key="5">
+                        5 (Slow)
+                    </MudSelectItem>
+                    <MudSelectItem Value="6"
+                                   @key="6">
+                        6
+                    </MudSelectItem>
+                    <MudSelectItem Value="7"
+                                   @key="7">
+                        7
+                    </MudSelectItem>
+                </MudSelect>
+            </div>
+
+            <div class="form-field">
+                <MudCheckBox Label="Use Battle Effects"
+                             @bind-Value="@sav1.BattleEffects"
+                             For="@(() => sav1.BattleEffects)" />
+            </div>
+        }
+
+    }
+</div>
+
+<BadgesComponent />
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        padding: 16px;
     }
 
-    @if (saveGeneration >= 2)
-    {
-        <GenderDisplayComponent Gender="@((Gender)saveFile.Gender)"
-                                OnClick="@OnGenderToggle" />
+    .form-field {
+        margin-bottom: 8px;
     }
-
-    <MudNumericField Label="Money"
-                     T="@uint"
-                     Variant="@Variant.Outlined"
-                     Adornment="@Adornment.Start"
-                     AdornmentIcon="@Constants.PokeDollarSvg"
-                     Min="0"
-                     Max="@((uint)saveFile.MaxMoney)"
-                     @bind-Value="@saveFile.Money"
-                     For="@(() => saveFile.Money)" />
-
-    <MudNumericField Label="Hours"
-                     T="@int"
-                     Variant="@Variant.Outlined"
-                     Min="0"
-                     @bind-Value="@saveFile.PlayedHours"
-                     For="@(() => saveFile.PlayedHours)" />
-
-    <MudNumericField Label="Minutes"
-                     T="@int"
-                     Variant="@Variant.Outlined"
-                     Min="0"
-                     @bind-Value="@saveFile.PlayedMinutes"
-                     For="@(() => saveFile.PlayedMinutes)" />
-
-    <MudNumericField Label="Seconds"
-                     T="@int"
-                     Variant="@Variant.Outlined"
-                     Min="0"
-                     @bind-Value="@saveFile.PlayedSeconds"
-                     For="@(() => saveFile.PlayedSeconds)" />
-
-    <BadgesComponent />
-}
+</style>

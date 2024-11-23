@@ -40,17 +40,13 @@ public partial class OtMiscTab : IDisposable
         }
     }
 
-    private void OnGenderToggle()
+    private void OnGenderToggle(Gender newGender)
     {
         if (Pokemon is null)
         {
             return;
         }
 
-        Pokemon.OriginalTrainerGender = (byte)((Gender)Pokemon.OriginalTrainerGender switch
-        {
-            Gender.Male => Gender.Female,
-            _ => Gender.Male
-        });
+        Pokemon.OriginalTrainerGender = (byte)newGender;
     }
 }
