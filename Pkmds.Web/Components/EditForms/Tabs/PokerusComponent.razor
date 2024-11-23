@@ -17,9 +17,10 @@
                    @bind-Value:set="@((int strain) => SetPokerusStrain(strain))">
             @for (var i = 0; i < 16; i++)
             {
-                <MudSelectItem Value="@i"
-                               @key="@i">
-                    @i
+                var localIndex = i;
+                <MudSelectItem Value="@localIndex"
+                               @key="@localIndex">
+                    @localIndex
                 </MudSelectItem>
             }
         </MudSelect>
@@ -29,11 +30,12 @@
             <MudSelect Label="Days"
                        @bind-Value:get="@pokemon.PokerusDays"
                        @bind-Value:set="@((int days) => SetPokerusDays(days))">
-                @for (var i = 0; i < 3; i++)
+                @foreach (var day in PokerusDays)
                 {
-                    <MudSelectItem Value="@i"
-                                   @key="@i">
-                        @i
+                    var localDay = day;
+                    <MudSelectItem Value="@localDay"
+                                   @key="@localDay">
+                        @localDay
                     </MudSelectItem>
                 }
             </MudSelect>
