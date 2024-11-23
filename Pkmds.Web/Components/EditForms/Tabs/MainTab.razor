@@ -69,8 +69,8 @@ AppState.SelectedSlotsAreValid)
 
             <MudStack Row
                       Spacing="1"
-                      Class="@($"d-flex align-center")"
-                      Style="@(Pokemon.PersonalInfo.IsDualGender ? string.Empty : "padding-left: 12px")">
+                      Class="d-flex align-center"
+                      Style="@(Pokemon.PersonalInfo.IsDualGender ? string.Empty : "padding-left: 12px;")">
 
                 <GenderDisplayComponent Gender="@((Gender)Pokemon.Gender)"
                                         OnClick="@OnGenderToggle"
@@ -98,6 +98,24 @@ AppState.SelectedSlotsAreValid)
                      @bind-Value="@Pokemon.CurrentLevel"
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.CurrentLevel)" />
+
+    @if (saveGeneration >= 3)
+    {
+        <MudSelect Label="Language"
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@Pokemon.Language"
+                   For="@(() => Pokemon.Language)">
+            @foreach (var language in GameInfo.FilteredSources.Languages.DistinctBy(language => language.Value))
+            {
+                <MudSelectItem Value="@language.Value"
+                               @key="@language.Value">
+                    <MudText>
+                        @language.Text
+                    </MudText>
+                </MudSelectItem>
+            }
+        </MudSelect>
+    }
 
     @if (saveGeneration >= 3)
     {
@@ -290,10 +308,13 @@ AppState.SelectedSlotsAreValid)
                          Max="255"
                          @bind-Value="@Pokemon.CurrentFriendship"
                          For="@(() => Pokemon.CurrentFriendship)" />
+    }
 
-        <MudStack Row
-                  Wrap="@Wrap.Wrap">
+    <MudStack Row
+              Wrap="@Wrap.Wrap">
 
+        @if (saveGeneration >= 2)
+        {
             <MudCheckBox Label="Is Egg"
                          @bind-Value="@Pokemon.IsEgg"
                          @bind-Value:after="@RefreshService.Refresh"
@@ -309,19 +330,20 @@ AppState.SelectedSlotsAreValid)
                          @bind-Value:after="@RefreshService.Refresh"
                          For="@(() => Pokemon.IsPokerusCured)" />
 
-            @if (Pokemon is PK5 pk5)
-            {
-                <MudCheckBox Label="N's Sparkle"
-                             @bind-Value="@pk5.NSparkle"
-                             @bind-Value:after="@RefreshService.Refresh"
-                             For="@(() => pk5.NSparkle)" />
-            }
+        }
 
-            <MudCheckBox Label="Shiny"
-                         @bind-Value:get="@Pokemon.IsShiny"
-                         @bind-Value:set="@(isShiny => OnShinySet(isShiny))"
-                         For="@(() => Pokemon.IsShiny)" />
+        @if (Pokemon is PK5 pk5)
+        {
+            <MudCheckBox Label="N's Sparkle"
+                         @bind-Value="@pk5.NSparkle"
+                         @bind-Value:after="@RefreshService.Refresh"
+                         For="@(() => pk5.NSparkle)" />
+        }
 
-        </MudStack>
-    }
+        <MudCheckBox Label="Shiny"
+                     @bind-Value:get="@Pokemon.IsShiny"
+                     @bind-Value:set="@(isShiny => OnShinySet(isShiny))"
+                     For="@(() => Pokemon.IsShiny)" />
+
+    </MudStack>
 }
