@@ -53,4 +53,18 @@ public partial class TrainerInfoTab : IDisposable
 
     private Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchPokemonNames(searchString));
+
+    private ComboItem GetTrainerCardPokemon(SAV3FRLG sav, int index)
+    {
+        var g3Species = sav.GetWork(0x43 + index);
+        var species = SpeciesConverter.GetNational3(g3Species);
+        return AppService.GetSpeciesComboItem(species);
+    }
+
+    private static void SetTrainerCardPokemon(SAV3FRLG sav, int index, ComboItem speciesComboItem)
+    {
+        var species = (ushort)speciesComboItem.Value;
+        var g3Species = SpeciesConverter.GetInternal3(species);
+        sav.SetWork(0x43 + index, g3Species);
+    }
 }
