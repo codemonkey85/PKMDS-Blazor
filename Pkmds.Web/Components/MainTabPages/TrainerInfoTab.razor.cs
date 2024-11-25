@@ -12,10 +12,15 @@ public partial class TrainerInfoTab : IDisposable
 
     private TimeSpan? GameStartedTime { get; set; }
 
+    private DateTime? HallOfFameDate { get; set; }
+
+    private TimeSpan? HallOfFameTime { get; set; }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         (GameStartedDate, GameStartedTime) = GetGameStarted();
+        (HallOfFameDate, HallOfFameTime) = GetHallOfFame();
     }
 
     private void OnGenderToggle(Gender newGender)
@@ -114,6 +119,46 @@ public partial class TrainerInfoTab : IDisposable
         {
             case SAV4 sav:
                 sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+        };
+    }
+
+    private (DateTime? Date, TimeSpan? Time) GetHallOfFame()
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return (null, null);
+        }
+
+        DateTime date;
+        DateTime time;
+
+        switch (saveFile)
+        {
+            case SAV4 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            default:
+                return (null, null);
+        };
+
+        return (date, time.TimeOfDay);
+    }
+
+    private void UpdateHallOfFame()
+    {
+        if (AppState.SaveFile is not { } saveFile || HallOfFameDate is null || HallOfFameTime is null)
+        {
+            return;
+        }
+
+        var date = HallOfFameDate.Value;
+        var time = HallOfFameTime.Value;
+
+        switch (saveFile)
+        {
+            case SAV4 sav:
+                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
         };
     }

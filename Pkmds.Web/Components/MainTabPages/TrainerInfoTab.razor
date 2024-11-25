@@ -89,7 +89,24 @@
                 <MudTimePicker Label="Time Started"
                                @bind-Time="@GameStartedTime"
                                @bind-Time:after="@UpdateGameStarted"
-                               TimeFormat="hh:mm:ss"
+                               TimeFormat="HH:mm:ss"
+                               Variant="@Variant.Outlined"
+                               PickerVariant="@PickerVariant.Inline" />
+            </div>
+
+            <div class="form-field">
+                <MudDatePicker Label="Hall of Fame Day"
+                               @bind-Date="@HallOfFameDate"
+                               @bind-Date:after="@UpdateHallOfFame"
+                               Variant="@Variant.Outlined"
+                               PickerVariant="@PickerVariant.Inline" />
+            </div>
+
+            <div class="form-field">
+                <MudTimePicker Label="Hall of Fame Time"
+                               @bind-Time="@HallOfFameTime"
+                               @bind-Time:after="@UpdateHallOfFame"
+                               TimeFormat="HH:mm:ss"
                                Variant="@Variant.Outlined"
                                PickerVariant="@PickerVariant.Inline" />
             </div>
