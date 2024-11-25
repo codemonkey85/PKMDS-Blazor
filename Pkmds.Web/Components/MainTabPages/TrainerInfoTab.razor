@@ -130,13 +130,13 @@
                              For="@(() => saveFile.PlayedSeconds)" />
         </div>
 
-        @if (saveFile is SAV1 sav)
+        @if (saveFile is SAV1 sav1)
         {
             <div class="form-field">
                 <MudSelect Label="Battle Style"
                            Variant="@Variant.Outlined"
-                           @bind-Value="@sav.BattleStyleSwitch"
-                           For="@(() => sav.BattleStyleSwitch)">
+                           @bind-Value="@sav1.BattleStyleSwitch"
+                           For="@(() => sav1.BattleStyleSwitch)">
                     <MudSelectItem Value="@true"
                                    @key="@true">
                         Switch
@@ -151,8 +151,8 @@
             <div class="form-field">
                 <MudSelect Label="Text Speed"
                            Variant="@Variant.Outlined"
-                           @bind-Value="@sav.TextSpeed"
-                           For="@(() => sav.TextSpeed)">
+                           @bind-Value="@sav1.TextSpeed"
+                           For="@(() => sav1.TextSpeed)">
                     <MudSelectItem Value="0"
                                    @key="0">
                         0 (Instant)
@@ -190,11 +190,91 @@
 
             <div class="form-field">
                 <MudCheckBox Label="Use Battle Effects"
-                             @bind-Value="@sav.BattleEffects"
-                             For="@(() => sav.BattleEffects)" />
+                             @bind-Value="@sav1.BattleEffects"
+                             For="@(() => sav1.BattleEffects)" />
             </div>
         }
 
+        @if (saveFile is SAV2 sav2)
+        {
+            <div class="form-field">
+                <MudSelect Label="Battle Style"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav2.BattleStyleSwitch"
+                           For="@(() => sav2.BattleStyleSwitch)">
+                    <MudSelectItem Value="@true"
+                                   @key="@true">
+                        Switch
+                    </MudSelectItem>
+                    <MudSelectItem Value="@false"
+                                   @key="@false">
+                        Set
+                    </MudSelectItem>
+                </MudSelect>
+            </div>
+
+            <div class="form-field">
+                <MudSelect Label="Text Speed"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav2.TextSpeed"
+                           For="@(() => sav2.TextSpeed)">
+                    <MudSelectItem Value="0"
+                                   @key="0">
+                        0 (Instant)
+                    </MudSelectItem>
+                    <MudSelectItem Value="1"
+                                   @key="1">
+                        1 (Fast)
+                    </MudSelectItem>
+                    <MudSelectItem Value="2"
+                                   @key="2">
+                        2
+                    </MudSelectItem>
+                    <MudSelectItem Value="3"
+                                   @key="3">
+                        3 (Normal)
+                    </MudSelectItem>
+                    <MudSelectItem Value="4"
+                                   @key="4">
+                        4
+                    </MudSelectItem>
+                    <MudSelectItem Value="5"
+                                   @key="5">
+                        5 (Slow)
+                    </MudSelectItem>
+                    <MudSelectItem Value="6"
+                                   @key="6">
+                        6
+                    </MudSelectItem>
+                    <MudSelectItem Value="7"
+                                   @key="7">
+                        7
+                    </MudSelectItem>
+                </MudSelect>
+            </div>
+
+            <div class="form-field">
+                <MudSelect Label="Sound Type"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav2.Sound"
+                           For="@(() => sav2.Sound)">
+                    <MudSelectItem Value="0"
+                                   @key="0">
+                        Mono
+                    </MudSelectItem>
+                    <MudSelectItem Value="1"
+                                   @key="1">
+                        Stereo
+                    </MudSelectItem>
+                </MudSelect>
+            </div>
+
+            <div class="form-field">
+                <MudCheckBox Label="Use Battle Effects"
+                             @bind-Value="@sav2.BattleEffects"
+                             For="@(() => sav2.BattleEffects)" />
+            </div>
+        }
     }
 </div>
 
