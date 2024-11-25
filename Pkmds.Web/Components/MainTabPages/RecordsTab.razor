@@ -1,0 +1,58 @@
+﻿@inherits BasePkmdsComponent
+
+@if (SaveFile is not null)
+{
+    <MudSelect Label="Record"
+               @bind-Value="CurrentRecordIndex"
+               @bind-Value:after="GetRecord"
+               Variant="Variant.Filled">
+        @foreach (var (index, record) in RecordComboItems.Index())
+        {
+            var localIndex = index;
+            <MudSelectItem Value="@localIndex"
+                           @key="@localIndex">
+                @record.Text
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudNumericField Label="Record Value"
+                     Variant="@Variant.Outlined"
+                     Min="@uint.MinValue"
+                     Max="@uint.MaxValue"
+                     @bind-Value:get="@CurrentRecordValue"
+                     @bind-Value:set="@SetCurrentRecordValue" />
+
+    @if (HallOfFameIndexSelected)
+    {
+        <div class="form-grid">
+            <div class="form-field">
+                <MudNumericField Label="Hours"
+                                 T="@uint"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="9999"
+                                 @bind-Value="@HallOfFameHours"
+                                 @bind-Value:after="@ChangeFame" />
+            </div>
+            <div class="form-field">
+                <MudNumericField Label="Minutes"
+                                 T="@byte"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="59"
+                                 @bind-Value="@HallOfFameMinutes"
+                                 @bind-Value:after="@ChangeFame" />
+            </div>
+            <div class="form-field">
+                <MudNumericField Label="Seconds"
+                                 T="@byte"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="59"
+                                 @bind-Value="@HallOfFameSeconds"
+                                 @bind-Value:after="@ChangeFame" />
+            </div>
+        </div>
+    }
+}

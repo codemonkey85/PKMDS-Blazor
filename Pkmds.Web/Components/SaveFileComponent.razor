@@ -58,5 +58,12 @@ else
             </MudTabPanel>
         }
 
+        @if (saveFile.Generation == 3 && saveFile is SAV3 sav3)
+        {
+            <MudTabPanel Text="Records">
+                <RecordsTab SaveFile="@sav3" />
+            </MudTabPanel>
+        }
+
     </MudTabs>
 }
