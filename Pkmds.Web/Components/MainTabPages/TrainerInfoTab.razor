@@ -75,6 +75,26 @@
             </div>
         }
 
+        @if (saveGeneration >= 4)
+        {
+            <div class="form-field">
+                <MudDatePicker Label="Day Started"
+                               @bind-Date="@GameStartedDate"
+                               @bind-Date:after="@UpdateGameStarted"
+                               Variant="@Variant.Outlined"
+                               PickerVariant="@PickerVariant.Inline" />
+            </div>
+
+            <div class="form-field">
+                <MudTimePicker Label="Time Started"
+                               @bind-Time="@GameStartedTime"
+                               @bind-Time:after="@UpdateGameStarted"
+                               TimeFormat="hh:mm:ss"
+                               Variant="@Variant.Outlined"
+                               PickerVariant="@PickerVariant.Inline" />
+            </div>
+        }
+
         @if (saveFile is SAV1 sav1Rival)
         {
             <div class="form-field">

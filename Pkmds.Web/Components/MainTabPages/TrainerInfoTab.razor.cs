@@ -8,6 +8,16 @@ public partial class TrainerInfoTab : IDisposable
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
+    private DateTime? GameStartedDate { get; set; }
+
+    private TimeSpan? GameStartedTime { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        (GameStartedDate, GameStartedTime) = GetGameStarted();
+    }
+
     private void OnGenderToggle(Gender newGender)
     {
         if (AppState.SaveFile is not { } saveFile)
@@ -66,5 +76,45 @@ public partial class TrainerInfoTab : IDisposable
         var species = (ushort)speciesComboItem.Value;
         var g3Species = SpeciesConverter.GetInternal3(species);
         sav.SetWork(0x43 + index, g3Species);
+    }
+
+    private (DateTime? Date, TimeSpan? Time) GetGameStarted()
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return (null, null);
+        }
+
+        DateTime date;
+        DateTime time;
+
+        switch (saveFile)
+        {
+            case SAV4 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                break;
+            default:
+                return (null, null);
+        };
+
+        return (date, time.TimeOfDay);
+    }
+
+    private void UpdateGameStarted()
+    {
+        if (AppState.SaveFile is not { } saveFile || GameStartedDate is null || GameStartedTime is null)
+        {
+            return;
+        }
+
+        var date = GameStartedDate.Value;
+        var time = GameStartedTime.Value;
+
+        switch (saveFile)
+        {
+            case SAV4 sav:
+                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+        };
     }
 }
