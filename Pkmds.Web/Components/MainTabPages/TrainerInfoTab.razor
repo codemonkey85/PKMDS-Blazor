@@ -94,22 +94,25 @@
                                PickerVariant="@PickerVariant.Inline" />
             </div>
 
-            <div class="form-field">
-                <MudDatePicker Label="Hall of Fame Day"
-                               @bind-Date="@HallOfFameDate"
-                               @bind-Date:after="@UpdateHallOfFame"
-                               Variant="@Variant.Outlined"
-                               PickerVariant="@PickerVariant.Inline" />
-            </div>
+            @if (saveGeneration <= 7)
+            {
+                <div class="form-field">
+                    <MudDatePicker Label="Hall of Fame Day"
+                                   @bind-Date="@HallOfFameDate"
+                                   @bind-Date:after="@UpdateHallOfFame"
+                                   Variant="@Variant.Outlined"
+                                   PickerVariant="@PickerVariant.Inline" />
+                </div>
 
-            <div class="form-field">
-                <MudTimePicker Label="Hall of Fame Time"
-                               @bind-Time="@HallOfFameTime"
-                               @bind-Time:after="@UpdateHallOfFame"
-                               TimeFormat="HH:mm:ss"
-                               Variant="@Variant.Outlined"
-                               PickerVariant="@PickerVariant.Inline" />
-            </div>
+                <div class="form-field">
+                    <MudTimePicker Label="Hall of Fame Time"
+                                   @bind-Time="@HallOfFameTime"
+                                   @bind-Time:after="@UpdateHallOfFame"
+                                   TimeFormat="HH:mm:ss"
+                                   Variant="@Variant.Outlined"
+                                   PickerVariant="@PickerVariant.Inline" />
+                </div>
+            }
         }
 
         @if (saveFile is SAV1 sav1Rival)
