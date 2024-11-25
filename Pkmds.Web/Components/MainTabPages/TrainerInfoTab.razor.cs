@@ -50,4 +50,7 @@ public partial class TrainerInfoTab : IDisposable
                 break;
         }
     }
+
+    private Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString, CancellationToken token) =>
+        Task.FromResult(AppService.SearchPokemonNames(searchString));
 }

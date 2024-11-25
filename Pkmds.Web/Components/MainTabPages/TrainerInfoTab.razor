@@ -75,6 +75,49 @@
             </div>
         }
 
+        @if (saveFile is SAV1 sav1Rival)
+        {
+            <div class="form-field">
+                <MudTextField Label="Rival Name"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@sav1Rival.MaxStringLengthTrainer"
+                              @bind-Value="@sav1Rival.Rival"
+                              For="@(() => sav1Rival.Rival)" />
+            </div>
+
+            <div class="form-field">
+                <MudAutocomplete T="@ComboItem"
+                                 Label="Rival Starter"
+                                 Variant="@Variant.Outlined"
+                                 @bind-Value:get="@(AppService.GetSpeciesComboItem(sav1Rival.RivalStarter))"
+                                 @bind-Value:set="@(species => { sav1Rival.RivalStarter = (byte)species.Value; })"
+                                 SearchFunc="@SearchPokemonNames"
+                                 ToStringFunc="@(species => species?.Text)" />
+            </div>
+        }
+
+        @if (saveFile is SAV2 sav2Rival)
+        {
+            <div class="form-field">
+                <MudTextField Label="Rival Name"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@sav2Rival.MaxStringLengthTrainer"
+                              @bind-Value="@sav2Rival.Rival"
+                              For="@(() => sav2Rival.Rival)" />
+            </div>
+        }
+
+        @if (saveFile is SAV3FRLG sav3Rival)
+        {
+            <div class="form-field">
+                <MudTextField Label="Rival Name"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@sav3Rival.MaxStringLengthTrainer"
+                              @bind-Value="@sav3Rival.RivalName"
+                              For="@(() => sav3Rival.RivalName)" />
+            </div>
+        }
+
         <div class="form-field">
             <MudNumericField Label="Money"
                              T="@uint"
@@ -97,6 +140,29 @@
                                  Variant="@Variant.Outlined"
                                  Min="0"
                                  Max="@((uint)saveFile.MaxCoins)" />
+            </div>
+        }
+
+        if (saveFile is SAV3E sav3)
+        {
+            <div class="form-field">
+                <MudNumericField Label="BP"
+                                 T="@uint"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="9999"
+                                 @bind-Value="@sav3.BP"
+                                 For="@(() => sav3.BP)" />
+            </div>
+
+            <div class="form-field">
+                <MudNumericField Label="Earned BP"
+                                 T="@uint"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="@uint.MaxValue"
+                                 @bind-Value="@sav3.BPEarned"
+                                 For="@(() => sav3.BPEarned)" />
             </div>
         }
 
@@ -130,13 +196,13 @@
                              For="@(() => saveFile.PlayedSeconds)" />
         </div>
 
-        @if (saveFile is SAV1 sav1)
+        @if (saveFile is SAV1 sav1Options)
         {
             <div class="form-field">
                 <MudSelect Label="Battle Style"
                            Variant="@Variant.Outlined"
-                           @bind-Value="@sav1.BattleStyleSwitch"
-                           For="@(() => sav1.BattleStyleSwitch)">
+                           @bind-Value="@sav1Options.BattleStyleSwitch"
+                           For="@(() => sav1Options.BattleStyleSwitch)">
                     <MudSelectItem Value="@true"
                                    @key="@true">
                         Switch
@@ -151,8 +217,8 @@
             <div class="form-field">
                 <MudSelect Label="Text Speed"
                            Variant="@Variant.Outlined"
-                           @bind-Value="@sav1.TextSpeed"
-                           For="@(() => sav1.TextSpeed)">
+                           @bind-Value="@sav1Options.TextSpeed"
+                           For="@(() => sav1Options.TextSpeed)">
                     <MudSelectItem Value="0"
                                    @key="0">
                         0 (Instant)
@@ -190,8 +256,8 @@
 
             <div class="form-field">
                 <MudCheckBox Label="Use Battle Effects"
-                             @bind-Value="@sav1.BattleEffects"
-                             For="@(() => sav1.BattleEffects)" />
+                             @bind-Value="@sav1Options.BattleEffects"
+                             For="@(() => sav1Options.BattleEffects)" />
             </div>
         }
 
