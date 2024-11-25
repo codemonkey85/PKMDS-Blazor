@@ -98,6 +98,15 @@ public partial class TrainerInfoTab : IDisposable
             case SAV4 sav:
                 DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
                 break;
+            case SAV5 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                break;
+            case SAV6 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                break;
+            case SAV7 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                break;
             default:
                 return (null, null);
         };
@@ -120,6 +129,17 @@ public partial class TrainerInfoTab : IDisposable
             case SAV4 sav:
                 sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
+            case SAV5 sav:
+                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV6 sav:
+                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV7 sav:
+                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            default:
+                return;
         };
     }
 
@@ -136,6 +156,15 @@ public partial class TrainerInfoTab : IDisposable
         switch (saveFile)
         {
             case SAV4 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            case SAV5 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            case SAV6 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            case SAV7 sav:
                 DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
                 break;
             default:
@@ -160,6 +189,17 @@ public partial class TrainerInfoTab : IDisposable
             case SAV4 sav:
                 sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
+            case SAV5 sav:
+                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV6 sav:
+                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV7 sav:
+                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            default:
+                return;
         };
     }
 }
