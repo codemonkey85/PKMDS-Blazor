@@ -75,6 +75,39 @@
             </div>
         }
 
+        @if (saveFile is SAV4 sav4Geo)
+        {
+            <div class="form-field">
+                <MudSelect Label="Country"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav4Geo.Country"
+                           @bind-Value:after="@UpdateCountry"
+                           For="@(() => sav4Geo.Country)">
+                    @foreach (var country in Countries.OrderBy(c => c.Text))
+                    {
+                        <MudSelectItem Value="@country.Value"
+                                       @key="@country.Value">
+                            @country.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="form-field">
+                <MudSelect Label="Region"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav4Geo.Region"
+                           For="@(() => sav4Geo.Region)">
+                    @foreach (var region in Regions)
+                    {
+                        <MudSelectItem Value="@region.Value"
+                                       @key="@region.Value">
+                            @region.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        }
+
         <div class="form-field">
             <MudNumericField Label="Hours"
                              T="@int"

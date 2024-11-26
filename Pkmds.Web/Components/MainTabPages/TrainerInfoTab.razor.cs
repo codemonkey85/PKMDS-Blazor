@@ -16,11 +16,35 @@ public partial class TrainerInfoTab : IDisposable
 
     private TimeSpan? HallOfFameTime { get; set; }
 
+    private List<ComboItem> Countries { get; set; } = [];
+
+    private List<ComboItem> Regions { get; set; } = [];
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         (GameStartedDate, GameStartedTime) = GetGameStarted();
         (HallOfFameDate, HallOfFameTime) = GetHallOfFame();
+        Countries = Util.GetCountryRegionList("countries", GameInfo.CurrentLanguage);
+    }
+
+    private void UpdateCountry()
+    {
+        var countryId = AppState.SaveFile switch
+        {
+            SAV4 sav4Geo => sav4Geo.Country,
+            SAV5 sav5Geo => sav5Geo.Country,
+            SAV6 sav6Geo => sav6Geo.Country,
+            SAV7 sav7Geo => sav7Geo.Country,
+            _ => 0,
+        };
+
+        if (countryId == 0)
+        {
+            return;
+        }
+
+        Regions = Util.GetCountryRegionList($"sr_{countryId:000}", GameInfo.CurrentLanguage);
     }
 
     private void OnGenderToggle(Gender newGender)
