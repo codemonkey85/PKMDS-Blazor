@@ -25,12 +25,33 @@ public partial class TrainerInfoTab : IDisposable
         base.OnParametersSet();
         (GameStartedDate, GameStartedTime) = GetGameStarted();
         (HallOfFameDate, HallOfFameTime) = GetHallOfFame();
-        Countries = Util.GetCountryRegionList("countries", GameInfo.CurrentLanguage);
+
+        if (AppState.SaveFile is not { Generation: { } saveGeneration })
+        {
+            return;
+        }
+
+        var countriesName = saveGeneration switch
+        {
+            4 => "gen4_countries",
+            5 => "gen5_countries",
+            6 => "countries",
+            7 => "countries",
+            _ => "countries",
+        };
+
+        Countries = Util.GetCountryRegionList(countriesName, GameInfo.CurrentLanguage);
+        UpdateCountry();
     }
 
     private void UpdateCountry()
     {
-        var countryId = AppState.SaveFile switch
+        if (AppState.SaveFile is not { Generation: { } saveGeneration } saveFile)
+        {
+            return;
+        }
+
+        var countryId = saveFile switch
         {
             SAV4 sav4Geo => sav4Geo.Country,
             SAV5 sav5Geo => sav5Geo.Country,
@@ -41,10 +62,30 @@ public partial class TrainerInfoTab : IDisposable
 
         if (countryId == 0)
         {
+            var regionsName = saveGeneration switch
+            {
+                4 => "gen4_sr_default",
+                5 => "gen5_sr_default",
+                _ => string.Empty,
+            };
+
+            if (string.IsNullOrEmpty(regionsName))
+            {
+                return;
+            }
+
+            Regions = Util.GetCountryRegionList(regionsName, GameInfo.CurrentLanguage);
             return;
         }
 
-        Regions = Util.GetCountryRegionList($"sr_{countryId:000}", GameInfo.CurrentLanguage);
+        var regionPrefix = saveGeneration switch
+        {
+            4 => "gen4_",
+            5 => "gen5_",
+            _ => string.Empty,
+        };
+
+        Regions = Util.GetCountryRegionList($"{regionPrefix}sr_{countryId:000}", GameInfo.CurrentLanguage);
     }
 
     private void OnGenderToggle(Gender newGender)
