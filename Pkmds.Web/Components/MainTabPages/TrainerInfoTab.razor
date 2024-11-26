@@ -75,6 +75,36 @@
             </div>
         }
 
+        <div class="form-field">
+            <MudNumericField Label="Hours"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             Max="@ushort.MaxValue"
+                             @bind-Value="@saveFile.PlayedHours"
+                             For="@(() => saveFile.PlayedHours)" />
+        </div>
+
+        <div class="form-field">
+            <MudNumericField Label="Minutes"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             Max="59"
+                             @bind-Value="@saveFile.PlayedMinutes"
+                             For="@(() => saveFile.PlayedMinutes)" />
+        </div>
+
+        <div class="form-field">
+            <MudNumericField Label="Seconds"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             Max="59"
+                             @bind-Value="@saveFile.PlayedSeconds"
+                             For="@(() => saveFile.PlayedSeconds)" />
+        </div>
+
         @if (saveGeneration >= 4)
         {
             <div class="form-field">
@@ -206,36 +236,6 @@
             </div>
         }
 
-        <div class="form-field">
-            <MudNumericField Label="Hours"
-                             T="@int"
-                             Variant="@Variant.Outlined"
-                             Min="0"
-                             Max="@ushort.MaxValue"
-                             @bind-Value="@saveFile.PlayedHours"
-                             For="@(() => saveFile.PlayedHours)" />
-        </div>
-
-        <div class="form-field">
-            <MudNumericField Label="Minutes"
-                             T="@int"
-                             Variant="@Variant.Outlined"
-                             Min="0"
-                             Max="59"
-                             @bind-Value="@saveFile.PlayedMinutes"
-                             For="@(() => saveFile.PlayedMinutes)" />
-        </div>
-
-        <div class="form-field">
-            <MudNumericField Label="Seconds"
-                             T="@int"
-                             Variant="@Variant.Outlined"
-                             Min="0"
-                             Max="59"
-                             @bind-Value="@saveFile.PlayedSeconds"
-                             For="@(() => saveFile.PlayedSeconds)" />
-        </div>
-
         @if (saveFile is SAV3FRLG sav3FrLgTrainerCard)
         {
             @for (int i = 0; i < 6; i++)
@@ -251,6 +251,34 @@
                                      ToStringFunc="@(species => species?.Text)" />
                 </div>
             }
+        }
+
+        @if (saveFile is SAV4 sav4Map)
+        {
+            <div class="form-field">
+                <MudNumericField Label="Current Map"
+                                 Variant="@Variant.Outlined"
+                                 @bind-Value="@sav4Map.M"
+                                 For="@(() => sav4Map.M)" />
+            </div>
+            <div class="form-field">
+                <MudNumericField Label="X"
+                                 Variant="@Variant.Outlined"
+                                 @bind-Value="@sav4Map.X"
+                                 For="@(() => sav4Map.X)" />
+            </div>
+            <div class="form-field">
+                <MudNumericField Label="Z"
+                                 Variant="@Variant.Outlined"
+                                 @bind-Value="@sav4Map.Z"
+                                 For="@(() => sav4Map.Z)" />
+            </div>
+            <div class="form-field">
+                <MudNumericField Label="Y"
+                                 Variant="@Variant.Outlined"
+                                 @bind-Value="@sav4Map.Y"
+                                 For="@(() => sav4Map.Y)" />
+            </div>
         }
 
         @if (saveFile is SAV1 sav1Options)
