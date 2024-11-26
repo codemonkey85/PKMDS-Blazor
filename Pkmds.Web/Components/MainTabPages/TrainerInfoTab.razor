@@ -159,8 +159,8 @@
                 <MudAutocomplete T="@ComboItem"
                                  Label="Rival Starter"
                                  Variant="@Variant.Outlined"
-                                 @bind-Value:get="@(AppService.GetSpeciesComboItem(sav1Rival.RivalStarter))"
-                                 @bind-Value:set="@(species => { sav1Rival.RivalStarter = (byte)species.Value; })"
+                                 @bind-Value:get="@GetGen1RivalStarter(sav1Rival)"
+                                 @bind-Value:set="@(species => SetGen1RivalStarter(sav1Rival, species))"
                                  SearchFunc="@SearchPokemonNames"
                                  ToStringFunc="@(species => species?.Text)" />
             </div>

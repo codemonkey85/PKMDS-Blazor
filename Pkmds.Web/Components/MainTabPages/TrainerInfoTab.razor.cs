@@ -202,4 +202,16 @@ public partial class TrainerInfoTab : IDisposable
                 return;
         };
     }
+
+    private ComboItem GetGen1RivalStarter(SAV1 sav1)
+    {
+        var nationalSpeciesId = SpeciesConverter.GetNational1(sav1.RivalStarter);
+        return AppService.GetSpeciesComboItem(nationalSpeciesId);
+    }
+
+    private void SetGen1RivalStarter(SAV1 sav1, ComboItem species)
+    {
+        var internalSpeciesId = SpeciesConverter.GetInternal1((byte)species.Value);
+        sav1.RivalStarter = internalSpeciesId;
+    }
 }
