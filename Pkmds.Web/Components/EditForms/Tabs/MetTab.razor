@@ -14,10 +14,13 @@ AppState.SelectedSlotsAreValid)
                ToStringFunc="@(version => GameInfo.GetVersionName(version))"
                Disabled="@(saveGeneration <= 2)"
                For="@(() => Pokemon.Version)">
-        @foreach (GameVersion version in Enum.GetValues(typeof(GameVersion)))
+        @foreach (var gameVersion in GameInfo.FilteredSources.Games)
         {
-            <MudSelectItem Value="@version"
-                           @key="@version" />
+            if (gameVersion is not null)
+            {
+                <MudSelectItem Value="@((GameVersion)gameVersion.Value)"
+                               @key="@((GameVersion)gameVersion.Value)" />
+            }
         }
     </MudSelect>
 
