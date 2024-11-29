@@ -111,15 +111,6 @@ public partial class MainLayout : IDisposable
             return;
         }
 
-        await ExportSupportedSaveFile();
-    }
-
-    private async Task ExportSupportedSaveFile()
-    {
-        if (AppState.SaveFile is null)
-        {
-            return;
-        }
         AppState.ShowProgressIndicator = true;
         await WriteFile(AppState.SaveFile.Write(), browserLoadSaveFile?.Name ?? "save.sav", ".sav", "Save File");
         AppState.ShowProgressIndicator = false;
