@@ -8,6 +8,14 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<RunAOTCompilation>true</RunAOTCompilation>
+		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
+		<EmccMaximumHeapSize>268435456</EmccMaximumHeapSize>
+		<BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
+		<BlazorEnableCompression>true</BlazorEnableCompression>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<WasmEnableSIMD>false</WasmEnableSIMD>
 	</PropertyGroup>
 
