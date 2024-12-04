@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Components;
 
-public partial class MarkingsContainer
+public partial class MarkingsContainer : IDisposable
 {
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }

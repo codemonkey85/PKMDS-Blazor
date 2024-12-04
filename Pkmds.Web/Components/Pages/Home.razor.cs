@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Components.Pages;
 
-public partial class Home
+public partial class Home : IDisposable
 {
     private bool IsUpdateAvailable { get; set; } = false;
 

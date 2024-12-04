@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Components;
 
-public partial class PokemonSlotComponent
+public partial class PokemonSlotComponent : IDisposable
 {
     [Parameter, EditorRequired]
     public int SlotNumber { get; set; }

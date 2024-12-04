@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Components;
 
-public partial class LetsGoBoxComponent
+public partial class LetsGoBoxComponent : IDisposable
 {
     public BoxEdit? BoxEdit { get; set; }
 

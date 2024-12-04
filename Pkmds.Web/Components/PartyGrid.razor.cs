@@ -1,6 +1,6 @@
 namespace Pkmds.Web.Components;
 
-public partial class PartyGrid
+public partial class PartyGrid : IDisposable
 {
     private void SetSelectedPokemon(PKM? pokemon, int slotNumber) =>
         AppService.SetSelectedPartyPokemon(pokemon, slotNumber);

@@ -13,12 +13,6 @@ jobs:
       # uses GitHub's checkout action to checkout code form the main branch
       - uses: actions/checkout@v4.1.1
 
-      - name: UpdateVersionInMainLayout
-        uses: datamonsters/replace-action@v2
-        with:
-          files: 'Pkmds.Web/Components/Layout/MainLayout.razor.cs'
-          replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
-
       # sets up .NET SDK
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4.0.0
