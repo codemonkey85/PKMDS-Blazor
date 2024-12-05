@@ -95,7 +95,7 @@ public partial class RecordsTab
         var min = Math.Min((byte)59, HallOfFameMinutes);
         var sec = Math.Min((byte)59, HallOfFameSeconds);
 
-        return (uint)((hrs << 16) | (min << 8) | sec);
+        return (hrs << 16) | ((uint)min << 8) | sec;
     }
 
     public void SetFameTime(uint time)
