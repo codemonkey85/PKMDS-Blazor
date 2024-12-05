@@ -1,0 +1,37 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    # use ubuntu-latest image to run steps on
+    runs-on: ubuntu-latest
+
+    steps:
+      # uses GitHub's checkout action to checkout code form the release branch
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      # sets up .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.1.0
+        with:
+          global-json-file: ./global.json
+
+      - name: Install WASM workload
+        run: dotnet workload install wasm-tools
+  
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build

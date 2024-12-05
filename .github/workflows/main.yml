@@ -1,32 +1,39 @@
 name: Deploy to GitHub Pages
 
-# Run workflow on every successful run of the CodeQL workflow
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - release
 
 jobs:
-  deploy-to-github-pages:
+  deploy:
     # use ubuntu-latest image to run steps on
     runs-on: ubuntu-latest
     steps:
-      # uses GitHub's checkout action to checkout code form the main branch
-      - uses: actions/checkout@v4.1.1
+      # uses GitHub's checkout action to checkout code form the release branch
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
 
       # sets up .NET SDK
-      - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v4.0.0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.1.0
         with:
           global-json-file: ./global.json
 
       - name: Install WASM workload
         run: dotnet workload install wasm-tools
 
-      - name: Test
-        run: dotnet test
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build
 
       # publishes Blazor project to the release-folder
-      - name: Publish .NET Core Project
+      - name: Publish .NET Project
         run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo
 
       # copy index.html to 404.html to serve the same file when a file is not found
@@ -37,14 +44,14 @@ jobs:
       - name: Add .nojekyll file
         run: touch release/wwwroot/.nojekyll
 
-      - name: UpdateVersion
+      - name: Update version
         uses: datamonsters/replace-action@v2
         with:
           files: 'release/wwwroot/service-worker.published.js'
           replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
 
       - name: Commit wwwroot to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        uses: JamesIves/github-pages-deploy-action@v4.7.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
