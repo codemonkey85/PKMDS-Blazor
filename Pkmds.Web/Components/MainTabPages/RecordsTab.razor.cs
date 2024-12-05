@@ -74,7 +74,7 @@ public partial class RecordsTab
         }
     }
 
-    void ChangeFame()
+    private void ChangeFame()
     {
         if (!HallOfFameIndexSelected || Records is null)
         {
