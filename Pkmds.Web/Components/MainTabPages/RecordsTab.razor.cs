@@ -19,9 +19,11 @@ public partial class RecordsTab
 
     private byte HallOfFameSeconds { get; set; }
 
-    private bool HallOfFameIndexSelected => CurrentRecordIndex switch
+    private bool HallOfFameIndexSelected => (SaveFile, CurrentRecordIndex) switch
     {
-        (int)RecID3RuSa.FIRST_HOF_PLAY_TIME or (int)RecID3Emerald.FIRST_HOF_PLAY_TIME or (int)RecID3FRLG.FIRST_HOF_PLAY_TIME => true,
+        (SAV3RS, (int)RecID3RuSa.FIRST_HOF_PLAY_TIME) => true,
+        (SAV3E, (int)RecID3Emerald.FIRST_HOF_PLAY_TIME) => true,
+        (SAV3FRLG, (int)RecID3FRLG.FIRST_HOF_PLAY_TIME) => true,
         _ => false,
     };
 
