@@ -12,7 +12,7 @@ Sprites from: https://github.com/msikma/pokesprite-spritesheet
 
 Some images from: https://github.com/msikma/PokeDings
 
-[![Dependabot Updates](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dependabot/dependabot-updates)
+[![Build and Test](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml)
 
 [![Deploy to GitHub Pages](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml)
 

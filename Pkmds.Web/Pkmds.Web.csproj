@@ -8,13 +8,6 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<RunAOTCompilation>true</RunAOTCompilation>
-		<WasmStripILAfterAOT>true</WasmStripILAfterAOT>
-		<BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
-		<BlazorEnableCompression>true</BlazorEnableCompression>
-	</PropertyGroup>
-
-	<PropertyGroup>
 		<WasmEnableSIMD>false</WasmEnableSIMD>
 	</PropertyGroup>
 
