@@ -45,7 +45,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         RefreshService.Refresh();
     }
 
-    public string GetPokemonSpeciesName(ushort speciesId) => GetSpeciesComboItem(speciesId)?.Text ?? string.Empty;
+    public string GetPokemonSpeciesName(ushort speciesId) => GetSpeciesComboItem(speciesId).Text;
 
     public IEnumerable<ComboItem> SearchPokemonNames(string searchString) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
@@ -100,16 +100,16 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         pokemon.SetStats(stats);
     }
 
-    public IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false) => AppState.SaveFile is null || searchString is not { Length: > 0 }
+    public IEnumerable<ComboItem> SearchMetLocations(string searchString, GameVersion gameVersion, EntityContext entityContext, bool isEggLocation = false) => AppState.SaveFile is null || searchString is not { Length: > 0 }
         ? []
-        : GameInfo.GetLocationList(AppState.SaveFile.Version.GetSingleVersion(), AppState.SaveFile.Context, isEggLocation)
+        : GameInfo.GetLocationList(gameVersion, entityContext, isEggLocation)
             .DistinctBy(l => l.Value)
             .Where(metLocation => metLocation.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             .OrderBy(metLocation => metLocation.Text);
 
-    public ComboItem GetMetLocationComboItem(ushort metLocationId, bool isEggLocation = false) => AppState.SaveFile is null
+    public ComboItem GetMetLocationComboItem(ushort metLocationId, GameVersion gameVersion, EntityContext entityContext, bool isEggLocation = false) => AppState.SaveFile is null
         ? default!
-        : GameInfo.GetLocationList(AppState.SaveFile.Version.GetSingleVersion(), AppState.SaveFile.Context, isEggLocation)
+        : GameInfo.GetLocationList(gameVersion, entityContext, isEggLocation)
             .DistinctBy(l => l.Value)
             .FirstOrDefault(metLocation => metLocation.Value == metLocationId) ?? default!;
 

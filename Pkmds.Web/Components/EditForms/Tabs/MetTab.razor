@@ -11,6 +11,7 @@ AppState.SelectedSlotsAreValid)
     <MudSelect Label="Origin Game"
                Variant="@Variant.Outlined"
                @bind-Value="@Pokemon.Version"
+               @bind-Value:after="@OriginGameChanged"
                ToStringFunc="@(version => GameInfo.GetVersionName(version))"
                Disabled="@(saveGeneration <= 2)"
                For="@(() => Pokemon.Version)">
@@ -27,7 +28,7 @@ AppState.SelectedSlotsAreValid)
     <MudAutocomplete T="@ComboItem"
                      Label="Met Location"
                      Variant="@Variant.Outlined"
-                     @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.MetLocation))"
+                     @bind-Value:get="@GetMetLocation()"
                      @bind-Value:set="@(metLocation => Pokemon.MetLocation = (ushort)metLocation.Value)"
                      SearchFunc="@SearchMetLocations"
                      ToStringFunc="@(metLocation => metLocation?.Text)" />
@@ -105,7 +106,7 @@ AppState.SelectedSlotsAreValid)
         <MudAutocomplete T="@ComboItem"
                          Label="Egg Met Location"
                          Variant="@Variant.Outlined"
-                         @bind-Value:get="@(AppService.GetMetLocationComboItem(Pokemon.EggLocation))"
+                         @bind-Value:get="@GetEggMetLocation()"
                          @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
                          DebounceInterval="200"
                          SearchFunc="@SearchEggMetLocations"

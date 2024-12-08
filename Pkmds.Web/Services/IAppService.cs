@@ -34,15 +34,15 @@ public interface IAppService
 
     IEnumerable<ComboItem> SearchAbilityNames(string searchString);
 
-    IEnumerable<ComboItem> SearchMetLocations(string searchString, bool isEggLocation = false);
+    IEnumerable<ComboItem> SearchMetLocations(string searchString, GameVersion gameVersion, EntityContext entityContext, bool isEggLocation = false);
 
-    ComboItem GetMetLocationComboItem(ushort metLocationId, bool isEggLocation = false);
+    ComboItem GetMetLocationComboItem(ushort metLocationId, GameVersion gameVersion, EntityContext entityContext, bool isEggLocation = false);
 
     IEnumerable<ComboItem> SearchMoves(string searchString);
 
     ComboItem GetMoveComboItem(int moveId);
 
-    public void SavePokemon(PKM? SelectedPokemon);
+    public void SavePokemon(PKM? selectedPokemon);
 
     string GetCleanFileName(PKM pkm);
 
