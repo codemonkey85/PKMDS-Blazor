@@ -18,6 +18,8 @@ Some images from: https://github.com/msikma/PokeDings
 
 [![pages-build-deployment](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/pages/pages-build-deployment)
 
+[![Dependabot Updates](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/dependabot/dependabot-updates)
+
 Special thanks to [Kaphotics](https://github.com/kwsch/), as well as [all the contributors to PKHeX and PKHeX.Core](https://github.com/kwsch/PKHeX/graphs/contributors).
 
 PLEASE NOTE: PKMDS does not, and will never, support custom ROMs.
