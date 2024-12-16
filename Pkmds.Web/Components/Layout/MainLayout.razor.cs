@@ -80,7 +80,8 @@ public partial class MainLayout : IDisposable
 
             if (AppState.SaveFile is null)
             {
-                await DialogService.ShowMessageBox("Error", "The file is not a supported save file.");
+                const string message = "The selected save file is invalid. If this save file came from a ROM hack, it is not supported. Otherwise, try saving in-game and re-exporting / re-uploading the save file.";
+                await DialogService.ShowMessageBox("Error", message);
                 return;
             }
         }
