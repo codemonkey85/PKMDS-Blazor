@@ -1,65 +1,68 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
-saveFileEntityContext is not
-EntityContext.None or
-EntityContext.SplitInvalid or
-EntityContext.MaxInvalid &&
-AppState.SelectedSlotsAreValid)
+     AppState.SaveFile is
+     {
+         Context: not
+         (EntityContext.None or
+         EntityContext.SplitInvalid or
+         EntityContext.MaxInvalid),
+         Generation: var saveGeneration
+     } saveFile &&
+     AppState.SelectedSlotsAreValid)
 {
     <MudGrid Spacing="1">
 
         @switch (saveFile.GetTrainerIDFormat())
         {
             case TrainerIDFormat.SixteenBit:
+            {
+                <MudItem xs="6"
+                         Class="@ColumnClass">
+                    <MudNumericField Label="Trainer ID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@Pokemon.TID16"
+                                     Format="@AppService.GetIdFormatString()"
+                                     For="@(() => Pokemon.TID16)"/>
+                </MudItem>
+
+                @if (saveGeneration >= 3)
                 {
                     <MudItem xs="6"
                              Class="@ColumnClass">
-                        <MudNumericField Label="Trainer ID"
+                        <MudNumericField Label="Trainer SID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value="@Pokemon.TID16"
-                                         Format="@AppService.GetIdFormatString()"
-                                         For="@(() => Pokemon.TID16)" />
+                                         @bind-Value="@Pokemon.SID16"
+                                         Format="@AppService.GetIdFormatString(true)"
+                                         For="@(() => Pokemon.SID16)"/>
                     </MudItem>
-
-                    @if (saveGeneration >= 3)
-                    {
-                        <MudItem xs="6"
-                                 Class="@ColumnClass">
-                            <MudNumericField Label="Trainer SID"
-                                             Variant="@Variant.Outlined"
-                                             @bind-Value="@Pokemon.SID16"
-                                             Format="@AppService.GetIdFormatString(true)"
-                                             For="@(() => Pokemon.SID16)" />
-                        </MudItem>
-                    }
                 }
+            }
                 break;
 
             case TrainerIDFormat.SixDigit:
+            {
+                <MudItem xs="6"
+                         Class="@ColumnClass">
+                    <MudNumericField Label="Trainer ID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@Pokemon.TrainerTID7"
+                                     Format="@AppService.GetIdFormatString()"
+                                     For="@(() => Pokemon.TrainerTID7)"/>
+                </MudItem>
+
+                @if (saveGeneration >= 3)
                 {
                     <MudItem xs="6"
                              Class="@ColumnClass">
-                        <MudNumericField Label="Trainer ID"
+                        <MudNumericField Label="Trainer SID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value="@Pokemon.TrainerTID7"
-                                         Format="@AppService.GetIdFormatString()"
-                                         For="@(() => Pokemon.TrainerTID7)" />
+                                         @bind-Value="@Pokemon.TrainerSID7"
+                                         Format="@AppService.GetIdFormatString(true)"
+                                         For="@(() => Pokemon.TrainerSID7)"/>
                     </MudItem>
-
-                    @if (saveGeneration >= 3)
-                    {
-                        <MudItem xs="6"
-                                 Class="@ColumnClass">
-                            <MudNumericField Label="Trainer SID"
-                                             Variant="@Variant.Outlined"
-                                             @bind-Value="@Pokemon.TrainerSID7"
-                                             Format="@AppService.GetIdFormatString(true)"
-                                             For="@(() => Pokemon.TrainerSID7)" />
-                        </MudItem>
-                    }
                 }
+            }
                 break;
         }
 
@@ -69,7 +72,7 @@ AppState.SelectedSlotsAreValid)
                           Variant="@Variant.Outlined"
                           @bind-Value="@Pokemon.OriginalTrainerName"
                           MaxLength="@saveFile.MaxStringLengthTrainer"
-                          For="@(() => Pokemon.OriginalTrainerName)" />
+                          For="@(() => Pokemon.OriginalTrainerName)"/>
         </MudItem>
 
         @if (saveGeneration >= 2)
@@ -77,7 +80,7 @@ AppState.SelectedSlotsAreValid)
             <MudItem xs="6"
                      Class="d-flex">
                 <GenderDisplayComponent Gender="@((Gender)Pokemon.OriginalTrainerGender)"
-                                        OnChange="@OnGenderToggle" />
+                                        OnChange="@OnGenderToggle"/>
             </MudItem>
         }
 

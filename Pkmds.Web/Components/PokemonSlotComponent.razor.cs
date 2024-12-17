@@ -2,17 +2,13 @@ namespace Pkmds.Web.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
-    [Parameter, EditorRequired]
-    public int SlotNumber { get; set; }
+    [Parameter, EditorRequired] public int SlotNumber { get; set; }
 
-    [Parameter, EditorRequired]
-    public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
 
-    [Parameter, EditorRequired]
-    public EventCallback OnSlotClick { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnSlotClick { get; set; }
 
-    [Parameter, EditorRequired]
-    public Func<string>? GetStyleFunction { get; set; }
+    [Parameter, EditorRequired] public Func<string>? GetStyleFunction { get; set; }
 
     private async Task HandleClick() =>
         await OnSlotClick.InvokeAsync();

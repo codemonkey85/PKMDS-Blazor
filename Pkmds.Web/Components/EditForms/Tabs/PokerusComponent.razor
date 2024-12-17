@@ -3,12 +3,12 @@
     <MudCheckBox Label="Infected"
                  @bind-Value:get="@pokemon.IsPokerusInfected"
                  @bind-Value:set="@((bool infected) => SetPokerusInfected(infected))"
-                 For="@(() => pokemon.IsPokerusInfected)" />
+                 For="@(() => pokemon.IsPokerusInfected)"/>
 
     <MudCheckBox Label="Cured"
                  @bind-Value:get="@pokemon.IsPokerusCured"
                  @bind-Value:set="@((bool cured) => SetPokerusCured(cured))"
-                 For="@(() => pokemon.IsPokerusCured)" />
+                 For="@(() => pokemon.IsPokerusCured)"/>
 
     @if (pokemon.IsPokerusInfected)
     {

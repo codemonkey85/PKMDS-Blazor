@@ -1,11 +1,11 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState is { SaveFile: { } saveFile } && MysteryGiftsList.Count > 0)
+@if (AppState is { SaveFile: not null } && MysteryGiftsList.Count > 0)
 {
     <MudPagination @bind-Selected="@CurrentPage"
                    @bind-Selected:after="@GoToPage"
                    Count="@TotalPages"
-                   ShowNextButton />
+                   ShowNextButton/>
 
     <MudSelect T="int"
                @bind-Value="PageSize"

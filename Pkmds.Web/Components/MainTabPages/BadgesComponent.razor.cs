@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Pkmds.Web.Components.MainTabPages;
 
 public partial class BadgesComponent : IDisposable
 {
-    private const int badgesFlagStart = 124;
+    private const int BadgesFlagStart = 124;
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
@@ -10,6 +12,7 @@ public partial class BadgesComponent : IDisposable
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     private List<bool> GetSaveFileBadgesValue()
     {
         List<bool> badgeFlags = [];
@@ -23,8 +26,9 @@ public partial class BadgesComponent : IDisposable
         {
             for (var i = 0; i < 8; i++)
             {
-                badgeFlags.Add(sav8bs.FlagWork.GetSystemFlag(badgesFlagStart + i));
+                badgeFlags.Add(sav8bs.FlagWork.GetSystemFlag(BadgesFlagStart + i));
             }
+
             return badgeFlags;
         }
 
@@ -74,7 +78,7 @@ public partial class BadgesComponent : IDisposable
                 badgeFlagInt = sav6ao.Badges;
                 break;
 
-            case EntityContext.Gen7b when saveFile is SAV7b sav7b:
+            case EntityContext.Gen7b when saveFile is SAV7b:
                 // TODO: Figure out why this isn't available
                 //badgeFlagInt = sav7b.Badges;
                 break;
@@ -83,7 +87,7 @@ public partial class BadgesComponent : IDisposable
                 badgeFlagInt = sav8swsh.Badges;
                 break;
 
-            case EntityContext.Gen9 when saveFile is SAV9SV sav9sv:
+            case EntityContext.Gen9 when saveFile is SAV9SV:
                 // TODO: Figure out why this isn't available
                 //badgeFlagInt = sav9sv.Badges;
                 break;
@@ -97,6 +101,7 @@ public partial class BadgesComponent : IDisposable
         return badgeFlags;
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     private void OnBadgeToggle(int badgeIndex)
     {
         if (AppState.SaveFile is not { } saveFile)
@@ -146,7 +151,7 @@ public partial class BadgesComponent : IDisposable
                 sav6ao.Badges = ToggleBadge(sav6ao.Badges, badgeIndex);
                 break;
 
-            case EntityContext.Gen7b when saveFile is SAV7b sav7b:
+            case EntityContext.Gen7b when saveFile is SAV7b:
                 // TODO: Figure out why this isn't available
                 //sav7b.Badges = ToggleBadge(sav7b.Badges, badgeIndex);
                 break;
@@ -156,16 +161,17 @@ public partial class BadgesComponent : IDisposable
                 break;
 
             case EntityContext.Gen8b when saveFile is SAV8BS sav8bs:
-                sav8bs.FlagWork.SetSystemFlag(badgesFlagStart + badgeIndex, !sav8bs.FlagWork.GetSystemFlag(badgesFlagStart + badgeIndex));
+                sav8bs.FlagWork.SetSystemFlag(BadgesFlagStart + badgeIndex,
+                    !sav8bs.FlagWork.GetSystemFlag(BadgesFlagStart + badgeIndex));
                 break;
 
-            case EntityContext.Gen9 when saveFile is SAV9SV sav9sv:
+            case EntityContext.Gen9 when saveFile is SAV9SV:
                 // TODO: Figure out why this isn't available
                 //sav9sv.Badges = ToggleBadge(sav9sv.Badges, badgeIndex);
                 break;
-        };
+        }
 
         static int ToggleBadge(int badges, int badgeIndex) =>
-            badges ^= (byte)(1 << badgeIndex);
+            badges ^ (byte)(1 << badgeIndex);
     }
 }

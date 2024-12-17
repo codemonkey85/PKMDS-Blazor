@@ -1,5 +1,4 @@
 ﻿@inherits BasePkmdsComponent
-@implements IDisposable
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
@@ -7,13 +6,15 @@
           Height="68px"
           Class="@SpriteHelper.GetSpriteCssClass(Pokemon)"
           Style="@GetStyle()">
+    @{ var title = Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : "Unknown"; }
     <object class="pkm-sprite"
             type="image/png"
             style="object-fit: contain;"
             data="@(Pokemon is { Species: > 0 } ? SpriteHelper.GetPokemonSpriteFilename(Pokemon) : null)"
-            title="@(Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : "Unknown")">
+            title="@title">
         <img class="pkm-sprite"
              src="@SpriteHelper.PokemonFallbackImageFileName"
-             title="@(Pokemon is { Species: > 0 } ? AppService.GetPokemonSpeciesName(Pokemon.Species) : "Unknown")">
+             title="@title"
+             alt="@title">
     </object>
 </MudPaper>

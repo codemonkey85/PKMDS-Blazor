@@ -2,68 +2,69 @@
 
 <div class="form-grid">
 
-    @if (AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
-    saveFileEntityContext is not
-    EntityContext.None or
-    EntityContext.SplitInvalid or
-    EntityContext.MaxInvalid)
+    @if (AppState.SaveFile is
+             {
+                 Context: not
+                 (EntityContext.None or
+                 EntityContext.SplitInvalid or
+                 EntityContext.MaxInvalid),
+                 Generation: var saveGeneration
+             } saveFile)
     {
         <div class="form-field">
             <MudTextField Label="Name"
                           Variant="@Variant.Outlined"
                           MaxLength="@saveFile.MaxStringLengthTrainer"
                           @bind-Value="@saveFile.OT"
-                          For="@(() => saveFile.OT)" />
+                          For="@(() => saveFile.OT)"/>
         </div>
 
         @switch (saveFile.GetTrainerIDFormat())
         {
             case TrainerIDFormat.SixteenBit:
+            {
+                <div class="form-field">
+                    <MudNumericField Label="ID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@saveFile.TID16"
+                                     Format="@AppService.GetIdFormatString()"
+                                     For="@(() => saveFile.TID16)"/>
+                </div>
+
+                @if (saveGeneration >= 3)
                 {
                     <div class="form-field">
-                        <MudNumericField Label="ID"
+                        <MudNumericField Label="SID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value="@saveFile.TID16"
-                                         Format="@AppService.GetIdFormatString()"
-                                         For="@(() => saveFile.TID16)" />
+                                         @bind-Value="@saveFile.SID16"
+                                         Format="@AppService.GetIdFormatString(true)"
+                                         For="@(() => saveFile.SID16)"/>
                     </div>
-
-                    @if (saveGeneration >= 3)
-                    {
-                        <div class="form-field">
-                            <MudNumericField Label="SID"
-                                             Variant="@Variant.Outlined"
-                                             @bind-Value="@saveFile.SID16"
-                                             Format="@AppService.GetIdFormatString(true)"
-                                             For="@(() => saveFile.SID16)" />
-                        </div>
-                    }
-
                 }
+            }
                 break;
 
             case TrainerIDFormat.SixDigit:
+            {
+                <div class="form-field">
+                    <MudNumericField Label="ID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@saveFile.TrainerTID7"
+                                     Format="@AppService.GetIdFormatString()"
+                                     For="@(() => saveFile.TrainerTID7)"/>
+                </div>
+
+                @if (saveGeneration >= 3)
                 {
                     <div class="form-field">
-                        <MudNumericField Label="ID"
+                        <MudNumericField Label="SID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value="@saveFile.TrainerTID7"
-                                         Format="@AppService.GetIdFormatString()"
-                                         For="@(() => saveFile.TrainerTID7)" />
+                                         @bind-Value="@saveFile.TrainerSID7"
+                                         Format="@AppService.GetIdFormatString(true)"
+                                         For="@(() => saveFile.TrainerSID7)"/>
                     </div>
-
-                    @if (saveGeneration >= 3)
-                    {
-                        <div class="form-field">
-                            <MudNumericField Label="SID"
-                                             Variant="@Variant.Outlined"
-                                             @bind-Value="@saveFile.TrainerSID7"
-                                             Format="@AppService.GetIdFormatString(true)"
-                                             For="@(() => saveFile.TrainerSID7)" />
-                        </div>
-                    }
-
                 }
+            }
                 break;
         }
 
@@ -71,7 +72,7 @@
         {
             <div class="form-field">
                 <GenderDisplayComponent Gender="@((Gender)saveFile.Gender)"
-                                        OnChange="@OnGenderToggle" />
+                                        OnChange="@OnGenderToggle"/>
             </div>
         }
 
@@ -115,7 +116,7 @@
                              Min="0"
                              Max="@ushort.MaxValue"
                              @bind-Value="@saveFile.PlayedHours"
-                             For="@(() => saveFile.PlayedHours)" />
+                             For="@(() => saveFile.PlayedHours)"/>
         </div>
 
         <div class="form-field">
@@ -125,7 +126,7 @@
                              Min="0"
                              Max="59"
                              @bind-Value="@saveFile.PlayedMinutes"
-                             For="@(() => saveFile.PlayedMinutes)" />
+                             For="@(() => saveFile.PlayedMinutes)"/>
         </div>
 
         <div class="form-field">
@@ -135,7 +136,7 @@
                              Min="0"
                              Max="59"
                              @bind-Value="@saveFile.PlayedSeconds"
-                             For="@(() => saveFile.PlayedSeconds)" />
+                             For="@(() => saveFile.PlayedSeconds)"/>
         </div>
 
         @if (saveGeneration >= 4)
@@ -145,7 +146,7 @@
                                @bind-Date="@GameStartedDate"
                                @bind-Date:after="@UpdateGameStarted"
                                Variant="@Variant.Outlined"
-                               PickerVariant="@PickerVariant.Inline" />
+                               PickerVariant="@PickerVariant.Inline"/>
             </div>
 
             <div class="form-field">
@@ -154,7 +155,7 @@
                                @bind-Time:after="@UpdateGameStarted"
                                TimeFormat="HH:mm:ss"
                                Variant="@Variant.Outlined"
-                               PickerVariant="@PickerVariant.Inline" />
+                               PickerVariant="@PickerVariant.Inline"/>
             </div>
 
             @if (saveGeneration <= 7)
@@ -164,7 +165,7 @@
                                    @bind-Date="@HallOfFameDate"
                                    @bind-Date:after="@UpdateHallOfFame"
                                    Variant="@Variant.Outlined"
-                                   PickerVariant="@PickerVariant.Inline" />
+                                   PickerVariant="@PickerVariant.Inline"/>
                 </div>
 
                 <div class="form-field">
@@ -173,7 +174,7 @@
                                    @bind-Time:after="@UpdateHallOfFame"
                                    TimeFormat="HH:mm:ss"
                                    Variant="@Variant.Outlined"
-                                   PickerVariant="@PickerVariant.Inline" />
+                                   PickerVariant="@PickerVariant.Inline"/>
                 </div>
             }
         }
@@ -185,17 +186,18 @@
                               Variant="@Variant.Outlined"
                               MaxLength="@sav1Rival.MaxStringLengthTrainer"
                               @bind-Value="@sav1Rival.Rival"
-                              For="@(() => sav1Rival.Rival)" />
+                              For="@(() => sav1Rival.Rival)"/>
             </div>
 
             <div class="form-field">
+                @* ReSharper disable once CSharpWarnings::CS8603 *@
                 <MudAutocomplete T="@ComboItem"
                                  Label="Rival Starter"
                                  Variant="@Variant.Outlined"
                                  @bind-Value:get="@GetGen1RivalStarter(sav1Rival)"
                                  @bind-Value:set="@(species => SetGen1RivalStarter(sav1Rival, species))"
                                  SearchFunc="@SearchPokemonNames"
-                                 ToStringFunc="@(species => species?.Text)" />
+                                 ToStringFunc="@(species => species?.Text)"/>
             </div>
         }
 
@@ -206,7 +208,7 @@
                               Variant="@Variant.Outlined"
                               MaxLength="@sav2Rival.MaxStringLengthTrainer"
                               @bind-Value="@sav2Rival.Rival"
-                              For="@(() => sav2Rival.Rival)" />
+                              For="@(() => sav2Rival.Rival)"/>
             </div>
         }
 
@@ -217,7 +219,7 @@
                               Variant="@Variant.Outlined"
                               MaxLength="@sav3FrLgRival.MaxStringLengthTrainer"
                               @bind-Value="@sav3FrLgRival.RivalName"
-                              For="@(() => sav3FrLgRival.RivalName)" />
+                              For="@(() => sav3FrLgRival.RivalName)"/>
             </div>
         }
 
@@ -230,7 +232,7 @@
                              Min="0"
                              Max="@((uint)saveFile.MaxMoney)"
                              @bind-Value="@saveFile.Money"
-                             For="@(() => saveFile.Money)" />
+                             For="@(() => saveFile.Money)"/>
         </div>
 
         @if (saveGeneration <= 4)
@@ -242,7 +244,7 @@
                                  ValueChanged="@SetCoins"
                                  Variant="@Variant.Outlined"
                                  Min="0"
-                                 Max="@((uint)saveFile.MaxCoins)" />
+                                 Max="@((uint)saveFile.MaxCoins)"/>
             </div>
         }
 
@@ -255,7 +257,7 @@
                                  Min="0"
                                  Max="9999"
                                  @bind-Value="@sav3.BP"
-                                 For="@(() => sav3.BP)" />
+                                 For="@(() => sav3.BP)"/>
             </div>
 
             <div class="form-field">
@@ -265,23 +267,24 @@
                                  Min="0"
                                  Max="@uint.MaxValue"
                                  @bind-Value="@sav3.BPEarned"
-                                 For="@(() => sav3.BPEarned)" />
+                                 For="@(() => sav3.BPEarned)"/>
             </div>
         }
 
         @if (saveFile is SAV3FRLG sav3FrLgTrainerCard)
         {
-            @for (int i = 0; i < 6; i++)
+            @for (var i = 0; i < 6; i++)
             {
                 var localIndex = i;
                 <div class="form-field">
+                    @* ReSharper disable once CSharpWarnings::CS8603 *@
                     <MudAutocomplete T="@ComboItem"
                                      Label="@($"Trainer Card {localIndex + 1}")"
                                      Variant="@Variant.Outlined"
                                      @bind-Value:get="@GetTrainerCardPokemon(sav3FrLgTrainerCard, localIndex)"
                                      @bind-Value:set="@((ComboItem species) => { SetTrainerCardPokemon(sav3FrLgTrainerCard, localIndex, species); })"
                                      SearchFunc="@SearchPokemonNames"
-                                     ToStringFunc="@(species => species?.Text)" />
+                                     ToStringFunc="@(species => species?.Text)"/>
                 </div>
             }
         }
@@ -292,25 +295,25 @@
                 <MudNumericField Label="Current Map"
                                  Variant="@Variant.Outlined"
                                  @bind-Value="@sav4Map.M"
-                                 For="@(() => sav4Map.M)" />
+                                 For="@(() => sav4Map.M)"/>
             </div>
             <div class="form-field">
                 <MudNumericField Label="X"
                                  Variant="@Variant.Outlined"
                                  @bind-Value="@sav4Map.X"
-                                 For="@(() => sav4Map.X)" />
+                                 For="@(() => sav4Map.X)"/>
             </div>
             <div class="form-field">
                 <MudNumericField Label="Z"
                                  Variant="@Variant.Outlined"
                                  @bind-Value="@sav4Map.Z"
-                                 For="@(() => sav4Map.Z)" />
+                                 For="@(() => sav4Map.Z)"/>
             </div>
             <div class="form-field">
                 <MudNumericField Label="Y"
                                  Variant="@Variant.Outlined"
                                  @bind-Value="@sav4Map.Y"
-                                 For="@(() => sav4Map.Y)" />
+                                 For="@(() => sav4Map.Y)"/>
             </div>
         }
 
@@ -375,7 +378,7 @@
             <div class="form-field">
                 <MudCheckBox Label="Use Battle Effects"
                              @bind-Value="@sav1Options.BattleEffects"
-                             For="@(() => sav1Options.BattleEffects)" />
+                             For="@(() => sav1Options.BattleEffects)"/>
             </div>
         }
 
@@ -456,10 +459,10 @@
             <div class="form-field">
                 <MudCheckBox Label="Use Battle Effects"
                              @bind-Value="@sav2.BattleEffects"
-                             For="@(() => sav2.BattleEffects)" />
+                             For="@(() => sav2.BattleEffects)"/>
             </div>
         }
     }
 </div>
 
-<BadgesComponent />
+<BadgesComponent/>

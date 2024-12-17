@@ -41,7 +41,6 @@
                                           RefreshService.Refresh();
                                       })"
                      SearchFunc="@SearchPokemonNames"
-                     @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
                      ToStringFunc="@(species => species?.Text)"/>
 
     if (Pokemon != saveFile.BlankPKM && Pokemon.Species != (ushort)Species.None)
@@ -177,7 +176,6 @@
 
             @if (Pokemon is IFormArgument && FormArgumentUtil.GetFormArgumentMax(Pokemon.Species, Pokemon.Form, Pokemon.Context) > 0 && FormConverter.GetFormArgumentIsNamedIndex(Pokemon.Species))
             {
-                
                 <MudSelect T="@(uint?)"
                            Label="Form Arg"
                            Variant="@Variant.Outlined"
@@ -222,7 +220,6 @@
                                                   RefreshService.Refresh();
                                               })"
                              SearchFunc="@SearchItemNames"
-                             @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
                              ToStringFunc="@(item => item?.Text)">
                 <ItemTemplate Context="item">
                     <MudStack Row>
@@ -257,33 +254,33 @@
         </MudStack>
     }
 
-    @if (saveGeneration == 3)
+    @switch (saveGeneration)
     {
-        <MudSelect Label="Ability"
-                   Variant="@Variant.Outlined"
-                   @bind-Value:get="@Pokemon.Ability"
-                   @bind-Value:set="@(ability => Pokemon.SetAbility(ability))"
-                   For="@(() => Pokemon.Ability)">
-            @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon).DistinctBy(ability => ability.Value))
-            {
-                <MudSelectItem Value="@ability.Value"
-                               @key="@ability.Value">
-                    @ability.Text
-                </MudSelectItem>
-            }
-        </MudSelect>
-    }
-    else if (saveGeneration >= 4)
-    {
-        @* ReSharper disable once CSharpWarnings::CS8603 *@
-        <MudAutocomplete T="@ComboItem"
-                         Label="Ability"
-                         Variant="@Variant.Outlined"
-                         @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
-                         @bind-Value:set="@(ability => Pokemon.Ability = ability.Value)"
-                         SearchFunc="@SearchAbilityNames"
-                         @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
-                         ToStringFunc="@(ability => ability?.Text)"/>
+        case 3:
+            <MudSelect Label="Ability"
+                       Variant="@Variant.Outlined"
+                       @bind-Value:get="@Pokemon.Ability"
+                       @bind-Value:set="@(ability => Pokemon.SetAbility(ability))"
+                       For="@(() => Pokemon.Ability)">
+                @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon).DistinctBy(ability => ability.Value))
+                {
+                    <MudSelectItem Value="@ability.Value"
+                                   @key="ability.Value">
+                        @ability.Text
+                    </MudSelectItem>
+                }
+            </MudSelect>
+            break;
+        case >= 4:
+            @* ReSharper disable once CSharpWarnings::CS8603 *@
+            <MudAutocomplete T="@ComboItem"
+                             Label="Ability"
+                             Variant="@Variant.Outlined"
+                             @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
+                             @bind-Value:set="@(ability => Pokemon.Ability = ability.Value)"
+                             SearchFunc="@SearchAbilityNames"
+                             ToStringFunc="@(ability => ability?.Text)"/>
+            break;
     }
 
     @if (saveGeneration >= 3)
