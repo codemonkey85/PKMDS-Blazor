@@ -2,8 +2,7 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class PokerusComponent
 {
-    [Parameter, EditorRequired]
-    public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
 
     private List<int> PokerusDays { get; set; } = [];
 
@@ -29,28 +28,28 @@ public partial class PokerusComponent
 
         Pokemon.IsPokerusInfected = infected;
 
-        if (!infected && Pokemon.IsPokerusCured)
+        switch (infected)
         {
-            Pokemon.IsPokerusCured = false;
-            return;
-        }
+            case false when Pokemon.IsPokerusCured:
+                Pokemon.IsPokerusCured = false;
+                return;
+            case true:
+                {
+                    if (Pokemon.PokerusStrain == 0)
+                    {
+                        Pokemon.PokerusStrain = 1;
+                    }
 
-        if (infected)
-        {
-            if (Pokemon.PokerusStrain == 0)
-            {
-                Pokemon.PokerusStrain = 1;
-            }
+                    if (Pokemon.PokerusDays == 0)
+                    {
+                        Pokemon.PokerusDays = 1;
+                    }
 
-            if (Pokemon.PokerusDays == 0)
-            {
-                Pokemon.PokerusDays = 1;
-            }
-        }
-
-        if (!infected)
-        {
-            Pokemon.PokerusStrain = Pokemon.PokerusDays = 0;
+                    break;
+                }
+            case false:
+                Pokemon.PokerusStrain = Pokemon.PokerusDays = 0;
+                break;
         }
     }
 

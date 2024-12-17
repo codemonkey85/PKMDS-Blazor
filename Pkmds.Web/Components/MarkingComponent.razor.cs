@@ -4,11 +4,9 @@ namespace Pkmds.Web.Components;
 
 public partial class MarkingComponent
 {
-    [Parameter, EditorRequired]
-    public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
 
-    [Parameter, EditorRequired]
-    public Markings Shape { get; set; }
+    [Parameter, EditorRequired] public Markings Shape { get; set; }
 
     private string DisplayString => Shape switch
     {

@@ -2,8 +2,7 @@ namespace Pkmds.Web.Components.MainTabPages;
 
 public partial class BagTab
 {
-    [Parameter, EditorRequired]
-    public IReadOnlyList<InventoryPouch>? Inventory { get; set; }
+    [Parameter, EditorRequired] public IReadOnlyList<InventoryPouch>? Inventory { get; set; }
 
     private MudTabs? PouchTabs { get; set; }
 
@@ -104,16 +103,23 @@ public partial class BagTab
 
     private string[] GetStringsForPouch(ReadOnlySpan<ushort> items, bool sort = true)
     {
-        string[] res = new string[items.Length + 1];
-        for (int i = 0; i < res.Length - 1; i++)
+        var res = new string[items.Length + 1];
+        for (var i = 0; i < res.Length - 1; i++)
+        {
             res[i] = ItemList[items[i]];
+        }
+
         res[items.Length] = ItemList[0];
         if (sort)
+        {
             Array.Sort(res);
+        }
+
         return res;
     }
 
-    private void SortByName(InventoryPouch pouch) => pouch.SortByName(ItemList, reverse: IsSortedByName = !IsSortedByName);
+    private void SortByName(InventoryPouch pouch) =>
+        pouch.SortByName(ItemList, reverse: IsSortedByName = !IsSortedByName);
 
     private void SortByCount(InventoryPouch pouch) => pouch.SortByCount(reverse: IsSortedByCount = !IsSortedByCount);
 
@@ -125,6 +131,7 @@ public partial class BagTab
 
         return Task.FromResult(ItemList
             .Select((name, index) => new ComboItem(name, index))
-            .Where(x => itemsToSearch.Contains(x.Text) && x.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase)));
+            .Where(x => itemsToSearch.Contains(x.Text) &&
+                        x.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase)));
     }
 }

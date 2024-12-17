@@ -174,7 +174,7 @@ public partial class TrainerInfoTab : IDisposable
                 break;
             default:
                 return (null, null);
-        };
+        }
 
         return (date, time.TimeOfDay);
     }
@@ -192,20 +192,24 @@ public partial class TrainerInfoTab : IDisposable
         switch (saveFile)
         {
             case SAV4 sav:
-                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToStart =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV5 sav:
-                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToStart =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV6 sav:
-                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToStart =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV7 sav:
-                sav.SecondsToStart = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToStart =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             default:
                 return;
-        };
+        }
     }
 
     private (DateTime? Date, TimeSpan? Time) GetHallOfFame()
@@ -234,7 +238,7 @@ public partial class TrainerInfoTab : IDisposable
                 break;
             default:
                 return (null, null);
-        };
+        }
 
         return (date, time.TimeOfDay);
     }
@@ -252,20 +256,24 @@ public partial class TrainerInfoTab : IDisposable
         switch (saveFile)
         {
             case SAV4 sav:
-                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV5 sav:
-                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV6 sav:
-                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV7 sav:
-                sav.SecondsToFame = (uint)DateUtil.GetSecondsFrom2000(date, new DateTime(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             default:
                 return;
-        };
+        }
     }
 
     private ComboItem GetGen1RivalStarter(SAV1 sav1)

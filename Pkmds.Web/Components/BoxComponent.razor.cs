@@ -2,8 +2,7 @@ namespace Pkmds.Web.Components;
 
 public partial class BoxComponent : IDisposable
 {
-    [Parameter]
-    public int BoxNumber { get; set; }
+    [Parameter] public int BoxNumber { get; set; }
 
     private BoxEdit? BoxEdit { get; set; }
 
@@ -38,9 +37,8 @@ public partial class BoxComponent : IDisposable
             return;
         }
 
-        BoxEdit = new BoxEdit(AppState.SaveFile);
+        BoxEdit = new(AppState.SaveFile);
         BoxEdit.LoadBox(BoxNumber);
         RefreshService.Refresh();
     }
 }
-

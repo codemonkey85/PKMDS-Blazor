@@ -1,18 +1,17 @@
-namespace Pkmds.Web.Components.MainTabPages;
+﻿namespace Pkmds.Web.Components.MainTabPages;
 
 public partial class MysteryGiftDatabaseTab
 {
-    [Parameter]
-    public bool FilterUnavailableSpecies { get; set; } = true;
+    [Parameter] public bool FilterUnavailableSpecies { get; set; } = true;
 
-    private List<MysteryGift> MysteryGiftsList = [];
+    private List<MysteryGift> mysteryGiftsList = [];
 
-    private List<MysteryGift> PaginatedItems = [];
-    private int CurrentPage = 1;
-    private int PageSize = 20; // Number of items per page
-    private readonly int[] PagesSizes = [10, 20, 50, 100];
+    private List<MysteryGift> paginatedItems = [];
+    private int currentPage = 1;
+    private int pageSize = 20; // Number of items per page
+    private readonly int[] pagesSizes = [10, 20, 50, 100];
 
-    private int TotalPages => (int)Math.Ceiling((double)MysteryGiftsList.Count / PageSize);
+    private int TotalPages => (int)Math.Ceiling((double)mysteryGiftsList.Count / pageSize);
 
     protected override void OnInitialized()
     {
@@ -43,28 +42,29 @@ public partial class MysteryGiftDatabaseTab
             };
         }
 
-        MysteryGiftsList = [.. encounterDatabase];
+        mysteryGiftsList = [.. encounterDatabase];
 
-        foreach (var mysteryGift in MysteryGiftsList)
+        foreach (var mysteryGift in mysteryGiftsList)
         {
             mysteryGift.GiftUsed = false;
         }
 
         UpdatePaginatedItems();
 
-        static Func<MysteryGift, bool> IsPresent<TTable>(TTable pt) where TTable : IPersonalTable => z => pt.IsPresentInGame(z.Species, z.Form);
+        static Func<MysteryGift, bool> IsPresent<TTable>(TTable pt) where TTable : IPersonalTable =>
+            z => pt.IsPresentInGame(z.Species, z.Form);
     }
 
-    private void UpdatePaginatedItems() => PaginatedItems = MysteryGiftsList
-            .Skip((CurrentPage - 1) * PageSize)
-            .Take(PageSize)
-            .ToList();
+    private void UpdatePaginatedItems() => paginatedItems = mysteryGiftsList
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
 
     private void GoToPage() => UpdatePaginatedItems();
 
     private void OnPageSizeChange()
     {
-        CurrentPage = 1; // Reset to the first page
+        currentPage = 1; // Reset to the first page
         UpdatePaginatedItems();
     }
 
@@ -92,12 +92,12 @@ public partial class MysteryGiftDatabaseTab
         saveFile.AdaptPKM(pokemon);
         AppState.CopiedPokemon = pokemon.Clone();
 
-        Snackbar.Add("The selected Pok�mon has been copied.");
+        Snackbar.Add("The selected Pokémon has been copied.");
     }
 
     private static string RenderListAsHtml(IReadOnlyList<string> items, string tag = "p")
     {
-        if (items == null || items.Count == 0)
+        if (items.Count == 0)
         {
             return string.Empty;
         }
@@ -107,6 +107,7 @@ public partial class MysteryGiftDatabaseTab
         {
             builder.AppendFormat("<{0}>{1}</{0}>", tag, WebUtility.HtmlEncode(item));
         }
+
         return builder.ToString();
     }
 }

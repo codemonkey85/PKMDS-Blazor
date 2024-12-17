@@ -2,6 +2,7 @@ namespace Pkmds.Web.Components;
 
 public partial class LetsGoBoxComponent : IDisposable
 {
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public BoxEdit? BoxEdit { get; set; }
 
     protected override void OnInitialized()
@@ -33,7 +34,7 @@ public partial class LetsGoBoxComponent : IDisposable
             return;
         }
 
-        BoxEdit = new BoxEdit(AppState.SaveFile);
+        BoxEdit = new(AppState.SaveFile);
         RefreshService.Refresh();
     }
 }

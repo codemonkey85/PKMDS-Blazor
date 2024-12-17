@@ -5,14 +5,14 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 services
-    .AddMudServices(config => 
+    .AddMudServices(config =>
     {
         config.SnackbarConfiguration.PreventDuplicates = false;
         config.SnackbarConfiguration.ClearAfterNavigation = true;
     });
 
 services
-    .AddSingleton(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+    .AddSingleton(_ => new HttpClient { BaseAddress = new(builder.HostEnvironment.BaseAddress) })
     .AddFileSystemAccessService()
     .AddSingleton<IAppState, AppState>()
     .AddSingleton<IRefreshService, RefreshService>()

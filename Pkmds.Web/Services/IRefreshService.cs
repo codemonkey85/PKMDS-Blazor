@@ -18,5 +18,6 @@ public interface IRefreshService
 
     void RefreshBoxAndPartyState();
 
+    // ReSharper disable once UnusedMember.Global
     void ShowUpdateMessage();
 }

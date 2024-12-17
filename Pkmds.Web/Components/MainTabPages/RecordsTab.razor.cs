@@ -39,7 +39,7 @@ public partial class RecordsTab
             return;
         }
 
-        Records = new Record3(SaveFile);
+        Records = new(SaveFile);
         RecordComboItems = Record3.GetItems(SaveFile);
         GetRecord();
     }

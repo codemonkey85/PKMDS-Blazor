@@ -1,8 +1,9 @@
 namespace Pkmds.Web.Components.Pages;
 
+// ReSharper disable once UnusedType.Global
 public partial class Home : IDisposable
 {
-    private bool IsUpdateAvailable { get; set; } = false;
+    private bool IsUpdateAvailable { get; set; }
 
     protected override void OnInitialized()
     {
@@ -16,7 +17,7 @@ public partial class Home : IDisposable
         RefreshService.OnUpdateAvailable -= ShowUpdateMessage;
     }
 
-    public void ShowUpdateMessage()
+    private void ShowUpdateMessage()
     {
         // Display the alert when an update is available
         IsUpdateAvailable = true;

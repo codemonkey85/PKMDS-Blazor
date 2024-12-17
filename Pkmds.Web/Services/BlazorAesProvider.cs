@@ -8,7 +8,7 @@ public class BlazorAesProvider(JsService jsService) : IAesCryptographyProvider
 #pragma warning disable CS9113 // Parameter is unread.
     private class CryptoJsAes(JsService jsService, byte[] key, CipherMode mode, PaddingMode padding, byte[]? iv = null)
 #pragma warning restore CS9113 // Parameter is unread.
-        : IAesCryptographyProvider.IAes, IDisposable
+        : IAesCryptographyProvider.IAes
     {
         public void EncryptEcb(ReadOnlySpan<byte> plaintext, Span<byte> destination) =>
             jsService.EncryptAes(plaintext, destination, key, CipherMode.ECB);
@@ -25,4 +25,3 @@ public class BlazorAesProvider(JsService jsService) : IAesCryptographyProvider
         public void Dispose() { }
     }
 }
-

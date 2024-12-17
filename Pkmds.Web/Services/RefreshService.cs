@@ -2,7 +2,7 @@
 
 public class RefreshService : IRefreshService
 {
-    public static RefreshService? Instance { get; private set; }
+    private static RefreshService? Instance { get; set; }
 
     public event Action? OnAppStateChanged;
     public event Action? OnBoxStateChanged;

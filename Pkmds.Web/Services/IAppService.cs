@@ -2,8 +2,6 @@
 
 public interface IAppService
 {
-    string[] NatureStatShortNames { get; }
-
     PKM? EditFormPokemon { get; set; }
 
     bool IsDrawerOpen { get; set; }
@@ -34,9 +32,11 @@ public interface IAppService
 
     IEnumerable<ComboItem> SearchAbilityNames(string searchString);
 
-    IEnumerable<ComboItem> SearchMetLocations(string searchString, GameVersion gameVersion, EntityContext entityContext, bool isEggLocation = false);
+    IEnumerable<ComboItem> SearchMetLocations(string searchString, GameVersion gameVersion, EntityContext entityContext,
+        bool isEggLocation = false);
 
-    ComboItem GetMetLocationComboItem(ushort metLocationId, GameVersion gameVersion, EntityContext entityContext, bool isEggLocation = false);
+    ComboItem GetMetLocationComboItem(ushort metLocationId, GameVersion gameVersion, EntityContext entityContext,
+        bool isEggLocation = false);
 
     IEnumerable<ComboItem> SearchMoves(string searchString);
 
