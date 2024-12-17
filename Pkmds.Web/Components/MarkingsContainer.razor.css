@@ -10,5 +10,5 @@
 
 .gen-3 {
     grid-template-columns: repeat(4, 1fr);
-    grid-gap: 0px;
+    grid-gap: 0;
 }
