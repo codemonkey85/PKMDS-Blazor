@@ -92,17 +92,30 @@
         </MudStack>
     }
 
+    <MudNumericField Label="Level"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@Pokemon.CurrentLevel"
+                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                     For="@(() => Pokemon.CurrentLevel)"/>
+
     <MudNumericField Label="EXP"
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.EXP"
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                      For="@(() => Pokemon.EXP)"/>
 
-    <MudNumericField Label="Level"
-                     Variant="@Variant.Outlined"
-                     @bind-Value="@Pokemon.CurrentLevel"
-                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                     For="@(() => Pokemon.CurrentLevel)"/>
+    <MudNumericField Label="EXP to next level"
+                     Value="@GetEXPToLevelUp()"/>
+
+    @{
+        var levelProgress = Experience.GetEXPToLevelUpPercentage(Pokemon.CurrentLevel, Pokemon.EXP, Pokemon.PersonalInfo.EXPGrowth);
+        <MudProgressLinear
+            Value="@(levelProgress * 100)"
+            Color="@Color.Primary"
+            Size="@Size.Medium"
+            Rounded
+            title="@(levelProgress.ToString("P"))"/>
+    }
 
     @if (saveGeneration >= 3)
     {

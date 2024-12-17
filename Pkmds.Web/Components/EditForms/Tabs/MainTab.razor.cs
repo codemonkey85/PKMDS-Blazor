@@ -124,4 +124,17 @@ public partial class MainTab : IDisposable
     }
 
     private readonly PatternMask hexMask = new("########") { MaskChars = [new('#', "[0-9a-fA-F]")] };
+
+    // ReSharper disable once InconsistentNaming
+    private double GetEXPToLevelUp()
+    {
+        if (Pokemon is not { CurrentLevel: var level and < 100, EXP: var exp, PersonalInfo.EXPGrowth: var growth })
+        {
+            return 0;
+        }
+
+        var table = Experience.GetTable(growth);
+        var next = Experience.GetEXP(++level, table);
+        return next - exp;
+    }
 }
