@@ -1,12 +1,15 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
-saveFileEntityContext is not
-EntityContext.None or
-EntityContext.SplitInvalid or
-EntityContext.MaxInvalid &&
-AppState.SelectedSlotsAreValid)
+     AppState.SaveFile is
+     {
+         Context: not
+         (EntityContext.None or
+         EntityContext.SplitInvalid or
+         EntityContext.MaxInvalid),
+         Generation: var saveGeneration
+     } saveFile &&
+     AppState.SelectedSlotsAreValid)
 {
     @if (saveGeneration >= 3)
     {
@@ -16,23 +19,30 @@ AppState.SelectedSlotsAreValid)
                          Max="@uint.MaxValue"
                          @bind-Value:get="@Pokemon.PID"
                          @bind-Value:set="@(newPid => SetPokemonPid(newPid))"
-                         For="@(() => Pokemon.PID)" />
+                         For="@(() => Pokemon.PID)"/>
 
         <MudTextField Label="PID (Hex)"
                       Variant="@Variant.Outlined"
                       MaxLength="8"
-                      Mask="@HexMask"
+                      Mask="@hexMask"
                       @bind-Value:get="@Pokemon.PID.ToString("X8")"
-                      @bind-Value:set="@(newPidHex => SetPokemonPid(newPidHex))" />
+                      @bind-Value:set="@((string newPidHex) => SetPokemonPid(newPidHex))"/>
     }
 
+    @* ReSharper disable once CSharpWarnings::CS8603 *@
     <MudAutocomplete T="@ComboItem"
                      Label="Species"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
-                     @bind-Value:set="@(species => { Pokemon.Species = (ushort)species.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
+                     @bind-Value:set="@(species =>
+                                      {
+                                          Pokemon.Species = (ushort)species.Value;
+                                          AppService.LoadPokemonStats(Pokemon);
+                                          RefreshService.Refresh();
+                                      })"
                      SearchFunc="@SearchPokemonNames"
-                     ToStringFunc="@(species => species?.Text)" />
+                     @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
+                     ToStringFunc="@(species => species?.Text)"/>
 
     if (Pokemon != saveFile.BlankPKM && Pokemon.Species != (ushort)Species.None)
     {
@@ -43,7 +53,7 @@ AppState.SelectedSlotsAreValid)
 
         <MudCheckBox Label="Is Nicknamed"
                      @bind-Value="@Pokemon.IsNicknamed"
-                     For="@(() => Pokemon.IsNicknamed)" />
+                     For="@(() => Pokemon.IsNicknamed)"/>
 
         <MudButton OnClick="@RevertNickname"
                    ButtonType="@ButtonType.Button"
@@ -60,7 +70,7 @@ AppState.SelectedSlotsAreValid)
                   Variant="@Variant.Outlined"
                   @bind-Value="@Pokemon.Nickname"
                   MaxLength="@saveFile.MaxStringLengthNickname"
-                  For="@(() => Pokemon.Nickname)" />
+                  For="@(() => Pokemon.Nickname)"/>
 
     @if (saveGeneration >= 2)
     {
@@ -71,7 +81,7 @@ AppState.SelectedSlotsAreValid)
 
             <GenderDisplayComponent Gender="@((Gender)Pokemon.Gender)"
                                     OnChange="@OnGenderToggle"
-                                    Disabled="@(!Pokemon.PersonalInfo.IsDualGender)" />
+                                    Disabled="@(!Pokemon.PersonalInfo.IsDualGender)"/>
 
             @if (!Pokemon.PersonalInfo.IsDualGender)
             {
@@ -87,13 +97,13 @@ AppState.SelectedSlotsAreValid)
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.EXP"
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                     For="@(() => Pokemon.EXP)" />
+                     For="@(() => Pokemon.EXP)"/>
 
     <MudNumericField Label="Level"
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.CurrentLevel"
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                     For="@(() => Pokemon.CurrentLevel)" />
+                     For="@(() => Pokemon.CurrentLevel)"/>
 
     @if (saveGeneration >= 3)
     {
@@ -167,20 +177,26 @@ AppState.SelectedSlotsAreValid)
 
             @if (Pokemon is IFormArgument && FormArgumentUtil.GetFormArgumentMax(Pokemon.Species, Pokemon.Form, Pokemon.Context) > 0 && FormConverter.GetFormArgumentIsNamedIndex(Pokemon.Species))
             {
+                
                 <MudSelect T="@(uint?)"
                            Label="Form Arg"
                            Variant="@Variant.Outlined"
                            @bind-Value:get="@(Pokemon.GetFormArgument())"
-                           @bind-Value:set="@(formArg => { Pokemon.ChangeFormArgument(formArg ?? 0); AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })">
+                           @bind-Value:set="@(formArg =>
+                                            {
+                                                Pokemon.ChangeFormArgument(formArg ?? 0);
+                                                AppService.LoadPokemonStats(Pokemon);
+                                                RefreshService.Refresh();
+                                            })">
                     @{
                         var formArgs = FormConverter.GetFormArgumentStrings(Pokemon.Species);
                     }
-                    @for (uint? i = 0; i < formArgs.Length; i++)
+                    @for (uint i = 0; i < formArgs.Length; i++)
                     {
                         var formArg = i;
                         <MudSelectItem Value="@formArg"
-                                       @key="@formArg.Value">
-                            @formArgs[formArg ?? 0]
+                                       @key="@formArg">
+                            @formArgs[formArg]
                         </MudSelectItem>
                     }
                 </MudSelect>
@@ -194,12 +210,19 @@ AppState.SelectedSlotsAreValid)
                   Spacing="1"
                   AlignItems="@AlignItems.Center">
 
+            @* ReSharper disable once CSharpWarnings::CS8603 *@
             <MudAutocomplete T="@ComboItem"
                              Label="Held Item"
                              Variant="@Variant.Outlined"
                              @bind-Value:get="@(AppService.GetItemComboItem(Pokemon.HeldItem))"
-                             @bind-Value:set="@(item => { Pokemon.HeldItem = item.Value; AppService.LoadPokemonStats(Pokemon); RefreshService.Refresh(); })"
+                             @bind-Value:set="@(item =>
+                                              {
+                                                  Pokemon.HeldItem = item.Value;
+                                                  AppService.LoadPokemonStats(Pokemon);
+                                                  RefreshService.Refresh();
+                                              })"
                              SearchFunc="@SearchItemNames"
+                             @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
                              ToStringFunc="@(item => item?.Text)">
                 <ItemTemplate Context="item">
                     <MudStack Row>
@@ -211,7 +234,7 @@ AppState.SelectedSlotsAreValid)
                                       ObjectFit="@ObjectFit.Contain"
                                       ObjectPosition="@ObjectPosition.Center"
                                       Width="22"
-                                      Height="22" />
+                                      Height="22"/>
                         }
                         <MudText>
                             @item.Text
@@ -229,7 +252,7 @@ AppState.SelectedSlotsAreValid)
                           ObjectFit="@ObjectFit.Contain"
                           ObjectPosition="@ObjectPosition.Center"
                           Width="22"
-                          Height="22" />
+                          Height="22"/>
             }
         </MudStack>
     }
@@ -238,7 +261,7 @@ AppState.SelectedSlotsAreValid)
     {
         <MudSelect Label="Ability"
                    Variant="@Variant.Outlined"
-                   @bind-Value:get="@((int)Pokemon.Ability)"
+                   @bind-Value:get="@Pokemon.Ability"
                    @bind-Value:set="@(ability => Pokemon.SetAbility(ability))"
                    For="@(() => Pokemon.Ability)">
             @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon).DistinctBy(ability => ability.Value))
@@ -252,13 +275,15 @@ AppState.SelectedSlotsAreValid)
     }
     else if (saveGeneration >= 4)
     {
+        @* ReSharper disable once CSharpWarnings::CS8603 *@
         <MudAutocomplete T="@ComboItem"
                          Label="Ability"
                          Variant="@Variant.Outlined"
                          @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
                          @bind-Value:set="@(ability => Pokemon.Ability = ability.Value)"
                          SearchFunc="@SearchAbilityNames"
-                         ToStringFunc="@(ability => ability?.Text)" />
+                         @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
+                         ToStringFunc="@(ability => ability?.Text)"/>
     }
 
     @if (saveGeneration >= 3)
@@ -283,11 +308,10 @@ AppState.SelectedSlotsAreValid)
     {
         <MudNumericField Label="@(Pokemon.IsEgg ? "Hatch Counter" : "Friendship")"
                          Variant="@Variant.Outlined"
-                         T="@byte"
-                         Min="0"
-                         Max="255"
+                         Min="@byte.MinValue"
+                         Max="@byte.MaxValue"
                          @bind-Value="@Pokemon.CurrentFriendship"
-                         For="@(() => Pokemon.CurrentFriendship)" />
+                         For="@(() => Pokemon.CurrentFriendship)"/>
     }
 
     <MudStack Row
@@ -298,9 +322,9 @@ AppState.SelectedSlotsAreValid)
             <MudCheckBox Label="Is Egg"
                          @bind-Value="@Pokemon.IsEgg"
                          @bind-Value:after="@RefreshService.Refresh"
-                         For="@(() => Pokemon.IsEgg)" />
+                         For="@(() => Pokemon.IsEgg)"/>
 
-            <PokerusComponent Pokemon="Pokemon" />
+            <PokerusComponent Pokemon="Pokemon"/>
         }
 
         @if (Pokemon is PK5 pk5)
@@ -308,13 +332,13 @@ AppState.SelectedSlotsAreValid)
             <MudCheckBox Label="N's Sparkle"
                          @bind-Value="@pk5.NSparkle"
                          @bind-Value:after="@RefreshService.Refresh"
-                         For="@(() => pk5.NSparkle)" />
+                         For="@(() => pk5.NSparkle)"/>
         }
 
         <MudCheckBox Label="Shiny"
                      @bind-Value:get="@Pokemon.IsShiny"
                      @bind-Value:set="@(isShiny => OnShinySet(isShiny))"
-                     For="@(() => Pokemon.IsShiny)" />
+                     For="@(() => Pokemon.IsShiny)"/>
 
     </MudStack>
 }
