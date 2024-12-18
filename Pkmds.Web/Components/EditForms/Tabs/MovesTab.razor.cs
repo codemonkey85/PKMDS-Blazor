@@ -2,8 +2,7 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class MovesTab : IDisposable
 {
-    [Parameter, EditorRequired]
-    public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
@@ -26,9 +25,11 @@ public partial class MovesTab : IDisposable
         RefreshService.Refresh();
     }
 
+    // ReSharper disable once InconsistentNaming
     private int GetPokemonPP(int moveIndex) =>
         Pokemon?.GetPP()[moveIndex] ?? 0;
 
+    // ReSharper disable once InconsistentNaming
     private void SetPokemonPP(int moveIndex, int pp)
     {
         if (Pokemon is null)
@@ -41,9 +42,11 @@ public partial class MovesTab : IDisposable
         RefreshService.Refresh();
     }
 
+    // ReSharper disable once InconsistentNaming
     private int GetPokemonPPUps(int moveIndex) =>
         Pokemon?.GetPPUps()[moveIndex] ?? 0;
 
+    // ReSharper disable once InconsistentNaming
     private void SetPokemonPPUps(int moveIndex, int ppUps)
     {
         if (Pokemon is null)

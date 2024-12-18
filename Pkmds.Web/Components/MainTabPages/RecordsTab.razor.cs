@@ -2,8 +2,7 @@ namespace Pkmds.Web.Components.MainTabPages;
 
 public partial class RecordsTab
 {
-    [Parameter, EditorRequired]
-    public SAV3? SaveFile { get; set; }
+    [Parameter, EditorRequired] public SAV3? SaveFile { get; set; }
 
     private int CurrentRecordIndex { get; set; }
 
@@ -40,7 +39,7 @@ public partial class RecordsTab
             return;
         }
 
-        Records = new Record3(SaveFile);
+        Records = new(SaveFile);
         RecordComboItems = Record3.GetItems(SaveFile);
         GetRecord();
     }
@@ -86,7 +85,7 @@ public partial class RecordsTab
         Records.SetRecord(1, (uint)(CurrentRecordValue = GetFameTime()));
     }
 
-    public uint GetFameTime()
+    private uint GetFameTime()
     {
         if (!HallOfFameIndexSelected || Records is null)
         {
@@ -100,7 +99,7 @@ public partial class RecordsTab
         return (hrs << 16) | ((uint)min << 8) | sec;
     }
 
-    public void SetFameTime(uint time)
+    private void SetFameTime(uint time)
     {
         if (!HallOfFameIndexSelected || Records is null)
         {

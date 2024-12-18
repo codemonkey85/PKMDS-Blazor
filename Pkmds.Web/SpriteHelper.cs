@@ -10,39 +10,44 @@ public static class SpriteHelper
     public const string PokemonFallbackImageFileName = $"{SpritesRoot}a/a_unknown.png";
 
     public static string GetMysteryGiftSpriteFileName(MysteryGift gift) => gift.IsItem
-            ? GetItemSpriteFilename(gift.ItemID, gift.Context)
-            : GetPokemonSpriteFilename(gift.Species, gift.Context, gift.IsEgg, gift.Form, 0, gift.Gender);
+        ? GetItemSpriteFilename(gift.ItemID, gift.Context)
+        : GetPokemonSpriteFilename(gift.Species, gift.Context, gift.IsEgg, gift.Form, 0, gift.Gender);
 
     public static string GetPokemonSpriteFilename(PKM? pokemon) => pokemon is null
-            ? PokemonFallbackImageFileName
-            : GetPokemonSpriteFilename(pokemon.Species, pokemon.Context, pokemon.IsEgg, pokemon.Form, pokemon.GetFormArgument(0), pokemon.Gender);
+        ? PokemonFallbackImageFileName
+        : GetPokemonSpriteFilename(pokemon.Species, pokemon.Context, pokemon.IsEgg, pokemon.Form,
+            pokemon.GetFormArgument(0), pokemon.Gender);
 
-    public static string GetPokemonSpriteFilename(ushort species, EntityContext context, bool isEgg, byte form, uint? formArg1, byte gender) =>
+    private static string GetPokemonSpriteFilename(ushort species, EntityContext context, bool isEgg, byte form,
+        uint? formArg1, byte gender) =>
         new StringBuilder($"{SpritesRoot}a/a_")
-        .Append((species, context, isEgg, form, formArg1, gender) switch
-        {
-            { context: EntityContext.Gen7b } and ({ species: (ushort)Species.Pikachu, form: PikachuStarterForm }
-                or { species: (ushort)Species.Eevee, form: EeveeStarterForm }) => $"{species}-{form}p",
-            { species: (ushort)Species.Manaphy, isEgg: true } => "490-e",
-            { isEgg: true } => "egg",
-            { species: (ushort)Species.Frillish or (ushort)Species.Jellicent, gender: (byte)Gender.Female } => $"{species}f",
-            { species: (ushort)Species.Alcremie } => $"{species}-{form}-{formArg1}",
-            _ when form > 0 && FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) => $"{species}-{FormInfo.GetTotemBaseForm(species, form)}",
-            { form: > 0 } => species switch
+            .Append((species, context, isEgg, form, formArg1, gender) switch
             {
-                (ushort)Species.Rockruff => species.ToString(),
-                (ushort)Species.Sinistea or (ushort)Species.Polteageist => species.ToString(),
-                (ushort)Species.Scatterbug or (ushort)Species.Spewpa => species.ToString(),
-                (ushort)Species.Urshifu => species.ToString(),
-                (ushort)Species.Dudunsparce => species.ToString(),
-                _ => $"{species}-{form}",
-            },
-            { species: > (ushort)Species.None and < (ushort)Species.MAX_COUNT } =>
-                species.ToString(),
-            _ => "unknown",
-        })
-        .Append(".png")
-        .ToString();
+                { context: EntityContext.Gen7b } and ({ species: (ushort)Species.Pikachu, form: PikachuStarterForm }
+                    or { species: (ushort)Species.Eevee, form: EeveeStarterForm }) => $"{species}-{form}p",
+                { species: (ushort)Species.Manaphy, isEgg: true } => "490-e",
+                { isEgg: true } => "egg",
+                {
+                        species: (ushort)Species.Frillish or (ushort)Species.Jellicent, gender: (byte)Gender.Female
+                    } => $"{species}f",
+                { species: (ushort)Species.Alcremie } => $"{species}-{form}-{formArg1}",
+                (_, _, _, > 0, _, _) when FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) =>
+                    $"{species}-{FormInfo.GetTotemBaseForm(species, form)}",
+                { form: > 0 } => species switch
+                {
+                    (ushort)Species.Rockruff => species.ToString(),
+                    (ushort)Species.Sinistea or (ushort)Species.Polteageist => species.ToString(),
+                    (ushort)Species.Scatterbug or (ushort)Species.Spewpa => species.ToString(),
+                    (ushort)Species.Urshifu => species.ToString(),
+                    (ushort)Species.Dudunsparce => species.ToString(),
+                    _ => $"{species}-{form}",
+                },
+                { species: > (ushort)Species.None and < (ushort)Species.MAX_COUNT } =>
+                    species.ToString(),
+                _ => "unknown",
+            })
+            .Append(".png")
+            .ToString();
 
     public static string GetBallSpriteFilename(int ball) =>
         $"{SpritesRoot}b/_ball{ball}.png";
@@ -96,6 +101,7 @@ public static class SpriteHelper
     };
 
     // TODO: Implement
+    // ReSharper disable once UnusedParameter.Global
     public static string GetMoveCategorySpriteFileName(int categoryId) =>
         string.Empty;
 

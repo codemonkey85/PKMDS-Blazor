@@ -6,15 +6,15 @@
     {
         <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
                      Width="210px"
-                     Height="50px" />
-        <br />
+                     Height="50px"/>
+        <br/>
         <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
                      Width="210px"
-                     Height="50px" />
-        <br />
+                     Height="50px"/>
+        <br/>
         <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
                      Width="480px"
-                     Height="350px" />
+                     Height="350px"/>
     }
 }
 else
@@ -33,19 +33,19 @@ else
 
         <MudTabPanel Text="Party / Box">
             <div class="mt-3">
-                <PartyAndBoxTab />
+                <PartyAndBoxTab/>
             </div>
         </MudTabPanel>
 
         <MudTabPanel Text="Trainer">
             <div class="mt-3">
-                <TrainerInfoTab />
+                <TrainerInfoTab/>
             </div>
         </MudTabPanel>
 
         <MudTabPanel Text="Bag">
             <div class="mt-3">
-                <BagTab Inventory="@AppState.SaveFile.Inventory" />
+                <BagTab Inventory="@AppState.SaveFile.Inventory"/>
             </div>
         </MudTabPanel>
 
@@ -53,7 +53,7 @@ else
         {
             <MudTabPanel Text="Mystery Gifts">
                 <div class="mt-3">
-                    <MysteryGiftDatabaseTab />
+                    <MysteryGiftDatabaseTab/>
                 </div>
             </MudTabPanel>
         }
@@ -61,7 +61,7 @@ else
         @if (saveFile.Generation == 3 && saveFile is SAV3 sav3)
         {
             <MudTabPanel Text="Records">
-                <RecordsTab SaveFile="@sav3" />
+                <RecordsTab SaveFile="@sav3"/>
             </MudTabPanel>
         }
 

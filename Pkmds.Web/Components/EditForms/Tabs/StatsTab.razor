@@ -1,12 +1,15 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
-saveFileEntityContext is not
-EntityContext.None or
-EntityContext.SplitInvalid or
-EntityContext.MaxInvalid &&
-AppState.SelectedSlotsAreValid)
+     AppState.SaveFile is
+     {
+         Context: not
+         (EntityContext.None or
+         EntityContext.SplitInvalid or
+         EntityContext.MaxInvalid),
+         Generation: var saveGeneration
+     } &&
+     AppState.SelectedSlotsAreValid)
 {
     <MudGrid>
 
@@ -21,7 +24,7 @@ AppState.SelectedSlotsAreValid)
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.HP"
                                  ReadOnly
-                                 HideSpinButtons />
+                                 HideSpinButtons/>
 
                 <MudNumericField Label="Atk"
                                  Class="@GetStatClass(Stats.Attack)"
@@ -29,7 +32,7 @@ AppState.SelectedSlotsAreValid)
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.ATK"
                                  ReadOnly
-                                 HideSpinButtons />
+                                 HideSpinButtons/>
 
                 <MudNumericField Label="Def"
                                  Class="@GetStatClass(Stats.Defense)"
@@ -37,7 +40,7 @@ AppState.SelectedSlotsAreValid)
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.PersonalInfo.DEF"
                                  ReadOnly
-                                 HideSpinButtons />
+                                 HideSpinButtons/>
 
                 @if (saveGeneration == 1 && Pokemon is PK1 pk1)
                 {
@@ -46,14 +49,14 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@pk1.PersonalInfo.SPE"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                     <MudNumericField Label="Spc"
                                      title="Special Base Stat"
                                      Variant="@Variant.Outlined"
                                      Value="@pk1.PersonalInfo.SPC"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
                 }
                 else
                 {
@@ -63,7 +66,7 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.PersonalInfo.SPA"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                     <MudNumericField Label="Spd"
                                      Class="@GetStatClass(Stats.SpecialDefense)"
@@ -71,7 +74,7 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.PersonalInfo.SPD"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                     <MudNumericField Label="Spe"
                                      Class="@GetStatClass(Stats.Speed)"
@@ -79,14 +82,14 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.PersonalInfo.SPE"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                     <MudNumericField Label="Sum"
                                      title="Base Stat Total"
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.PersonalInfo.GetBaseStatTotal()"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
                 }
 
             </MudStack>
@@ -101,33 +104,33 @@ AppState.SelectedSlotsAreValid)
                 <MudNumericField Label="HP"
                                  title="HP IV"
                                  Variant="@Variant.Outlined"
-                                 Min="0"
+                                 Min="@int.MinValue"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_HP"
                                  @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
                                  For="@(() => Pokemon.IV_HP)"
                                  ReadOnly="@(saveGeneration == 1 && Pokemon is PK1)"
-                                 HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)" />
+                                 HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)"/>
 
                 <MudNumericField Label="Atk"
                                  Class="@GetStatClass(Stats.Attack)"
                                  title="Attack IV"
                                  Variant="@Variant.Outlined"
-                                 Min="0"
+                                 Min="@int.MinValue"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_ATK"
                                  @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.IV_ATK)" />
+                                 For="@(() => Pokemon.IV_ATK)"/>
 
                 <MudNumericField Label="Def"
                                  Class="@GetStatClass(Stats.Defense)"
                                  title="Defense IV"
                                  Variant="@Variant.Outlined"
-                                 Min="0"
+                                 Min="@int.MinValue"
                                  Max="31"
                                  @bind-Value="@Pokemon.IV_DEF"
                                  @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                 For="@(() => Pokemon.IV_DEF)" />
+                                 For="@(() => Pokemon.IV_DEF)"/>
 
 
                 @if (saveGeneration == 1 && Pokemon is PK1 pk1)
@@ -135,16 +138,20 @@ AppState.SelectedSlotsAreValid)
                     <MudNumericField Label="Spe"
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
+                                     Min="@int.MinValue"
+                                     Max="31"
                                      @bind-Value="@pk1.IV_SPE"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => pk1.IV_SPE)" />
+                                     For="@(() => pk1.IV_SPE)"/>
 
                     <MudNumericField Label="Spc"
                                      title="Special IV"
                                      Variant="@Variant.Outlined"
+                                     Min="@int.MinValue"
+                                     Max="31"
                                      @bind-Value="@pk1.IV_SPC"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => pk1.IV_SPC)" />
+                                     For="@(() => pk1.IV_SPC)"/>
                 }
                 else
                 {
@@ -152,31 +159,31 @@ AppState.SelectedSlotsAreValid)
                                      Class="@GetStatClass(Stats.SpecialAttack)"
                                      title="Special Attack IV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@int.MinValue"
                                      Max="31"
                                      @bind-Value="@Pokemon.IV_SPA"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => Pokemon.IV_SPA)" />
+                                     For="@(() => Pokemon.IV_SPA)"/>
 
                     <MudNumericField Label="Spd"
                                      Class="@GetStatClass(Stats.SpecialDefense)"
                                      title="Special Defense IV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@int.MinValue"
                                      Max="31"
                                      @bind-Value="@Pokemon.IV_SPD"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => Pokemon.IV_SPD)" />
+                                     For="@(() => Pokemon.IV_SPD)"/>
 
                     <MudNumericField Label="Spe"
                                      Class="@GetStatClass(Stats.Speed)"
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@int.MinValue"
                                      Max="31"
                                      @bind-Value="@Pokemon.IV_SPE"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => Pokemon.IV_SPE)" />
+                                     For="@(() => Pokemon.IV_SPE)"/>
 
                     <MudNumericField Label="Sum"
                                      title="IVs Total"
@@ -184,7 +191,7 @@ AppState.SelectedSlotsAreValid)
                                      Value="@Pokemon.IVTotal"
                                      For="@(() => Pokemon.IVTotal)"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
                 }
 
             </MudStack>
@@ -202,73 +209,73 @@ AppState.SelectedSlotsAreValid)
                                      T="@byte"
                                      title="HP AV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@AwakeningUtil.AwakeningMax"
                                      @bind-Value="@aPkm.AV_HP"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => aPkm.AV_HP)" />
+                                     For="@(() => aPkm.AV_HP)"/>
 
                     <MudNumericField Label="Atk"
                                      Class="@GetStatClass(Stats.Attack)"
                                      T="@byte"
                                      title="Attack AV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@AwakeningUtil.AwakeningMax"
                                      @bind-Value="@aPkm.AV_ATK"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => aPkm.AV_ATK)" />
+                                     For="@(() => aPkm.AV_ATK)"/>
 
                     <MudNumericField Label="Def"
                                      Class="@GetStatClass(Stats.Defense)"
                                      T="@byte"
                                      title="Defense AV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@AwakeningUtil.AwakeningMax"
                                      @bind-Value="@aPkm.AV_DEF"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => aPkm.AV_DEF)" />
+                                     For="@(() => aPkm.AV_DEF)"/>
 
                     <MudNumericField Label="Spa"
                                      Class="@GetStatClass(Stats.SpecialAttack)"
                                      T="@byte"
                                      title="Special Attack AV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@AwakeningUtil.AwakeningMax"
                                      @bind-Value="@aPkm.AV_SPA"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => aPkm.AV_SPA)" />
+                                     For="@(() => aPkm.AV_SPA)"/>
 
                     <MudNumericField Label="Spd"
                                      Class="@GetStatClass(Stats.SpecialDefense)"
                                      T="@byte"
                                      title="Special Defense AV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@AwakeningUtil.AwakeningMax"
                                      @bind-Value="@aPkm.AV_SPD"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => aPkm.AV_SPD)" />
+                                     For="@(() => aPkm.AV_SPD)"/>
 
                     <MudNumericField Label="Spe"
                                      Class="@GetStatClass(Stats.Speed)"
                                      T="@byte"
                                      title="Speed AV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@AwakeningUtil.AwakeningMax"
                                      @bind-Value="@aPkm.AV_SPE"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => aPkm.AV_SPE)" />
+                                     For="@(() => aPkm.AV_SPE)"/>
 
                     <MudNumericField Label="Sum"
                                      title="AVs Total"
                                      Variant="@Variant.Outlined"
                                      Value="@aPkm.AwakeningSum()"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                 </MudStack>
             </MudItem>
@@ -285,66 +292,66 @@ AppState.SelectedSlotsAreValid)
                                      T="@byte"
                                      title="HP GV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@Pokemon.GetMaxGanbaru(0)"
                                      @bind-Value="@gPkm.GV_HP"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => gPkm.GV_HP)" />
+                                     For="@(() => gPkm.GV_HP)"/>
 
                     <MudNumericField Label="Atk"
                                      Class="@GetStatClass(Stats.Attack)"
                                      T="@byte"
                                      title="Attack GV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@Pokemon.GetMaxGanbaru(1)"
                                      @bind-Value="@gPkm.GV_ATK"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => gPkm.GV_ATK)" />
+                                     For="@(() => gPkm.GV_ATK)"/>
 
                     <MudNumericField Label="Def"
                                      Class="@GetStatClass(Stats.Defense)"
                                      T="@byte"
                                      title="Defense GV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@Pokemon.GetMaxGanbaru(2)"
                                      @bind-Value="@gPkm.GV_DEF"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => gPkm.GV_DEF)" />
+                                     For="@(() => gPkm.GV_DEF)"/>
 
                     <MudNumericField Label="Spa"
                                      Class="@GetStatClass(Stats.SpecialAttack)"
                                      T="@byte"
                                      title="Special Attack GV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@Pokemon.GetMaxGanbaru(3)"
                                      @bind-Value="@gPkm.GV_SPA"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => gPkm.GV_SPA)" />
+                                     For="@(() => gPkm.GV_SPA)"/>
 
                     <MudNumericField Label="Spd"
                                      Class="@GetStatClass(Stats.SpecialDefense)"
                                      T="@byte"
                                      title="Special Defense GV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@Pokemon.GetMaxGanbaru(4)"
                                      @bind-Value="@gPkm.GV_SPD"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => gPkm.GV_SPD)" />
+                                     For="@(() => gPkm.GV_SPD)"/>
 
                     <MudNumericField Label="Spe"
                                      Class="@GetStatClass(Stats.Speed)"
                                      T="@byte"
                                      title="Speed GV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@byte.MinValue"
                                      Max="@Pokemon.GetMaxGanbaru(5)"
                                      @bind-Value="@gPkm.GV_SPE"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => gPkm.GV_SPE)" />
+                                     For="@(() => gPkm.GV_SPE)"/>
 
                 </MudStack>
             </MudItem>
@@ -360,47 +367,51 @@ AppState.SelectedSlotsAreValid)
                     <MudNumericField Label="HP"
                                      title="HP EV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@int.MinValue"
                                      Max="@GetEvMax(saveGeneration)"
                                      @bind-Value="@Pokemon.EV_HP"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => Pokemon.EV_HP)" />
+                                     For="@(() => Pokemon.EV_HP)"/>
 
                     <MudNumericField Label="Atk"
                                      Class="@GetStatClass(Stats.Attack)"
                                      title="Attack EV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@int.MinValue"
                                      Max="@GetEvMax(saveGeneration)"
                                      @bind-Value="@Pokemon.EV_ATK"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => Pokemon.EV_ATK)" />
+                                     For="@(() => Pokemon.EV_ATK)"/>
 
                     <MudNumericField Label="Def"
                                      Class="@GetStatClass(Stats.Defense)"
                                      title="Defense EV"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
+                                     Min="@int.MinValue"
                                      Max="@GetEvMax(saveGeneration)"
                                      @bind-Value="@Pokemon.EV_DEF"
                                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                     For="@(() => Pokemon.EV_DEF)" />
+                                     For="@(() => Pokemon.EV_DEF)"/>
 
                     @if (saveGeneration == 1 && Pokemon is PK1 pk1)
                     {
                         <MudNumericField Label="Spe"
                                          title="Speed EV"
                                          Variant="@Variant.Outlined"
+                                         Min="@int.MinValue"
+                                         Max="@GetEvMax(saveGeneration)"
                                          @bind-Value="@pk1.EV_SPE"
                                          @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                         For="@(() => pk1.EV_SPE)" />
+                                         For="@(() => pk1.EV_SPE)"/>
 
                         <MudNumericField Label="Spc"
                                          title="Special EV"
                                          Variant="@Variant.Outlined"
+                                         Min="@int.MinValue"
+                                         Max="@GetEvMax(saveGeneration)"
                                          @bind-Value="@pk1.EV_SPC"
                                          @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                         For="@(() => pk1.EV_SPC)" />
+                                         For="@(() => pk1.EV_SPC)"/>
                     }
                     else
                     {
@@ -408,38 +419,38 @@ AppState.SelectedSlotsAreValid)
                                          Class="@GetStatClass(Stats.SpecialAttack)"
                                          title="Special Attack EV"
                                          Variant="@Variant.Outlined"
-                                         Min="0"
+                                         Min="@int.MinValue"
                                          Max="@GetEvMax(saveGeneration)"
                                          @bind-Value="@Pokemon.EV_SPA"
                                          @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                         For="@(() => Pokemon.EV_SPA)" />
+                                         For="@(() => Pokemon.EV_SPA)"/>
 
                         <MudNumericField Label="Spd"
                                          Class="@GetStatClass(Stats.SpecialDefense)"
                                          title="Special Defense EV"
                                          Variant="@Variant.Outlined"
-                                         Min="0"
+                                         Min="@int.MinValue"
                                          Max="@GetEvMax(saveGeneration)"
                                          @bind-Value="@Pokemon.EV_SPD"
                                          @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                         For="@(() => Pokemon.EV_SPD)" />
+                                         For="@(() => Pokemon.EV_SPD)"/>
 
                         <MudNumericField Label="Spe"
                                          Class="@GetStatClass(Stats.Speed)"
                                          title="Speed EV"
                                          Variant="@Variant.Outlined"
-                                         Min="0"
+                                         Min="@int.MinValue"
                                          Max="@GetEvMax(saveGeneration)"
                                          @bind-Value="@Pokemon.EV_SPE"
                                          @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                                         For="@(() => Pokemon.EV_SPE)" />
+                                         For="@(() => Pokemon.EV_SPE)"/>
 
                         <MudNumericField Label="Sum"
                                          title="EVs Total"
                                          Variant="@Variant.Outlined"
                                          Value="@Pokemon.EVTotal"
                                          ReadOnly
-                                         HideSpinButtons />
+                                         HideSpinButtons/>
                     }
 
                 </MudStack>
@@ -457,7 +468,7 @@ AppState.SelectedSlotsAreValid)
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_HPMax"
                                  ReadOnly
-                                 HideSpinButtons />
+                                 HideSpinButtons/>
 
                 <MudNumericField Label="Atk"
                                  Class="@GetStatClass(Stats.Attack)"
@@ -465,7 +476,7 @@ AppState.SelectedSlotsAreValid)
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_ATK"
                                  ReadOnly
-                                 HideSpinButtons />
+                                 HideSpinButtons/>
 
                 <MudNumericField Label="Def"
                                  Class="@GetStatClass(Stats.Defense)"
@@ -473,7 +484,7 @@ AppState.SelectedSlotsAreValid)
                                  Variant="@Variant.Outlined"
                                  Value="@Pokemon.Stat_DEF"
                                  ReadOnly
-                                 HideSpinButtons />
+                                 HideSpinButtons/>
 
                 @if (saveGeneration == 1 && Pokemon is PK1 pk1)
                 {
@@ -482,14 +493,14 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@pk1.Stat_SPE"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                     <MudNumericField Label="Spc"
                                      title="Special Stat"
                                      Variant="@Variant.Outlined"
                                      Value="@pk1.Stat_SPC"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
                 }
                 else
                 {
@@ -499,7 +510,7 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.Stat_SPA"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                     <MudNumericField Label="Spd"
                                      Class="@GetStatClass(Stats.SpecialDefense)"
@@ -507,7 +518,7 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.Stat_SPD"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
 
                     <MudNumericField Label="Spe"
                                      Class="@GetStatClass(Stats.Speed)"
@@ -515,7 +526,7 @@ AppState.SelectedSlotsAreValid)
                                      Variant="@Variant.Outlined"
                                      Value="@Pokemon.Stat_SPE"
                                      ReadOnly
-                                     HideSpinButtons />
+                                     HideSpinButtons/>
                 }
 
                 @if (saveGeneration >= 3)
@@ -536,7 +547,7 @@ AppState.SelectedSlotsAreValid)
                      Variant="@Variant.Outlined"
                      @bind-Value="@Pokemon.CurrentLevel"
                      @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
-                     For="@(() => Pokemon.CurrentLevel)" />
+                     For="@(() => Pokemon.CurrentLevel)"/>
 
     @if (Pokemon is ICombatPower pb)
     {
@@ -545,7 +556,7 @@ AppState.SelectedSlotsAreValid)
                          ReadOnly
                          HideSpinButtons
                          Value="@pb.Stat_CP"
-                         For="@(() => pb.Stat_CP)" />
+                         For="@(() => pb.Stat_CP)"/>
     }
 
     @if (saveGeneration >= 3)
@@ -598,7 +609,7 @@ AppState.SelectedSlotsAreValid)
 
     @if (GameInfo.FilteredSources.Moves.Any(m => m.Value == (int)Move.HiddenPower) && Pokemon is not { Context: EntityContext.Gen8 or EntityContext.Gen9 })
     {
-        <HiddenPowerChooser Pokemon="@Pokemon" />
+        <HiddenPowerChooser Pokemon="@Pokemon"/>
     }
 
     @if (saveGeneration >= 4)
@@ -618,16 +629,16 @@ AppState.SelectedSlotsAreValid)
                     <MudNumericField Label="Dynamax Level"
                                      T="@byte"
                                      Variant="@Variant.Outlined"
-                                     Min="0"
-                                     Max="10"
-                                     @bind-Value="@d.DynamaxLevel" />
+                                     Min="@byte.MinValue"
+                                     Max="@Constants.MaxDynamaxLevel"
+                                     @bind-Value="@d.DynamaxLevel"/>
                 </MudItem>
                 @if (Pokemon is IGigantamax c)
                 {
                     <MudItem xs="3">
                         <MudCheckBox Label="Gigantamax"
                                      @bind-Value="@c.CanGigantamax"
-                                     For="@(() => c.CanGigantamax)" />
+                                     For="@(() => c.CanGigantamax)"/>
                     </MudItem>
                 }
             }
@@ -638,7 +649,7 @@ AppState.SelectedSlotsAreValid)
             <MudItem xs="3">
                 <MudCheckBox Label="Noble"
                              @bind-Value="@noble.IsNoble"
-                             For="@(() => noble.IsNoble)" />
+                             For="@(() => noble.IsNoble)"/>
             </MudItem>
         }
 
@@ -647,7 +658,7 @@ AppState.SelectedSlotsAreValid)
             <MudItem xs="3">
                 <MudCheckBox Label="Alpha"
                              Value="@alphaReadOnly.IsAlpha"
-                             Readonly />
+                             Readonly/>
             </MudItem>
         }
 
@@ -656,7 +667,7 @@ AppState.SelectedSlotsAreValid)
             <MudItem xs="3">
                 <MudCheckBox Label="Alpha"
                              @bind-Value="@alpha.IsAlpha"
-                             For="@(() => alpha.IsAlpha)" />
+                             For="@(() => alpha.IsAlpha)"/>
             </MudItem>
         }
     </MudGrid>
@@ -753,11 +764,13 @@ AppState.SelectedSlotsAreValid)
 
 
 @code {
+
     private RenderFragment RenderTeraTypeImage(byte teraTypeid, int width = 30) =>
-    @<MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(teraTypeid)"
-          Alt="@GetTeraTypeDisplayName(teraTypeid)"
-          title="@GetTeraTypeDisplayName(teraTypeid)"
-          ObjectFit="@ObjectFit.Contain"
-          ObjectPosition="@ObjectPosition.Center"
-          Width="@width" />;
+        @<MudImage Src="@SpriteHelper.GetTypeGemSpriteFileName(teraTypeid)"
+                   Alt="@GetTeraTypeDisplayName(teraTypeid)"
+                   title="@GetTeraTypeDisplayName(teraTypeid)"
+                   ObjectFit="@ObjectFit.Contain"
+                   ObjectPosition="@ObjectPosition.Center"
+                   Width="@width"/>;
+
 }

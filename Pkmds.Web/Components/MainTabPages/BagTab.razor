@@ -16,7 +16,7 @@
                     <MudStack Row>
                         <MudImage Src="@SpriteHelper.GetBagPouchSpriteFileName(pouch.Type)"
                                   Alt="@tabText"
-                                  title="@tabText" />
+                                  title="@tabText"/>
                         @if (string.Equals(PouchTabs?.ActivePanel?.ID?.ToString(), pouch.Type.ToString()))
                         {
                             @GetPouchName(pouch)
@@ -75,7 +75,7 @@
                                                              Value="@GetItem(context)"
                                                              ValueChanged="@(newItem => SetItem(context, newItem))"
                                                              SearchFunc="@((string searchString, CancellationToken _) => SearchItemNames(pouch, searchString))"
-                                                             ToStringFunc="@(item => { return ItemList[context.Item.Index]; })">
+                                                             ToStringFunc="@(_ => ItemList[context.Item.Index])">
                                                 <ItemTemplate Context="item">
                                                     <MudStack Row>
                                                         @if (item.Value != 0)
@@ -87,7 +87,8 @@
                                                                     title="@item.Text">
                                                                 <img class="pkm-sprite"
                                                                      src="@SpriteHelper.ItemFallbackImageFileName"
-                                                                     title="@item.Text">
+                                                                     title="@item.Text"
+                                                                     alt="@item.Text">
                                                             </object>
                                                         }
                                                         <MudText>
@@ -106,7 +107,8 @@
                                                         title="@itemText">
                                                     <img class="pkm-sprite"
                                                          src="@SpriteHelper.ItemFallbackImageFileName"
-                                                         title="@itemText">
+                                                         title="@itemText"
+                                                         alt="@itemText">
                                                 </object>
                                             }
                                         </MudStack>
@@ -118,7 +120,7 @@
                                         <MudNumericField T="@int"
                                                          Variant="@Variant.Outlined"
                                                          Max="@pouch.MaxCount"
-                                                         @bind-Value="@context.Item.Count" />
+                                                         @bind-Value="@context.Item.Count"/>
                                     </EditTemplate>
                                 </PropertyColumn>
                                 @if (HasFreeSpace)
@@ -129,7 +131,7 @@
                                             {
                                                 <MudCheckBox Label="Free Space"
                                                              Value="@freeSpaceItem.IsFreeSpace"
-                                                             ValueChanged="@((bool value) => freeSpaceItem.IsFreeSpace = value)" />
+                                                             ValueChanged="@((bool value) => freeSpaceItem.IsFreeSpace = value)"/>
                                             }
                                         </EditTemplate>
                                     </TemplateColumn>
@@ -142,7 +144,7 @@
                                             {
                                                 <MudNumericField T="@uint"
                                                                  Variant="@Variant.Outlined"
-                                                                 @bind-Value="@freeSpaceIndexItem.FreeSpaceIndex" />
+                                                                 @bind-Value="@freeSpaceIndexItem.FreeSpaceIndex"/>
                                             }
                                         </EditTemplate>
                                     </TemplateColumn>
@@ -155,7 +157,7 @@
                                             {
                                                 <MudCheckBox Label="Favorite"
                                                              Value="@favoriteItem.IsFavorite"
-                                                             ValueChanged="@((bool value) => favoriteItem.IsFavorite = value)" />
+                                                             ValueChanged="@((bool value) => favoriteItem.IsFavorite = value)"/>
                                             }
                                         </EditTemplate>
                                     </TemplateColumn>
@@ -168,7 +170,7 @@
                                             {
                                                 <MudCheckBox Label="New"
                                                              Value="@newFlagItem.IsNew"
-                                                             ValueChanged="@((bool value) => newFlagItem.IsNew = value)" />
+                                                             ValueChanged="@((bool value) => newFlagItem.IsNew = value)"/>
                                             }
                                         </EditTemplate>
                                     </TemplateColumn>
@@ -179,7 +181,7 @@
                                                        ButtonType="@ButtonType.Button"
                                                        Color="@Color.Error"
                                                        Variant="@Variant.Filled"
-                                                       Icon="@Icons.Material.Filled.Delete" />
+                                                       Icon="@Icons.Material.Filled.Delete"/>
                                     </EditTemplate>
                                 </TemplateColumn>
                             </Columns>

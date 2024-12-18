@@ -18,10 +18,11 @@
 
     <MudNumericField Label="Record Value"
                      Variant="@Variant.Outlined"
+                     T="@(uint?)"
                      Min="@uint.MinValue"
                      Max="@uint.MaxValue"
                      @bind-Value:get="@CurrentRecordValue"
-                     @bind-Value:set="@SetCurrentRecordValue" />
+                     @bind-Value:set="@SetCurrentRecordValue"/>
 
     @if (HallOfFameIndexSelected)
     {
@@ -33,25 +34,25 @@
                                  Min="0"
                                  Max="9999"
                                  @bind-Value="@HallOfFameHours"
-                                 @bind-Value:after="@ChangeFame" />
+                                 @bind-Value:after="@ChangeFame"/>
             </div>
             <div class="form-field">
                 <MudNumericField Label="Minutes"
                                  T="@byte"
                                  Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="59"
+                                 Min="@Constants.MinMinutes"
+                                 Max="@Constants.MaxMinutes"
                                  @bind-Value="@HallOfFameMinutes"
-                                 @bind-Value:after="@ChangeFame" />
+                                 @bind-Value:after="@ChangeFame"/>
             </div>
             <div class="form-field">
                 <MudNumericField Label="Seconds"
                                  T="@byte"
                                  Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="59"
+                                 Min="@Constants.MinSeconds"
+                                 Max="@Constants.MaxSeconds"
                                  @bind-Value="@HallOfFameSeconds"
-                                 @bind-Value:after="@ChangeFame" />
+                                 @bind-Value:after="@ChangeFame"/>
             </div>
         </div>
     }

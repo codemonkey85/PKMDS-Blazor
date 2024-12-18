@@ -36,18 +36,11 @@ public partial class MainLayout : IDisposable
     {
         const string message = "Choose a save file";
 
-        var dialogParameters = new DialogParameters
-        {
-            { nameof(FileUploadDialog.Message), message }
-        };
+        var dialogParameters = new DialogParameters { { nameof(FileUploadDialog.Message), message } };
 
         var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Save File",
             parameters: dialogParameters,
-            options: new DialogOptions
-            {
-                CloseOnEscapeKey = true,
-                BackdropClick = false,
-            });
+            options: new() { CloseOnEscapeKey = true, BackdropClick = false, });
 
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
@@ -80,7 +73,9 @@ public partial class MainLayout : IDisposable
 
             if (AppState.SaveFile is null)
             {
-                await DialogService.ShowMessageBox("Error", "The file is not a supported save file.");
+                const string message =
+                    "The selected save file is invalid. If this save file came from a ROM hack, it is not supported. Otherwise, try saving in-game and re-exporting / re-uploading the save file.";
+                await DialogService.ShowMessageBox("Error", message);
                 return;
             }
         }
@@ -118,25 +113,17 @@ public partial class MainLayout : IDisposable
         const string title = "Load Pokémon File";
         const string message = "Choose a Pokémon file";
 
-        var dialogParameters = new DialogParameters
-        {
-            { nameof(FileUploadDialog.Message), message }
-        };
+        var dialogParameters = new DialogParameters { { nameof(FileUploadDialog.Message), message } };
 
         var dialog = await DialogService.ShowAsync<FileUploadDialog>(
             title,
             parameters: dialogParameters,
-            options: new DialogOptions
-            {
-                CloseOnEscapeKey = true,
-                BackdropClick = false,
-            });
+            options: new() { CloseOnEscapeKey = true, BackdropClick = false, });
 
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
         {
-            var browserLoadPokemonFile = selectedFile;
-            await LoadPokemonFile(browserLoadPokemonFile, title);
+            await LoadPokemonFile(selectedFile, title);
         }
     }
 
@@ -145,25 +132,17 @@ public partial class MainLayout : IDisposable
         const string title = "Load Mystery Gift file";
         const string message = "Choose a Mystery Gift file";
 
-        var dialogParameters = new DialogParameters
-        {
-            { nameof(FileUploadDialog.Message), message }
-        };
+        var dialogParameters = new DialogParameters { { nameof(FileUploadDialog.Message), message } };
 
         var dialog = await DialogService.ShowAsync<FileUploadDialog>(
             title,
             parameters: dialogParameters,
-            options: new DialogOptions
-            {
-                CloseOnEscapeKey = true,
-                BackdropClick = false,
-            });
+            options: new() { CloseOnEscapeKey = true, BackdropClick = false, });
 
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
         {
-            var browserLoadPokemonFile = selectedFile;
-            await LoadMysteryGiftFile(browserLoadPokemonFile, title);
+            await LoadMysteryGiftFile(selectedFile, title);
         }
     }
 
@@ -171,12 +150,6 @@ public partial class MainLayout : IDisposable
     {
         if (AppState.SaveFile is not { } saveFile)
         {
-            return;
-        }
-
-        if (browserLoadPokemonFile is null)
-        {
-            await DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
             return;
         }
 
@@ -247,12 +220,6 @@ public partial class MainLayout : IDisposable
             return;
         }
 
-        if (browserLoadMysteryGiftFile is null)
-        {
-            await DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
-            return;
-        }
-
         AppState.ShowProgressIndicator = true;
 
         try
@@ -262,7 +229,8 @@ public partial class MainLayout : IDisposable
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
 
-            if (!FileUtil.TryGetMysteryGift(data, out var mysteryGift, Path.GetExtension(browserLoadMysteryGiftFile.Name)))
+            if (!FileUtil.TryGetMysteryGift(data, out var mysteryGift,
+                    Path.GetExtension(browserLoadMysteryGiftFile.Name)))
             {
                 await DialogService.ShowMessageBox("Error", "The file is not a supported Mystery Gift file.");
                 return;
@@ -349,7 +317,8 @@ public partial class MainLayout : IDisposable
         try
         {
             // Ensure that the FilePicker API is invoked correctly within a user gesture context
-            await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite", fileName, data, fileTypeExtension, fileTypeDescription);
+            await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite", fileName, data, fileTypeExtension,
+                fileTypeDescription);
         }
         catch (JSException ex)
         {

@@ -1,12 +1,15 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-AppState.SaveFile is { Context: { } saveFileEntityContext, Generation: { } saveGeneration } saveFile &&
-saveFileEntityContext is not
-EntityContext.None or
-EntityContext.SplitInvalid or
-EntityContext.MaxInvalid &&
-AppState.SelectedSlotsAreValid)
+     AppState.SaveFile is
+     {
+         Context: not
+         (EntityContext.None or
+         EntityContext.SplitInvalid or
+         EntityContext.MaxInvalid),
+         Generation: var saveGeneration
+     } &&
+     AppState.SelectedSlotsAreValid)
 {
     <MudStack Row
               Justify="@Justify.FlexStart">
@@ -80,33 +83,33 @@ AppState.SelectedSlotsAreValid)
                  Border>
 
             <MudTabPanel Text="Main">
-                <MainTab Pokemon="@Pokemon" />
+                <MainTab Pokemon="@Pokemon"/>
             </MudTabPanel>
 
             @if (saveGeneration >= 2)
             {
                 <MudTabPanel Text="Met">
-                    <MetTab Pokemon="@Pokemon" />
+                    <MetTab Pokemon="@Pokemon"/>
                 </MudTabPanel>
             }
 
             <MudTabPanel Text="Stats">
-                <StatsTab Pokemon="@Pokemon" />
+                <StatsTab Pokemon="@Pokemon"/>
             </MudTabPanel>
 
             <MudTabPanel Text="Moves">
-                <MovesTab Pokemon="@Pokemon" />
+                <MovesTab Pokemon="@Pokemon"/>
             </MudTabPanel>
 
             @if (saveGeneration >= 3)
             {
                 <MudTabPanel Text="Cosmetic">
-                    <CosmeticTab Pokemon="@Pokemon" />
+                    <CosmeticTab Pokemon="@Pokemon"/>
                 </MudTabPanel>
             }
 
             <MudTabPanel Text="OT/Misc">
-                <OtMiscTab Pokemon="@Pokemon" />
+                <OtMiscTab Pokemon="@Pokemon"/>
             </MudTabPanel>
 
         </MudTabs>

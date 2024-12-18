@@ -4,13 +4,13 @@
             suggestedName: fileName,
             types: [{
                 description: description,
-                accept: { 'application/octet-stream': [extension] }
+                accept: {'application/octet-stream': [extension]}
             }]
         };
 
         const handle = await window.showSaveFilePicker(opts);
         const writable = await handle.createWritable();
-        await writable.write(new Blob([new Uint8Array(byteArray)], { type: "application/octet-stream" }));
+        await writable.write(new Blob([new Uint8Array(byteArray)], {type: "application/octet-stream"}));
         await writable.close();
     } catch (ex) {
         console.error(ex);

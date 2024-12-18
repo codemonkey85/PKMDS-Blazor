@@ -21,7 +21,9 @@ public static class SaveFileNameDisplay
 
         if (saveFile.Context is not EntityContext.Gen1)
         {
-            var genderDisplay = saveFile.Gender == (byte)Gender.Male ? Constants.MaleGenderUnicode : Constants.FemaleGenderUnicode;
+            var genderDisplay = saveFile.Gender == (byte)Gender.Male
+                ? Constants.MaleGenderUnicode
+                : Constants.FemaleGenderUnicode;
             sbTitle.Append($"{genderDisplay} ");
         }
 

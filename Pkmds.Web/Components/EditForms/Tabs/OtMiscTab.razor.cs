@@ -2,8 +2,7 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class OtMiscTab : IDisposable
 {
-    [Parameter, EditorRequired]
-    public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
@@ -34,8 +33,6 @@ public partial class OtMiscTab : IDisposable
             case TrainerIDFormat.SixDigit: // Gen 7+
                 Pokemon.SetTrainerTID7(saveFile.TrainerTID7);
                 Pokemon.SetTrainerSID7(saveFile.TrainerSID7);
-                break;
-            default:
                 break;
         }
     }

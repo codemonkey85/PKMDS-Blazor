@@ -2,8 +2,7 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class MainTab : IDisposable
 {
-    [Parameter, EditorRequired]
-    public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
 
     private MudSelect<byte>? FormSelect { get; set; }
 
@@ -13,7 +12,7 @@ public partial class MainTab : IDisposable
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= Refresh;
 
-    public void Refresh()
+    private void Refresh()
     {
         FormSelect?.ForceRender(true);
         StateHasChanged();
@@ -68,7 +67,7 @@ public partial class MainTab : IDisposable
 
     private void OnGenderToggle(Gender newGender)
     {
-        if (Pokemon is not { PersonalInfo.IsDualGender: true, Gender: var gender } pkm)
+        if (Pokemon is not { PersonalInfo.IsDualGender: true } pkm)
         {
             return;
         }
@@ -124,8 +123,18 @@ public partial class MainTab : IDisposable
         RefreshService.Refresh();
     }
 
-    private readonly PatternMask HexMask = new("########")
+    private readonly PatternMask hexMask = new("########") { MaskChars = [new('#', "[0-9a-fA-F]")] };
+
+    // ReSharper disable once InconsistentNaming
+    private double GetEXPToLevelUp()
     {
-        MaskChars = [new MaskChar('#', @"[0-9a-fA-F]")]
-    };
+        if (Pokemon is not { CurrentLevel: var level and < 100, EXP: var exp, PersonalInfo.EXPGrowth: var growth })
+        {
+            return 0;
+        }
+
+        var table = Experience.GetTable(growth);
+        var next = Experience.GetEXP(++level, table);
+        return next - exp;
+    }
 }

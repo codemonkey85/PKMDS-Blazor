@@ -1,17 +1,17 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState is { SaveFile: { } saveFile } && MysteryGiftsList.Count > 0)
+@if (AppState is { SaveFile: not null } && mysteryGiftsList.Count > 0)
 {
-    <MudPagination @bind-Selected="@CurrentPage"
+    <MudPagination @bind-Selected="@currentPage"
                    @bind-Selected:after="@GoToPage"
                    Count="@TotalPages"
-                   ShowNextButton />
+                   ShowNextButton/>
 
     <MudSelect T="int"
-               @bind-Value="PageSize"
+               @bind-Value="pageSize"
                @bind-Value:after="OnPageSizeChange"
                Label="Items per page">
-        @foreach (var pageSize in PagesSizes)
+        @foreach (var pageSize in pagesSizes)
         {
             <MudSelectItem Value="pageSize">
                 @pageSize
@@ -22,7 +22,7 @@
     <div class="overflow-scroll"
          style="height: calc(100vh - 300px);">
         <MudGrid Spacing="1">
-            @foreach (var mysteryGift in PaginatedItems)
+            @foreach (var mysteryGift in paginatedItems)
             {
                 <MudItem xs="12"
                          sm="6"

@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
     paths-ignore:
       - "**.md"
       - "**.ps1"
@@ -14,7 +14,7 @@ on:
 
 jobs:
   deploy:
-    name: "Deploy to GitHub Pages"
+    name: Deploy to GitHub Pages
     # use ubuntu-latest image to run steps on
     runs-on: ubuntu-latest
     steps:
