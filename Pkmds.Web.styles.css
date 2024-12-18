@@ -27,12 +27,12 @@
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss[b-89m6tus79e] {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss[b-89m6tus79e] {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
 /* /Components/LetsGoBoxGrid.razor.rz.scp.css */
 .box-grid-lets-go[b-807wpm749n] {
     width: 420px;
@@ -90,7 +90,7 @@
 
 .gen-3[b-wq5bilj2g5] {
     grid-template-columns: repeat(4, 1fr);
-    grid-gap: 0px;
+    grid-gap: 0;
 }
 /* /Components/PokemonStorageComponent.razor.rz.scp.css */
 .select-container[b-nory1ms4jj] {
