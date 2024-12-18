@@ -105,17 +105,19 @@
                      For="@(() => Pokemon.EXP)"/>
 
     <MudNumericField Label="EXP to next level"
-                     Value="@GetEXPToLevelUp()"/>
+                     Variant="@Variant.Outlined"
+                     Value="@GetEXPToLevelUp()"
+                     ReadOnly
+                     HideSpinButtons/>
 
-    @{
-        var levelProgress = Experience.GetEXPToLevelUpPercentage(Pokemon.CurrentLevel, Pokemon.EXP, Pokemon.PersonalInfo.EXPGrowth);
-        <MudProgressLinear
-            Value="@(levelProgress * 100)"
-            Color="@Color.Primary"
-            Size="@Size.Medium"
-            Rounded
-            title="@(levelProgress.ToString("P"))"/>
-    }
+    var levelProgress = Experience.GetEXPToLevelUpPercentage(Pokemon.CurrentLevel, Pokemon.EXP, Pokemon.PersonalInfo.EXPGrowth);
+    <MudProgressLinear
+        Value="@(levelProgress * 100)"
+        Color="@Color.Primary"
+        Size="@Size.Medium"
+        Rounded
+        Class="mt-2"
+        title="@(levelProgress.ToString("P0"))"/>
 
     @if (saveGeneration >= 3)
     {
