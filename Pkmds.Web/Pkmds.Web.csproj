@@ -7,6 +7,10 @@
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+
 	<PropertyGroup>
 		<WasmEnableSIMD>false</WasmEnableSIMD>
 	</PropertyGroup>

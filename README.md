@@ -119,3 +119,13 @@ Q: Can I use PKMDS on my Mac?
 A: Yes, you can use PKMDS on your Mac. The web app is designed to be used on any device that has a web browser, including Mac computers.
 
 </details>
+
+## Star History
+
+<a href="https://star-history.com/#codemonkey85/PKMDS-Blazor&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=codemonkey85/PKMDS-Blazor&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=codemonkey85/PKMDS-Blazor&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=codemonkey85/PKMDS-Blazor&type=Date" />
+ </picture>
+</a>
