@@ -11,7 +11,7 @@ public partial class PokemonEditForm : IDisposable
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
     private void ExportAsShowdown() =>
-        DialogService.Show<ShowdownExportDialog>(
+        DialogService.ShowAsync<ShowdownExportDialog>(
             "Showdown Export",
             new() { { nameof(ShowdownExportDialog.Pokemon), Pokemon } },
             new() { CloseOnEscapeKey = true, });
@@ -31,7 +31,7 @@ public partial class PokemonEditForm : IDisposable
             { nameof(ConfirmActionDialog.OnConfirm), EventCallback.Factory.Create<bool>(this, OnDeleteConfirm) }
         };
 
-        DialogService.Show<ConfirmActionDialog>(
+        DialogService.ShowAsync<ConfirmActionDialog>(
             "Confirm Action",
             parameters,
             new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, });
@@ -100,7 +100,7 @@ public partial class PokemonEditForm : IDisposable
                 { nameof(ConfirmActionDialog.OnConfirm), EventCallback.Factory.Create<bool>(this, OnPasteConfirm) }
             };
 
-            DialogService.Show<ConfirmActionDialog>(
+            DialogService.ShowAsync<ConfirmActionDialog>(
                 "Confirm Action",
                 parameters,
                 new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, });

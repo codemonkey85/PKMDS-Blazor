@@ -22,7 +22,7 @@ public partial class PartyGrid : IDisposable
     }
 
     private void ExportAsShowdown() =>
-        DialogService.Show<ShowdownExportDialog>(
+        DialogService.ShowAsync<ShowdownExportDialog>(
             "Showdown Export",
             new DialogOptions { CloseOnEscapeKey = true });
 }
