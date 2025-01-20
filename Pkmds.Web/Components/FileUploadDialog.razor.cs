@@ -2,7 +2,7 @@ namespace Pkmds.Web.Components;
 
 public partial class FileUploadDialog
 {
-    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = null!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter] public string Message { get; set; } = "Choose a file to upload.";
 
