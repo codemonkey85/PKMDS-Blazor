@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Pkmds.Web",
   "resources": {
-    "hash": "sha256-QEPYIk+ZIZX4HcUyBwdB/wuu1q+EtO8vQBLThcXq3z4=",
+    "hash": "sha256-0qvXieBIKjHgSI1pkvtVmZ/PupQt+4mLg6O87tnBD0c=",
     "fingerprinting": {
       "KristofferStrube.Blazor.FileAPI.y7qr9qlbwg.wasm": "KristofferStrube.Blazor.FileAPI.wasm",
       "KristofferStrube.Blazor.FileSystem.l7rerd8wys.wasm": "KristofferStrube.Blazor.FileSystem.wasm",
@@ -26,9 +26,9 @@
       "Microsoft.Extensions.Primitives.mytv1lpnrg.wasm": "Microsoft.Extensions.Primitives.wasm",
       "Microsoft.JSInterop.d53p15x6ka.wasm": "Microsoft.JSInterop.wasm",
       "Microsoft.JSInterop.WebAssembly.8eb000j8w7.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
-      "MudBlazor.kzx2kqy15k.wasm": "MudBlazor.wasm",
+      "MudBlazor.g8qg3uzaue.wasm": "MudBlazor.wasm",
       "PKHeX.Core.uu1dzvwyb3.wasm": "PKHeX.Core.wasm",
-      "Pkmds.Web.cva58q9ymu.wasm": "Pkmds.Web.wasm",
+      "Pkmds.Web.r4kx13wbyk.wasm": "Pkmds.Web.wasm",
       "System.Collections.Concurrent.yocaa8izi6.wasm": "System.Collections.Concurrent.wasm",
       "System.Collections.Immutable.eherpzmz4r.wasm": "System.Collections.Immutable.wasm",
       "System.Collections.NonGeneric.ipje0hy292.wasm": "System.Collections.NonGeneric.wasm",
@@ -112,9 +112,9 @@
       "Microsoft.Extensions.Primitives.mytv1lpnrg.wasm": "sha256-kvH0PWaEihTjfJSm4b+K3UHAQau8H9u9OsWrrZj/Chw=",
       "Microsoft.JSInterop.d53p15x6ka.wasm": "sha256-MUEzqEeRAr943Kjo3GH/2xIL2ZnD76DmoYU0ij3jJ9k=",
       "Microsoft.JSInterop.WebAssembly.8eb000j8w7.wasm": "sha256-sGms9Oai1ztzgfMsqBvmeKwa5ZyGWr/AEXr6thw0lso=",
-      "MudBlazor.kzx2kqy15k.wasm": "sha256-kLS6dwSg+v5YfYNH5hhPSIBFNmoYZgOWy2AEL1bbtCw=",
+      "MudBlazor.g8qg3uzaue.wasm": "sha256-0LM7JfMM/PgLBwpxXCuu0VkZFWQDbgQvY5tICczKBAs=",
       "PKHeX.Core.uu1dzvwyb3.wasm": "sha256-pqkxoPaKIV8nT1iIS6MQOVfN6yOHPMyTXxnd+SyeFY0=",
-      "Pkmds.Web.cva58q9ymu.wasm": "sha256-SIa/P2+ffJImIXBY2Usw8sGTeqP7DJew3tXXnp2KX/M=",
+      "Pkmds.Web.r4kx13wbyk.wasm": "sha256-1c79LhCEB6jZpQWKsLyn9lERExHEQy0w4DZW6tCr710=",
       "System.Collections.Concurrent.yocaa8izi6.wasm": "sha256-Plf3Mk+MdFXErmU40+tdRcRpEC/WaFF5enxXFkIJY+4=",
       "System.Collections.Immutable.eherpzmz4r.wasm": "sha256-EscG4Z3X1zRYEYWygDleWRvZ3jYmG6z6A+5u3cmwzyY=",
       "System.Collections.NonGeneric.ipje0hy292.wasm": "sha256-Rt983cJ29RtxD05bwpWgVSyxesh9nGUMpLifksrk+Zo=",
