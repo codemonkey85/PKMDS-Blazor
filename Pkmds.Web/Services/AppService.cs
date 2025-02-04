@@ -5,8 +5,6 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     private const string EnglishLang = "en";
     private const string DefaultPkmFileName = "pkm.bin";
 
-    private PKM? editFormPokemon;
-    private bool isDrawerOpen;
     private IAppState AppState { get; } = appState;
 
     private IRefreshService RefreshService { get; } = refreshService;
@@ -15,20 +13,20 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
     public PKM? EditFormPokemon
     {
-        get => editFormPokemon;
+        get;
         set
         {
-            editFormPokemon = value?.Clone();
-            LoadPokemonStats(editFormPokemon);
+            field = value?.Clone();
+            LoadPokemonStats(field);
         }
     }
 
     public bool IsDrawerOpen
     {
-        get => isDrawerOpen;
+        get;
         set
         {
-            isDrawerOpen = value;
+            field = value;
             RefreshService.Refresh();
         }
     }
