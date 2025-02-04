@@ -28,7 +28,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.1" PrivateAssets="all" />
 		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2" />
-		<PackageReference Include="MudBlazor" Version="8.1.0" />
+		<PackageReference Include="MudBlazor" Version="8.2.0" />
 		<PackageReference Include="PKHeX.Core" Version="24.11.12" />
 	</ItemGroup>
 
