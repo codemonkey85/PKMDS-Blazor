@@ -53,12 +53,7 @@ AppState.SelectedSlotsAreValid)
                                              ToStringFunc="@(move => move?.Text)">
 
                                 <ItemTemplate Context="move">
-                                    <MudStack Row>
-                                        @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
-                                        <MudText>
-                                            @move.Text
-                                        </MudText>
-                                    </MudStack>
+                                    @MoveRenderFragment(move, saveFileEntityContext)
                                 </ItemTemplate>
 
                             </MudAutocomplete>
