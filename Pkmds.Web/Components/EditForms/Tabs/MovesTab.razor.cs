@@ -13,8 +13,15 @@ public partial class MovesTab
     private void SetPokemonMove(int moveIndex, ComboItem? moveComboItem) =>
         SetPokemonMove(moveIndex, moveComboItem?.Value);
 
-    private void SetPokemonMove(int moveIndex, int? newMoveId) =>
+    private void SetPokemonMove(int moveIndex, int? newMoveId)
+    {
         Pokemon?.SetMove(moveIndex, (ushort)(newMoveId ?? 0));
+        if (newMoveId is null or 0)
+        {
+            SetPokemonPP(moveIndex, 0);
+            SetPokemonPPUps(moveIndex, 0);
+        }
+    }
 
     private int? GetPokemonMove(int moveIndex) =>
         Pokemon?.Moves[moveIndex];
