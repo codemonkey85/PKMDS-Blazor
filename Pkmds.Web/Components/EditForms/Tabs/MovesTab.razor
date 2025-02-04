@@ -23,29 +23,22 @@ AppState.SelectedSlotsAreValid)
                 var moveId = Pokemon.Moves[i];
 
                 <MudGrid Spacing="1">
-                    <MudItem xs="1"
-                             Class="@ColumnClass">
-                        @if (moveId != 0)
-                        {
-                            @MoveTypeSummary(MoveInfo.GetType(moveId, saveFileEntityContext))
-                        }
-                        else
-                        {
-                            <span style="width: 30px"></span>
-                        }
-                    </MudItem>
+                    @if (UseTextSearch)
+                    {
+                        <MudItem xs="1"
+                                 Class="@ColumnClass">
+                            @if (moveId != 0)
+                            {
+                                @MoveTypeSummary(MoveInfo.GetType(moveId, saveFileEntityContext))
+                            }
+                            else
+                            {
+                                <span style="width: 30px"></span>
+                            }
+                        </MudItem>
+                    }
 
-                    @* TODO: Add back in when we have the data
-                @if (saveGeneration >= 4)
-                {
-                    <MudItem xs="1"
-                             Class="@ColumnClass">
-                        @MoveCategorySummary(MoveInfo.GetCategory(moveId, saveFileEntityContext))
-                    </MudItem>
-                })
-                *@
-
-                    <MudItem xs="5"
+                    <MudItem xs="@(UseTextSearch ? 5 : 6)"
                              Class="@ColumnClass">
                         @if (UseTextSearch)
                         {
@@ -72,14 +65,16 @@ AppState.SelectedSlotsAreValid)
                         }
                         else
                         {
-
                             <MudSelect T="@(int?)"
+                                       Label="@($"Move {displayNumber}")"
+                                       Variant="@Variant.Outlined"
+                                       Margin="@Margin.Dense"
                                        @bind-Value:get="@(GetPokemonMove(i))"
                                        @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))">
                                 @foreach (var move in AppService.GetMoves())
                                 {
                                     <MudSelectItem Value="@move?.Value">
-                                        @move?.Text
+                                        @MoveRenderFragment(move, saveFileEntityContext)
                                     </MudSelectItem>
                                 }
                             </MudSelect>
@@ -130,4 +125,20 @@ AppState.SelectedSlotsAreValid)
         }
 
     </MudStack>
+}
+
+@code {
+    private RenderFragment MoveRenderFragment(ComboItem? move, EntityContext saveFileEntityContext)
+    {
+        if (move is null)
+        {
+            return @<span>(None)</span>;
+        }
+        return @<MudStack Row>
+        @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
+        <MudText>
+            @move.Text
+        </MudText>
+    </MudStack>;
+    }
 }
