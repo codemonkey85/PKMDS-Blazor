@@ -2,15 +2,16 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class MovesTab
 {
-    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired]
+    public PKM? Pokemon { get; set; }
 
     private bool UseTextSearch { get; set; } = true;
 
     private Task<IEnumerable<ComboItem>> SearchMoves(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchMoves(searchString));
 
-    private void SetPokemonMove(int moveIndex, ComboItem moveComboItem) =>
-        SetPokemonMove(moveIndex, moveComboItem.Value);
+    private void SetPokemonMove(int moveIndex, ComboItem? moveComboItem) =>
+        SetPokemonMove(moveIndex, moveComboItem?.Value);
 
     private void SetPokemonMove(int moveIndex, int? newMoveId) =>
         Pokemon?.SetMove(moveIndex, (ushort)(newMoveId ?? 0));
