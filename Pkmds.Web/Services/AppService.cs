@@ -127,6 +127,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(move => move.Text);
 
+    public IEnumerable<ComboItem> GetMoves() => AppState.SaveFile is null
+            ? []
+            : GameInfo.FilteredSources.Moves
+                .DistinctBy(move => move.Value)
+                .OrderBy(move => move.Text);
+
     public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
         .DistinctBy(move => move.Value)
         .FirstOrDefault(metLocation => metLocation.Value == moveId) ?? null!;

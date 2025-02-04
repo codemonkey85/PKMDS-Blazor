@@ -1,61 +1,36 @@
 namespace Pkmds.Web.Components.EditForms.Tabs;
 
-public partial class MovesTab : IDisposable
+public partial class MovesTab
 {
     [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
 
-    protected override void OnInitialized() =>
-        RefreshService.OnAppStateChanged += StateHasChanged;
-
-    public void Dispose() =>
-        RefreshService.OnAppStateChanged -= StateHasChanged;
+    private bool UseTextSearch { get; set; } = true;
 
     private Task<IEnumerable<ComboItem>> SearchMoves(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchMoves(searchString));
 
-    private void SetPokemonMove(int moveIndex, ComboItem moveComboItem)
-    {
-        if (Pokemon is null)
-        {
-            return;
-        }
+    private void SetPokemonMove(int moveIndex, ComboItem moveComboItem) =>
+        SetPokemonMove(moveIndex, moveComboItem.Value);
 
-        Pokemon.SetMove(moveIndex, (ushort)moveComboItem.Value);
+    private void SetPokemonMove(int moveIndex, int? newMoveId) =>
+        Pokemon?.SetMove(moveIndex, (ushort)(newMoveId ?? 0));
 
-        RefreshService.Refresh();
-    }
+    private int? GetPokemonMove(int moveIndex) =>
+        Pokemon?.Moves[moveIndex];
 
     // ReSharper disable once InconsistentNaming
     private int GetPokemonPP(int moveIndex) =>
         Pokemon?.GetPP()[moveIndex] ?? 0;
 
     // ReSharper disable once InconsistentNaming
-    private void SetPokemonPP(int moveIndex, int pp)
-    {
-        if (Pokemon is null)
-        {
-            return;
-        }
-
-        Pokemon.SetPP(moveIndex, pp);
-
-        RefreshService.Refresh();
-    }
+    private void SetPokemonPP(int moveIndex, int pp) =>
+        Pokemon?.SetPP(moveIndex, pp);
 
     // ReSharper disable once InconsistentNaming
     private int GetPokemonPPUps(int moveIndex) =>
         Pokemon?.GetPPUps()[moveIndex] ?? 0;
 
     // ReSharper disable once InconsistentNaming
-    private void SetPokemonPPUps(int moveIndex, int ppUps)
-    {
-        if (Pokemon is null)
-        {
-            return;
-        }
-
-        Pokemon.SetPPUps(moveIndex, ppUps);
-
-        RefreshService.Refresh();
-    }
+    private void SetPokemonPPUps(int moveIndex, int ppUps) =>
+        Pokemon?.SetPPUps(moveIndex, ppUps);
 }

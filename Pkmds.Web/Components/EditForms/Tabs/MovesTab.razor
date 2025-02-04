@@ -1,18 +1,21 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-     AppState.SaveFile is
-     {
-         Context: var saveFileEntityContext and not
-         (EntityContext.None or
-         EntityContext.SplitInvalid or
-         EntityContext.MaxInvalid)
-     } &&
-     AppState.SelectedSlotsAreValid)
+AppState.SaveFile is
+{
+   Context: var saveFileEntityContext and not
+(EntityContext.None or
+EntityContext.SplitInvalid or
+EntityContext.MaxInvalid)
+} &&
+AppState.SelectedSlotsAreValid)
 {
     <MudStack Spacing="1">
 
         <MudStack Spacing="1">
+            <MudCheckBox @bind-Value="@UseTextSearch"
+                         Label="Use text search" />
+
             @for (var counter = 0; counter < Pokemon.Moves.Length; counter++)
             {
                 var i = counter;
@@ -44,26 +47,43 @@
 
                     <MudItem xs="5"
                              Class="@ColumnClass">
-                        @* ReSharper disable once CSharpWarnings::CS8603 *@
-                        <MudAutocomplete T="@ComboItem"
-                                         Label="@($"Move {displayNumber}")"
-                                         Variant="@Variant.Outlined"
-                                         Margin="@Margin.Dense"
-                                         @bind-Value:get="@(AppService.GetMoveComboItem(moveId))"
-                                         @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))"
-                                         SearchFunc="@SearchMoves"
-                                         ToStringFunc="@(move => move?.Text)">
+                        @if (UseTextSearch)
+                        {
+                            @* ReSharper disable once CSharpWarnings::CS8603 *@
+                            <MudAutocomplete T="@ComboItem"
+                                             Label="@($"Move {displayNumber}")"
+                                             Variant="@Variant.Outlined"
+                                             Margin="@Margin.Dense"
+                                             @bind-Value:get="@(AppService.GetMoveComboItem(moveId))"
+                                             @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))"
+                                             SearchFunc="@SearchMoves"
+                                             ToStringFunc="@(move => move?.Text)">
 
-                            <ItemTemplate Context="move">
-                                <MudStack Row>
-                                    @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
-                                    <MudText>
-                                        @move.Text
-                                    </MudText>
-                                </MudStack>
-                            </ItemTemplate>
+                                <ItemTemplate Context="move">
+                                    <MudStack Row>
+                                        @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
+                                        <MudText>
+                                            @move.Text
+                                        </MudText>
+                                    </MudStack>
+                                </ItemTemplate>
 
-                        </MudAutocomplete>
+                            </MudAutocomplete>
+                        }
+                        else
+                        {
+
+                            <MudSelect T="@(int?)"
+                                       @bind-Value:get="@(GetPokemonMove(i))"
+                                       @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))">
+                                @foreach (var move in AppService.GetMoves())
+                                {
+                                    <MudSelectItem Value="@move?.Value">
+                                        @move?.Text
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                        }
                     </MudItem>
 
                     <MudItem xs="2"
@@ -74,7 +94,7 @@
                                          Min="0"
                                          Margin="@Margin.Dense"
                                          @bind-Value:get="@GetPokemonPP(i)"
-                                         @bind-Value:set="@(newValue => SetPokemonPP(i, newValue))"/>
+                                         @bind-Value:set="@(newValue => SetPokemonPP(i, newValue))" />
 
                     </MudItem>
 
@@ -87,7 +107,7 @@
                                          Min="0"
                                          Margin="@Margin.Dense"
                                          @bind-Value:get="@GetPokemonPPUps(i)"
-                                         @bind-Value:set="@(newValue => SetPokemonPPUps(i, newValue))"/>
+                                         @bind-Value:set="@(newValue => SetPokemonPPUps(i, newValue))" />
                     </MudItem>
 
                     <MudItem xs="2"
@@ -98,7 +118,7 @@
                                          Value="@Pokemon.GetMaxPP(i)"
                                          ReadOnly
                                          Margin="@Margin.Dense"
-                                         HideSpinButtons/>
+                                         HideSpinButtons />
                     </MudItem>
                 </MudGrid>
             }
@@ -106,7 +126,7 @@
 
         @if (GameInfo.FilteredSources.Moves.Any(m => m.Value == (int)Move.HiddenPower) && Pokemon is not { Context: EntityContext.Gen8 or EntityContext.Gen9 })
         {
-            <HiddenPowerChooser Pokemon="@Pokemon"/>
+            <HiddenPowerChooser Pokemon="@Pokemon" />
         }
 
     </MudStack>
