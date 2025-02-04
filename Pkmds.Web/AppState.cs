@@ -2,8 +2,6 @@
 
 public record AppState : IAppState
 {
-    public AppState() => LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
-
     public PKM? CopiedPokemon { get; set; }
 
     public string CurrentLanguage
