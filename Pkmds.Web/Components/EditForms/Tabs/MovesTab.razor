@@ -13,6 +13,9 @@
     <MudStack Spacing="1">
 
         <MudStack Spacing="1">
+            <MudCheckBox @bind-Value="@UseTextSearch"
+                         Label="Use text search"/>
+
             @for (var counter = 0; counter < Pokemon.Moves.Length; counter++)
             {
                 var i = counter;
@@ -20,50 +23,62 @@
                 var moveId = Pokemon.Moves[i];
 
                 <MudGrid Spacing="1">
-                    <MudItem xs="1"
+                    @if (UseTextSearch)
+                    {
+                        <MudItem xs="1"
+                                 Class="@ColumnClass">
+                            @if (moveId != 0)
+                            {
+                                @MoveTypeSummary(MoveInfo.GetType(moveId, saveFileEntityContext))
+                            }
+                            else
+                            {
+                                <span style="width: 30px"></span>
+                            }
+                        </MudItem>
+                    }
+
+                    <MudItem xs="@(UseTextSearch
+                                     ? 5
+                                     : 6)"
                              Class="@ColumnClass">
-                        @if (moveId != 0)
+                        @if (UseTextSearch)
                         {
-                            @MoveTypeSummary(MoveInfo.GetType(moveId, saveFileEntityContext))
+                            @* ReSharper disable once CSharpWarnings::CS8603 *@
+                            <MudAutocomplete T="@ComboItem"
+                                             Label="@($"Move {displayNumber}")"
+                                             Variant="@Variant.Outlined"
+                                             Margin="@Margin.Dense"
+                                             Clearable
+                                             @bind-Value:get="@(AppService.GetMoveComboItem(moveId))"
+                                             @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))"
+                                             SearchFunc="@SearchMoves"
+                                             ToStringFunc="@(move => move?.Text)">
+
+                                <ItemTemplate Context="move">
+                                    @MoveRenderFragment(move, saveFileEntityContext)
+                                </ItemTemplate>
+
+                            </MudAutocomplete>
                         }
                         else
                         {
-                            <span style="width: 30px"></span>
+                            <MudSelect T="@(int?)"
+                                       Label="@($"Move {displayNumber}")"
+                                       Variant="@Variant.Outlined"
+                                       Margin="@Margin.Dense"
+                                       Clearable
+                                       @bind-Value:get="@(GetPokemonMove(i))"
+                                       @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))">
+                                @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
+                                @foreach (var move in AppService.GetMoves())
+                                {
+                                    <MudSelectItem Value="@move?.Value">
+                                        @MoveRenderFragment(move, saveFileEntityContext)
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
                         }
-                    </MudItem>
-
-                    @* TODO: Add back in when we have the data
-                @if (saveGeneration >= 4)
-                {
-                    <MudItem xs="1"
-                             Class="@ColumnClass">
-                        @MoveCategorySummary(MoveInfo.GetCategory(moveId, saveFileEntityContext))
-                    </MudItem>
-                })
-                *@
-
-                    <MudItem xs="5"
-                             Class="@ColumnClass">
-                        @* ReSharper disable once CSharpWarnings::CS8603 *@
-                        <MudAutocomplete T="@ComboItem"
-                                         Label="@($"Move {displayNumber}")"
-                                         Variant="@Variant.Outlined"
-                                         Margin="@Margin.Dense"
-                                         @bind-Value:get="@(AppService.GetMoveComboItem(moveId))"
-                                         @bind-Value:set="@(newMove => SetPokemonMove(i, newMove))"
-                                         SearchFunc="@SearchMoves"
-                                         ToStringFunc="@(move => move?.Text)">
-
-                            <ItemTemplate Context="move">
-                                <MudStack Row>
-                                    @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
-                                    <MudText>
-                                        @move.Text
-                                    </MudText>
-                                </MudStack>
-                            </ItemTemplate>
-
-                        </MudAutocomplete>
                     </MudItem>
 
                     <MudItem xs="2"
@@ -110,4 +125,26 @@
         }
 
     </MudStack>
+}
+
+@code {
+
+    private RenderFragment MoveRenderFragment(ComboItem? move, EntityContext saveFileEntityContext)
+    {
+        if (move is null)
+        {
+            return @<span>(None)</span>;
+        }
+
+        return @<MudStack Row>
+                   @if (move.Value != 0)
+                   {
+                       @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
+                   }
+                   <MudText>
+                       @move.Text
+                   </MudText>
+               </MudStack>;
+    }
+
 }

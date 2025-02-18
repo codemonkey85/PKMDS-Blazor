@@ -1,12 +1,14 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-     AppState.SaveFile is { Context: not
+     AppState.SaveFile is
+     {
+         Context: not
          (EntityContext.None or
          EntityContext.SplitInvalid or
          EntityContext.MaxInvalid)
      } &&
      AppState.SelectedSlotsAreValid)
 {
-    <MarkingsContainer Pokemon="@Pokemon" />
+    <MarkingsContainer Pokemon="@Pokemon"/>
 }

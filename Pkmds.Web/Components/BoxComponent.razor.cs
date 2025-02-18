@@ -2,7 +2,8 @@ namespace Pkmds.Web.Components;
 
 public partial class BoxComponent : IDisposable
 {
-    [Parameter] public int BoxNumber { get; set; }
+    [Parameter]
+    public int BoxNumber { get; set; }
 
     private BoxEdit? BoxEdit { get; set; }
 

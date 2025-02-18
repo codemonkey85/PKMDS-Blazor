@@ -2,7 +2,8 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class MetTab : IDisposable
 {
-    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired]
+    public PKM? Pokemon { get; set; }
 
     /// <summary>
     /// Currently loaded met location group that is populating Met and Egg location comboboxes

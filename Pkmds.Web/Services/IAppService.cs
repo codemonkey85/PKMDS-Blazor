@@ -40,6 +40,8 @@ public interface IAppService
 
     IEnumerable<ComboItem> SearchMoves(string searchString);
 
+    IEnumerable<ComboItem> GetMoves();
+
     ComboItem GetMoveComboItem(int moveId);
 
     public void SavePokemon(PKM? selectedPokemon);

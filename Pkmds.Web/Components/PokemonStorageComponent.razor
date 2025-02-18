@@ -26,7 +26,9 @@
                     @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
                     {
                         var localBoxId = boxId;
-                        var boxName = saveFile is IBoxDetailNameRead boxDetailNameRead ? boxDetailNameRead.GetBoxName(localBoxId) : string.Empty;
+                        var boxName = saveFile is IBoxDetailNameRead boxDetailNameRead
+                            ? boxDetailNameRead.GetBoxName(localBoxId)
+                            : string.Empty;
                         <MudSelectItem Value="@localBoxId"
                                        @key="@localBoxId">
                             @boxName

@@ -2,7 +2,8 @@ namespace Pkmds.Web.Components.EditForms;
 
 public partial class PokemonEditForm : IDisposable
 {
-    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired]
+    public PKM? Pokemon { get; set; }
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
@@ -87,10 +88,7 @@ public partial class PokemonEditForm : IDisposable
             var parameters = new DialogParameters
             {
                 { nameof(ConfirmActionDialog.Title), "Paste Pokémon" },
-                {
-                    nameof(ConfirmActionDialog.Message),
-                    "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced."
-                },
+                { nameof(ConfirmActionDialog.Message), "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced." },
                 { nameof(ConfirmActionDialog.ConfirmText), "Paste" },
                 { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.Delete },
                 { nameof(ConfirmActionDialog.ConfirmColor), Color.Default },

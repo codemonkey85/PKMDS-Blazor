@@ -33,7 +33,9 @@ public static class PkmExtensions
 
         return pokemon switch
         {
-            IAppliedMarkings<bool> b => b.GetMarking(index) ? 1 : 0,
+            IAppliedMarkings<bool> b => b.GetMarking(index)
+                ? 1
+                : 0,
             IAppliedMarkings<MarkingColor> c => (int)c.GetMarking(index),
             _ => throw new ArgumentException("Pokémon does not implement IAppliedMarkings", nameof(pokemon)),
         };

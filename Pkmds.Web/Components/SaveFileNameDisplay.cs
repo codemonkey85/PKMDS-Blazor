@@ -11,7 +11,9 @@ public static class SaveFileNameDisplay
             return Constants.AppTitle;
         }
 
-        var sbTitle = new StringBuilder(isPageTitle ? Constants.AppShortTitle : string.Empty);
+        var sbTitle = new StringBuilder(isPageTitle
+            ? Constants.AppShortTitle
+            : string.Empty);
         if (isPageTitle)
         {
             sbTitle.Append(" - ");

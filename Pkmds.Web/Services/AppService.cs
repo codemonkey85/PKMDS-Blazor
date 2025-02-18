@@ -2,34 +2,31 @@
 
 public class AppService(IAppState appState, IRefreshService refreshService) : IAppService
 {
+    private const string EnglishLang = "en";
+    private const string DefaultPkmFileName = "pkm.bin";
+
     private IAppState AppState { get; } = appState;
 
     private IRefreshService RefreshService { get; } = refreshService;
 
-    private const string EnglishLang = "en";
-    private const string DefaultPkmFileName = "pkm.bin";
-
-    private PKM? editFormPokemon;
-    private bool isDrawerOpen;
-
-    public string[] NatureStatShortNames => ["Atk", "Def", "Spe", "SpA", "SpD"];
+    private static string[] NatureStatShortNames => ["Atk", "Def", "Spe", "SpA", "SpD"];
 
     public PKM? EditFormPokemon
     {
-        get => editFormPokemon;
+        get;
         set
         {
-            editFormPokemon = value?.Clone();
-            LoadPokemonStats(editFormPokemon);
+            field = value?.Clone();
+            LoadPokemonStats(field);
         }
     }
 
     public bool IsDrawerOpen
     {
-        get => isDrawerOpen;
+        get;
         set
         {
-            isDrawerOpen = value;
+            field = value;
             RefreshService.Refresh();
         }
     }
@@ -86,7 +83,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     public string GetStatModifierString(Nature nature)
     {
         var (up, down) = NatureAmp.GetNatureModification(nature);
-        return up == down ? "(neutral)" : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
+        return up == down
+            ? "(neutral)"
+            : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
     }
 
     public void LoadPokemonStats(PKM? pokemon)
@@ -126,6 +125,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 .DistinctBy(move => move.Value)
                 .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(move => move.Text);
+
+    public IEnumerable<ComboItem> GetMoves() => AppState.SaveFile is null
+        ? []
+        : GameInfo.FilteredSources.Moves
+            .DistinctBy(move => move.Value)
+            .OrderBy(move => move.Text);
 
     public ComboItem GetMoveComboItem(int moveId) => GameInfo.FilteredSources.Moves
         .DistinctBy(move => move.Value)
@@ -172,9 +177,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         {
             PK1 pk1 => $"{GameInfo.GetStrings(EnglishLang).Species[pk1.Species]}_{pk1.DV16}.{pk1.Extension}",
             PK2 pk2 => $"{GameInfo.GetStrings(EnglishLang).Species[pk2.Species]}_{pk2.DV16}.{pk2.Extension}",
-            _ => DefaultPkmFileName,
+            _ => DefaultPkmFileName
         },
-        _ => $"{GameInfo.GetStrings(EnglishLang).Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}",
+        _ => $"{GameInfo.GetStrings(EnglishLang).Species[pkm.Species]}_{pkm.PID:X}.{pkm.Extension}"
     };
 
     public void SetSelectedLetsGoPokemon(PKM? pkm, int slotNumber)
@@ -210,21 +215,6 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         HandleNullOrEmptyPokemon();
         RefreshService.Refresh();
-    }
-
-    private void HandleNullOrEmptyPokemon()
-    {
-        if (AppState.SaveFile is not { } saveFile)
-        {
-            return;
-        }
-
-        EditFormPokemon ??= saveFile.BlankPKM;
-
-        if (EditFormPokemon is { Species: (ushort)Species.None })
-        {
-            EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
-        }
     }
 
     public void DeletePokemon(int partySlotNumber)
@@ -296,5 +286,20 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             (TrainerIDFormat.SixDigit, true) => TrainerIDExtensions.SID7,
             _ => "D"
         };
+    }
+
+    private void HandleNullOrEmptyPokemon()
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return;
+        }
+
+        EditFormPokemon ??= saveFile.BlankPKM;
+
+        if (EditFormPokemon is { Species: (ushort)Species.None })
+        {
+            EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
+        }
     }
 }

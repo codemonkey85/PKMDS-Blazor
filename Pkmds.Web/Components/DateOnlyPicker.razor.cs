@@ -2,23 +2,32 @@ namespace Pkmds.Web.Components;
 
 public partial class DateOnlyPicker
 {
-    [CascadingParameter] public EditContext? EditContext { get; set; }
+    [CascadingParameter]
+    public EditContext? EditContext { get; set; }
 
-    [Parameter, EditorRequired] public DateOnly? Date { get; set; }
+    [Parameter, EditorRequired]
+    public DateOnly? Date { get; set; }
 
-    [Parameter] public EventCallback<DateOnly?> DateChanged { get; set; }
+    [Parameter]
+    public EventCallback<DateOnly?> DateChanged { get; set; }
 
-    [Parameter, EditorRequired] public string? Label { get; set; }
+    [Parameter, EditorRequired]
+    public string? Label { get; set; }
 
-    [Parameter] public Expression<Func<DateOnly?>>? For { get; set; }
+    [Parameter]
+    public Expression<Func<DateOnly?>>? For { get; set; }
 
-    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter]
+    public bool ReadOnly { get; set; }
 
-    [Parameter] public string? HelperText { get; set; }
+    [Parameter]
+    public string? HelperText { get; set; }
 
-    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+    [Parameter]
+    public Variant Variant { get; set; } = Variant.Outlined;
 
-    [Parameter] public Color Color { get; set; } = Color.Default;
+    [Parameter]
+    public Color Color { get; set; } = Color.Default;
 
     private MudDatePicker? datePickerRef;
 

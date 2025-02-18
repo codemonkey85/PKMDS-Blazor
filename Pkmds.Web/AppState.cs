@@ -2,29 +2,24 @@
 
 public record AppState : IAppState
 {
-    public AppState() => LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
-
-    private string currentLanguage = GameLanguage.DefaultLanguage;
-    private SaveFile? saveFile;
-
     public PKM? CopiedPokemon { get; set; }
 
     public string CurrentLanguage
     {
-        get => currentLanguage;
+        get;
         set
         {
-            currentLanguage = value;
+            field = value;
             LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
         }
-    }
+    } = GameLanguage.DefaultLanguage;
 
     public SaveFile? SaveFile
     {
-        get => saveFile;
+        get;
         set
         {
-            saveFile = value;
+            field = value;
             LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
         }
     }

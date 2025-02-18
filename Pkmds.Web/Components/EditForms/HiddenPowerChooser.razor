@@ -19,7 +19,7 @@
                                       title="@GameInfo.Strings.Types[type.Value + 1]"
                                       ObjectFit="@ObjectFit.Contain"
                                       ObjectPosition="@ObjectPosition.Center"
-                                      Width="30" />
+                                      Width="30"/>
                             <MudText>
                                 @type.Text
                             </MudText>
@@ -35,5 +35,8 @@
 }
 
 @code {
-    [Parameter] public PKM? Pokemon { get; set; }
+
+    [Parameter]
+    public PKM? Pokemon { get; set; }
+
 }
