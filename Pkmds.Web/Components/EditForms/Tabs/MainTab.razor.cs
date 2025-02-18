@@ -2,7 +2,8 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class MainTab : IDisposable
 {
-    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired]
+    public PKM? Pokemon { get; set; }
 
     private MudSelect<byte>? FormSelect { get; set; }
 
@@ -136,5 +137,28 @@ public partial class MainTab : IDisposable
         var table = Experience.GetTable(growth);
         var next = Experience.GetEXP(++level, table);
         return next - exp;
+    }
+
+    private void SetPokemonNickname(string newNickname)
+    {
+        if (Pokemon is not { Species: var species, Language: var language, Format: var format })
+        {
+            return;
+        }
+
+        var defaultName = SpeciesName.GetSpeciesNameGeneration(species, language, format);
+
+        if (newNickname is not { Length: > 0 })
+        {
+            newNickname = defaultName;
+        }
+
+        if (newNickname is not { Length: > 0 })
+        {
+            return;
+        }
+
+        Pokemon.IsNicknamed = !string.Equals(newNickname, defaultName, StringComparison.Ordinal);
+        Pokemon.Nickname = newNickname;
     }
 }

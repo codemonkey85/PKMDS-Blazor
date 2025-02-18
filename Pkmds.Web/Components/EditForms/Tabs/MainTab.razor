@@ -57,7 +57,7 @@
         <MudButton OnClick="@RevertNickname"
                    ButtonType="@ButtonType.Button"
                    Variant="@Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.Note"
+                   StartIcon="@Icons.Material.Filled.Undo"
                    Color="@Color.Default"
                    Disabled="@(!Pokemon.IsNicknamed)">
             Revert Nickname
@@ -67,7 +67,8 @@
 
     <MudTextField Label="Nickname"
                   Variant="@Variant.Outlined"
-                  @bind-Value="@Pokemon.Nickname"
+                  Text="@Pokemon.Nickname"
+                  TextChanged="SetPokemonNickname"
                   MaxLength="@saveFile.MaxStringLengthNickname"
                   For="@(() => Pokemon.Nickname)"/>
 
@@ -76,7 +77,9 @@
         <MudStack Row
                   Spacing="1"
                   Class="d-flex align-center"
-                  Style="@(Pokemon.PersonalInfo.IsDualGender ? string.Empty : "padding-left: 12px;")">
+                  Style="@(Pokemon.PersonalInfo.IsDualGender
+                             ? string.Empty
+                             : "padding-left: 12px;")">
 
             <GenderDisplayComponent Gender="@((Gender)Pokemon.Gender)"
                                     OnChange="@OnGenderToggle"
@@ -318,7 +321,9 @@
 
     @if (saveGeneration >= 2)
     {
-        <MudNumericField Label="@(Pokemon.IsEgg ? "Hatch Counter" : "Friendship")"
+        <MudNumericField Label="@(Pokemon.IsEgg
+                                    ? "Hatch Counter"
+                                    : "Friendship")"
                          Variant="@Variant.Outlined"
                          Min="@byte.MinValue"
                          Max="@byte.MaxValue"
