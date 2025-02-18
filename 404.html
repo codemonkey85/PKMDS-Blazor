@@ -2,106 +2,124 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0"/>
     <title>PKMDS: Pokémon Save Editor for Web</title>
-    <base href="/" />
-    <link href="manifest.webmanifest" rel="manifest" />
-    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-    <link href="css\app.css" rel="stylesheet" />
-    <link href="Pkmds.Web.styles.css" rel="stylesheet" />
-    <link href="icon-512.png" type="image/png" rel="apple-touch-icon" sizes="512x512" />
-    <link href="icon-192.png" type="image/png" rel="apple-touch-icon" sizes="192x192" />
-    <link href="icon-32.png" type="image/png" rel="apple-touch-icon" sizes="32x32" />
-    <link href="icon-32.png" type="image/png" rel="icon" />
+    <base href="/"/>
+    <link href="manifest.webmanifest"
+          rel="manifest"/>
+    <link href="_content/MudBlazor/MudBlazor.min.css"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet"/>
+    <link href="css\app.css"
+          rel="stylesheet"/>
+    <link href="Pkmds.Web.styles.css"
+          rel="stylesheet"/>
+    <link href="icon-512.png"
+          type="image/png"
+          rel="apple-touch-icon"
+          sizes="512x512"/>
+    <link href="icon-192.png"
+          type="image/png"
+          rel="apple-touch-icon"
+          sizes="192x192"/>
+    <link href="icon-32.png"
+          type="image/png"
+          rel="apple-touch-icon"
+          sizes="32x32"/>
+    <link href="icon-32.png"
+          type="image/png"
+          rel="icon"/>
     <script src="js/fileSave.js"></script>
 </head>
 
 <body>
 
-    <div class="status-bar-safe-area"></div>
+<div class="status-bar-safe-area"></div>
 
-    <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%"
-                    cx="50%"
-                    cy="50%" />
+<div id="app">
+    <svg class="loading-progress">
+        <circle r="40%"
+                cx="50%"
+                cy="50%"/>
 
-            <circle r="40%"
-                    cx="50%"
-                    cy="50%" />
-        </svg>
+        <circle r="40%"
+                cx="50%"
+                cy="50%"/>
+    </svg>
 
-        <div class="loading-progress-text"></div>
-    </div>
+    <div class="loading-progress-text"></div>
+</div>
 
-    <div id="blazor-error-ui">
+<div id="blazor-error-ui">
 
-        An unhandled error has occurred.
+    An unhandled error has occurred.
 
-        <a href=""
-           class="reload">
-            Reload
-        </a>
+    <a href=""
+       class="reload">
+        Reload
+    </a>
 
-        <a class="dismiss">🗙</a>
+    <a class="dismiss">🗙</a>
 
-    </div>
+</div>
 
-    <!--prevent autostarting-->
-    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
-    <script>
-        navigator.serviceWorker.register('service-worker.published.js', { updateViaCache: 'none' }).then(registration => {
-            setInterval(() => registration.update(), 1 * 60 * 60 * 1000); // check for updates every hour
-            registration.onupdatefound = () => {
-                const installingWorker = registration.installing;
-                installingWorker.onstatechange = () => {
-                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // Notify Blazor about the update
-                        window.dispatchEvent(new CustomEvent('updateAvailable'));
-                    }
-                };
-            };
-        });
-    </script>
-    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
-    <script src="js/lib/crypto-js/crypto-js.min.js"></script>
-
-    <script>
-        //check if webassembly is supported
-        const webassemblySupported = (function () {
-            try {
-                if (typeof WebAssembly === "object"
-                    && typeof WebAssembly.instantiate === "function") {
-                    const module = new WebAssembly.Module(
-                        Uint8Array.of(0x0, 0x61, 0x73, 0x6d,
-                            0x01, 0x00, 0x00, 0x00));
-                    if (module instanceof WebAssembly.Module)
-                        return new WebAssembly.Instance(module)
-                            instanceof WebAssembly.Instance;
+<!--prevent autostarting-->
+<script src="_framework/blazor.webassembly.js"
+        autostart="false"></script>
+<script>
+    navigator.serviceWorker.register('service-worker.published.js', {updateViaCache: 'none'}).then(registration => {
+        setInterval(() => registration.update(), 1 * 60 * 60 * 1000); // check for updates every hour
+        registration.onupdatefound = () => {
+            const installingWorker = registration.installing;
+            installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Notify Blazor about the update
+                    window.dispatchEvent(new CustomEvent('updateAvailable'));
                 }
-            } catch (e) {
-            }
-            return false;
-        })();
-        // Modern browsers e.g. Microsoft Edge
-        if (webassemblySupported) {
-            Blazor.start({});
-        }
-        // Older browsers e.g. IE11
-        else {
-            window.location = window.location + "BrowserNotSupported.html";
-        }
-    </script>
-
-    <script>
-        window.addUpdateListener = () => {
-            window.addEventListener('updateAvailable', () => {
-                DotNet.invokeMethodAsync('Pkmds.Web', 'ShowUpdateMessage');
-            });
+            };
         };
-    </script>
+    });
+</script>
+<script src="_content/MudBlazor/MudBlazor.min.js"></script>
+<script src="js/lib/crypto-js/crypto-js.min.js"></script>
+
+<script>
+    //check if webassembly is supported
+    const webassemblySupported = (function () {
+        try {
+            if (typeof WebAssembly === "object"
+                && typeof WebAssembly.instantiate === "function") {
+                const module = new WebAssembly.Module(
+                    Uint8Array.of(0x0, 0x61, 0x73, 0x6d,
+                        0x01, 0x00, 0x00, 0x00));
+                if (module instanceof WebAssembly.Module)
+                    return new WebAssembly.Instance(module)
+                        instanceof WebAssembly.Instance;
+            }
+        } catch (e) {
+        }
+        return false;
+    })();
+    // Modern browsers e.g. Microsoft Edge
+    if (webassemblySupported) {
+        Blazor.start({});
+    }
+    // Older browsers e.g. IE11
+    else {
+        window.location = window.location + "BrowserNotSupported.html";
+    }
+</script>
+
+<script>
+    window.addUpdateListener = () => {
+        window.addEventListener('updateAvailable', () => {
+            DotNet.invokeMethodAsync('Pkmds.Web', 'ShowUpdateMessage');
+        });
+    };
+</script>
 
 </body>
 
