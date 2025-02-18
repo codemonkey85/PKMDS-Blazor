@@ -12,20 +12,27 @@
                        Color="@Color.Inherit"
                        Edge="@Edge.Start"
                        OnClick="@DrawerToggle"/>
-        <MudText Typo="@Typo.h4" class="d-none d-lg-flex">
+        <MudText Typo="@Typo.h4"
+                 class="d-none d-lg-flex">
             @Constants.AppTitle
         </MudText>
-        <MudText Typo="@Typo.h6" class="d-none d-md-flex d-lg-none">
-            @(AppService.IsDrawerOpen ? Constants.AppShortTitle : Constants.AppTitle)
+        <MudText Typo="@Typo.h6"
+                 class="d-none d-md-flex d-lg-none">
+            @(AppService.IsDrawerOpen
+                ? Constants.AppShortTitle
+                : Constants.AppTitle)
         </MudText>
-        <MudText Typo="@Typo.inherit" class="d-xs-flex d-md-none">
+        <MudText Typo="@Typo.inherit"
+                 class="d-xs-flex d-md-none">
             @Constants.AppShortTitle
         </MudText>
         <MudSpacer/>
         <MudStack Row>
             <MudSwitch @bind-Value="@isDarkMode"
                        Color="@Color.Primary"
-                       Label="@(isDarkMode ? "Dark" : "Light")"/>
+                       Label="@(isDarkMode
+                                  ? "Dark"
+                                  : "Light")"/>
             <MudButton Class="d-none d-md-flex"
                        EndIcon="@Icons.Custom.Brands.GitHub"
                        Href="https://github.com/codemonkey85/PKMDS-Blazor"

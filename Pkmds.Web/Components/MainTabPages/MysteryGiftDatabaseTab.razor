@@ -47,7 +47,9 @@
                                             data="@SpriteHelper.GetMysteryGiftSpriteFileName(mysteryGift)"
                                             title="@pokemonName">
                                         <img class="pkm-sprite"
-                                             src="@(mysteryGift.IsItem ? SpriteHelper.ItemFallbackImageFileName : SpriteHelper.PokemonFallbackImageFileName)"
+                                             src="@(mysteryGift.IsItem
+                                                      ? SpriteHelper.ItemFallbackImageFileName
+                                                      : SpriteHelper.PokemonFallbackImageFileName)"
                                              alt="@pokemonName"
                                              title="@pokemonName">
                                     </object>

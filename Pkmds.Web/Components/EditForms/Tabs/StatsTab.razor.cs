@@ -2,7 +2,8 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class StatsTab : IDisposable
 {
-    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired]
+    public PKM? Pokemon { get; set; }
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
@@ -67,7 +68,9 @@ public partial class StatsTab : IDisposable
             return string.Empty;
         }
 
-        var nature = Pokemon.Format >= 8 ? Pokemon.StatNature : Pokemon.Nature;
+        var nature = Pokemon.Format >= 8
+            ? Pokemon.StatNature
+            : Pokemon.Nature;
 
         var (up, dn) = NatureAmp.GetNatureModification(nature);
 

@@ -2,7 +2,8 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class PokerusComponent
 {
-    [Parameter, EditorRequired] public PKM? Pokemon { get; set; }
+    [Parameter, EditorRequired]
+    public PKM? Pokemon { get; set; }
 
     private List<int> PokerusDays { get; set; } = [];
 

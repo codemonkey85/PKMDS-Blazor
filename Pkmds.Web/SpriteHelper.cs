@@ -125,6 +125,8 @@ public static class SpriteHelper
         {
             HeldItemLumpImage.TechnicalMachine => "tm",
             HeldItemLumpImage.TechnicalRecord => "tr",
-            _ => IsItemMail(item, context) ? "unk" : item.ToString(),
+            _ => IsItemMail(item, context)
+                ? "unk"
+                : item.ToString(),
         };
 }

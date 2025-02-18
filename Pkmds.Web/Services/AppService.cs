@@ -83,7 +83,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     public string GetStatModifierString(Nature nature)
     {
         var (up, down) = NatureAmp.GetNatureModification(nature);
-        return up == down ? "(neutral)" : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
+        return up == down
+            ? "(neutral)"
+            : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
     }
 
     public void LoadPokemonStats(PKM? pokemon)

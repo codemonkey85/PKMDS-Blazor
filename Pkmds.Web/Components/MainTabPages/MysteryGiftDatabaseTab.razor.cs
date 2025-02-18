@@ -2,7 +2,8 @@
 
 public partial class MysteryGiftDatabaseTab
 {
-    [Parameter] public bool FilterUnavailableSpecies { get; set; } = true;
+    [Parameter]
+    public bool FilterUnavailableSpecies { get; set; } = true;
 
     private List<MysteryGift> mysteryGiftsList = [];
 

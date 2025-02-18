@@ -2,13 +2,17 @@ namespace Pkmds.Web.Components;
 
 public partial class GenderDisplayComponent
 {
-    [Parameter] public Gender Gender { get; set; }
+    [Parameter]
+    public Gender Gender { get; set; }
 
-    [Parameter] public EventCallback<Gender> OnChange { get; set; }
+    [Parameter]
+    public EventCallback<Gender> OnChange { get; set; }
 
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter]
+    public bool Disabled { get; set; }
 
-    [Parameter] public bool IncludeGenderless { get; set; }
+    [Parameter]
+    public bool IncludeGenderless { get; set; }
 
     private static string GetGenderIcon(Gender gender) => gender switch
     {

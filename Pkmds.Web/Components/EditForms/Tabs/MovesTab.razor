@@ -38,7 +38,9 @@
                         </MudItem>
                     }
 
-                    <MudItem xs="@(UseTextSearch ? 5 : 6)"
+                    <MudItem xs="@(UseTextSearch
+                                     ? 5
+                                     : 6)"
                              Class="@ColumnClass">
                         @if (UseTextSearch)
                         {

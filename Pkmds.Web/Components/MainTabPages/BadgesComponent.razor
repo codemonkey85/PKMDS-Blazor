@@ -4,12 +4,18 @@
 {
     case SAV7b { Context: EntityContext.Gen7b }:
         <MudAlert Severity="@MudBlazor.Severity.Warning">
-            Badges are not supported for this save file. See <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues/59" target="_blank" style="text-decoration: underline">issue #59</a> for more information.
+            Badges are not supported for this save file. See
+            <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues/59"
+               target="_blank"
+               style="text-decoration: underline">issue #59</a> for more information.
         </MudAlert>
         break;
     case SAV9SV { Context: EntityContext.Gen9 }:
         <MudAlert Severity="@MudBlazor.Severity.Warning">
-            Badges are not supported for this save file. See <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues/60" target="_blank" style="text-decoration: underline">issue #60</a> for more information.
+            Badges are not supported for this save file. See
+            <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues/60"
+               target="_blank"
+               style="text-decoration: underline">issue #60</a> for more information.
         </MudAlert>
         break;
     case SAV1 { Context: EntityContext.Gen1 }:
@@ -38,7 +44,7 @@
                     <MudCheckBox Label="@($"Badge {badgeIndex + 1}")"
                                  T="@bool"
                                  Value="@badges[badgeIndex]"
-                                 ValueChanged="@(_ => OnBadgeToggle(badgeIndex))" />
+                                 ValueChanged="@(_ => OnBadgeToggle(badgeIndex))"/>
                 </MudItem>
             }
         </MudGrid>
