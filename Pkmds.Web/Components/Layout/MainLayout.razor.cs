@@ -5,6 +5,7 @@ public partial class MainLayout : IDisposable
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
 
+    [StringSyntax(StringSyntaxAttribute.Uri)]
     private const string GitHubRepoLink = "https://github.com/codemonkey85/PKMDS-Blazor";
 
     private const string GitHubTooltip = "Source code on GitHub";
