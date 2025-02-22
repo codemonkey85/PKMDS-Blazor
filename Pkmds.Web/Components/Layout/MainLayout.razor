@@ -13,17 +13,17 @@
                        Edge="@Edge.Start"
                        OnClick="@DrawerToggle"/>
         <MudText Typo="@Typo.h4"
-                 class="d-none d-lg-flex">
+                 Class="d-none d-lg-flex">
             @Constants.AppTitle
         </MudText>
         <MudText Typo="@Typo.h6"
-                 class="d-none d-md-flex d-lg-none">
+                 Class="d-none d-md-flex d-lg-none">
             @(AppService.IsDrawerOpen
                 ? Constants.AppShortTitle
                 : Constants.AppTitle)
         </MudText>
         <MudText Typo="@Typo.inherit"
-                 class="d-xs-flex d-md-none">
+                 Class="d-xs-flex d-md-none">
             @Constants.AppShortTitle
         </MudText>
         <MudSpacer/>
