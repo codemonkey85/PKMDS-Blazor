@@ -5,6 +5,10 @@ public partial class MainLayout : IDisposable
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
 
+    private const string GitHubRepoLink = "https://github.com/codemonkey85/PKMDS-Blazor";
+
+    private const string GitHubTooltip = "Source code on GitHub";
+
     protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
 
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
