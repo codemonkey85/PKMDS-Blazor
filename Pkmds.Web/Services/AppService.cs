@@ -143,30 +143,29 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             return;
         }
 
-        if (AppState.SelectedPartySlotNumber is not null)
+        var selectedPokemonType = GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
+        switch (selectedPokemonType)
         {
-            AppState.SaveFile.SetPartySlotAtIndex(pokemon, AppState.SelectedPartySlotNumber.Value);
+            case SelectedPokemonType.Party:
+                AppState.SaveFile.SetPartySlotAtIndex(pokemon, partySlot);
 
-            if (AppState.SaveFile is SAV7b)
-            {
+                if (AppState.SaveFile is SAV7b)
+                {
+                    RefreshService.RefreshBoxAndPartyState();
+                }
+                else
+                {
+                    RefreshService.RefreshPartyState();
+                }
+                break;
+            case SelectedPokemonType.Box:
+                AppState.SaveFile.SetBoxSlotAtIndex(pokemon, boxNumber, boxSlot);
+                RefreshService.RefreshBoxState();
+                break;
+            case SelectedPokemonType.None when AppState.SaveFile is SAV7b:
+                AppState.SaveFile.SetBoxSlotAtIndex(pokemon, boxSlot);
                 RefreshService.RefreshBoxAndPartyState();
-            }
-            else
-            {
-                RefreshService.RefreshPartyState();
-            }
-        }
-        else if (AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null)
-        {
-            AppState.SaveFile.SetBoxSlotAtIndex(pokemon, AppState.SelectedBoxNumber.Value,
-                AppState.SelectedBoxSlotNumber.Value);
-            RefreshService.RefreshBoxState();
-        }
-        else if (AppState.SelectedBoxNumber is null && AppState.SelectedBoxSlotNumber is not null &&
-                 AppState.SaveFile is SAV7b)
-        {
-            AppState.SaveFile.SetBoxSlotAtIndex(pokemon, AppState.SelectedBoxSlotNumber.Value);
-            RefreshService.RefreshBoxAndPartyState();
+                break;
         }
     }
 
@@ -301,5 +300,28 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         {
             EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
         }
+    }
+
+    public SelectedPokemonType GetSelectedPokemonSlot(out int partySlot, out int boxNumber, out int boxSlot)
+    {
+        const int defaultValue = -1;
+
+        partySlot = AppState.SelectedPartySlotNumber ?? defaultValue;
+        boxNumber = AppState.SelectedBoxNumber ?? defaultValue;
+        boxSlot = AppState.SelectedBoxSlotNumber ?? defaultValue;
+
+        return (partySlot, boxNumber, boxSlot) switch
+        {
+            (not defaultValue, defaultValue, defaultValue) => SelectedPokemonType.Party,
+            (defaultValue, not defaultValue, not defaultValue) => SelectedPokemonType.Box,
+            _ => SelectedPokemonType.None,
+        };
+    }
+
+    public enum SelectedPokemonType
+    {
+        None,
+        Party,
+        Box
     }
 }

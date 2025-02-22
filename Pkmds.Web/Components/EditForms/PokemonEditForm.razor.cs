@@ -44,13 +44,15 @@ public partial class PokemonEditForm : IDisposable
                 return;
             }
 
-            if (AppState.SelectedPartySlotNumber is not null)
+            var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
+            switch (selectedPokemonType)
             {
-                AppService.DeletePokemon(AppState.SelectedPartySlotNumber.Value);
-            }
-            else if (AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null)
-            {
-                AppService.DeletePokemon(AppState.SelectedBoxNumber.Value, AppState.SelectedBoxSlotNumber.Value);
+                case Services.AppService.SelectedPokemonType.Party:
+                    AppService.DeletePokemon(partySlot);
+                    break;
+                case Services.AppService.SelectedPokemonType.Box:
+                    AppService.DeletePokemon(boxNumber, boxSlot);
+                    break;
             }
         }
     }
@@ -119,13 +121,15 @@ public partial class PokemonEditForm : IDisposable
             Pokemon = AppState.CopiedPokemon.Clone();
             AppService.SavePokemon(Pokemon);
 
-            if (AppState.SelectedPartySlotNumber is { } slotNumber)
+            var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
+            switch (selectedPokemonType)
             {
-                AppService.SetSelectedPartyPokemon(Pokemon, slotNumber);
-            }
-            else if (AppState.SelectedBoxNumber is { } boxNumber && AppState.SelectedBoxSlotNumber is { } boxSlotNumber)
-            {
-                AppService.SetSelectedBoxPokemon(Pokemon, boxNumber, boxSlotNumber);
+                case Services.AppService.SelectedPokemonType.Party:
+                    AppService.SetSelectedPartyPokemon(Pokemon, partySlot);
+                    break;
+                case Services.AppService.SelectedPokemonType.Box:
+                    AppService.SetSelectedBoxPokemon(Pokemon, boxNumber, boxSlot);
+                    break;
             }
 
             Snackbar.Add("The copied Pokémon has been pasted.");

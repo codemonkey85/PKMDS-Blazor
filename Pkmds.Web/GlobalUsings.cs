@@ -20,3 +20,4 @@ global using Pkmds.Web;
 global using Pkmds.Web.Components.Dialogs;
 global using Pkmds.Web.Extensions;
 global using Pkmds.Web.Services;
+global using static Pkmds.Web.Services.AppService;
