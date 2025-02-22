@@ -44,7 +44,7 @@ public interface IAppService
 
     ComboItem GetMoveComboItem(int moveId);
 
-    public void SavePokemon(PKM? selectedPokemon);
+    void SavePokemon(PKM? selectedPokemon);
 
     string GetCleanFileName(PKM pkm);
 
@@ -59,4 +59,6 @@ public interface IAppService
     string ExportPartyAsShowdown();
 
     string GetIdFormatString(bool isSid = false);
+
+    SelectedPokemonType GetSelectedPokemonSlot(out int partySlot, out int boxNumber, out int boxSlot);
 }

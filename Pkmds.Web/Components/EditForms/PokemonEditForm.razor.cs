@@ -44,13 +44,15 @@ public partial class PokemonEditForm : IDisposable
                 return;
             }
 
-            if (AppState.SelectedPartySlotNumber is not null)
+            var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
+            switch (selectedPokemonType)
             {
-                AppService.DeletePokemon(AppState.SelectedPartySlotNumber.Value);
-            }
-            else if (AppState.SelectedBoxNumber is not null && AppState.SelectedBoxSlotNumber is not null)
-            {
-                AppService.DeletePokemon(AppState.SelectedBoxNumber.Value, AppState.SelectedBoxSlotNumber.Value);
+                case Services.AppService.SelectedPokemonType.Party:
+                    AppService.DeletePokemon(partySlot);
+                    break;
+                case Services.AppService.SelectedPokemonType.Box:
+                    AppService.DeletePokemon(boxNumber, boxSlot);
+                    break;
             }
         }
     }
@@ -90,7 +92,7 @@ public partial class PokemonEditForm : IDisposable
                 { nameof(ConfirmActionDialog.Title), "Paste Pokémon" },
                 { nameof(ConfirmActionDialog.Message), "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced." },
                 { nameof(ConfirmActionDialog.ConfirmText), "Paste" },
-                { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.Delete },
+                { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.ContentPaste },
                 { nameof(ConfirmActionDialog.ConfirmColor), Color.Default },
                 { nameof(ConfirmActionDialog.CancelText), "Cancel" },
                 { nameof(ConfirmActionDialog.CancelIcon), Icons.Material.Filled.Clear },
@@ -118,6 +120,18 @@ public partial class PokemonEditForm : IDisposable
         {
             Pokemon = AppState.CopiedPokemon.Clone();
             AppService.SavePokemon(Pokemon);
+
+            var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
+            switch (selectedPokemonType)
+            {
+                case Services.AppService.SelectedPokemonType.Party:
+                    AppService.SetSelectedPartyPokemon(Pokemon, partySlot);
+                    break;
+                case Services.AppService.SelectedPokemonType.Box:
+                    AppService.SetSelectedBoxPokemon(Pokemon, boxNumber, boxSlot);
+                    break;
+            }
+
             Snackbar.Add("The copied Pokémon has been pasted.");
         }
     }

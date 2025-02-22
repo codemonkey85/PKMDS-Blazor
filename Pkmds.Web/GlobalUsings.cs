@@ -1,5 +1,6 @@
 ﻿global using System.Collections.Generic;
 global using System.Collections.ObjectModel;
+global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
 global using System.Linq.Expressions;
 global using System.Net;
@@ -19,3 +20,4 @@ global using Pkmds.Web;
 global using Pkmds.Web.Components.Dialogs;
 global using Pkmds.Web.Extensions;
 global using Pkmds.Web.Services;
+global using static Pkmds.Web.Services.AppService;
