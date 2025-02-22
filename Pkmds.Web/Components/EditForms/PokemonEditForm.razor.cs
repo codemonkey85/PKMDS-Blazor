@@ -90,7 +90,7 @@ public partial class PokemonEditForm : IDisposable
                 { nameof(ConfirmActionDialog.Title), "Paste Pokémon" },
                 { nameof(ConfirmActionDialog.Message), "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced." },
                 { nameof(ConfirmActionDialog.ConfirmText), "Paste" },
-                { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.Delete },
+                { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.ContentPaste },
                 { nameof(ConfirmActionDialog.ConfirmColor), Color.Default },
                 { nameof(ConfirmActionDialog.CancelText), "Cancel" },
                 { nameof(ConfirmActionDialog.CancelIcon), Icons.Material.Filled.Clear },
@@ -118,6 +118,16 @@ public partial class PokemonEditForm : IDisposable
         {
             Pokemon = AppState.CopiedPokemon.Clone();
             AppService.SavePokemon(Pokemon);
+
+            if (AppState.SelectedPartySlotNumber is { } slotNumber)
+            {
+                AppService.SetSelectedPartyPokemon(Pokemon, slotNumber);
+            }
+            else if (AppState.SelectedBoxNumber is { } boxNumber && AppState.SelectedBoxSlotNumber is { } boxSlotNumber)
+            {
+                AppService.SetSelectedBoxPokemon(Pokemon, boxNumber, boxSlotNumber);
+            }
+
             Snackbar.Add("The copied Pokémon has been pasted.");
         }
     }
