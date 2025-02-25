@@ -185,7 +185,7 @@ public partial class MainLayout : IDisposable
                 }
             }
 
-            saveFile.AdaptPKM(pokemon);
+            saveFile.AdaptToSaveFile(pokemon);
 
             var index = saveFile.NextOpenBoxSlot();
             if (index < 0)
@@ -260,7 +260,7 @@ public partial class MainLayout : IDisposable
                 }
             }
 
-            saveFile.AdaptPKM(pokemon);
+            saveFile.AdaptToSaveFile(pokemon);
 
             var index = saveFile.NextOpenBoxSlot();
             if (index < 0)

@@ -90,7 +90,7 @@ public partial class MysteryGiftDatabaseTab
             }
         }
 
-        saveFile.AdaptPKM(pokemon);
+        saveFile.AdaptToSaveFile(pokemon);
         AppState.CopiedPokemon = pokemon.Clone();
 
         Snackbar.Add("The selected Pokémon has been copied.");

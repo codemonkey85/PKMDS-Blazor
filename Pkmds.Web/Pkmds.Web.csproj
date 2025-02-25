@@ -30,7 +30,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
         <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2" />
         <PackageReference Include="MudBlazor" Version="8.3.0" />
-        <PackageReference Include="PKHeX.Core" Version="24.11.12" />
+        <PackageReference Include="PKHeX.Core" Version="25.2.23" />
     </ItemGroup>
 
     <ItemGroup>
