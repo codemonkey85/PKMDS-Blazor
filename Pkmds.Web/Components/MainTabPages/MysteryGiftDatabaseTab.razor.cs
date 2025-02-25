@@ -95,12 +95,6 @@ public partial class MysteryGiftDatabaseTab
         Snackbar.Add("The selected Pokémon has been copied.");
     }
 
-    private async Task OnClickImport(MysteryGift mysteryGift)
-    {
-        await AppService.ImportMysteryGift(mysteryGift, out var isSuccessful, out var resultsMessage);
-        Snackbar.Add(resultsMessage, isSuccessful ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
-    }
-
     private static string RenderListAsHtml(IReadOnlyList<string> items, string tag = "p")
     {
         if (items.Count == 0)
