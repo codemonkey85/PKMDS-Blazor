@@ -241,21 +241,21 @@ public partial class MainLayout : IDisposable
                 return;
             }
 
-            if (mysteryGift.Species == (ushort)Species.None)
+            if (mysteryGift.Species.IsInvalidSpecies())
             {
                 return;
             }
 
-            var temp = mysteryGift.ConvertToPKM(saveFile);
-            var pokemon = temp.Clone();
+            var tempPokemon = mysteryGift.ConvertToPKM(saveFile);
+            var pokemon = tempPokemon.Clone();
 
-            if (temp.GetType() != saveFile.PKMType)
+            if (tempPokemon.GetType() != saveFile.PKMType)
             {
-                pokemon = EntityConverter.ConvertToType(temp, saveFile.PKMType, out var c);
+                pokemon = EntityConverter.ConvertToType(tempPokemon, saveFile.PKMType, out var convertedEntity);
 
-                if (!c.IsSuccess() || pokemon is null)
+                if (!convertedEntity.IsSuccess() || pokemon is null)
                 {
-                    await DialogService.ShowMessageBox("Error", c.GetDisplayString(temp, saveFile.PKMType));
+                    await DialogService.ShowMessageBox("Error", convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));
                     return;
                 }
             }

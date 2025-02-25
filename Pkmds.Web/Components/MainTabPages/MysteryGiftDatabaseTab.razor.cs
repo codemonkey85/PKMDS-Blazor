@@ -22,7 +22,7 @@ public partial class MysteryGiftDatabaseTab
 
     private void LoadData()
     {
-        if (AppState is not { SaveFile: { } saveFile })
+        if (AppState.SaveFile is not { } saveFile)
         {
             return;
         }
@@ -70,7 +70,7 @@ public partial class MysteryGiftDatabaseTab
 
     private async Task OnClickCopy(MysteryGift mysteryGift)
     {
-        if (mysteryGift.Species == (ushort)Species.None || AppState is not { SaveFile: { } saveFile })
+        if (mysteryGift.Species.IsInvalidSpecies() || AppState.SaveFile is not { } saveFile)
         {
             return;
         }
