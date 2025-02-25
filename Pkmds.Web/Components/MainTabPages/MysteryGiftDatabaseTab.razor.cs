@@ -33,13 +33,13 @@ public partial class MysteryGiftDatabaseTab
         {
             encounterDatabase = saveFile switch
             {
-                SAV9SV s9 => encounterDatabase.Where(IsPresent(s9.Personal)),
-                SAV8SWSH s8 => encounterDatabase.Where(IsPresent(s8.Personal)),
-                SAV8BS b8 => encounterDatabase.Where(IsPresent(b8.Personal)),
-                SAV8LA a8 => encounterDatabase.Where(IsPresent(a8.Personal)),
-                SAV7b => encounterDatabase.Where(z => z is WB7),
-                SAV7 => encounterDatabase.Where(z => z.Generation < 7 || z is WC7),
-                _ => encounterDatabase.Where(z => z.Generation <= saveFile.Generation),
+                SAV9SV sav9sv => encounterDatabase.Where(IsPresent(sav9sv.Personal)),
+                SAV8SWSH sav8swsh => encounterDatabase.Where(IsPresent(sav8swsh.Personal)),
+                SAV8BS sav8bs => encounterDatabase.Where(IsPresent(sav8bs.Personal)),
+                SAV8LA sav8la => encounterDatabase.Where(IsPresent(sav8la.Personal)),
+                SAV7b => encounterDatabase.Where(mysteryGift => mysteryGift is WB7),
+                SAV7 => encounterDatabase.Where(mysteryGift => mysteryGift.Generation < 7 || mysteryGift is WC7),
+                _ => encounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation),
             };
         }
 
@@ -52,14 +52,13 @@ public partial class MysteryGiftDatabaseTab
 
         UpdatePaginatedItems();
 
-        static Func<MysteryGift, bool> IsPresent<TTable>(TTable pt) where TTable : IPersonalTable =>
-            z => pt.IsPresentInGame(z.Species, z.Form);
+        static Func<MysteryGift, bool> IsPresent<TTable>(TTable personalTable) where TTable : IPersonalTable =>
+            mysteryGift => personalTable.IsPresentInGame(mysteryGift.Species, mysteryGift.Form);
     }
 
-    private void UpdatePaginatedItems() => paginatedItems = mysteryGiftsList
+    private void UpdatePaginatedItems() => paginatedItems = [.. mysteryGiftsList
         .Skip((currentPage - 1) * pageSize)
-        .Take(pageSize)
-        .ToList();
+        .Take(pageSize)];
 
     private void GoToPage() => UpdatePaginatedItems();
 
@@ -69,23 +68,23 @@ public partial class MysteryGiftDatabaseTab
         UpdatePaginatedItems();
     }
 
-    private async Task OnClickCopy(MysteryGift gift)
+    private async Task OnClickCopy(MysteryGift mysteryGift)
     {
-        if (gift.Species == (ushort)Species.None || AppState is not { SaveFile: { } saveFile })
+        if (mysteryGift.Species == (ushort)Species.None || AppState is not { SaveFile: { } saveFile })
         {
             return;
         }
 
-        var temp = gift.ConvertToPKM(saveFile);
-        var pokemon = temp.Clone();
+        var tempPokemon = mysteryGift.ConvertToPKM(saveFile);
+        var pokemon = tempPokemon.Clone();
 
-        if (temp.GetType() != saveFile.PKMType)
+        if (tempPokemon.GetType() != saveFile.PKMType)
         {
-            pokemon = EntityConverter.ConvertToType(temp, saveFile.PKMType, out var c);
+            pokemon = EntityConverter.ConvertToType(tempPokemon, saveFile.PKMType, out var convertedEntity);
 
-            if (!c.IsSuccess() || pokemon is null)
+            if (!convertedEntity.IsSuccess() || pokemon is null)
             {
-                await DialogService.ShowMessageBox("Error", c.GetDisplayString(temp, saveFile.PKMType));
+                await DialogService.ShowMessageBox("Error", convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));
                 return;
             }
         }
