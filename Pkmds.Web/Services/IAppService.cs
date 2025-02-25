@@ -61,4 +61,6 @@ public interface IAppService
     string GetIdFormatString(bool isSid = false);
 
     SelectedPokemonType GetSelectedPokemonSlot(out int partySlot, out int boxNumber, out int boxSlot);
+
+    Task ImportMysteryGift(MysteryGift mysteryGift, out bool isSuccessful, out string resultsMessage);
 }

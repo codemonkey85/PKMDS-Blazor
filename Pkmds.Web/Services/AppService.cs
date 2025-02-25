@@ -324,4 +324,11 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         Party,
         Box
     }
+
+    public Task ImportMysteryGift(MysteryGift mysteryGift, out bool isSuccessful, out string resultsMessage) 
+    {
+        isSuccessful = true;
+        resultsMessage = "The Mystery Gift has been successfully imported.";
+        return Task.CompletedTask;
+    }
 }

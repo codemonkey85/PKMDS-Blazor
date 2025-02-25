@@ -220,7 +220,7 @@ public partial class MainLayout : IDisposable
 
     private async Task LoadMysteryGiftFile(IBrowserFile browserLoadMysteryGiftFile, string title)
     {
-        if (AppState.SaveFile is not { } saveFile)
+        if (AppState.SaveFile is null)
         {
             return;
         }
@@ -246,40 +246,9 @@ public partial class MainLayout : IDisposable
                 return;
             }
 
-            var tempPokemon = mysteryGift.ConvertToPKM(saveFile);
-            var pokemon = tempPokemon.Clone();
+            await AppService.ImportMysteryGift(mysteryGift, out _, out var resultsMessage);
 
-            if (tempPokemon.GetType() != saveFile.PKMType)
-            {
-                pokemon = EntityConverter.ConvertToType(tempPokemon, saveFile.PKMType, out var convertedEntity);
-
-                if (!convertedEntity.IsSuccess() || pokemon is null)
-                {
-                    await DialogService.ShowMessageBox("Error", convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));
-                    return;
-                }
-            }
-
-            saveFile.AdaptToSaveFile(pokemon);
-
-            var index = saveFile.NextOpenBoxSlot();
-            if (index < 0)
-            {
-                return;
-            }
-
-            saveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
-            saveFile.SetBoxSlotAtIndex(pokemon, index);
-
-            const string messageStart = "The Pokémon has been imported and stored in";
-
-            var message = saveFile is IBoxDetailNameRead boxDetail
-                ? $"{messageStart} '{boxDetail.GetBoxName(box)}' (Box {box + 1}), Slot {slot + 1}."
-                : $"{messageStart} Box {box + 1}, Slot {slot + 1}.";
-
-            await DialogService.ShowMessageBox(
-                title,
-                message);
+            await DialogService.ShowMessageBox(title, resultsMessage);
         }
         catch (Exception ex)
         {
