@@ -324,4 +324,185 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         Party,
         Box
     }
+
+    public Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage)
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            isSuccessful = false;
+            resultsMessage = "No save file loaded.";
+            return Task.CompletedTask;
+        }
+
+        var gift = MysteryGift.GetMysteryGift(data, fileExtension);
+        if (gift is null)
+        {
+            isSuccessful = false;
+            resultsMessage = "The Mystery Gift could not be imported.";
+            return Task.CompletedTask;
+        }
+
+        if (!gift.IsCardCompatible(saveFile, out var msg))
+        {
+            isSuccessful = false;
+            resultsMessage = msg;
+            return Task.CompletedTask;
+        }
+
+        var cards = GetMysteryGiftProvider(saveFile);
+        var album = LoadMysteryGifts(saveFile, cards);
+        var flags = cards as IMysteryGiftFlags;
+        var index = 0;
+
+        var lastUnfilled = GetLastUnfilledByType(gift, album);
+        if (lastUnfilled > -1 && lastUnfilled < index)
+        {
+            index = lastUnfilled;
+        }
+
+        if (gift is PCD { IsLockCapsule: true })
+        {
+            index = 11;
+        }
+
+        var gifts = album;
+        var other = gifts[index];
+        if (gift is PCD { CanConvertToPGT: true } pcd && other is PGT)
+        {
+            gift = pcd.Gift;
+        }
+        else if (gift.Type != other.Type)
+        {
+            isSuccessful = false;
+            resultsMessage = $"{gift.Type} != {other.Type}";
+            return Task.CompletedTask;
+        }
+        else if (gift is PCD g && g is { IsLockCapsule: true } != (index == 11))
+        {
+            isSuccessful = false;
+            resultsMessage = $"{GameInfo.Strings.Item[533]} slot not valid.";
+            return Task.CompletedTask;
+        }
+
+        gifts[index] = (DataMysteryGift)gift.Clone();
+
+        List<string> receivedFlags = [];
+
+        SetCardId(gift.CardID, flags, receivedFlags);
+        SaveReceivedFlags(flags, receivedFlags);
+        SaveReceivedCards(saveFile, cards, album);
+
+        isSuccessful = true;
+        resultsMessage = "The Mystery Gift has been successfully imported.";
+        return Task.CompletedTask;
+
+        static int GetLastUnfilledByType(DataMysteryGift gift, DataMysteryGift[] album)
+        {
+            for (var i = 0; i < album.Length; i++)
+            {
+                var exist = album[i];
+                if (!exist.Empty)
+                {
+                    continue;
+                }
+
+                if (exist.Type != gift.Type)
+                {
+                    continue;
+                }
+
+                return i;
+            }
+            return -1;
+        }
+
+        static DataMysteryGift[] LoadMysteryGifts(SaveFile saveFile, IMysteryGiftStorage cards)
+        {
+            var count = cards.GiftCountMax;
+            var size = saveFile is SAV4HGSS ? count + 1 : count;
+            var result = new DataMysteryGift[size];
+            for (var i = 0; i < count; i++)
+            {
+                result[i] = cards.GetMysteryGift(i);
+            }
+
+            if (saveFile is SAV4HGSS s4)
+            {
+                result[^1] = s4.LockCapsuleSlot;
+            }
+
+            return result;
+        }
+
+        static IMysteryGiftStorage GetMysteryGiftProvider(SaveFile saveFile) => saveFile is IMysteryGiftStorageProvider provider
+                ? provider.MysteryGiftStorage
+                : throw new ArgumentException("Save file does not support Mystery Gifts.", nameof(saveFile));
+
+        static void SetCardId(int cardId, IMysteryGiftFlags? flags, List<string> receivedFlags)
+        {
+            if (flags is null || (uint)cardId >= flags.MysteryGiftReceivedFlagMax)
+            {
+                return;
+            }
+
+            var card = cardId.ToString("0000");
+            if (!receivedFlags.Contains(card))
+            {
+                receivedFlags.Add(card);
+            }
+        }
+
+        static void SaveReceivedFlags(IMysteryGiftFlags? flags, List<string> receivedFlags)
+        {
+            if (flags is null)
+            {
+                return; // nothing to save
+            }
+
+            var count = flags.MysteryGiftReceivedFlagMax;
+            for (var i = 1; i < count; i++)
+            {
+                if (flags.GetMysteryGiftReceivedFlag(i))
+                {
+                    receivedFlags.Add(i.ToString("0000"));
+                }
+            }
+
+            // Store the list of set flag indexes back to the bitflag array.
+            flags.ClearReceivedFlags();
+            foreach (var o in receivedFlags)
+            {
+                if (o?.ToString() is not { } x || !int.TryParse(x, out var index))
+                {
+                    continue;
+                }
+
+                flags.SetMysteryGiftReceivedFlag(index, true);
+            }
+        }
+
+        static void SaveReceivedCards(SaveFile saveFile, IMysteryGiftStorage cards, DataMysteryGift[] album)
+        {
+            if (cards is MysteryBlock4 s4)
+            {
+                // Replace the line causing the error with the following code
+                s4.IsDeliveryManActive = album.Any(g => !g.Empty);
+                MysteryBlock4.UpdateSlotPGT(album, saveFile is SAV4HGSS);
+                if (saveFile is SAV4HGSS hgss)
+                {
+                    hgss.LockCapsuleSlot = (PCD)album[^1];
+                }
+            }
+            var count = cards.GiftCountMax;
+            for (var i = 0; i < count; i++)
+            {
+                cards.SetMysteryGift(i, album[i]);
+            }
+
+            if (cards is MysteryBlock5 s5)
+            {
+                s5.EndAccess(); // need to encrypt the at-rest data with the seed.
+            }
+        }
+    }
 }
