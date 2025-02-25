@@ -243,10 +243,11 @@ public partial class MainLayout : IDisposable
 
             if (mysteryGift.Species.IsInvalidSpecies())
             {
+                await DialogService.ShowMessageBox("Error", "The Mystery Gift Pokémon is invalid.");
                 return;
             }
 
-            await AppService.ImportMysteryGift(mysteryGift, out _, out var resultsMessage);
+            await AppService.ImportMysteryGift(data, Path.GetExtension(browserLoadMysteryGiftFile.Name), out _, out var resultsMessage);
 
             await DialogService.ShowMessageBox(title, resultsMessage);
         }
