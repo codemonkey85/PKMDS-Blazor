@@ -4,11 +4,11 @@ public partial class BadgesComponent : IDisposable
 {
     private const int BadgesFlagStart = 124;
 
-    protected override void OnInitialized() =>
-        RefreshService.OnAppStateChanged += StateHasChanged;
-
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    protected override void OnInitialized() =>
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private List<bool> GetSaveFileBadgesValue()
@@ -93,7 +93,7 @@ public partial class BadgesComponent : IDisposable
 
         for (var i = 0; i < badgeTotal; i++)
         {
-            badgeFlags.Add((badgeFlagInt & (1 << i)) != 0);
+            badgeFlags.Add((badgeFlagInt & 1 << i) != 0);
         }
 
         return badgeFlags;

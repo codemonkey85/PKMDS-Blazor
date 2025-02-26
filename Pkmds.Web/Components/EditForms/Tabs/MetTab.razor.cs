@@ -2,25 +2,31 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class MetTab : IDisposable
 {
-    [Parameter, EditorRequired]
-    public PKM? Pokemon { get; set; }
+    private EntityContext currentLocationSearchContext = EntityContext.None;
+
+    private GameVersion currentLocationSearchVersion = GameVersion.Any;
+
+    private EntityContext originFormat = EntityContext.None;
 
     /// <summary>
     /// Currently loaded met location group that is populating Met and Egg location comboboxes
     /// </summary>
     private GameVersion origintrack;
 
-    private EntityContext originFormat = EntityContext.None;
+    [Parameter, EditorRequired]
+    public PKM? Pokemon { get; set; }
 
-    private GameVersion currentLocationSearchVersion = GameVersion.Any;
+    private MetTimeOfDay GetMetTimeOfDay => Pokemon is not (PK2 and ICaughtData2 c2)
+        ? MetTimeOfDay.None
+        : (MetTimeOfDay)c2.MetTimeOfDay;
 
-    private EntityContext currentLocationSearchContext = EntityContext.None;
-
-    protected override void OnInitialized() =>
-        RefreshService.OnAppStateChanged += StateHasChanged;
+    private bool PokemonMetAsEgg => Pokemon is not null && (Pokemon.IsEgg || Pokemon.WasEgg || Pokemon.WasTradedEgg);
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    protected override void OnInitialized() =>
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     protected override void OnParametersSet()
     {
@@ -103,11 +109,7 @@ public partial class MetTab : IDisposable
 
     private Task<IEnumerable<ComboItem>> SearchEggMetLocations(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchMetLocations(searchString, currentLocationSearchVersion,
-            currentLocationSearchContext, isEggLocation: true));
-
-    private MetTimeOfDay GetMetTimeOfDay => Pokemon is not (PK2 and ICaughtData2 c2)
-        ? MetTimeOfDay.None
-        : (MetTimeOfDay)c2.MetTimeOfDay;
+            currentLocationSearchContext, true));
 
     private void SetMetTimeOfDay(MetTimeOfDay metTimeOfDay)
     {
@@ -118,16 +120,6 @@ public partial class MetTab : IDisposable
 
         c2.MetTimeOfDay = (int)metTimeOfDay;
     }
-
-    private enum MetTimeOfDay
-    {
-        None,
-        Morning,
-        Day,
-        Night
-    }
-
-    private bool PokemonMetAsEgg => Pokemon is not null && (Pokemon.IsEgg || Pokemon.WasEgg || Pokemon.WasTradedEgg);
 
     private void MetAsEggChanged(bool newValue)
     {
@@ -157,5 +149,13 @@ public partial class MetTab : IDisposable
                     break;
                 }
         }
+    }
+
+    private enum MetTimeOfDay
+    {
+        None,
+        Morning,
+        Day,
+        Night
     }
 }

@@ -5,11 +5,11 @@ public partial class StatsTab : IDisposable
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    protected override void OnInitialized() =>
-        RefreshService.OnAppStateChanged += StateHasChanged;
-
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    protected override void OnInitialized() =>
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     private static string GetCharacteristic(PKM? pokemon) =>
         pokemon?.Characteristic is { } characteristicIndex and > -1 &&
@@ -83,6 +83,10 @@ public partial class StatsTab : IDisposable
                     : string.Empty;
     }
 
+    private static string GetTeraTypeDisplayName(byte teraTypeId) => teraTypeId == TeraTypeUtil.Stellar
+        ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
+        : GameInfo.Strings.Types[teraTypeId];
+
     private enum Stats
     {
         Attack,
@@ -91,8 +95,4 @@ public partial class StatsTab : IDisposable
         SpecialAttack,
         SpecialDefense
     }
-
-    private static string GetTeraTypeDisplayName(byte teraTypeId) => teraTypeId == TeraTypeUtil.Stellar
-        ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
-        : GameInfo.Strings.Types[teraTypeId];
 }

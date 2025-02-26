@@ -37,7 +37,7 @@ public static class PkmExtensions
                 ? 1
                 : 0,
             IAppliedMarkings<MarkingColor> c => (int)c.GetMarking(index),
-            _ => throw new ArgumentException("Pokémon does not implement IAppliedMarkings", nameof(pokemon)),
+            _ => throw new ArgumentException("Pokémon does not implement IAppliedMarkings", nameof(pokemon))
         };
     }
 
@@ -121,7 +121,7 @@ public static class PkmExtensions
     }
 
     public static bool IsValidSpecies(this ushort speciesId) =>
-        speciesId is > ((ushort)Species.None) and < ((ushort)Species.MAX_COUNT);
+        speciesId is > (ushort)Species.None and < (ushort)Species.MAX_COUNT;
 
     public static bool IsValidSpecies(this ushort? speciesId) =>
         speciesId is not null && speciesId.IsValidSpecies();

@@ -2,15 +2,16 @@
 
 public partial class MysteryGiftDatabaseTab
 {
-    [Parameter]
-    public bool FilterUnavailableSpecies { get; set; } = true;
+    private readonly int[] pagesSizes = [10, 20, 50, 100];
+    private int currentPage = 1;
+    private int itemsPerPage = 20; // Number of items per page
 
     private List<MysteryGift> mysteryGiftsList = [];
 
     private List<MysteryGift> paginatedItems = [];
-    private int currentPage = 1;
-    private int itemsPerPage = 20; // Number of items per page
-    private readonly int[] pagesSizes = [10, 20, 50, 100];
+
+    [Parameter]
+    public bool FilterUnavailableSpecies { get; set; } = true;
 
     private int TotalPages => (int)Math.Ceiling((double)mysteryGiftsList.Count / itemsPerPage);
 
@@ -39,7 +40,7 @@ public partial class MysteryGiftDatabaseTab
                 SAV8LA sav8La => encounterDatabase.Where(IsPresent(sav8La.Personal)),
                 SAV7b => encounterDatabase.Where(mysteryGift => mysteryGift is WB7),
                 SAV7 => encounterDatabase.Where(mysteryGift => mysteryGift.Generation < 7 || mysteryGift is WC7),
-                _ => encounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation),
+                _ => encounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation)
             };
         }
 
@@ -107,8 +108,8 @@ public partial class MysteryGiftDatabaseTab
 
         await AppService.ImportMysteryGift(dataMysteryGift, out var isSuccessful, out var resultsMessage);
         Snackbar.Add(resultsMessage, isSuccessful
-            ? MudBlazor.Severity.Success
-            : MudBlazor.Severity.Error);
+            ? Severity.Success
+            : Severity.Error);
     }
 
     private static string RenderListAsHtml(IReadOnlyList<string> items, string tag = "p")

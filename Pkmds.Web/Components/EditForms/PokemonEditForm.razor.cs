@@ -5,17 +5,17 @@ public partial class PokemonEditForm : IDisposable
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    protected override void OnInitialized() =>
-        RefreshService.OnAppStateChanged += StateHasChanged;
-
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    protected override void OnInitialized() =>
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     private void ExportAsShowdown() =>
         DialogService.ShowAsync<ShowdownExportDialog>(
             "Showdown Export",
             new() { { nameof(ShowdownExportDialog.Pokemon), Pokemon } },
-            new() { CloseOnEscapeKey = true, });
+            new() { CloseOnEscapeKey = true });
 
     private void DeletePokemon()
     {
@@ -35,7 +35,7 @@ public partial class PokemonEditForm : IDisposable
         DialogService.ShowAsync<ConfirmActionDialog>(
             "Confirm Action",
             parameters,
-            new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, });
+            new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small });
 
         void OnDeleteConfirm(bool confirmed)
         {
@@ -103,7 +103,7 @@ public partial class PokemonEditForm : IDisposable
             DialogService.ShowAsync<ConfirmActionDialog>(
                 "Confirm Action",
                 parameters,
-                new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, });
+                new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small });
         }
 
         void OnPasteConfirm(bool confirmed)

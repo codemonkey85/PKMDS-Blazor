@@ -120,11 +120,11 @@ public partial class BagTab
     }
 
     private void SortByName(InventoryPouch pouch) =>
-        pouch.SortByName(ItemList, reverse: IsSortedByName = !IsSortedByName);
+        pouch.SortByName(ItemList, IsSortedByName = !IsSortedByName);
 
-    private void SortByCount(InventoryPouch pouch) => pouch.SortByCount(reverse: IsSortedByCount = !IsSortedByCount);
+    private void SortByCount(InventoryPouch pouch) => pouch.SortByCount(IsSortedByCount = !IsSortedByCount);
 
-    private void SortByIndex(InventoryPouch pouch) => pouch.SortByIndex(reverse: IsSortedByIndex = !IsSortedByIndex);
+    private void SortByIndex(InventoryPouch pouch) => pouch.SortByIndex(IsSortedByIndex = !IsSortedByIndex);
 
     private Task<IEnumerable<ComboItem>> SearchItemNames(InventoryPouch pouch, string searchString)
     {

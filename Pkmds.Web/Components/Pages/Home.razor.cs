@@ -5,16 +5,16 @@ public partial class Home : IDisposable
 {
     private bool IsUpdateAvailable { get; set; }
 
-    protected override void OnInitialized()
-    {
-        RefreshService.OnAppStateChanged += StateHasChanged;
-        RefreshService.OnUpdateAvailable += ShowUpdateMessage;
-    }
-
     public void Dispose()
     {
         RefreshService.OnAppStateChanged -= StateHasChanged;
         RefreshService.OnUpdateAvailable -= ShowUpdateMessage;
+    }
+
+    protected override void OnInitialized()
+    {
+        RefreshService.OnAppStateChanged += StateHasChanged;
+        RefreshService.OnUpdateAvailable += ShowUpdateMessage;
     }
 
     private void ShowUpdateMessage()

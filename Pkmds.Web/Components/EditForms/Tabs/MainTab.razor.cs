@@ -2,16 +2,18 @@ namespace Pkmds.Web.Components.EditForms.Tabs;
 
 public partial class MainTab : IDisposable
 {
+    private readonly PatternMask hexMask = new("########") { MaskChars = [new('#', "[0-9a-fA-F]")] };
+
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
     private MudSelect<byte>? FormSelect { get; set; }
 
-    protected override void OnInitialized() =>
-        RefreshService.OnAppStateChanged += Refresh;
-
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= Refresh;
+
+    protected override void OnInitialized() =>
+        RefreshService.OnAppStateChanged += Refresh;
 
     private void Refresh()
     {
@@ -123,8 +125,6 @@ public partial class MainTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
         RefreshService.Refresh();
     }
-
-    private readonly PatternMask hexMask = new("########") { MaskChars = [new('#', "[0-9a-fA-F]")] };
 
     // ReSharper disable once InconsistentNaming
     private double GetEXPToLevelUp()

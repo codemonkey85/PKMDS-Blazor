@@ -18,7 +18,7 @@ public partial class MarkingComponent
         Markings.Heart => Heart,
         Markings.Star => Star,
         Markings.Diamond => Diamond,
-        _ => string.Empty,
+        _ => string.Empty
     };
 
     private string MarkingClass => $"marking{Pokemon?.GetMarking((int)Shape) switch
@@ -27,7 +27,7 @@ public partial class MarkingComponent
         0 => " gray-mark",
         1 => Pokemon.Generation >= 7 ? " blue-mark" : " black-mark",
         2 => " red-mark",
-        _ => string.Empty,
+        _ => string.Empty
     }}";
 
     private void Toggle() => Pokemon?.ToggleMarking((int)Shape);

@@ -19,14 +19,14 @@ public partial class GenderDisplayComponent
         Gender.Male => Icons.Material.Filled.Male,
         Gender.Female => Icons.Material.Filled.Female,
         Gender.Genderless => Icons.Material.Filled.Block,
-        _ => string.Empty,
+        _ => string.Empty
     };
 
     private static string GetGenderColor(Gender gender) => gender switch
     {
         Gender.Male => Colors.Blue.Default,
         Gender.Female => Colors.Red.Default,
-        _ => string.Empty,
+        _ => string.Empty
     };
 
     private RenderFragment GenderDisplayIcon(Gender gender) => !Disabled && OnChange.HasDelegate
