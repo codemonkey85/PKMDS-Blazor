@@ -276,9 +276,20 @@ public partial class MainLayout : IDisposable
 
         pkm.RefreshChecksum();
         var cleanFileName = AppService.GetCleanFileName(pkm);
-        await WriteFile(pkm.Data, cleanFileName, $".{pkm.Extension}", "Pokémon File");
+        var data = GetPokemonFileData(pkm);
+        await WriteFile(data, cleanFileName, $".{pkm.Extension}", "Pokémon File");
 
         AppState.ShowProgressIndicator = false;
+    }
+
+    private byte[] GetPokemonFileData(PKM? pokemon) 
+    {
+        if (pokemon is null) 
+        {
+            return [];
+        }
+
+        return pokemon.Data;
     }
 
     private async Task WriteFile(byte[] data, string fileName, string fileTypeExtension, string fileTypeDescription)
