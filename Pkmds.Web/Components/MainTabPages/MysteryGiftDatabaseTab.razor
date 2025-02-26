@@ -73,6 +73,16 @@
                                        Disabled="@(mysteryGift.Species == (ushort)Species.None)">
                                 Copy
                             </MudButton>
+                            <MudButton OnClick="@(() => OnClickImport(mysteryGift))"
+                                       ButtonType="@ButtonType.Button"
+                                       Variant="@Variant.Filled"
+                                       StartIcon="@Icons.Material.Filled.ImportExport"
+                                       Color="@Color.Default"
+                                       Size="@Size.Small"
+                                       title="Import Card"
+                                       Disabled="@(mysteryGift.Species == (ushort)Species.None)">
+                                Copy
+                            </MudButton>
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
