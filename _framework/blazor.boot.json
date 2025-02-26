@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Pkmds.Web",
   "resources": {
-    "hash": "sha256-Q8hHkKswWlHq80IPkO++7aFA/1oZF3PLZrzItY4j5Q8=",
+    "hash": "sha256-VwkLoDj2tT/pTU3UZvpmux11IQarhuoeei7wIbS/5gw=",
     "fingerprinting": {
       "KristofferStrube.Blazor.FileAPI.y7qr9qlbwg.wasm": "KristofferStrube.Blazor.FileAPI.wasm",
       "KristofferStrube.Blazor.FileSystem.l7rerd8wys.wasm": "KristofferStrube.Blazor.FileSystem.wasm",
@@ -28,7 +28,7 @@
       "Microsoft.JSInterop.WebAssembly.p386u0jty9.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
       "MudBlazor.b92j3p5hx0.wasm": "MudBlazor.wasm",
       "PKHeX.Core.svclbdanjy.wasm": "PKHeX.Core.wasm",
-      "Pkmds.Web.77ovzhqcr3.wasm": "Pkmds.Web.wasm",
+      "Pkmds.Web.d8evomfipo.wasm": "Pkmds.Web.wasm",
       "System.Collections.Concurrent.2vqc7t7v9z.wasm": "System.Collections.Concurrent.wasm",
       "System.Collections.Immutable.32abxwg34j.wasm": "System.Collections.Immutable.wasm",
       "System.Collections.NonGeneric.mt6o8g0wve.wasm": "System.Collections.NonGeneric.wasm",
@@ -114,7 +114,7 @@
       "Microsoft.JSInterop.WebAssembly.p386u0jty9.wasm": "sha256-hbzWuXrlepIqY/y+nQ2ZAFer2/njy1dc+Y4LUaAaL5E=",
       "MudBlazor.b92j3p5hx0.wasm": "sha256-LwmTo7sQeC5isWZ3G1ugQ2Yb6le0bkcGXPPhMLPf548=",
       "PKHeX.Core.svclbdanjy.wasm": "sha256-eNPMdZsB1GgFcAlY5rPnKGs5PKal7yYUDG+si1bWmQg=",
-      "Pkmds.Web.77ovzhqcr3.wasm": "sha256-vezJF1BEu3CAzCcZ4k9SdmCV4Fj+ImzlPqYAVByQ4oQ=",
+      "Pkmds.Web.d8evomfipo.wasm": "sha256-MwbNMGb4Eg2bUadcqIxF/HXjlyByRxW3IDsunlhWc2s=",
       "System.Collections.Concurrent.2vqc7t7v9z.wasm": "sha256-AsKWrXroLBrfdl99P9BHokFTCDFvjaGLAUAmdJKV/Lw=",
       "System.Collections.Immutable.32abxwg34j.wasm": "sha256-VfcJNehepjOTrrBexXzUWtim9BbmI+WuFfE4AnJzBaw=",
       "System.Collections.NonGeneric.mt6o8g0wve.wasm": "sha256-dn+YQIhqg8DqttwHYCn2lfUNdQOY6qNqn1NJkikyeBY=",
