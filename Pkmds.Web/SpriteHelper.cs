@@ -42,7 +42,7 @@ public static class SpriteHelper
                     (ushort)Species.Dudunsparce => species.ToString(),
                     _ => $"{species}-{form}",
                 },
-                { species: > (ushort)Species.None and < (ushort)Species.MAX_COUNT } =>
+                { species: var speciesId } when speciesId.IsValidSpecies() =>
                     species.ToString(),
                 _ => "unknown",
             })

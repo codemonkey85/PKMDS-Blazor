@@ -297,7 +297,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         EditFormPokemon ??= saveFile.BlankPKM;
 
-        if (EditFormPokemon is { Species: (ushort)Species.None })
+        if (EditFormPokemon.Species.IsInvalidSpecies())
         {
             EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
         }
