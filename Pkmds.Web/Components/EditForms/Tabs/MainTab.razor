@@ -43,7 +43,7 @@
                      SearchFunc="@SearchPokemonNames"
                      ToStringFunc="@(species => species?.Text)"/>
 
-    if (Pokemon != saveFile.BlankPKM && Pokemon.Species != (ushort)Species.None)
+    if (Pokemon != saveFile.BlankPKM && Pokemon.Species.IsValidSpecies())
     {
         @TypeSummary(Pokemon.GetGenerationTypes())
     }

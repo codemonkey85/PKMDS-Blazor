@@ -9,6 +9,10 @@ public static class SpriteHelper
     public const string ItemFallbackImageFileName = $"{SpritesRoot}bi/bitem_unk.png";
     public const string PokemonFallbackImageFileName = $"{SpritesRoot}a/a_unknown.png";
 
+    private static readonly int[] Gen2MailIds = [0x9E, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD];
+    private static readonly int[] Gen3MailIds = [121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132];
+    private static readonly int[] Gen45MailIds = [137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148];
+
     public static string GetMysteryGiftSpriteFileName(MysteryGift gift) => gift.IsItem
         ? GetItemSpriteFilename(gift.ItemID, gift.Context)
         : GetPokemonSpriteFilename(gift.Species, gift.Context, gift.IsEgg, gift.Form, 0, gift.Gender);
@@ -31,7 +35,7 @@ public static class SpriteHelper
                         species: (ushort)Species.Frillish or (ushort)Species.Jellicent, gender: (byte)Gender.Female
                     } => $"{species}f",
                 { species: (ushort)Species.Alcremie } => $"{species}-{form}-{formArg1}",
-                (_, _, _, > 0, _, _) when FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) =>
+                { form: > 0 } when FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) =>
                     $"{species}-{FormInfo.GetTotemBaseForm(species, form)}",
                 { form: > 0 } => species switch
                 {
@@ -40,11 +44,11 @@ public static class SpriteHelper
                     (ushort)Species.Scatterbug or (ushort)Species.Spewpa => species.ToString(),
                     (ushort)Species.Urshifu => species.ToString(),
                     (ushort)Species.Dudunsparce => species.ToString(),
-                    _ => $"{species}-{form}",
+                    _ => $"{species}-{form}"
                 },
-                { species: > (ushort)Species.None and < (ushort)Species.MAX_COUNT } =>
+                { species: var speciesId } when speciesId.IsValidSpecies() =>
                     species.ToString(),
-                _ => "unknown",
+                _ => "unknown"
             })
             .Append(".png")
             .ToString();
@@ -97,7 +101,7 @@ public static class SpriteHelper
         InventoryType.TMHMs => "Tech",
         InventoryType.Treasure => "Treasure",
         InventoryType.ZCrystals => "Z",
-        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
     };
 
     // TODO: Implement
@@ -106,11 +110,8 @@ public static class SpriteHelper
         string.Empty;
 
     public static string GetSpriteCssClass(PKM? pkm) =>
-        $"d-flex align-items-center justify-center {(pkm is { Species: > (ushort)Species.None } ? "slot-fill" : string.Empty)}";
-
-    private static readonly int[] Gen2MailIds = [0x9E, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD];
-    private static readonly int[] Gen3MailIds = [121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132];
-    private static readonly int[] Gen45MailIds = [137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148];
+        $"d-flex align-items-center justify-center{(pkm is { Species: > (ushort)Species.None }
+            and { Species: < (ushort)Species.MAX_COUNT } ? " slot-fill" : string.Empty)}";
 
     private static bool IsItemMail(int item, EntityContext context) => context switch
     {
@@ -127,6 +128,6 @@ public static class SpriteHelper
             HeldItemLumpImage.TechnicalRecord => "tr",
             _ => IsItemMail(item, context)
                 ? "unk"
-                : item.ToString(),
+                : item.ToString()
         };
 }

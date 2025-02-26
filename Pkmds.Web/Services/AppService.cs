@@ -157,6 +157,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 {
                     RefreshService.RefreshPartyState();
                 }
+
                 break;
             case SelectedPokemonType.Box:
                 AppState.SaveFile.SetBoxSlotAtIndex(pokemon, boxNumber, boxSlot);
@@ -296,7 +297,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         EditFormPokemon ??= saveFile.BlankPKM;
 
-        if (EditFormPokemon is { Species: (ushort)Species.None })
+        if (EditFormPokemon.Species.IsInvalidSpecies())
         {
             EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
         }
@@ -325,20 +326,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         Box
     }
 
-    public Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage)
+    public Task ImportMysteryGift(DataMysteryGift gift, out bool isSuccessful, out string resultsMessage)
     {
         if (AppState.SaveFile is not { } saveFile)
         {
             isSuccessful = false;
             resultsMessage = "No save file loaded.";
-            return Task.CompletedTask;
-        }
-
-        var gift = MysteryGift.GetMysteryGift(data, fileExtension);
-        if (gift is null)
-        {
-            isSuccessful = false;
-            resultsMessage = "The Mystery Gift could not be imported.";
             return Task.CompletedTask;
         }
 
@@ -355,7 +348,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         var index = 0;
 
         var lastUnfilled = GetLastUnfilledByType(gift, album);
-        if (lastUnfilled > -1 && lastUnfilled < index)
+        if (lastUnfilled > -1)
         {
             index = lastUnfilled;
         }
@@ -413,13 +406,16 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
                 return i;
             }
+
             return -1;
         }
 
         static DataMysteryGift[] LoadMysteryGifts(SaveFile saveFile, IMysteryGiftStorage cards)
         {
             var count = cards.GiftCountMax;
-            var size = saveFile is SAV4HGSS ? count + 1 : count;
+            var size = saveFile is SAV4HGSS
+                ? count + 1
+                : count;
             var result = new DataMysteryGift[size];
             for (var i = 0; i < count; i++)
             {
@@ -435,8 +431,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         }
 
         static IMysteryGiftStorage GetMysteryGiftProvider(SaveFile saveFile) => saveFile is IMysteryGiftStorageProvider provider
-                ? provider.MysteryGiftStorage
-                : throw new ArgumentException("Save file does not support Mystery Gifts.", nameof(saveFile));
+            ? provider.MysteryGiftStorage
+            : throw new ArgumentException("Save file does not support Mystery Gifts.", nameof(saveFile));
 
         static void SetCardId(int cardId, IMysteryGiftFlags? flags, List<string> receivedFlags)
         {
@@ -472,7 +468,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             flags.ClearReceivedFlags();
             foreach (var o in receivedFlags)
             {
-                if (o?.ToString() is not { } x || !int.TryParse(x, out var index))
+                if (!int.TryParse(o, out var index))
                 {
                     continue;
                 }
@@ -493,6 +489,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                     hgss.LockCapsuleSlot = (PCD)album[^1];
                 }
             }
+
             var count = cards.GiftCountMax;
             for (var i = 0; i < count; i++)
             {
@@ -504,5 +501,18 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 s5.EndAccess(); // need to encrypt the at-rest data with the seed.
             }
         }
+    }
+
+    public Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage)
+    {
+        var gift = MysteryGift.GetMysteryGift(data, fileExtension);
+        if (gift is not null)
+        {
+            return ImportMysteryGift(gift, out isSuccessful, out resultsMessage);
+        }
+
+        isSuccessful = false;
+        resultsMessage = "The Mystery Gift could not be imported.";
+        return Task.CompletedTask;
     }
 }

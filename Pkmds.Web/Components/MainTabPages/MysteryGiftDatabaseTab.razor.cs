@@ -9,10 +9,10 @@ public partial class MysteryGiftDatabaseTab
 
     private List<MysteryGift> paginatedItems = [];
     private int currentPage = 1;
-    private int pageSize = 20; // Number of items per page
+    private int itemsPerPage = 20; // Number of items per page
     private readonly int[] pagesSizes = [10, 20, 50, 100];
 
-    private int TotalPages => (int)Math.Ceiling((double)mysteryGiftsList.Count / pageSize);
+    private int TotalPages => (int)Math.Ceiling((double)mysteryGiftsList.Count / itemsPerPage);
 
     protected override void OnInitialized()
     {
@@ -33,10 +33,10 @@ public partial class MysteryGiftDatabaseTab
         {
             encounterDatabase = saveFile switch
             {
-                SAV9SV sav9sv => encounterDatabase.Where(IsPresent(sav9sv.Personal)),
-                SAV8SWSH sav8swsh => encounterDatabase.Where(IsPresent(sav8swsh.Personal)),
-                SAV8BS sav8bs => encounterDatabase.Where(IsPresent(sav8bs.Personal)),
-                SAV8LA sav8la => encounterDatabase.Where(IsPresent(sav8la.Personal)),
+                SAV9SV sav9Sv => encounterDatabase.Where(IsPresent(sav9Sv.Personal)),
+                SAV8SWSH sav8Swsh => encounterDatabase.Where(IsPresent(sav8Swsh.Personal)),
+                SAV8BS sav8Bs => encounterDatabase.Where(IsPresent(sav8Bs.Personal)),
+                SAV8LA sav8La => encounterDatabase.Where(IsPresent(sav8La.Personal)),
                 SAV7b => encounterDatabase.Where(mysteryGift => mysteryGift is WB7),
                 SAV7 => encounterDatabase.Where(mysteryGift => mysteryGift.Generation < 7 || mysteryGift is WC7),
                 _ => encounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation),
@@ -56,9 +56,12 @@ public partial class MysteryGiftDatabaseTab
             mysteryGift => personalTable.IsPresentInGame(mysteryGift.Species, mysteryGift.Form);
     }
 
-    private void UpdatePaginatedItems() => paginatedItems = [.. mysteryGiftsList
-        .Skip((currentPage - 1) * pageSize)
-        .Take(pageSize)];
+    private void UpdatePaginatedItems() => paginatedItems =
+    [
+        .. mysteryGiftsList
+            .Skip((currentPage - 1) * itemsPerPage)
+            .Take(itemsPerPage)
+    ];
 
     private void GoToPage() => UpdatePaginatedItems();
 
@@ -93,6 +96,19 @@ public partial class MysteryGiftDatabaseTab
         AppState.CopiedPokemon = pokemon.Clone();
 
         Snackbar.Add("The selected Pokémon has been copied.");
+    }
+
+    private async Task OnClickImport(MysteryGift mysteryGift)
+    {
+        if (mysteryGift is not DataMysteryGift dataMysteryGift)
+        {
+            return;
+        }
+
+        await AppService.ImportMysteryGift(dataMysteryGift, out var isSuccessful, out var resultsMessage);
+        Snackbar.Add(resultsMessage, isSuccessful
+            ? MudBlazor.Severity.Success
+            : MudBlazor.Severity.Error);
     }
 
     private static string RenderListAsHtml(IReadOnlyList<string> items, string tag = "p")

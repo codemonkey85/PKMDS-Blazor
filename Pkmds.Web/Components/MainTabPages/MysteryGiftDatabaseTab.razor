@@ -8,7 +8,7 @@
                    ShowNextButton/>
 
     <MudSelect T="int"
-               @bind-Value="pageSize"
+               @bind-Value="itemsPerPage"
                @bind-Value:after="OnPageSizeChange"
                Label="Items per page">
         @foreach (var pageSize in pagesSizes)
@@ -70,8 +70,18 @@
                                        Color="@Color.Default"
                                        Size="@Size.Small"
                                        title="Copy Pokémon"
-                                       Disabled="@(mysteryGift.Species == (ushort)Species.None)">
+                                       Disabled="@(mysteryGift.Species.IsInvalidSpecies())">
                                 Copy
+                            </MudButton>
+                            <MudButton OnClick="@(() => OnClickImport(mysteryGift))"
+                                       ButtonType="@ButtonType.Button"
+                                       Variant="@Variant.Filled"
+                                       StartIcon="@Icons.Material.Filled.ImportExport"
+                                       Color="@Color.Default"
+                                       Size="@Size.Small"
+                                       title="Import Card"
+                                       Disabled="@(mysteryGift.Species.IsInvalidSpecies())">
+                                Import
                             </MudButton>
                         </MudCardActions>
                     </MudCard>

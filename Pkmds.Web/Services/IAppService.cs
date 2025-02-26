@@ -62,5 +62,7 @@ public interface IAppService
 
     SelectedPokemonType GetSelectedPokemonSlot(out int partySlot, out int boxNumber, out int boxSlot);
 
+    Task ImportMysteryGift(DataMysteryGift gift, out bool isSuccessful, out string resultsMessage);
+
     Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage);
 }

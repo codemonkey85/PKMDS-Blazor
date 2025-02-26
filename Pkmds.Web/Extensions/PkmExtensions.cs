@@ -121,7 +121,7 @@ public static class PkmExtensions
     }
 
     public static bool IsValidSpecies(this ushort speciesId) =>
-        speciesId is not < 0 and not ((ushort)Species.None);
+        speciesId is > ((ushort)Species.None) and < ((ushort)Species.MAX_COUNT);
 
     public static bool IsValidSpecies(this ushort? speciesId) =>
         speciesId is not null && speciesId.IsValidSpecies();

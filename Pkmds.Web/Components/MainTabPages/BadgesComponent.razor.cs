@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Pkmds.Web.Components.MainTabPages;
 
 public partial class BadgesComponent : IDisposable
