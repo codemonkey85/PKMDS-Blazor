@@ -2,17 +2,18 @@ namespace Pkmds.Web.Components.Layout;
 
 public partial class MainLayout : IDisposable
 {
-    private bool isDarkMode;
-    private MudThemeProvider? mudThemeProvider;
-
     [StringSyntax(StringSyntaxAttribute.Uri)]
     private const string GitHubRepoLink = "https://github.com/codemonkey85/PKMDS-Blazor";
 
     private const string GitHubTooltip = "Source code on GitHub";
 
-    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
+    private IBrowserFile? browserLoadSaveFile;
+    private bool isDarkMode;
+    private MudThemeProvider? mudThemeProvider;
 
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -35,8 +36,6 @@ public partial class MainLayout : IDisposable
 
     private void DrawerToggle() => AppService.ToggleDrawer();
 
-    private IBrowserFile? browserLoadSaveFile;
-
     private async Task ShowLoadSaveFileDialog()
     {
         const string message = "Choose a save file";
@@ -44,8 +43,8 @@ public partial class MainLayout : IDisposable
         var dialogParameters = new DialogParameters { { nameof(FileUploadDialog.Message), message } };
 
         var dialog = await DialogService.ShowAsync<FileUploadDialog>("Load Save File",
-            parameters: dialogParameters,
-            options: new() { CloseOnEscapeKey = true, BackdropClick = false, });
+            dialogParameters,
+            new() { CloseOnEscapeKey = true, BackdropClick = false });
 
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
@@ -74,7 +73,7 @@ public partial class MainLayout : IDisposable
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
-            AppState.SaveFile = SaveUtil.GetVariantSAV(data, path: selectedFile.Name);
+            AppState.SaveFile = SaveUtil.GetVariantSAV(data, selectedFile.Name);
 
             if (AppState.SaveFile is null)
             {
@@ -122,8 +121,8 @@ public partial class MainLayout : IDisposable
 
         var dialog = await DialogService.ShowAsync<FileUploadDialog>(
             title,
-            parameters: dialogParameters,
-            options: new() { CloseOnEscapeKey = true, BackdropClick = false, });
+            dialogParameters,
+            new() { CloseOnEscapeKey = true, BackdropClick = false });
 
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
@@ -141,8 +140,8 @@ public partial class MainLayout : IDisposable
 
         var dialog = await DialogService.ShowAsync<FileUploadDialog>(
             title,
-            parameters: dialogParameters,
-            options: new() { CloseOnEscapeKey = true, BackdropClick = false, });
+            dialogParameters,
+            new() { CloseOnEscapeKey = true, BackdropClick = false });
 
         var result = await dialog.Result;
         if (result is { Data: IBrowserFile selectedFile })
@@ -282,15 +281,10 @@ public partial class MainLayout : IDisposable
         AppState.ShowProgressIndicator = false;
     }
 
-    private byte[] GetPokemonFileData(PKM? pokemon)
-    {
-        if (pokemon is null)
-        {
-            return [];
-        }
-
-        return pokemon.Data;
-    }
+    private static byte[] GetPokemonFileData(PKM? pokemon) =>
+        pokemon is null
+            ? []
+            : pokemon.DecryptedPartyData;
 
     private async Task WriteFile(byte[] data, string fileName, string fileTypeExtension, string fileTypeDescription)
     {
