@@ -97,7 +97,12 @@ public partial class MysteryGiftDatabaseTab
 
     private async Task OnClickImport(MysteryGift mysteryGift)
     {
-        await AppService.ImportMysteryGift(mysteryGift, out var isSuccessful, out var resultsMessage);
+        if (mysteryGift is not DataMysteryGift dataMysteryGift)
+        {
+            return;
+        }
+
+        await AppService.ImportMysteryGift(dataMysteryGift, out var isSuccessful, out var resultsMessage);
         Snackbar.Add(resultsMessage, isSuccessful ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
     }
 

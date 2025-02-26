@@ -1,4 +1,6 @@
-﻿namespace Pkmds.Web.Services;
+﻿using PKHeX.Core;
+
+namespace Pkmds.Web.Services;
 
 public class AppService(IAppState appState, IRefreshService refreshService) : IAppService
 {
@@ -325,20 +327,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         Box
     }
 
-    public Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage)
+    public Task ImportMysteryGift(DataMysteryGift gift, out bool isSuccessful, out string resultsMessage)
     {
         if (AppState.SaveFile is not { } saveFile)
         {
             isSuccessful = false;
             resultsMessage = "No save file loaded.";
-            return Task.CompletedTask;
-        }
-
-        var gift = MysteryGift.GetMysteryGift(data, fileExtension);
-        if (gift is null)
-        {
-            isSuccessful = false;
-            resultsMessage = "The Mystery Gift could not be imported.";
             return Task.CompletedTask;
         }
 
@@ -504,5 +498,18 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 s5.EndAccess(); // need to encrypt the at-rest data with the seed.
             }
         }
+    }
+
+    public Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage)
+    {
+        var gift = MysteryGift.GetMysteryGift(data, fileExtension);
+        if (gift is null)
+        {
+            isSuccessful = false;
+            resultsMessage = "The Mystery Gift could not be imported.";
+            return Task.CompletedTask;
+        }
+
+        return ImportMysteryGift(gift, out isSuccessful, out resultsMessage);
     }
 }
