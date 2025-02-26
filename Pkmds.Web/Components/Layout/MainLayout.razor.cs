@@ -282,9 +282,9 @@ public partial class MainLayout : IDisposable
         AppState.ShowProgressIndicator = false;
     }
 
-    private byte[] GetPokemonFileData(PKM? pokemon) 
+    private byte[] GetPokemonFileData(PKM? pokemon)
     {
-        if (pokemon is null) 
+        if (pokemon is null)
         {
             return [];
         }

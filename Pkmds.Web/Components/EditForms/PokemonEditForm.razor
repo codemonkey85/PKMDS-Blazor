@@ -22,7 +22,7 @@
                    Class="my-2"
                    StartIcon="@Icons.Material.Filled.Delete"
                    title="Delete Pokémon"
-                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
+                   Disabled="@(Pokemon.Species.IsInvalidSpecies())">
             Delete
         </MudButton>
 
@@ -34,7 +34,7 @@
                    Color="@Color.Primary"
                    Size="@Size.Small"
                    title="Save Pokémon"
-                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
+                   Disabled="@(Pokemon.Species.IsInvalidSpecies())">
             Save
         </MudButton>
 
@@ -46,7 +46,7 @@
                    Color="@Color.Default"
                    Size="@Size.Small"
                    title="Copy Pokémon"
-                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
+                   Disabled="@(Pokemon.Species.IsInvalidSpecies())">
             Copy
         </MudButton>
 
@@ -70,7 +70,7 @@
                    Color="@Color.Default"
                    Size="@Size.Small"
                    title="Export Pokémon as Showdown"
-                   Disabled="@(Pokemon.Species == (ushort)Species.None)">
+                   Disabled="@(Pokemon.Species.IsInvalidSpecies())">
             Showdown
         </MudButton>
 

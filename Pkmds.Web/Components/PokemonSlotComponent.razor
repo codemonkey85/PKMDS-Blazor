@@ -6,9 +6,7 @@
           Height="68px"
           Class="@SpriteHelper.GetSpriteCssClass(Pokemon)"
           Style="@GetStyle()">
-    @{ var title = Pokemon is { Species: > 0 }
-               ? AppService.GetPokemonSpeciesName(Pokemon.Species)
-               : "Unknown"; }
+    @{ var title = GetPokemonTitle(); }
     <object class="pkm-sprite"
             type="image/png"
             style="object-fit: contain;"

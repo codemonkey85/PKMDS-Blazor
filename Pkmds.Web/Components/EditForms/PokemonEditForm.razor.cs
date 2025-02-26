@@ -47,10 +47,10 @@ public partial class PokemonEditForm : IDisposable
             var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
             switch (selectedPokemonType)
             {
-                case Services.AppService.SelectedPokemonType.Party:
+                case SelectedPokemonType.Party:
                     AppService.DeletePokemon(partySlot);
                     break;
-                case Services.AppService.SelectedPokemonType.Box:
+                case SelectedPokemonType.Box:
                     AppService.DeletePokemon(boxNumber, boxSlot);
                     break;
             }
@@ -76,7 +76,7 @@ public partial class PokemonEditForm : IDisposable
             return;
         }
 
-        if (Pokemon is { Species: > (int)Species.None })
+        if ((Pokemon?.Species).IsValidSpecies())
         {
             ShowPasteConfirmation();
         }
@@ -124,10 +124,10 @@ public partial class PokemonEditForm : IDisposable
             var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
             switch (selectedPokemonType)
             {
-                case Services.AppService.SelectedPokemonType.Party:
+                case SelectedPokemonType.Party:
                     AppService.SetSelectedPartyPokemon(Pokemon, partySlot);
                     break;
-                case Services.AppService.SelectedPokemonType.Box:
+                case SelectedPokemonType.Box:
                     AppService.SetSelectedBoxPokemon(Pokemon, boxNumber, boxSlot);
                     break;
             }

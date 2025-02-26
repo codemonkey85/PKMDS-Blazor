@@ -25,4 +25,8 @@ public partial class PokemonSlotComponent : IDisposable
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    private string GetPokemonTitle() => Pokemon is { Species: > 0 }
+        ? AppService.GetPokemonSpeciesName(Pokemon.Species)
+        : "Unknown";
 }

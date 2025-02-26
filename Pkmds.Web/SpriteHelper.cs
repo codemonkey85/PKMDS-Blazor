@@ -31,7 +31,7 @@ public static class SpriteHelper
                         species: (ushort)Species.Frillish or (ushort)Species.Jellicent, gender: (byte)Gender.Female
                     } => $"{species}f",
                 { species: (ushort)Species.Alcremie } => $"{species}-{form}-{formArg1}",
-                (_, _, _, > 0, _, _) when FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) =>
+                { form: > 0 } when FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form) =>
                     $"{species}-{FormInfo.GetTotemBaseForm(species, form)}",
                 { form: > 0 } => species switch
                 {
