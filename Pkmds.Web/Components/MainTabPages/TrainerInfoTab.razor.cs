@@ -2,12 +2,6 @@ namespace Pkmds.Web.Components.MainTabPages;
 
 public partial class TrainerInfoTab : IDisposable
 {
-    protected override void OnInitialized() =>
-        RefreshService.OnAppStateChanged += StateHasChanged;
-
-    public void Dispose() =>
-        RefreshService.OnAppStateChanged -= StateHasChanged;
-
     private DateTime? GameStartedDate { get; set; }
 
     private TimeSpan? GameStartedTime { get; set; }
@@ -19,6 +13,12 @@ public partial class TrainerInfoTab : IDisposable
     private List<ComboItem> Countries { get; set; } = [];
 
     private List<ComboItem> Regions { get; set; } = [];
+
+    public void Dispose() =>
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+
+    protected override void OnInitialized() =>
+        RefreshService.OnAppStateChanged += StateHasChanged;
 
     protected override void OnParametersSet()
     {
@@ -37,7 +37,7 @@ public partial class TrainerInfoTab : IDisposable
             5 => "gen5_countries",
             6 => "countries",
             7 => "countries",
-            _ => "countries",
+            _ => "countries"
         };
 
         Countries = Util.GetCountryRegionList(countriesName, GameInfo.CurrentLanguage);
@@ -57,7 +57,7 @@ public partial class TrainerInfoTab : IDisposable
             SAV5 sav5Geo => sav5Geo.Country,
             SAV6 sav6Geo => sav6Geo.Country,
             SAV7 sav7Geo => sav7Geo.Country,
-            _ => 0,
+            _ => 0
         };
 
         if (countryId == 0)
@@ -66,7 +66,7 @@ public partial class TrainerInfoTab : IDisposable
             {
                 4 => "gen4_sr_default",
                 5 => "gen5_sr_default",
-                _ => string.Empty,
+                _ => string.Empty
             };
 
             if (string.IsNullOrEmpty(regionsName))
@@ -82,7 +82,7 @@ public partial class TrainerInfoTab : IDisposable
         {
             4 => "gen4_",
             5 => "gen5_",
-            _ => string.Empty,
+            _ => string.Empty
         };
 
         Regions = Util.GetCountryRegionList($"{regionPrefix}sr_{countryId:000}", GameInfo.CurrentLanguage);
@@ -104,7 +104,7 @@ public partial class TrainerInfoTab : IDisposable
         SAV2 sav => sav.Coin,
         SAV3 sav => sav.Coin,
         SAV4 sav => sav.Coin,
-        _ => 0U,
+        _ => 0U
     };
 
     private void SetCoins(uint value)

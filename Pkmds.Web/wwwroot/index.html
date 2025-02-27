@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0"/>
+    <meta content="width=device-width, initial-scale=1.0"
+          name="viewport"/>
     <title>PKMDS: Pokémon Save Editor for Web</title>
     <base href="/"/>
     <link href="manifest.webmanifest"
@@ -18,20 +18,20 @@
     <link href="Pkmds.Web.styles.css"
           rel="stylesheet"/>
     <link href="icon-512.png"
-          type="image/png"
           rel="apple-touch-icon"
-          sizes="512x512"/>
+          sizes="512x512"
+          type="image/png"/>
     <link href="icon-192.png"
-          type="image/png"
           rel="apple-touch-icon"
-          sizes="192x192"/>
+          sizes="192x192"
+          type="image/png"/>
     <link href="icon-32.png"
-          type="image/png"
           rel="apple-touch-icon"
-          sizes="32x32"/>
+          sizes="32x32"
+          type="image/png"/>
     <link href="icon-32.png"
-          type="image/png"
-          rel="icon"/>
+          rel="icon"
+          type="image/png"/>
     <script src="js/fileSave.js"></script>
 </head>
 
@@ -41,13 +41,13 @@
 
 <div id="app">
     <svg class="loading-progress">
-        <circle r="40%"
-                cx="50%"
-                cy="50%"/>
+        <circle cx="50%"
+                cy="50%"
+                r="40%"/>
 
-        <circle r="40%"
-                cx="50%"
-                cy="50%"/>
+        <circle cx="50%"
+                cy="50%"
+                r="40%"/>
     </svg>
 
     <div class="loading-progress-text"></div>
@@ -57,8 +57,8 @@
 
     An unhandled error has occurred.
 
-    <a href=""
-       class="reload">
+    <a class="reload"
+       href="">
         Reload
     </a>
 
@@ -67,8 +67,8 @@
 </div>
 
 <!--prevent autostarting-->
-<script src="_framework/blazor.webassembly.js"
-        autostart="false"></script>
+<script autostart="false"
+        src="_framework/blazor.webassembly.js"></script>
 <script>
     navigator.serviceWorker.register('service-worker.published.js', {updateViaCache: 'none'}).then(registration => {
         setInterval(() => registration.update(), 1 * 60 * 60 * 1000); // check for updates every hour

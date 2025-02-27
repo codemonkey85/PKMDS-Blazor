@@ -2,9 +2,8 @@ namespace Pkmds.Web.Components;
 
 public partial class PokemonStorageComponent : IDisposable
 {
-    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
-
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
+    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
 
     private void GoToNextBox()
     {

@@ -13,6 +13,9 @@ public partial class BoxGrid : IDisposable
             ? "box-grid-20"
             : "box-grid-30";
 
+    public void Dispose() =>
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+
     private void SetSelectedPokemon(PKM? pokemon, int boxNumber, int slotNumber) =>
         AppService.SetSelectedBoxPokemon(pokemon, boxNumber, slotNumber);
 
@@ -22,7 +25,4 @@ public partial class BoxGrid : IDisposable
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
-
-    public void Dispose() =>
-        RefreshService.OnAppStateChanged -= StateHasChanged;
 }

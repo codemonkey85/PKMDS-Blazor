@@ -37,7 +37,7 @@
         <MudButton OnClick="@Ok"
                    Variant="@Variant.Filled"
                    Color="@Color.Primary"
-                   Disabled=@(browserFile is null)
+                   Disabled="@(browserFile is null)"
                    StartIcon="@Icons.Material.Filled.Check">
             Ok
         </MudButton>

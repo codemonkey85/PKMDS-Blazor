@@ -2,6 +2,12 @@ namespace Pkmds.Web.Components;
 
 public partial class PartyGrid : IDisposable
 {
+    public void Dispose()
+    {
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+        RefreshService.OnPartyStateChanged -= StateHasChanged;
+    }
+
     private void SetSelectedPokemon(PKM? pokemon, int slotNumber) =>
         AppService.SetSelectedPartyPokemon(pokemon, slotNumber);
 
@@ -13,12 +19,6 @@ public partial class PartyGrid : IDisposable
     {
         RefreshService.OnAppStateChanged += StateHasChanged;
         RefreshService.OnPartyStateChanged += StateHasChanged;
-    }
-
-    public void Dispose()
-    {
-        RefreshService.OnAppStateChanged -= StateHasChanged;
-        RefreshService.OnPartyStateChanged -= StateHasChanged;
     }
 
     private void ExportAsShowdown() =>

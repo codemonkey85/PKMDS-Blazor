@@ -2,6 +2,13 @@
 
 public class AppService(IAppState appState, IRefreshService refreshService) : IAppService
 {
+    public enum SelectedPokemonType
+    {
+        None,
+        Party,
+        Box
+    }
+
     private const string EnglishLang = "en";
     private const string DefaultPkmFileName = "pkm.bin";
 
@@ -288,21 +295,6 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         };
     }
 
-    private void HandleNullOrEmptyPokemon()
-    {
-        if (AppState.SaveFile is not { } saveFile)
-        {
-            return;
-        }
-
-        EditFormPokemon ??= saveFile.BlankPKM;
-
-        if (EditFormPokemon.Species.IsInvalidSpecies())
-        {
-            EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
-        }
-    }
-
     public SelectedPokemonType GetSelectedPokemonSlot(out int partySlot, out int boxNumber, out int boxSlot)
     {
         const int defaultValue = -1;
@@ -315,15 +307,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         {
             (not defaultValue, defaultValue, defaultValue) => SelectedPokemonType.Party,
             (defaultValue, not defaultValue, not defaultValue) => SelectedPokemonType.Box,
-            _ => SelectedPokemonType.None,
+            _ => SelectedPokemonType.None
         };
-    }
-
-    public enum SelectedPokemonType
-    {
-        None,
-        Party,
-        Box
     }
 
     public Task ImportMysteryGift(DataMysteryGift gift, out bool isSuccessful, out string resultsMessage)
@@ -514,5 +499,20 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         isSuccessful = false;
         resultsMessage = "The Mystery Gift could not be imported.";
         return Task.CompletedTask;
+    }
+
+    private void HandleNullOrEmptyPokemon()
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return;
+        }
+
+        EditFormPokemon ??= saveFile.BlankPKM;
+
+        if (EditFormPokemon.Species.IsInvalidSpecies())
+        {
+            EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
+        }
     }
 }

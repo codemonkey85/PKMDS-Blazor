@@ -2,6 +2,8 @@ namespace Pkmds.Web.Components;
 
 public partial class DateOnlyPicker
 {
+    private MudDatePicker? datePickerRef;
+
     [CascadingParameter]
     public EditContext? EditContext { get; set; }
 
@@ -28,8 +30,6 @@ public partial class DateOnlyPicker
 
     [Parameter]
     public Color Color { get; set; } = Color.Default;
-
-    private MudDatePicker? datePickerRef;
 
     private DateTime? DateBindTarget
     {

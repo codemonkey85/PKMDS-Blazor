@@ -24,7 +24,7 @@ public partial class RecordsTab
         (SAV3RS, (int)RecID3RuSa.FIRST_HOF_PLAY_TIME) => true,
         (SAV3E, (int)RecID3Emerald.FIRST_HOF_PLAY_TIME) => true,
         (SAV3FRLG, (int)RecID3FRLG.FIRST_HOF_PLAY_TIME) => true,
-        _ => false,
+        _ => false
     };
 
     protected override void OnParametersSet()
@@ -97,7 +97,7 @@ public partial class RecordsTab
         var min = Math.Min((byte)59, HallOfFameMinutes);
         var sec = Math.Min((byte)59, HallOfFameSeconds);
 
-        return (hrs << 16) | ((uint)min << 8) | sec;
+        return hrs << 16 | (uint)min << 8 | sec;
     }
 
     private void SetFameTime(uint time)

@@ -110,8 +110,7 @@ public static class SpriteHelper
         string.Empty;
 
     public static string GetSpriteCssClass(PKM? pkm) =>
-        $"d-flex align-items-center justify-center{(pkm is { Species: > (ushort)Species.None }
-            and { Species: < (ushort)Species.MAX_COUNT } ? " slot-fill" : string.Empty)}";
+        $"d-flex align-items-center justify-center{(PkmExtensions.IsValidSpecies(pkm?.Species) ? " slot-fill" : string.Empty)}";
 
     private static bool IsItemMail(int item, EntityContext context) => context switch
     {

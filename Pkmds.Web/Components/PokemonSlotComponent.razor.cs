@@ -14,6 +14,9 @@ public partial class PokemonSlotComponent : IDisposable
     [Parameter, EditorRequired]
     public Func<string>? GetStyleFunction { get; set; }
 
+    public void Dispose() =>
+        RefreshService.OnAppStateChanged -= StateHasChanged;
+
     private async Task HandleClick() =>
         await OnSlotClick.InvokeAsync();
 
@@ -22,9 +25,6 @@ public partial class PokemonSlotComponent : IDisposable
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;
-
-    public void Dispose() =>
-        RefreshService.OnAppStateChanged -= StateHasChanged;
 
     private string GetPokemonTitle() => Pokemon is { Species: > 0 }
         ? AppService.GetPokemonSpeciesName(Pokemon.Species)

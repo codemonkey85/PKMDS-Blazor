@@ -84,6 +84,6 @@ public static class SaveFileNameDisplay
         StadiumJ => "Stadium (J)",
         Stadium => "Stadium",
         Stadium2 => "Stadium 2",
-        _ => gameVersion.ToString(),
+        _ => gameVersion.ToString()
     };
 }

@@ -9,7 +9,7 @@ public static class MarkingsHelper
         Square = 2,
         Heart = 3,
         Star = 4,
-        Diamond = 5,
+        Diamond = 5
     }
 
     public const string Circle = "●";
