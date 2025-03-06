@@ -28,5 +28,7 @@ public class RefreshService : IRefreshService
     }
 
     [JSInvokable(nameof(ShowUpdateMessage))]
-    public static void ShowUpdateMessage() { return; }
+    public static void ShowUpdateMessage()
+    {
+    }
 }
