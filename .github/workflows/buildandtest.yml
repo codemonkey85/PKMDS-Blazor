@@ -44,7 +44,7 @@ jobs:
 
       # sets up MAUI
       - name: Set up MAUI
-        run: dotnet workload install maui --source https://api.nuget.org/v3/index.json
+        run: dotnet workload install maui-android --source https://api.nuget.org/v3/index.json
 
       - name: Install WASM workload
         run: dotnet workload install wasm-tools
