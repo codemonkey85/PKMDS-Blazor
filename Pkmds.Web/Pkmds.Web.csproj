@@ -1,44 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>preview</LangVersion>
-        <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>preview</LangVersion>
+		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+	</PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <WasmEnableSIMD>false</WasmEnableSIMD>
-    </PropertyGroup>
+	<PropertyGroup>
+		<WasmEnableSIMD>false</WasmEnableSIMD>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
-        <BlazorEnableCompression>true</BlazorEnableCompression>
-    </PropertyGroup>
+	<PropertyGroup>
+		<BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
+		<BlazorEnableCompression>true</BlazorEnableCompression>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <GenerateServiceWorkerAssetsManifest>true</GenerateServiceWorkerAssetsManifest>
-    </PropertyGroup>
+	<PropertyGroup>
+		<GenerateServiceWorkerAssetsManifest>true</GenerateServiceWorkerAssetsManifest>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all"/>
-        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2"/>
-        <PackageReference Include="MudBlazor" Version="8.3.0"/>
-        <PackageReference Include="PKHeX.Core" Version="25.2.23"/>
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js"/>
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
+	</ItemGroup>
 
-    <Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
-        <Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js"/>
-    </Target>
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
+
+	<Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
+		<Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js" />
+	</Target>
 
 </Project>
