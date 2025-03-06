@@ -1,36 +1,36 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using KristofferStrube.Blazor.FileSystemAccess;
+using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
-using Pkmds.Rcl.Services;
-using Pkmds.Rcl;
-using KristofferStrube.Blazor.FileSystemAccess;
 using Pkmds.Maui.Services;
+using Pkmds.Rcl;
+using Pkmds.Rcl.Services;
 
 namespace Pkmds.Maui;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
         var services = builder.Services;
-        
+
         builder
             .UseMauiApp<App>()
-			.ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
+            .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
         services.AddMauiBlazorWebView();
 
 #if DEBUG
         services.AddBlazorWebViewDeveloperTools();
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
         services
-    .AddMudServices(config =>
-    {
-        config.SnackbarConfiguration.PreventDuplicates = false;
-        config.SnackbarConfiguration.ClearAfterNavigation = true;
-    });
+            .AddMudServices(config =>
+            {
+                config.SnackbarConfiguration.PreventDuplicates = false;
+                config.SnackbarConfiguration.ClearAfterNavigation = true;
+            });
 
         services
             .AddFileSystemAccessService()
@@ -39,5 +39,5 @@ public static class MauiProgram
             .AddSingleton<IAppService, AppService>();
 
         return builder.Build();
-	}
+    }
 }
