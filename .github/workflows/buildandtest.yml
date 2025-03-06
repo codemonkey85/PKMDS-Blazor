@@ -19,7 +19,7 @@ on:
 jobs:
   build:
     name: Build and Test
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     if: github.event_name != 'push' || github.event.pull_request == null  # Prevents duplicate runs
 
@@ -43,16 +43,19 @@ jobs:
 
       # sets up MAUI
       - name: Set up MAUI
-        run: dotnet workload install maui --source https://api.nuget.org/v3/index.json
+        run: dotnet workload install maui-android --source https://api.nuget.org/v3/index.json
 
       - name: Install WASM workload
         run: dotnet workload install wasm-tools
   
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore -p:SelfContained=true
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      - name: Build Web
+        run: dotnet build Pkmds.Web/Pkmds.Web.csproj --configuration Release --no-restore
+
+      - name: Build Android
+        run: dotnet build Pkmds.Maui/Pkmds.Maui.csproj --configuration Release -f net9.0-android --no-restore
 
       - name: Run tests
         run: dotnet test --configuration Release --no-build
