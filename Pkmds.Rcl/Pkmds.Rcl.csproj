@@ -1,25 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
 
 
-	<ItemGroup>
-		<SupportedPlatform Include="browser" />
-	</ItemGroup>
+    <ItemGroup>
+        <SupportedPlatform Include="browser"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
-		<PackageReference Include="MudBlazor" Version="8.3.0" />
-		<PackageReference Include="PKHeX.Core" Version="25.2.23" />
-		<PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2"/>
+        <PackageReference Include="MudBlazor" Version="8.3.0"/>
+        <PackageReference Include="PKHeX.Core" Version="25.2.23"/>
+        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="wwwroot\" />
-	</ItemGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="Components\Dialogs\ConfirmActionDialog.razor"/>
+        <AdditionalFiles Include="Components\Dialogs\ShowdownExportDialog.razor"/>
+        <AdditionalFiles Include="Components\EditForms\HiddenPowerChooser.razor"/>
+        <AdditionalFiles Include="Components\EditForms\PokemonEditForm.razor"/>
+        <AdditionalFiles Include="Components\EditForms\Tabs\CosmeticTab.razor"/>
+        <AdditionalFiles Include="Components\EditForms\Tabs\MainTab.razor"/>
+        <AdditionalFiles Include="Components\EditForms\Tabs\MetTab.razor"/>
+        <AdditionalFiles Include="Components\EditForms\Tabs\MovesTab.razor"/>
+        <AdditionalFiles Include="Components\EditForms\Tabs\OtMiscTab.razor"/>
+        <AdditionalFiles Include="Components\EditForms\Tabs\PokerusComponent.razor"/>
+        <AdditionalFiles Include="Components\EditForms\Tabs\StatsTab.razor"/>
+        <AdditionalFiles Include="Components\Layout\MainLayout.razor"/>
+        <AdditionalFiles Include="Components\MainTabPages\BadgesComponent.razor"/>
+        <AdditionalFiles Include="Components\MainTabPages\BagTab.razor"/>
+        <AdditionalFiles Include="Components\MainTabPages\MysteryGiftDatabaseTab.razor"/>
+        <AdditionalFiles Include="Components\MainTabPages\PartyAndBoxTab.razor"/>
+        <AdditionalFiles Include="Components\MainTabPages\RecordsTab.razor"/>
+        <AdditionalFiles Include="Components\MainTabPages\TrainerInfoTab.razor"/>
+        <AdditionalFiles Include="Components\Pages\Home.razor"/>
+    </ItemGroup>
 
 </Project>

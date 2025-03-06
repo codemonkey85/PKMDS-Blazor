@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using Pkmds.Rcl.Services;
 
-namespace Pkmds.Web.Services;
+namespace Pkmds.Maui.Services;
 
 public class RefreshService : IRefreshService
 {
@@ -28,5 +28,5 @@ public class RefreshService : IRefreshService
     }
 
     [JSInvokable(nameof(ShowUpdateMessage))]
-    public static void ShowUpdateMessage() => Instance?.OnUpdateAvailable?.Invoke();
+    public static void ShowUpdateMessage() { return; }
 }

@@ -1,45 +1,67 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<LangVersion>preview</LangVersion>
-		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>preview</LangVersion>
+        <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
 
-	<PropertyGroup>
-		<WasmEnableSIMD>false</WasmEnableSIMD>
-	</PropertyGroup>
+    <PropertyGroup>
+        <WasmEnableSIMD>false</WasmEnableSIMD>
+    </PropertyGroup>
 
-	<PropertyGroup>
-		<BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
-		<BlazorEnableCompression>true</BlazorEnableCompression>
-	</PropertyGroup>
+    <PropertyGroup>
+        <BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
+        <BlazorEnableCompression>true</BlazorEnableCompression>
+    </PropertyGroup>
 
-	<PropertyGroup>
-		<GenerateServiceWorkerAssetsManifest>true</GenerateServiceWorkerAssetsManifest>
-	</PropertyGroup>
+    <PropertyGroup>
+        <GenerateServiceWorkerAssetsManifest>true</GenerateServiceWorkerAssetsManifest>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
-	</ItemGroup>
+    <ItemGroup>
+        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+    </ItemGroup>
 
-	<Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
-		<Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js" />
-	</Target>
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
+        <_ContentIncludedByDefault Remove="Components\Dialogs\ConfirmActionDialog.razor" />
+        <_ContentIncludedByDefault Remove="Components\Dialogs\ShowdownExportDialog.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\HiddenPowerChooser.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\PokemonEditForm.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\CosmeticTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MainTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MetTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MovesTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\OtMiscTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\PokerusComponent.razor" />
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\StatsTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\BadgesComponent.razor" />
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\BagTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\MysteryGiftDatabaseTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\PartyAndBoxTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\RecordsTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\TrainerInfoTab.razor" />
+    </ItemGroup>
+
+    <Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
+        <Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js" />
+    </Target>
 
 </Project>

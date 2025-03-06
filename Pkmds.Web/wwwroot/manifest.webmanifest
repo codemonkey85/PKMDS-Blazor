@@ -8,12 +8,12 @@
   "theme_color": "#3E4EB8",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "_content/Pkmds.Rcl/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "_content/Pkmds.Rcl/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
