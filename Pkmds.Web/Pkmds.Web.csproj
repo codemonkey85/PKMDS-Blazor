@@ -26,42 +26,42 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj" />
+        <ProjectReference Include="..\Pkmds.Rcl\Pkmds.Rcl.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js"/>
     </ItemGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
-        <_ContentIncludedByDefault Remove="Components\Dialogs\ConfirmActionDialog.razor" />
-        <_ContentIncludedByDefault Remove="Components\Dialogs\ShowdownExportDialog.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\HiddenPowerChooser.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\PokemonEditForm.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\CosmeticTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MainTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MetTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MovesTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\OtMiscTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\PokerusComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\StatsTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
-        <_ContentIncludedByDefault Remove="Components\MainTabPages\BadgesComponent.razor" />
-        <_ContentIncludedByDefault Remove="Components\MainTabPages\BagTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\MainTabPages\MysteryGiftDatabaseTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\MainTabPages\PartyAndBoxTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\MainTabPages\RecordsTab.razor" />
-        <_ContentIncludedByDefault Remove="Components\MainTabPages\TrainerInfoTab.razor" />
+        <_ContentIncludedByDefault Remove="Components\Pages\Home.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Dialogs\ConfirmActionDialog.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Dialogs\ShowdownExportDialog.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\HiddenPowerChooser.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\PokemonEditForm.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\CosmeticTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MainTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MetTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\MovesTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\OtMiscTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\PokerusComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\EditForms\Tabs\StatsTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\BadgesComponent.razor"/>
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\BagTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\MysteryGiftDatabaseTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\PartyAndBoxTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\RecordsTab.razor"/>
+        <_ContentIncludedByDefault Remove="Components\MainTabPages\TrainerInfoTab.razor"/>
     </ItemGroup>
 
     <Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
-        <Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js" />
+        <Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js"/>
     </Target>
 
 </Project>
