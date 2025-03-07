@@ -33,7 +33,7 @@ jobs:
         run: dotnet workload install wasm-tools
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore Pkmds.Web/Pkmds.Web.csproj
 
       # publishes Blazor project to the release-folder
       - name: Publish .NET Project
