@@ -1,0 +1,18 @@
+﻿global using System.Collections.Generic;
+global using System.Collections.ObjectModel;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Globalization;
+global using System.Linq.Expressions;
+global using System.Net;
+global using System.Reflection;
+global using System.Security.Cryptography;
+global using System.Text;
+global using KristofferStrube.Blazor.FileSystemAccess;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Components.Forms;
+global using Microsoft.AspNetCore.Components.Web;
+global using Microsoft.JSInterop;
+global using MudBlazor;
+global using MudBlazor.Services;
+global using PKHeX.Core;
+global using Severity = MudBlazor.Severity;

@@ -1,4 +1,7 @@
-﻿namespace Pkmds.Web.Services;
+﻿using System.Security.Cryptography;
+using PKHeX.Core;
+
+namespace Pkmds.Web.Services;
 
 public class BlazorAesProvider(JsService jsService) : IAesCryptographyProvider
 {

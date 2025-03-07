@@ -1,4 +1,7 @@
-﻿namespace Pkmds.Web.Services;
+﻿using Microsoft.JSInterop;
+using Pkmds.Rcl.Services;
+
+namespace Pkmds.Web.Services;
 
 public class RefreshService : IRefreshService
 {
