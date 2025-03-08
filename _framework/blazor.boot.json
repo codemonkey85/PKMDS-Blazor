@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Pkmds.Web",
   "resources": {
-    "hash": "sha256-/yiVsAXMshdV2JtMJ/nxsBZPvuzinVbVsnImn2tJgCU=",
+    "hash": "sha256-eh6G135fzm1oPJstTDmjPcDUB02M+Sy8wEyimf9Jj5k=",
     "fingerprinting": {
       "KristofferStrube.Blazor.FileAPI.y7qr9qlbwg.wasm": "KristofferStrube.Blazor.FileAPI.wasm",
       "KristofferStrube.Blazor.FileSystem.l7rerd8wys.wasm": "KristofferStrube.Blazor.FileSystem.wasm",
@@ -28,7 +28,8 @@
       "Microsoft.JSInterop.WebAssembly.p386u0jty9.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
       "MudBlazor.b92j3p5hx0.wasm": "MudBlazor.wasm",
       "PKHeX.Core.svclbdanjy.wasm": "PKHeX.Core.wasm",
-      "Pkmds.Web.db4ul9b5gz.wasm": "Pkmds.Web.wasm",
+      "Pkmds.Rcl.2zdnlc3ckl.wasm": "Pkmds.Rcl.wasm",
+      "Pkmds.Web.mtepxzo9xs.wasm": "Pkmds.Web.wasm",
       "System.Collections.Concurrent.2vqc7t7v9z.wasm": "System.Collections.Concurrent.wasm",
       "System.Collections.Immutable.32abxwg34j.wasm": "System.Collections.Immutable.wasm",
       "System.Collections.NonGeneric.mt6o8g0wve.wasm": "System.Collections.NonGeneric.wasm",
@@ -49,7 +50,7 @@
       "System.Net.Primitives.3uow9zd1kc.wasm": "System.Net.Primitives.wasm",
       "System.Numerics.Vectors.12moq54n01.wasm": "System.Numerics.Vectors.wasm",
       "System.ObjectModel.gqled8adk9.wasm": "System.ObjectModel.wasm",
-      "System.Private.CoreLib.xj05vhuhv7.wasm": "System.Private.CoreLib.wasm",
+      "System.Private.CoreLib.wzq7aml6wt.wasm": "System.Private.CoreLib.wasm",
       "System.Private.Uri.2udbvvzxjw.wasm": "System.Private.Uri.wasm",
       "System.Runtime.InteropServices.JavaScript.f4ln4hfftw.wasm": "System.Runtime.InteropServices.JavaScript.wasm",
       "System.Runtime.InteropServices.ebl1t4cqsb.wasm": "System.Runtime.InteropServices.wasm",
@@ -63,7 +64,7 @@
       "System.v3da086c8u.wasm": "System.wasm",
       "System.Web.HttpUtility.87lv9oaks6.wasm": "System.Web.HttpUtility.wasm",
       "dotnet.native.lodha6wvrf.js": "dotnet.native.js",
-      "dotnet.native.ijk9fw1ryn.wasm": "dotnet.native.wasm",
+      "dotnet.native.vaqi4tlnhu.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.tsg4gsv2hg.js": "dotnet.runtime.js",
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
@@ -77,7 +78,7 @@
       "dotnet.runtime.tsg4gsv2hg.js": "sha256-82FoDmY+LsehdN2u8aSGEutGEKXJHcYaSX/3zptbsCw="
     },
     "wasmNative": {
-      "dotnet.native.ijk9fw1ryn.wasm": "sha256-Po8Zc71YgJpHUXebH9LEU4rPwjRoaPb+KBRXGMqh+84="
+      "dotnet.native.vaqi4tlnhu.wasm": "sha256-p33lkH6iBm5O5k3QNk1LyUBgqsygh/RxYikJX/fxkLY="
     },
     "icu": {
       "icudt_CJK.tjcz0u77k5.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -85,7 +86,7 @@
       "icudt_no_CJK.lfu7j35m59.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "coreAssembly": {
-      "System.Private.CoreLib.xj05vhuhv7.wasm": "sha256-DRXU5tu12xI/l5zEH83HaIKbbyrrYAEtoUTU4Xh4FFQ=",
+      "System.Private.CoreLib.wzq7aml6wt.wasm": "sha256-lEk6I1wB6zjGMFUk1mOm+L+9nngWHhkKYW2XmHLKXic=",
       "System.Runtime.InteropServices.JavaScript.f4ln4hfftw.wasm": "sha256-r+LQmgoVdHgFKWJvUNAR7HQZAtSw+xvBIQ6siSPsBNM="
     },
     "assembly": {
@@ -114,7 +115,8 @@
       "Microsoft.JSInterop.WebAssembly.p386u0jty9.wasm": "sha256-hbzWuXrlepIqY/y+nQ2ZAFer2/njy1dc+Y4LUaAaL5E=",
       "MudBlazor.b92j3p5hx0.wasm": "sha256-LwmTo7sQeC5isWZ3G1ugQ2Yb6le0bkcGXPPhMLPf548=",
       "PKHeX.Core.svclbdanjy.wasm": "sha256-eNPMdZsB1GgFcAlY5rPnKGs5PKal7yYUDG+si1bWmQg=",
-      "Pkmds.Web.db4ul9b5gz.wasm": "sha256-WVpYo8Fi5G5bZ5+8b6kpttnyufxlfDPi7dVhi60xJsw=",
+      "Pkmds.Rcl.2zdnlc3ckl.wasm": "sha256-gkSF4IOBhy7vxYAvdGtBkbuuLR2Wi8B+C5gLnEvUs8o=",
+      "Pkmds.Web.mtepxzo9xs.wasm": "sha256-tvvQPEdKIAfeHU3Z2zXF9Z/lINk+wQgVw2pte8bjXJI=",
       "System.Collections.Concurrent.2vqc7t7v9z.wasm": "sha256-AsKWrXroLBrfdl99P9BHokFTCDFvjaGLAUAmdJKV/Lw=",
       "System.Collections.Immutable.32abxwg34j.wasm": "sha256-VfcJNehepjOTrrBexXzUWtim9BbmI+WuFfE4AnJzBaw=",
       "System.Collections.NonGeneric.mt6o8g0wve.wasm": "sha256-dn+YQIhqg8DqttwHYCn2lfUNdQOY6qNqn1NJkikyeBY=",
