@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Pkmds.Web",
   "resources": {
-    "hash": "sha256-eh6G135fzm1oPJstTDmjPcDUB02M+Sy8wEyimf9Jj5k=",
+    "hash": "sha256-VYZNjwoew62OKfOwU0AHdEthpIFSZvRYodpRBuEaTt0=",
     "fingerprinting": {
       "KristofferStrube.Blazor.FileAPI.y7qr9qlbwg.wasm": "KristofferStrube.Blazor.FileAPI.wasm",
       "KristofferStrube.Blazor.FileSystem.l7rerd8wys.wasm": "KristofferStrube.Blazor.FileSystem.wasm",
@@ -28,8 +28,8 @@
       "Microsoft.JSInterop.WebAssembly.p386u0jty9.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
       "MudBlazor.b92j3p5hx0.wasm": "MudBlazor.wasm",
       "PKHeX.Core.svclbdanjy.wasm": "PKHeX.Core.wasm",
-      "Pkmds.Rcl.2zdnlc3ckl.wasm": "Pkmds.Rcl.wasm",
-      "Pkmds.Web.mtepxzo9xs.wasm": "Pkmds.Web.wasm",
+      "Pkmds.Rcl.9tese3f1dq.wasm": "Pkmds.Rcl.wasm",
+      "Pkmds.Web.1cpbgyd10i.wasm": "Pkmds.Web.wasm",
       "System.Collections.Concurrent.2vqc7t7v9z.wasm": "System.Collections.Concurrent.wasm",
       "System.Collections.Immutable.32abxwg34j.wasm": "System.Collections.Immutable.wasm",
       "System.Collections.NonGeneric.mt6o8g0wve.wasm": "System.Collections.NonGeneric.wasm",
@@ -115,8 +115,8 @@
       "Microsoft.JSInterop.WebAssembly.p386u0jty9.wasm": "sha256-hbzWuXrlepIqY/y+nQ2ZAFer2/njy1dc+Y4LUaAaL5E=",
       "MudBlazor.b92j3p5hx0.wasm": "sha256-LwmTo7sQeC5isWZ3G1ugQ2Yb6le0bkcGXPPhMLPf548=",
       "PKHeX.Core.svclbdanjy.wasm": "sha256-eNPMdZsB1GgFcAlY5rPnKGs5PKal7yYUDG+si1bWmQg=",
-      "Pkmds.Rcl.2zdnlc3ckl.wasm": "sha256-gkSF4IOBhy7vxYAvdGtBkbuuLR2Wi8B+C5gLnEvUs8o=",
-      "Pkmds.Web.mtepxzo9xs.wasm": "sha256-tvvQPEdKIAfeHU3Z2zXF9Z/lINk+wQgVw2pte8bjXJI=",
+      "Pkmds.Rcl.9tese3f1dq.wasm": "sha256-/SMQU3c2hnIROTNkvKS/9WRheuiGFOsbp+fnDES1DeA=",
+      "Pkmds.Web.1cpbgyd10i.wasm": "sha256-/8K5sukvkD3I7JO29IJ1ihwv9PGjWAWzzC21bzwAkcU=",
       "System.Collections.Concurrent.2vqc7t7v9z.wasm": "sha256-AsKWrXroLBrfdl99P9BHokFTCDFvjaGLAUAmdJKV/Lw=",
       "System.Collections.Immutable.32abxwg34j.wasm": "sha256-VfcJNehepjOTrrBexXzUWtim9BbmI+WuFfE4AnJzBaw=",
       "System.Collections.NonGeneric.mt6o8g0wve.wasm": "sha256-dn+YQIhqg8DqttwHYCn2lfUNdQOY6qNqn1NJkikyeBY=",
