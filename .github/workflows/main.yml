@@ -53,6 +53,10 @@ jobs:
 
       - name: Commit version update to dev branch (Verified via GitHub Actions)
         run: |
+          git pull origin main
+          git checkout dev
+          git pull origin dev
+          git merge main
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add Pkmds.Web/Pkmds.Web.csproj
