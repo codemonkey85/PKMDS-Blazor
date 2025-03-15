@@ -1,4 +1,8 @@
-﻿namespace Pkmds.Rcl;
+﻿using System.Reflection;
+using PKHeX.Core;
+using Pkmds.Rcl;
+
+namespace Pkmds.Maui;
 
 public record AppState : IAppState
 {
@@ -38,4 +42,6 @@ public record AppState : IAppState
         SelectedBoxNumber is null && SelectedBoxSlotNumber is not null && SaveFile is SAV7b
         || SelectedBoxNumber is not null && SelectedBoxSlotNumber is not null
         || SelectedPartySlotNumber is not null;
+
+    public string? AppVersion => Assembly.GetAssembly(typeof(MauiProgram))?.GetName().Version?.ToString();
 }
