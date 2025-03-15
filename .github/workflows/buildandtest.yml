@@ -20,8 +20,8 @@ jobs:
   build:
     name: Build and Test
     runs-on: windows-latest
-
-    if: github.event_name != 'push' || github.event.pull_request == null  # Prevents duplicate runs
+    needs: versioning  # Ensure versioning completes before running build
+    if: "!contains(github.event.head_commit.message, 'Bump version')"  # Prevents unnecessary runs
 
     steps:
       # uses GitHub's checkout action to checkout code form the release branch
@@ -47,7 +47,7 @@ jobs:
 
       - name: Install WASM workload
         run: dotnet workload install wasm-tools
-  
+
       - name: Restore dependencies
         run: dotnet restore -p:SelfContained=true
 

@@ -18,9 +18,9 @@ public interface IAppState
 
     bool ShowProgressIndicator { get; set; }
 
-    static string? AppVersion { get; } // => Assembly.GetAssembly(typeof(Program))?.GetName().Version?.ToString();
+    string? AppVersion { get; }
 
-    static string? PkhexVersion { get; } // => Assembly.GetAssembly(typeof(PKM))?.GetName().Version?.ToString();
+    static string? PkhexVersion => Assembly.GetAssembly(typeof(PKM))?.GetName().Version?.ToString();
 
     bool SelectedSlotsAreValid { get; }
 }
