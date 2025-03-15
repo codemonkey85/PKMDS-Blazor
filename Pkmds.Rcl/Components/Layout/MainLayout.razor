@@ -99,7 +99,10 @@
         <MudStack Spacing="1"
                   Class="mx-1 my-3 mb-20">
             <MudText Typo="@Typo.subtitle2">
-                Version @AppState.AppVersion
+                <MudLink Href="@($"https://github.com/codemonkey85/PKMDS-Blazor/releases/tag/{@AppState.AppVersion}")"
+                         Target="_blank">
+                    Version @AppState.AppVersion
+                </MudLink>
             </MudText>
             <MudText Typo="@Typo.subtitle2">
                 Created by
