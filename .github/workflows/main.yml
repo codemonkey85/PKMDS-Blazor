@@ -56,12 +56,14 @@ jobs:
         run: |
           sed -i "s/<Version>.*<\/Version>/<Version>${{ env.NEW_VERSION }}<\/Version>/g" Pkmds.Web/Pkmds.Web.csproj
 
-      - name: Commit version update to dev branch
+      - name: Commit version update to dev branch (Signed)
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global commit.gpgsign true
+          git config --global user.signingkey /dev/null
           git add Pkmds.Web/Pkmds.Web.csproj
-          git commit -m "Bump version to ${{ env.NEW_VERSION }}"
+          git commit -S -m "Bump version to ${{ env.NEW_VERSION }}"
           git push origin dev  # Push changes to dev, not main
 
       - name: Create Git Tag
