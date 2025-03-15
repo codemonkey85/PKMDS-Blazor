@@ -28,34 +28,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
-      # sets up Java
-      - name: Set up Java
-        uses: actions/setup-java@v4.7.0
-        with:
-          distribution: "microsoft"
-          java-version: "11"
-
       # sets up .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4.3.0
         with:
           global-json-file: ./global.json
 
-      # sets up MAUI
-      - name: Set up MAUI
-        run: dotnet workload install maui --source https://api.nuget.org/v3/index.json
-
       - name: Install WASM workload
         run: dotnet workload install wasm-tools
   
       - name: Restore dependencies
-        run: dotnet restore -p:SelfContained=true
+        run: dotnet restore Pkmds.Web/Pkmds.Web.csproj -p:SelfContained=true
 
       - name: Build Web
         run: dotnet build Pkmds.Web/Pkmds.Web.csproj --configuration Release --no-restore
-
-      - name: Build Android
-        run: dotnet build Pkmds.Maui/Pkmds.Maui.csproj --configuration Release -f net9.0-android --no-restore
 
       - name: Run tests
         run: dotnet test --configuration Release --no-build
