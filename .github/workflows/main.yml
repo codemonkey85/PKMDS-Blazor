@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   workflow_dispatch:
   push:
-    branches: [ dev ]  # Run workflow on `dev`, not `main`
+    branches: [ dev, main ]  # Now triggers on both dev and main
     paths-ignore:
       - "**.md"
       - "**.ps1"
@@ -12,6 +12,10 @@ on:
       - '**/*.gitignore'
       - '**/*.gitattributes'
       - '**/*.yml'
+
+permissions:
+  contents: write  # Ensures GitHub Actions can push commits
+  pages: write     # Required for GitHub Pages deployment
 
 jobs:
   versioning:
