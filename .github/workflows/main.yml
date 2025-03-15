@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   workflow_dispatch:
   push:
-    branches: [ dev, main ]  # Now triggers on both dev and main
+    branches: [ main ]
     paths-ignore:
       - "**.md"
       - "**.ps1"
@@ -11,73 +11,13 @@ on:
       - "TestFiles/*"
       - '**/*.gitignore'
       - '**/*.gitattributes'
-  pull_request:
-    branches: [ main ]
-    
-
-permissions:
-  contents: write  # Ensures GitHub Actions can push commits
-  pages: write     # Required for GitHub Pages deployment
+      - '**/*.yml'
 
 jobs:
-  versioning:
-    if: github.ref == 'refs/heads/dev'
-    name: Update Version in Dev
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0  # Ensure full Git history
-
-      - name: Generate Date-Based Version
-        id: versioning
-        run: |
-          DATE_VERSION=$(date +'%Y.%m.%d')
-          echo "DATE_VERSION=$DATE_VERSION" >> $GITHUB_ENV
-
-          BASE_VERSION="${DATE_VERSION}"
-          EXISTING_VERSIONS=$(git tag -l "$BASE_VERSION.*" | sort -V | tail -n 1)
-
-          if [[ -z "$EXISTING_VERSIONS" ]]; then
-            COUNTER=1
-          else
-            LAST_COUNTER=$(echo "$EXISTING_VERSIONS" | awk -F '.' '{print $NF}')
-            COUNTER=$((LAST_COUNTER + 1))
-          fi
-
-          NEW_VERSION="$BASE_VERSION.$COUNTER"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-
-      - name: Update version in .csproj
-        run: |
-          sed -i "s/<Version>.*<\/Version>/<Version>${{ env.NEW_VERSION }}<\/Version>/g" Pkmds.Web/Pkmds.Web.csproj
-
-      - name: Commit version update to dev branch (Verified via GitHub Actions)
-        run: |
-          git pull origin main
-          git checkout dev
-          git pull origin dev
-          git merge origin/main
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Pkmds.Web/Pkmds.Web.csproj
-          git commit -m "Bump version to ${{ env.NEW_VERSION }}"
-          git push origin dev  # Push changes to dev, not main
-
-      - name: Create Git Tag
-        run: |
-          git tag "${{ env.NEW_VERSION }}"
-          git push origin "${{ env.NEW_VERSION }}"
-
   deploy:
-    if: github.ref == 'refs/heads/main'  # Only deploy when merged into main
     name: Deploy to GitHub Pages
     # use ubuntu-latest image to run steps on
     runs-on: ubuntu-latest
-    needs: versioning
-
     steps:
       # uses GitHub's checkout action to checkout code form the release branch
       - name: Checkout code
@@ -100,18 +40,18 @@ jobs:
         run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo
 
       # copy index.html to 404.html to serve the same file when a file is not found
-      - name: Copy index.html to 404.html
+      - name: copy index.html to 404.html
         run: cp release/wwwroot/index.html release/wwwroot/404.html
 
       # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
       - name: Add .nojekyll file
         run: touch release/wwwroot/.nojekyll
 
-      - name: Update service worker cache version
+      - name: Update version
         uses: datamonsters/replace-action@v2
         with:
           files: 'release/wwwroot/service-worker.published.js'
-          replacements: '%%CACHE_VERSION%%=${{ env.NEW_VERSION }}'
+          replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
 
       - name: Commit wwwroot to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.7.3
