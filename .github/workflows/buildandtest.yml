@@ -11,6 +11,7 @@ on:
       - "TestFiles/*"
       - '**/*.gitignore'
       - '**/*.gitattributes'
+      - '**/*.yml'
   pull_request:
     branches: [ main ]
     types: [opened, synchronize, reopened]  # Only run when PR is created or updated
@@ -19,7 +20,8 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'Bump version')"  # Prevents unnecessary runs
+
+    if: github.event_name != 'push' || github.event.pull_request == null  # Prevents duplicate runs
 
     steps:
       # uses GitHub's checkout action to checkout code form the release branch
@@ -34,7 +36,7 @@ jobs:
 
       - name: Install WASM workload
         run: dotnet workload install wasm-tools
-
+  
       - name: Restore dependencies
         run: dotnet restore Pkmds.Web/Pkmds.Web.csproj -p:SelfContained=true
 
