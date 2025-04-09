@@ -9,14 +9,14 @@
 
 
     <ItemGroup>
-        <SupportedPlatform Include="browser" />
+        <SupportedPlatform Include="browser"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.3" />
-        <PackageReference Include="MudBlazor" Version="8.5.1" />
-        <PackageReference Include="PKHeX.Core" Version="25.2.23" />
-        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.2.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.4"/>
+        <PackageReference Include="MudBlazor" Version="8.5.1"/>
+        <PackageReference Include="PKHeX.Core" Version="25.2.23"/>
+        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.3.0"/>
     </ItemGroup>
 
 </Project>
