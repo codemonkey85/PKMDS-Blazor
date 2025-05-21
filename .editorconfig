@@ -231,6 +231,7 @@ csharp_style_prefer_primary_constructors = true:suggestion
 csharp_prefer_static_anonymous_function = true:suggestion
 csharp_prefer_system_threading_lock = true:suggestion
 csharp_style_prefer_unbound_generic_type_in_nameof = true:suggestion
+csharp_style_prefer_implicitly_typed_lambda_expression = true:suggestion
 
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
