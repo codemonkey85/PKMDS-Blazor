@@ -1,0 +1,19 @@
+<Project>
+    <PropertyGroup>
+        <Version>2025.05.27.0</Version>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <NeutralLanguage>en</NeutralLanguage>
+        <Product>PKMDS</Product>
+        <Company>BondCodes</Company>
+        <Authors>codemonkey85</Authors>
+        <Copyright>codemonkey85</Copyright>
+        <SourceRevisionId>$([System.DateTime]::UtcNow.ToString("yyMMddHHmmss"))</SourceRevisionId>
+    </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+</Project>
