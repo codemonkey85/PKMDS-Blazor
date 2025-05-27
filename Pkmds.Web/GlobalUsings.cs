@@ -1,0 +1,13 @@
+﻿global using System.Reflection;
+global using System.Security.Cryptography;
+global using KristofferStrube.Blazor.FileSystemAccess;
+global using Microsoft.AspNetCore.Components.Web;
+global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+global using Microsoft.JSInterop;
+global using MudBlazor.Services;
+global using PKHeX.Core;
+global using Pkmds.Rcl;
+global using Pkmds.Rcl.Extensions;
+global using Pkmds.Rcl.Services;
+global using Pkmds.Web;
+global using Pkmds.Web.Services;
