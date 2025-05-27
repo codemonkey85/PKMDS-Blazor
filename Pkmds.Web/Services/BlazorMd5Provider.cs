@@ -1,6 +1,4 @@
-﻿using PKHeX.Core;
-
-namespace Pkmds.Web.Services;
+﻿namespace Pkmds.Web.Services;
 
 public class BlazorMd5Provider(JsService jsService) : IMd5Provider
 {

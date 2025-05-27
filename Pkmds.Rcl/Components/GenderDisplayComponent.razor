@@ -1,11 +1,37 @@
-﻿@GenderDisplayIcon(Gender)
+﻿@GenderButton(Gender, IncludeGenderless)
 
 @code {
+    private const string MaleGenderIcon = Icons.Material.Filled.Male;
 
-    private static RenderFragment GenderText(string text, string? color) =>
-        @<MudText Style="@($"color: {color}; ")">
-            @text
-        </MudText>;
+    private const string FemaleGenderIcon = Icons.Material.Filled.Female;
+
+    private const string GenderlessGenderIcon = Icons.Material.Filled.Block;
+
+    private static readonly string MaleGenderColor = Colors.Blue.Default;
+
+    private static readonly string FemaleGenderColor = Colors.Red.Default;
+
+    private static readonly string GenderlessGenderColor = string.Empty;
+
+    [Parameter]
+    public Gender Gender { get; set; }
+
+    [Parameter]
+    public EventCallback<Gender> OnChange { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    [Parameter]
+    public bool IncludeGenderless { get; set; }
+
+    private static string GetGenderColor(Gender gender) => gender switch
+    {
+        Gender.Male => MaleGenderColor,
+        Gender.Female => FemaleGenderColor,
+        Gender.Genderless => GenderlessGenderColor,
+        _ => string.Empty
+    };
 
     private RenderFragment GenderButton(Gender gender, bool includeGenderless) =>
         @<MudSelect T="@Gender"
@@ -13,31 +39,44 @@
                     Variant="@Variant.Outlined"
                     Value="@gender"
                     ValueChanged="@OnChange"
-                    Dense>
+                    Dense
+                    ReadOnly="@ReadOnly">
             <MudSelectItem Value="@Gender.Male">
                 <MudStack Row>
-                    <MudIcon Icon="@Icons.Material.Filled.Male"/>
-                    @GenderDisplayAscii(Gender.Male)
+                    <MudIcon Icon="@MaleGenderIcon"/>
+                    @GenderDisplayText(Gender.Male)
                 </MudStack>
             </MudSelectItem>
             <MudSelectItem Value="@Gender.Female">
                 <MudStack Row>
-                    <MudIcon Icon="@Icons.Material.Filled.Female"/>
-                    @GenderDisplayAscii(Gender.Female)
+                    <MudIcon Icon="@FemaleGenderIcon"/>
+                    @GenderDisplayText(Gender.Female)
                 </MudStack>
             </MudSelectItem>
-            @if (includeGenderless)
+            @if (includeGenderless || ReadOnly)
             {
                 <MudSelectItem Value="@Gender.Genderless">
                     <MudStack Row>
-                        @GenderDisplayAscii(Gender.Genderless)
+                        <MudIcon Icon="@GenderlessGenderIcon"/>
+                        @GenderDisplayText(Gender.Genderless)
                     </MudStack>
                 </MudSelectItem>
             }
         </MudSelect>;
 
-    private static RenderFragment GenderIconOnly(Gender gender) =>
-        @<MudIcon Icon="@GetGenderIcon(gender)"
-                  Style="@($"color: {GetGenderColor(gender)};")"/>;
+    private RenderFragment GenderDisplayText(Gender gender) =>
+        @<MudStack Row
+                   Spacing="1"
+                   Class="d-flex align-center">
+            <MudText Style="@($"color: {GetGenderColor(gender)};")">
+                @gender.ToString()
+            </MudText>
+            @if (ReadOnly)
+            {
+                <MudText>
+                    - Gender cannot be changed.
+                </MudText>
+            }
+        </MudStack>;
 
 }

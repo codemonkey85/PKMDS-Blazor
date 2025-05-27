@@ -1,13 +1,3 @@
-using KristofferStrube.Blazor.FileSystemAccess;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MudBlazor.Services;
-using PKHeX.Core;
-using Pkmds.Rcl;
-using Pkmds.Rcl.Services;
-using Pkmds.Web;
-using Pkmds.Web.Services;
-
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var services = builder.Services;
 

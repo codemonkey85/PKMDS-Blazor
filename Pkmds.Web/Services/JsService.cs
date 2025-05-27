@@ -1,7 +1,4 @@
-﻿using System.Security.Cryptography;
-using Microsoft.JSInterop;
-
-namespace Pkmds.Web.Services;
+﻿namespace Pkmds.Web.Services;
 
 public class JsService(IJSRuntime js)
 {
