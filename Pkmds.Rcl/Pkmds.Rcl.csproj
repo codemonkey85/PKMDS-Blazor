@@ -2,21 +2,17 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>preview</LangVersion>
     </PropertyGroup>
-
 
     <ItemGroup>
         <SupportedPlatform Include="browser"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.5"/>
-        <PackageReference Include="MudBlazor" Version="8.6.0"/>
-        <PackageReference Include="PKHeX.Core" Version="25.5.18"/>
-        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.3.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web"/>
+        <PackageReference Include="MudBlazor"/>
+        <PackageReference Include="PKHeX.Core"/>
+        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess"/>
     </ItemGroup>
 
 </Project>
