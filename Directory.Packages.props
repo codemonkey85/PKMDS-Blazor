@@ -11,6 +11,6 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.80" />
     <PackageVersion Include="MudBlazor" Version="8.8.0" />
-    <PackageVersion Include="PKHeX.Core" Version="25.5.18" />
+    <PackageVersion Include="PKHeX.Core" Version="25.6.9" />
   </ItemGroup>
 </Project>
