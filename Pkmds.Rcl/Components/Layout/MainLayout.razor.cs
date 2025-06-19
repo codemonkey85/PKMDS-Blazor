@@ -24,8 +24,8 @@ public partial class MainLayout : IDisposable
             return;
         }
 
-        isDarkMode = await mudThemeProvider.GetSystemPreference();
-        await mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+        isDarkMode = await mudThemeProvider.GetSystemDarkModeAsync();
+        await mudThemeProvider.WatchSystemDarkModeAsync(OnSystemPreferenceChanged);
         StateHasChanged();
     }
 
