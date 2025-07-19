@@ -87,12 +87,148 @@ public partial class StatsTab : IDisposable
         ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
         : GameInfo.Strings.Types[teraTypeId];
 
+    private void OnSetDv(Stats stat, int newValue)
+    {
+        if (Pokemon is not PK1 or PK2)
+        {
+            return;
+        }
+
+        var saveGeneration = AppState?.SaveFile?.Generation;
+        if (saveGeneration is not 1 or 2)
+        {
+            return;
+        }
+
+        if (Pokemon is PK1 && stat == Stats.HP)
+        {
+            return;
+        }
+
+        if (newValue < 0)
+        {
+            newValue = 0;
+        }
+
+        if (newValue > 15)
+        {
+            newValue = 15;
+        }
+
+        if (saveGeneration == 1 && Pokemon is PK1 pk1)
+        {
+            if (stat == Stats.Attack)
+            {
+                pk1.IV_ATK = (byte)newValue;
+            }
+
+            if (stat == Stats.Defense)
+            {
+                pk1.IV_DEF = (byte)newValue;
+            }
+
+            if (stat == Stats.Speed)
+            {
+                pk1.IV_SPE = (byte)newValue;
+            }
+
+            if (stat == Stats.Special)
+            {
+                pk1.IV_SPC = (byte)newValue;
+            }
+        }
+
+        if (saveGeneration == 2 && Pokemon is PK2 pk2)
+        {
+            if (stat == Stats.HP)
+            {
+                pk2.IV_HP = (byte)newValue;
+            }
+
+            if (stat == Stats.Attack)
+            {
+                pk2.IV_ATK = (byte)newValue;
+            }
+
+            if (stat == Stats.Defense)
+            {
+                pk2.IV_DEF = (byte)newValue;
+            }
+
+            if (stat == Stats.Speed)
+            {
+                pk2.IV_SPE = (byte)newValue;
+            }
+
+            if (stat == Stats.SpecialAttack)
+            {
+                pk2.IV_SPA = (byte)newValue;
+            }
+
+            if (stat == Stats.SpecialDefense)
+            {
+                pk2.IV_SPD = (byte)newValue;
+            }
+        }
+    }
+
+    private void OnSetIv(Stats stat, int newValue)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        var saveGeneration = AppState?.SaveFile?.Generation;
+        if (saveGeneration is null)
+        {
+            return;
+        }
+
+        if (saveGeneration == 1 && Pokemon is PK1 && stat == Stats.HP)
+        {
+            return;
+        }
+
+        if (newValue < 0)
+        {
+            newValue = 0;
+        }
+
+        if ((saveGeneration == 1 || saveGeneration == 2) &&
+            Pokemon is PK1 or PK2 && newValue > 15)
+        {
+            newValue = 15;
+        }
+        else if (newValue > 31)
+        {
+            newValue = 31;
+        }
+
+        var statIndex = stat switch
+        {
+            Stats.HP => 0,
+            Stats.Attack => 1,
+            Stats.Defense => 2,
+            Stats.Speed => 3,
+            Stats.SpecialAttack => 4,
+            Stats.SpecialDefense => 5,
+            _ => throw new ArgumentOutOfRangeException(nameof(stat), stat, null)
+        };
+
+        Pokemon.SetIV(statIndex, (byte)newValue);
+
+        AppService.LoadPokemonStats(Pokemon);
+    }
+
     private enum Stats
     {
-        Attack,
+        HP = -1,
+        Attack = 0,
         Defense,
         Speed,
         SpecialAttack,
-        SpecialDefense
+        SpecialDefense,
+        Special = 99
     }
 }

@@ -105,9 +105,9 @@
                                  title="HP IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
-                                 Max="31"
-                                 @bind-Value="@Pokemon.IV_HP"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                 Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                 Value="@Pokemon.IV_HP"
+                                 ValueChanged="@((int newValue) => OnSetIv(Stats.HP, newValue))"
                                  For="@(() => Pokemon.IV_HP)"
                                  ReadOnly="@(saveGeneration == 1 && Pokemon is PK1)"
                                  HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)"/>
@@ -117,9 +117,9 @@
                                  title="Attack IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
-                                 Max="31"
-                                 @bind-Value="@Pokemon.IV_ATK"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                 Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                 Value="@Pokemon.IV_ATK"
+                                 ValueChanged="@((int newValue) => OnSetIv(Stats.Attack, newValue))"
                                  For="@(() => Pokemon.IV_ATK)"/>
 
                 <MudNumericField Label="Def"
@@ -127,9 +127,9 @@
                                  title="Defense IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
-                                 Max="31"
-                                 @bind-Value="@Pokemon.IV_DEF"
-                                 @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                 Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                 Value="@Pokemon.IV_DEF"
+                                 ValueChanged="@((int newValue) => OnSetIv(Stats.Defense, newValue))"
                                  For="@(() => Pokemon.IV_DEF)"/>
 
 
@@ -139,18 +139,18 @@
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="31"
-                                     @bind-Value="@pk1.IV_SPE"
-                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     Max="15"
+                                     Value="@pk1.IV_SPE"
+                                     ValueChanged="@((int newValue) => OnSetDv(Stats.Speed, newValue))"
                                      For="@(() => pk1.IV_SPE)"/>
 
                     <MudNumericField Label="Spc"
                                      title="Special IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="31"
-                                     @bind-Value="@pk1.IV_SPC"
-                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     Max="15"
+                                     Value="@pk1.IV_SPC"
+                                     ValueChanged="@((int newValue) => OnSetDv(Stats.Special, newValue))"
                                      For="@(() => pk1.IV_SPC)"/>
                 }
                 else
@@ -160,9 +160,9 @@
                                      title="Special Attack IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="31"
-                                     @bind-Value="@Pokemon.IV_SPA"
-                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                     Value="@Pokemon.IV_SPA"
+                                     ValueChanged="@((int newValue) => OnSetIv(Stats.SpecialAttack, newValue))"
                                      For="@(() => Pokemon.IV_SPA)"/>
 
                     <MudNumericField Label="Spd"
@@ -170,9 +170,9 @@
                                      title="Special Defense IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="31"
-                                     @bind-Value="@Pokemon.IV_SPD"
-                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                     Value="@Pokemon.IV_SPD"
+                                     ValueChanged="@((int newValue) => OnSetIv(Stats.SpecialDefense, newValue))"
                                      For="@(() => Pokemon.IV_SPD)"/>
 
                     <MudNumericField Label="Spe"
@@ -180,9 +180,9 @@
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="31"
-                                     @bind-Value="@Pokemon.IV_SPE"
-                                     @bind-Value:after="@(() => AppService.LoadPokemonStats(Pokemon))"
+                                     Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                     Value="@Pokemon.IV_SPE"
+                                     ValueChanged="@((int newValue) => OnSetIv(Stats.Speed, newValue))"
                                      For="@(() => Pokemon.IV_SPE)"/>
 
                     <MudNumericField Label="Sum"
