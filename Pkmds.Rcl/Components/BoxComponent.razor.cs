@@ -29,7 +29,7 @@ public partial class BoxComponent : IDisposable
             return;
         }
 
-        AppState.BoxEdit.LoadBox(AppState.SaveFile.CurrentBox);
+        AppState.BoxEdit.LoadBox(AppState.BoxEdit.CurrentBox);
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;

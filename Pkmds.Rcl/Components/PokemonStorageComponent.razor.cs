@@ -13,12 +13,12 @@ public partial class PokemonStorageComponent : IDisposable
             return;
         }
 
-        AppState.SaveFile.CurrentBox = AppState.BoxEdit.MoveRight();
+        AppState.BoxEdit.MoveRight();
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        RefreshService.RefreshBoxState();
+        RefreshService.Refresh();
     }
 
     private void GoToPreviousBox()
@@ -28,15 +28,15 @@ public partial class PokemonStorageComponent : IDisposable
             return;
         }
 
-        AppState.SaveFile.CurrentBox = AppState.BoxEdit.MoveLeft();
+        AppState.BoxEdit.MoveLeft();
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        RefreshService.RefreshBoxState();
+        RefreshService.Refresh();
     }
 
-    private void OnBoxChanged(int newBox) 
+    private void OnBoxChanged(int newBox)
     {
         if (AppState.SaveFile is null || AppState.BoxEdit is null)
         {
@@ -44,11 +44,10 @@ public partial class PokemonStorageComponent : IDisposable
         }
 
         AppState.BoxEdit.LoadBox(newBox);
-        AppState.SaveFile.CurrentBox = newBox;
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        RefreshService.RefreshBoxState();
+        RefreshService.Refresh();
     }
 }

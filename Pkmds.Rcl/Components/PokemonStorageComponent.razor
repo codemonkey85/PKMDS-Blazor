@@ -1,11 +1,11 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is { } saveFile)
+@if (AppState is { SaveFile: { } saveFile, BoxEdit: { } boxEdit })
 {
 
     if (saveFile.Version is not GameVersion.RSBOX)
     {
-        <PartyGrid />
+        <PartyGrid/>
     }
 
     @if (saveFile.Version is GameVersion.LG or GameVersion.GP or GameVersion.GE)
@@ -24,15 +24,17 @@
             </MudIconButton>
 
             <div class="select-container">
-                <MudSelect Value="@saveFile.CurrentBox"
+                <MudSelect Value="@boxEdit.CurrentBox"
                            ValueChanged="@((int newBox) => OnBoxChanged(newBox))"
                            Class="box-select">
                     @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
                     {
                         var localBoxId = boxId;
+
                         var boxName = saveFile is IBoxDetailNameRead boxDetailNameRead
                             ? boxDetailNameRead.GetBoxName(localBoxId)
                             : string.Empty;
+
                         <MudSelectItem Value="@localBoxId"
                                        @key="@localBoxId">
                             @boxName
@@ -50,6 +52,6 @@
             </MudIconButton>
         </div>
 
-        <BoxComponent BoxNumber="@saveFile.CurrentBox"/>
+        <BoxComponent BoxNumber="@boxEdit.CurrentBox" />
     }
 }
