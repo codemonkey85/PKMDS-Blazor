@@ -2,8 +2,6 @@ namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
 public partial class MainTab : IDisposable
 {
-    private readonly PatternMask hexMask = new("########") { MaskChars = [new('#', "[0-9a-fA-F]")] };
-
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
