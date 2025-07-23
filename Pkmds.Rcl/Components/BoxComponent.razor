@@ -1,9 +1,8 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (BoxEdit is not null)
+@if (AppState.BoxEdit is not null)
 {
     <div class="my-3">
-        <BoxGrid BoxEdit="@BoxEdit"
-                 BoxNumber="@BoxNumber"/>
+        <BoxGrid BoxNumber="@BoxNumber"/>
     </div>
 }

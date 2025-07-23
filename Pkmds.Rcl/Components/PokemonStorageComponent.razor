@@ -20,8 +20,8 @@
             </MudIconButton>
 
             <div class="select-container">
-                <MudSelect @bind-Value="@saveFile.CurrentBox"
-                           @bind-Value:after="@AppService.ClearSelection"
+                <MudSelect Value="@saveFile.CurrentBox"
+                           ValueChanged="@((int newBox) => OnBoxChanged(newBox))"
                            Class="box-select">
                     @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
                     {
