@@ -22,10 +22,7 @@ public record AppState : IAppState
             field = value;
             LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
 
-            if (SaveFile is not null)
-            {
-                BoxEdit = new(SaveFile);
-            }
+            BoxEdit = SaveFile is not null ? new(SaveFile) : null;
         }
     }
 
