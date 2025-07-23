@@ -21,8 +21,15 @@ public record AppState : IAppState
         {
             field = value;
             LocalizeUtil.InitializeStrings(CurrentLanguage, SaveFile);
+
+            if (SaveFile is not null)
+            {
+                BoxEdit = new(SaveFile);
+            }
         }
     }
+
+    public BoxEdit? BoxEdit { get; internal set; }
 
     public int CurrentLanguageId => SaveFile?.Language ?? (int)LanguageID.English;
 

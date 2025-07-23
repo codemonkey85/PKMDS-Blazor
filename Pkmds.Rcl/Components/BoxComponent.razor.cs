@@ -5,8 +5,6 @@ public partial class BoxComponent : IDisposable
     [Parameter]
     public int BoxNumber { get; set; }
 
-    private BoxEdit? BoxEdit { get; set; }
-
     public void Dispose()
     {
         RefreshService.OnAppStateChanged -= StateHasChanged;
@@ -21,25 +19,21 @@ public partial class BoxComponent : IDisposable
 
     protected override void OnParametersSet()
     {
-        if (AppState.SaveFile is null)
-        {
-            return;
-        }
-
-        AppState.SelectedBoxNumber = null;
-        AppState.SelectedBoxSlotNumber = null;
         ReloadBox();
     }
 
     private void ReloadBox()
     {
-        if (AppState.SaveFile is null)
+        if (AppState.SaveFile is null || AppState.BoxEdit is null)
         {
             return;
         }
 
-        BoxEdit = new(AppState.SaveFile);
-        BoxEdit.LoadBox(BoxNumber);
+        AppState.BoxEdit.LoadBox(AppState.SaveFile.CurrentBox);
+
+        AppState.SelectedBoxNumber = null;
+        AppState.SelectedBoxSlotNumber = null;
+
         RefreshService.Refresh();
     }
 }

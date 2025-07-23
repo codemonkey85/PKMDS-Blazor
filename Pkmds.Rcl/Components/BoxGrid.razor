@@ -1,12 +1,12 @@
 ﻿@inherits BasePkmdsComponent
 
-@if (BoxEdit is not null)
+@if (AppState.BoxEdit is not null)
 {
     <div class="@BoxGridClass">
         @for (var i = 0; i < (AppState.SaveFile?.BoxSlotCount ?? 0); i++)
         {
             var slotNum = i;
-            var pkm = BoxEdit[slotNum];
+            var pkm = AppState.BoxEdit[slotNum];
 
             <BoxSlotComponent BoxNumber="@BoxNumber"
                               SlotNumber="@slotNum"

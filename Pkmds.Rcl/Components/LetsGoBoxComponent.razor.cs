@@ -2,9 +2,6 @@ namespace Pkmds.Rcl.Components;
 
 public partial class LetsGoBoxComponent : IDisposable
 {
-    // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public BoxEdit? BoxEdit { get; set; }
-
     public void Dispose()
     {
         RefreshService.OnAppStateChanged -= StateHasChanged;
@@ -19,22 +16,21 @@ public partial class LetsGoBoxComponent : IDisposable
 
     protected override void OnParametersSet()
     {
-        if (AppState.SaveFile is null)
-        {
-            return;
-        }
-
         ReloadBox();
     }
 
     private void ReloadBox()
     {
-        if (AppState.SaveFile is null)
+        if (AppState.SaveFile is null || AppState.BoxEdit is null)
         {
             return;
         }
 
-        BoxEdit = new(AppState.SaveFile);
+        AppState.BoxEdit.LoadBox(AppState.SaveFile.CurrentBox);
+
+        AppState.SelectedBoxNumber = null;
+        AppState.SelectedBoxSlotNumber = null;
+
         RefreshService.Refresh();
     }
 }

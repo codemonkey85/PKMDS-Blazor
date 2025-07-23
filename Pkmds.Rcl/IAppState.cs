@@ -8,6 +8,8 @@ public interface IAppState
 
     SaveFile? SaveFile { get; set; }
 
+    BoxEdit? BoxEdit { get; }
+
     PKM? CopiedPokemon { get; set; }
 
     int? SelectedBoxNumber { get; set; }
