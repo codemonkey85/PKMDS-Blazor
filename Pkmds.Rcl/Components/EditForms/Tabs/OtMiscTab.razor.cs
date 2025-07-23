@@ -47,4 +47,30 @@ public partial class OtMiscTab : IDisposable
 
         Pokemon.OriginalTrainerGender = (byte)newGender;
     }
+
+    private void SetPokemonEc(uint newEc)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.EncryptionConstant = newEc;
+
+        AppService.LoadPokemonStats(Pokemon);
+        RefreshService.Refresh();
+    }
+
+    private void SetPokemonEc(string newEcHex)
+    {
+        if (Pokemon is null || !uint.TryParse(newEcHex, NumberStyles.HexNumber, null, out var parsedEc))
+        {
+            return;
+        }
+
+        Pokemon.EncryptionConstant = parsedEc;
+
+        AppService.LoadPokemonStats(Pokemon);
+        RefreshService.Refresh();
+    }
 }

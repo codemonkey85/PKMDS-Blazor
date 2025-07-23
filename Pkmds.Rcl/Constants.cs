@@ -2,6 +2,8 @@
 
 public static class Constants
 {
+    public static readonly PatternMask HexMask = new("########") { MaskChars = [new('#', "[0-9a-fA-F]")] };
+
     public const string AppTitle = "PKMDS: Pokémon Save Editor for Web";
 
     public const string AppShortTitle = "PKMDS for Web";
