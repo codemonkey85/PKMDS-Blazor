@@ -2,7 +2,11 @@
 
 @if (AppState.SaveFile is { } saveFile)
 {
-    <PartyGrid/>
+
+    if (saveFile.Version is not GameVersion.RSBOX)
+    {
+        <PartyGrid />
+    }
 
     @if (saveFile.Version is GameVersion.LG or GameVersion.GP or GameVersion.GE)
     {
