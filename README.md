@@ -4,6 +4,10 @@ A web app to edit your Pokémon save files. Check it out at [pkmds.app](https://
 
 **PLEASE NOTE: PKMDS does not, and will never, support custom ROMs.**
 
+**Note: this is a save editor, not a ROM editor.**
+
+A Pokémon save editor modifies the game’s save data, allowing changes to your current game progress, like your Pokémon’s stats, items, or location. A ROM editor, on the other hand, modifies the game’s core code, allowing for more extensive changes like new areas, characters, or even entirely new stories.
+
 **The app should fully work while offline, after initially caching everything it needs.**
 
 Powered by PKHeX.Core: https://github.com/kwsch/PKHeX
