@@ -66,5 +66,12 @@ else
             </MudTabPanel>
         }
 
+        @if (saveFile.HasPokeDex)
+        {
+            <MudTabPanel Text="Pokédex">
+                <PokedexTab/>
+            </MudTabPanel>
+        }
+
     </MudTabs>
 }
