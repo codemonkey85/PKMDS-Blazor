@@ -13,3 +13,9 @@
     grid-template-columns: repeat(4, 80px);
     grid-template-rows: repeat(5, 80px);
 }
+
+@media (max-width: 600px) {
+    .box-grid-30 {
+        width: 100%;
+    }
+}
