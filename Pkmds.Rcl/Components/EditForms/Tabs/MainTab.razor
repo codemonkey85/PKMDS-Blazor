@@ -338,7 +338,7 @@
         }
 
         <MudCheckBox Label="Shiny"
-                     @bind-Value:get="@Pokemon.IsShiny"
+                     @bind-Value:get="@Pokemon.GetIsShinySafe()"
                      @bind-Value:set="@(isShiny => OnShinySet(isShiny))"
                      For="@(() => Pokemon.IsShiny)"/>
 
