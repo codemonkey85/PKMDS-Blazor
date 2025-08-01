@@ -8,6 +8,12 @@
 
 @media (min-width: 1280px) {
     .box-grid-lets-go {
-        height: calc(100vh - 319px);
+        height: calc(100dvh - 319px);
+    }
+}
+
+@media (max-width: 600px) {
+    .box-grid-lets-go {
+        width: 100%;
     }
 }
