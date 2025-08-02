@@ -1,6 +1,6 @@
 ﻿.box-grid-30 {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, 64px);
     gap: 0.25rem;
     width: 100%;
     aspect-ratio: 6 / 5;

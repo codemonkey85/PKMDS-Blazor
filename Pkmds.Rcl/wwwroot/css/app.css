@@ -14,6 +14,10 @@ body, html {
     align-self: center;
 }
 
+.square-slot{
+    aspect-ratio: 1 / 1;
+}
+
 .slot-selected {
     background-color: orange;
 }
@@ -21,10 +25,6 @@ body, html {
 .slot-fill :hover {
     transform-origin: center;
     animation: bounce 500ms linear infinite;
-}
-
-.party-grid {
-    width: 462px; /* (68 + 4 + 5) * 30 */
 }
 
 .current-tera-type-image {
