@@ -13,8 +13,8 @@ public partial class PartyGrid : IDisposable
     private void SetSelectedPokemon(PKM? pokemon, int slotNumber) =>
         AppService.SetSelectedPartyPokemon(pokemon, slotNumber);
 
-    private string GetStyle(int slotNumber) => AppState.SelectedPartySlotNumber == slotNumber
-        ? Constants.SelectedSlotStyle
+    private string GetClass(int slotNumber) => AppState.SelectedPartySlotNumber == slotNumber
+        ? Constants.SelectedSlotClass
         : string.Empty;
 
     protected override void OnInitialized()

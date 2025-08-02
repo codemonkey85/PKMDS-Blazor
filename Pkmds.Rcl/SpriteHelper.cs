@@ -111,8 +111,9 @@ public static class SpriteHelper
     public static string GetMoveCategorySpriteFileName(int categoryId) =>
         string.Empty;
 
-    public static string GetSpriteCssClass(PKM? pkm) =>
-        $"d-flex align-items-center justify-center{((pkm?.Species).IsValidSpecies() ? " slot-fill" : string.Empty)}";
+    public static string GetSpriteCssClass(PKM? pkm) => (pkm?.Species).IsValidSpecies()
+        ? " slot-fill"
+        : string.Empty;
 
     private static bool IsItemMail(int item, EntityContext context) => context switch
     {

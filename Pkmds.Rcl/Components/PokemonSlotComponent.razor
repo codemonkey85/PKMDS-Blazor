@@ -2,21 +2,19 @@
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
-          Width="68px"
-          Height="68px"
-          Class="@SpriteHelper.GetSpriteCssClass(Pokemon)"
-          Style="@GetStyle()">
-    @{ var title = GetPokemonTitle(); }
-    <object class="pkm-sprite"
-            type="image/png"
-            style="object-fit: contain;"
-            data="@(Pokemon is { Species: > 0 }
-                      ? SpriteHelper.GetPokemonSpriteFilename(Pokemon)
-                      : null)"
-            title="@title">
-        <img class="pkm-sprite"
-             src="@SpriteHelper.PokemonFallbackImageFileName"
-             title="@title"
-             alt="@title">
-    </object>
+          Class="@($"square-slot {GetClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
+    <div class="pokemon-slot">
+        @{ var title = GetPokemonTitle(); }
+        <object class="pkm-sprite"
+                type="image/png"
+                data="@(Pokemon is { Species: > 0 }
+                          ? SpriteHelper.GetPokemonSpriteFilename(Pokemon)
+                          : null)"
+                title="@title">
+            <img class="pkm-sprite"
+                 src="@SpriteHelper.PokemonFallbackImageFileName"
+                 title="@title"
+                 alt="@title">
+        </object>
+    </div>
 </MudPaper>

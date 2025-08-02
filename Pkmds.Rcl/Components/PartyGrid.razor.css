@@ -1,0 +1,7 @@
+.party-grid {
+    display: grid;
+    gap: 0.25rem;
+    width: 100%;
+    aspect-ratio: 6 / 1;
+    margin: 0 auto;
+}

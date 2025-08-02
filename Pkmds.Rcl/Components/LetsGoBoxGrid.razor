@@ -5,7 +5,7 @@
     <MudText>
         Note: The box grid is scrollable.
     </MudText>
-    <div class="overflow-auto box-grid-lets-go">
+    <div class="overflow-x-hidden overflow-y-none box-grid-lets-go">
         @{
             var count = 0;
         }
@@ -16,7 +16,7 @@
             <LetsGoBoxSlotComponent SlotNumber="@slotNum"
                                     Pokemon="@pkm"
                                     OnSlotClick="@(() => SetSelectedPokemon(pkm, slotNum))"
-                                    GetStyleFunction="@(() => GetStyle(slotNum))"/>
+                                    GetClassFunction="@(() => GetClass(slotNum))"/>
 
             count++;
         }

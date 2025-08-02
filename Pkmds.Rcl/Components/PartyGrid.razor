@@ -15,17 +15,17 @@
                     <PokemonSlotComponent Pokemon="@pkm"
                                           SlotNumber="@slotNum"
                                           OnSlotClick="@(() => SetSelectedPokemon(pkm, slotNum))"
-                                          GetStyleFunction="@(() => GetStyle(slotNum))"/>
+                                          GetClassFunction="@(() => GetClass(slotNum))"/>
                 </MudItem>
             }
         </MudGrid>
-        <MudButton OnClick="@ExportAsShowdown"
-                   ButtonType="@ButtonType.Button"
-                   Variant="@Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.Share"
-                   Class="my-3"
-                   Color="@Color.Default">
-            Export Party As Showdown
-        </MudButton>
     </div>
+    <MudButton OnClick="@ExportAsShowdown"
+                ButtonType="@ButtonType.Button"
+                Variant="@Variant.Filled"
+                StartIcon="@Icons.Material.Filled.Share"
+                Class="my-3"
+                Color="@Color.Default">
+        Export Party As Showdown
+    </MudButton>
 }
