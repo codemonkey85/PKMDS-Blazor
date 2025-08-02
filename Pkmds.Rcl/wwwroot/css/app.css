@@ -9,14 +9,13 @@ body, html {
     box-sizing: border-box;
 }
 
-.pkm-sprite {
+.item-sprite {
     object-fit: contain;
     align-self: center;
 }
 
-.item-sprite {
-    object-fit: contain;
-    align-self: center;
+.slot-selected {
+    background-color: orange;
 }
 
 .slot-fill :hover {

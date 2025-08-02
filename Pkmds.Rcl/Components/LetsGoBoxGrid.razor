@@ -16,7 +16,7 @@
             <LetsGoBoxSlotComponent SlotNumber="@slotNum"
                                     Pokemon="@pkm"
                                     OnSlotClick="@(() => SetSelectedPokemon(pkm, slotNum))"
-                                    GetStyleFunction="@(() => GetStyle(slotNum))"/>
+                                    GetClassFunction="@(() => GetClass(slotNum))"/>
 
             count++;
         }

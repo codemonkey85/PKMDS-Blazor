@@ -5,7 +5,7 @@ public partial class LetsGoBoxGrid
     private void SetSelectedPokemon(PKM? pokemon, int slotNumber) =>
         AppService.SetSelectedLetsGoPokemon(pokemon, slotNumber);
 
-    private string GetStyle(int slotNumber) => AppState.SelectedBoxSlotNumber == slotNumber
-        ? Constants.SelectedSlotStyle
+    private string GetClass(int slotNumber) => AppState.SelectedBoxSlotNumber == slotNumber
+        ? Constants.SelectedSlotClass
         : string.Empty;
 }

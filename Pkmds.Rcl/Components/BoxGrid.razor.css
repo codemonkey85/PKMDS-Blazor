@@ -1,9 +1,11 @@
 ﻿.box-grid-30 {
-    width: 480px;
-    height: 400px;
     display: grid;
-    grid-template-columns: repeat(6, 80px);
-    grid-template-rows: repeat(5, 80px);
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.25rem;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 6 / 5;
+    margin: 0 auto;
 }
 
 .box-grid-20 {
@@ -12,4 +14,10 @@
     display: grid;
     grid-template-columns: repeat(4, 80px);
     grid-template-rows: repeat(5, 80px);
+}
+
+.grid-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem;
 }

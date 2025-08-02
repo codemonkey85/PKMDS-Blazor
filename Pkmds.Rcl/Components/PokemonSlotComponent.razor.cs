@@ -12,7 +12,7 @@ public partial class PokemonSlotComponent : IDisposable
     public EventCallback OnSlotClick { get; set; }
 
     [Parameter, EditorRequired]
-    public Func<string>? GetStyleFunction { get; set; }
+    public Func<string>? GetClassFunction { get; set; }
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
@@ -20,8 +20,8 @@ public partial class PokemonSlotComponent : IDisposable
     private async Task HandleClick() =>
         await OnSlotClick.InvokeAsync();
 
-    private string GetStyle() =>
-        GetStyleFunction?.Invoke() ?? string.Empty;
+    private string GetClass() =>
+        GetClassFunction?.Invoke() ?? string.Empty;
 
     protected override void OnInitialized() =>
         RefreshService.OnAppStateChanged += StateHasChanged;

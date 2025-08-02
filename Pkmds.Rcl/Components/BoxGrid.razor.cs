@@ -16,8 +16,8 @@ public partial class BoxGrid : IDisposable
     private void SetSelectedPokemon(PKM? pokemon, int boxNumber, int slotNumber) =>
         AppService.SetSelectedBoxPokemon(pokemon, boxNumber, slotNumber);
 
-    private string GetStyle(int slotNumber) => AppState.SelectedBoxSlotNumber == slotNumber
-        ? Constants.SelectedSlotStyle
+    private string GetClass(int slotNumber) => AppState.SelectedBoxSlotNumber == slotNumber
+        ? Constants.SelectedSlotClass
         : string.Empty;
 
     protected override void OnInitialized() =>

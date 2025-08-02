@@ -15,7 +15,7 @@
                     <PokemonSlotComponent Pokemon="@pkm"
                                           SlotNumber="@slotNum"
                                           OnSlotClick="@(() => SetSelectedPokemon(pkm, slotNum))"
-                                          GetStyleFunction="@(() => GetStyle(slotNum))"/>
+                                          GetClassFunction="@(() => GetClass(slotNum))"/>
                 </MudItem>
             }
         </MudGrid>
