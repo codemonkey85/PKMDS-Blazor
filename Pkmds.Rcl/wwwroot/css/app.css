@@ -9,6 +9,10 @@ body, html {
     box-sizing: border-box;
 }
 
+.pkm-sprite{
+
+}
+
 .item-sprite {
     object-fit: contain;
     align-self: center;
