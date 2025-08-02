@@ -2,10 +2,10 @@
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
-          Class="@GetClass()">
+          Class="@($"{GetClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
     <div class="pokemon-slot">
         @{ var title = GetPokemonTitle(); }
-        <object class="@($"pkm-sprite {SpriteHelper.GetSpriteCssClass(Pokemon)}")"
+        <object class="pkm-sprite"
                 type="image/png"
                 data="@(Pokemon is { Species: > 0 }
                           ? SpriteHelper.GetPokemonSpriteFilename(Pokemon)
