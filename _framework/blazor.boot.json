@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Pkmds.Web",
   "resources": {
-    "hash": "sha256-JmaGSLhSSxIVFk6pAmbYo7E1oWFUtfldg7ziCC8rF6c=",
+    "hash": "sha256-iZi6R+QS63C8DGm3g8jSZpRkX591V4uEh9/aujJx5EM=",
     "fingerprinting": {
       "KristofferStrube.Blazor.FileAPI.y7qr9qlbwg.wasm": "KristofferStrube.Blazor.FileAPI.wasm",
       "KristofferStrube.Blazor.FileSystem.l7rerd8wys.wasm": "KristofferStrube.Blazor.FileSystem.wasm",
@@ -61,8 +61,8 @@
       "System.Web.HttpUtility.snlvgg9mwl.wasm": "System.Web.HttpUtility.wasm",
       "System.wznexm8bk2.wasm": "System.wasm",
       "System.Private.CoreLib.cu83oydy2z.wasm": "System.Private.CoreLib.wasm",
-      "Pkmds.Rcl.2k1bk8myik.wasm": "Pkmds.Rcl.wasm",
-      "Pkmds.Web.p1j3nv9p95.wasm": "Pkmds.Web.wasm",
+      "Pkmds.Rcl.6p5zycv6v7.wasm": "Pkmds.Rcl.wasm",
+      "Pkmds.Web.7ahcycv37k.wasm": "Pkmds.Web.wasm",
       "dotnet.native.jt1myu9cul.js": "dotnet.native.js",
       "dotnet.native.48p1iit2bb.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
@@ -146,8 +146,8 @@
       "System.Threading.acwnquwc9t.wasm": "sha256-hmq7E5RBDuX9WHoN8bZjejvmxHmSFsAk0rO4O+E/LOg=",
       "System.Web.HttpUtility.snlvgg9mwl.wasm": "sha256-mCAQdAZlOETmCbODuWmA5oSWWIhiY3ROW8LbO6BDS4s=",
       "System.wznexm8bk2.wasm": "sha256-/Imz/Enqa2AZc4T3k/CqtsM6674KRN9OUtvK4Nokhew=",
-      "Pkmds.Rcl.2k1bk8myik.wasm": "sha256-onB/HL2NYpc7Kw4y7MTWnixTyOt4NUsA9Kt5LlX3LgY=",
-      "Pkmds.Web.p1j3nv9p95.wasm": "sha256-LaZCZkG02GFU8tAc/7N705P/O3kPT2fMQz4rs1BlPkY="
+      "Pkmds.Rcl.6p5zycv6v7.wasm": "sha256-mokjszouumJJljgPMJZwleCcedH/yYLAfEq+fWe87aA=",
+      "Pkmds.Web.7ahcycv37k.wasm": "sha256-f6SEG24dNJJ+vdWX1jVKLAZyJiSII+p235tmKtMdSNE="
     }
   },
   "cacheBootResources": true,

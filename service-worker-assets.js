@@ -1,12 +1,12 @@
 self.assetsManifest = {
-  "version": "3fMJZLuU",
+  "version": "UIcx3Gk7",
   "assets": [
     {
       "hash": "sha256-ocTTuvwGdfwNBTdUQMJ40/QJlTMHjVFuE+zeR5fqjLA=",
       "url": "BrowserNotSupported.html"
     },
     {
-      "hash": "sha256-jqffToLgbwyOkOmciz9qt/EoTAXcnEfvOlCYy5Zm80Q=",
+      "hash": "sha256-dq30b5QVSA0fe4sx3zbIlAy0LhocMcnVbIQqw8FCAUg=",
       "url": "Pkmds.Web.styles.css"
     },
     {
@@ -38,11 +38,11 @@ self.assetsManifest = {
       "url": "_content/MudBlazor/MudBlazor.min.js"
     },
     {
-      "hash": "sha256-wATMj3rtj4HAlCvq86l9UNEfwEM8M8vczcOvqfAK+2s=",
-      "url": "_content/Pkmds.Rcl/Pkmds.Rcl.cpfztdnreg.bundle.scp.css"
+      "hash": "sha256-I3nK8vVDF0WtNkbMl+VkzrJv0SwC8j4hlFzm1n9qzQ8=",
+      "url": "_content/Pkmds.Rcl/Pkmds.Rcl.xvi93nigun.bundle.scp.css"
     },
     {
-      "hash": "sha256-KaK1bYQfryxo6WgbyZ6eBusaQ6rsYzLVLN+Ygll/6k4=",
+      "hash": "sha256-SpNqS2fj6dw6YTNMD9JacO6JYJcQgvA/XSrc8xkGKUM=",
       "url": "_content/Pkmds.Rcl/css/app.css"
     },
     {
@@ -10338,12 +10338,12 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.pqsa1frnj4.wasm"
     },
     {
-      "hash": "sha256-onB/HL2NYpc7Kw4y7MTWnixTyOt4NUsA9Kt5LlX3LgY=",
-      "url": "_framework/Pkmds.Rcl.2k1bk8myik.wasm"
+      "hash": "sha256-mokjszouumJJljgPMJZwleCcedH/yYLAfEq+fWe87aA=",
+      "url": "_framework/Pkmds.Rcl.6p5zycv6v7.wasm"
     },
     {
-      "hash": "sha256-LaZCZkG02GFU8tAc/7N705P/O3kPT2fMQz4rs1BlPkY=",
-      "url": "_framework/Pkmds.Web.p1j3nv9p95.wasm"
+      "hash": "sha256-f6SEG24dNJJ+vdWX1jVKLAZyJiSII+p235tmKtMdSNE=",
+      "url": "_framework/Pkmds.Web.7ahcycv37k.wasm"
     },
     {
       "hash": "sha256-8DPO4Q8w/P535HS9nYD0vIoB3fR2ebwLkb2/n2H17J4=",
@@ -10478,7 +10478,7 @@ self.assetsManifest = {
       "url": "_framework/System.wznexm8bk2.wasm"
     },
     {
-      "hash": "sha256-qDp2IXTAnwypnopHotx9fNKGimgVpBWRADO+PuCIG9k=",
+      "hash": "sha256-81fHEsVJ5i1tLCHWPaqWuz2wMtJwAkuSxQ6r1YkpIDI=",
       "url": "_framework/blazor.boot.json"
     },
     {
