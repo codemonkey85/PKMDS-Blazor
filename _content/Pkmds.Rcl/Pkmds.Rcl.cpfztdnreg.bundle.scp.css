@@ -1,10 +1,11 @@
 /* _content/Pkmds.Rcl/Components/BoxGrid.razor.rz.scp.css */
 .box-grid-30[b-lib7bz3622] {
-    width: 480px;
-    height: 400px;
     display: grid;
-    grid-template-columns: repeat(6, 80px);
-    grid-template-rows: repeat(5, 80px);
+    grid-template-columns: repeat(6, 64px);
+    gap: 0.25rem;
+    width: 100%;
+    aspect-ratio: 6 / 5;
+    margin: 0 auto;
 }
 
 .box-grid-20[b-lib7bz3622] {
@@ -13,12 +14,6 @@
     display: grid;
     grid-template-columns: repeat(4, 80px);
     grid-template-rows: repeat(5, 80px);
-}
-
-@media (max-width: 600px) {
-    .box-grid-30[b-lib7bz3622] {
-        width: 100%;
-    }
 }
 /* _content/Pkmds.Rcl/Components/Layout/MainLayout.razor.rz.scp.css */
 #blazor-error-ui[b-hbx2molpah] {
@@ -50,13 +45,7 @@
 
 @media (min-width: 1280px) {
     .box-grid-lets-go[b-zfen6jmu56] {
-        height: calc(100dvh - 319px);
-    }
-}
-
-@media (max-width: 600px) {
-    .box-grid-lets-go[b-zfen6jmu56] {
-        width: 100%;
+        height: calc(100vh - 319px);
     }
 }
 /* _content/Pkmds.Rcl/Components/MarkingComponent.razor.rz.scp.css */
@@ -103,6 +92,14 @@
 .gen-3[b-43837kdgh7] {
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 0;
+}
+/* _content/Pkmds.Rcl/Components/PartyGrid.razor.rz.scp.css */
+.party-grid[b-bobigpg0wh] {
+    display: grid;
+    gap: 0.25rem;
+    width: 100%;
+    aspect-ratio: 6 / 1;
+    margin: 0 auto;
 }
 /* _content/Pkmds.Rcl/Components/PokemonStorageComponent.razor.rz.scp.css */
 .select-container[b-m9s6mzq2tk] {

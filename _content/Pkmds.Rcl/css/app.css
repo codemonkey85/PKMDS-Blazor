@@ -9,23 +9,22 @@ body, html {
     box-sizing: border-box;
 }
 
-.pkm-sprite {
-    object-fit: contain;
-    align-self: center;
-}
-
 .item-sprite {
     object-fit: contain;
     align-self: center;
 }
 
+.square-slot{
+    aspect-ratio: 1 / 1;
+}
+
+.slot-selected {
+    background-color: orange;
+}
+
 .slot-fill :hover {
     transform-origin: center;
     animation: bounce 500ms linear infinite;
-}
-
-.party-grid {
-    width: 462px; /* (68 + 4 + 5) * 30 */
 }
 
 .current-tera-type-image {
