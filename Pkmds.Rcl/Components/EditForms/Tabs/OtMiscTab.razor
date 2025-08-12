@@ -136,9 +136,9 @@
 
                 <MudTextField Label="Home Tracker"
                               Variant="@Variant.Outlined"
-                              MaxLength="8"
+                              MaxLength="16"
                               Mask="@Constants.HexMask"
-                              @bind-Value:get="@homeTrack.Tracker.ToString("X8")"
+                              @bind-Value:get="@homeTrack.Tracker.ToString("X16")"
                               @bind-Value:set="@((string newHomeTrackerHex) => SetPokemonHomeTracker(newHomeTrackerHex))" />
 
             </MudItem>
