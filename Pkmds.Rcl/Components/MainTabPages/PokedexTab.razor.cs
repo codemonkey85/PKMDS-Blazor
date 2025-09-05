@@ -125,6 +125,12 @@ public partial class PokedexTab
         }
     }
 
+    private void ShowNotImplementedMessage() =>
+        DialogService.ShowMessageBox(
+            "Not implemented",
+            "This feature is not implemented yet. Please check back later.",
+            options: new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small });
+
     // ReSharper disable UnusedParameter.Local
     private void FillGen4Pokedex(SAV4 s4) => ShowNotImplementedMessage();
 
@@ -149,10 +155,4 @@ public partial class PokedexTab
 
     private void FillGen9Rev1Pokedex(SAV9SV sv) => ShowNotImplementedMessage();
     // ReSharper restore UnusedParameter.Local
-
-    private void ShowNotImplementedMessage() =>
-        DialogService.ShowMessageBox(
-            "Not implemented",
-            "This feature is not implemented yet. Please check back later.",
-            options: new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small });
 }

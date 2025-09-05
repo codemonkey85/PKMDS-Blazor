@@ -11,24 +11,24 @@
     border: 1px solid transparent;
 }
 
-    .pokemon-slot img {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-        display: block;
-    }
+.pokemon-slot img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
 
-    .pokemon-slot object {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-        display: block;
-    }
+.pokemon-slot object {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
 
-    .pokemon-slot img:empty {
-        display: none;
-    }
+.pokemon-slot img:empty {
+    display: none;
+}
 
-    .pokemon-slot object:empty {
-        display: none;
-    }
+.pokemon-slot object:empty {
+    display: none;
+}

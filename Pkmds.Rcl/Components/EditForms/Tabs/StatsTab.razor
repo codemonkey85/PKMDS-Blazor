@@ -105,7 +105,9 @@
                                  title="HP IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
-                                 Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                 Max="@(saveGeneration == 1 && Pokemon is PK1
+                                          ? 15
+                                          : 31)"
                                  Value="@Pokemon.IV_HP"
                                  ValueChanged="@((int newValue) => OnSetIv(Stats.HP, newValue))"
                                  For="@(() => Pokemon.IV_HP)"
@@ -117,7 +119,9 @@
                                  title="Attack IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
-                                 Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                 Max="@(saveGeneration == 1 && Pokemon is PK1
+                                          ? 15
+                                          : 31)"
                                  Value="@Pokemon.IV_ATK"
                                  ValueChanged="@((int newValue) => OnSetIv(Stats.Attack, newValue))"
                                  For="@(() => Pokemon.IV_ATK)"/>
@@ -127,7 +131,9 @@
                                  title="Defense IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
-                                 Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                 Max="@(saveGeneration == 1 && Pokemon is PK1
+                                          ? 15
+                                          : 31)"
                                  Value="@Pokemon.IV_DEF"
                                  ValueChanged="@((int newValue) => OnSetIv(Stats.Defense, newValue))"
                                  For="@(() => Pokemon.IV_DEF)"/>
@@ -160,7 +166,9 @@
                                      title="Special Attack IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                     Max="@(saveGeneration == 1 && Pokemon is PK1
+                                              ? 15
+                                              : 31)"
                                      Value="@Pokemon.IV_SPA"
                                      ValueChanged="@((int newValue) => OnSetIv(Stats.SpecialAttack, newValue))"
                                      For="@(() => Pokemon.IV_SPA)"/>
@@ -170,7 +178,9 @@
                                      title="Special Defense IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                     Max="@(saveGeneration == 1 && Pokemon is PK1
+                                              ? 15
+                                              : 31)"
                                      Value="@Pokemon.IV_SPD"
                                      ValueChanged="@((int newValue) => OnSetIv(Stats.SpecialDefense, newValue))"
                                      For="@(() => Pokemon.IV_SPD)"/>
@@ -180,7 +190,9 @@
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
-                                     Max="@(saveGeneration == 1 && Pokemon is PK1 ? 15 : 31)"
+                                     Max="@(saveGeneration == 1 && Pokemon is PK1
+                                              ? 15
+                                              : 31)"
                                      Value="@Pokemon.IV_SPE"
                                      ValueChanged="@((int newValue) => OnSetIv(Stats.Speed, newValue))"
                                      For="@(() => Pokemon.IV_SPE)"/>

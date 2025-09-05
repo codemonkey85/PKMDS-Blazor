@@ -290,7 +290,7 @@ public partial class MainLayout : IDisposable
 
     private async Task WriteFile(byte[] data, string fileName, string fileTypeExtension, string fileTypeDescription)
     {
-        if (await FileSystemAccessService.IsSupportedAsync() == false)
+        if (!await FileSystemAccessService.IsSupportedAsync())
         {
             await WriteFileOldWay(data, fileName);
             return;

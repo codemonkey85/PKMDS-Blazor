@@ -21,7 +21,7 @@
         @foreach (var gameVersion in GameInfo.FilteredSources.Games)
         {
             <MudSelectItem Value="@((GameVersion)gameVersion.Value)"
-                           @key="@((GameVersion)gameVersion.Value)" />
+                           @key="@((GameVersion)gameVersion.Value)"/>
         }
     </MudSelect>
 
@@ -32,7 +32,7 @@
                      @bind-Value:get="@GetMetLocation()"
                      @bind-Value:set="@(metLocation => Pokemon.MetLocation = (ushort)metLocation.Value)"
                      SearchFunc="@SearchMetLocations"
-                     ToStringFunc="@(metLocation => metLocation?.Text)" />
+                     ToStringFunc="@(metLocation => metLocation?.Text)"/>
 
     @if (saveGeneration >= 3)
     {
@@ -51,7 +51,7 @@
                                   ObjectFit="@ObjectFit.Contain"
                                   ObjectPosition="@ObjectPosition.Center"
                                   Width="22"
-                                  Height="22" />
+                                  Height="22"/>
                         <MudText>
                             @ball.Text
                         </MudText>
@@ -66,7 +66,7 @@
         <MudNumericField Label="Met Level"
                          Variant="@Variant.Outlined"
                          @bind-Value="@Pokemon.MetLevel"
-                         For="@(() => Pokemon.MetLevel)" />
+                         For="@(() => Pokemon.MetLevel)"/>
     }
 
     @switch (saveGeneration)
@@ -92,7 +92,7 @@
             </label>
             <InputDate Type="@InputDateType.Date"
                        id="met-date"
-                       @bind-Value="@Pokemon.MetDate" />
+                       @bind-Value="@Pokemon.MetDate"/>
             break;
     }
 
@@ -102,7 +102,7 @@
                      T="@bool"
                      Value="@PokemonMetAsEgg"
                      ValueChanged="@MetAsEggChanged"
-                     For="@(() => Pokemon.FatefulEncounter)" />
+                     For="@(() => Pokemon.FatefulEncounter)"/>
     }
 
     @if (saveGeneration >= 4 && PokemonMetAsEgg)
@@ -115,25 +115,25 @@
                          @bind-Value:set="@(metLocation => Pokemon.EggLocation = (ushort)metLocation.Value)"
                          DebounceInterval="200"
                          SearchFunc="@SearchEggMetLocations"
-                         ToStringFunc="@(metLocation => metLocation?.Text)" />
+                         ToStringFunc="@(metLocation => metLocation?.Text)"/>
 
         <label for="egg-met-date">
             Met Date
         </label>
         <InputDate Type="@InputDateType.Date"
                    id="egg-met-date"
-                   @bind-Value="@Pokemon.EggMetDate" />
+                   @bind-Value="@Pokemon.EggMetDate"/>
     }
 
     <MudCheckBox Label="Is Egg"
                  @bind-Value="@Pokemon.IsEgg"
                  @bind-Value:after="@RefreshService.Refresh"
-                 For="@(() => Pokemon.IsEgg)" />
+                 For="@(() => Pokemon.IsEgg)"/>
 
     @if (saveGeneration >= 3)
     {
         <MudCheckBox Label="Fateful Encounter"
                      @bind-Value="@Pokemon.FatefulEncounter"
-                     For="@(() => Pokemon.FatefulEncounter)" />
+                     For="@(() => Pokemon.FatefulEncounter)"/>
     }
 }

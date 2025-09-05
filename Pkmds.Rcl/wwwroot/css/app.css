@@ -9,7 +9,7 @@ body, html {
     box-sizing: border-box;
 }
 
-.pkm-sprite{
+.pkm-sprite {
 
 }
 
@@ -18,7 +18,7 @@ body, html {
     align-self: center;
 }
 
-.square-slot{
+.square-slot {
     aspect-ratio: 1 / 1;
 }
 

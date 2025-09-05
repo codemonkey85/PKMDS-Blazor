@@ -31,12 +31,13 @@
     }
 
     @* ReSharper disable once CSharpWarnings::CS8603 *@
-    <MudAutocomplete T="@ComboItem"
+    <MudAutocomplete T="@(ComboItem?)"
                      Label="Species"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
                      @bind-Value:set="@(species =>
                                       {
+                                          if (species is null) return;
                                           Pokemon.Species = (ushort)species.Value;
                                           AppService.LoadPokemonStats(Pokemon);
                                           RefreshService.Refresh();
