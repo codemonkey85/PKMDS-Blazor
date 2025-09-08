@@ -75,9 +75,8 @@ public partial class MainLayout : IDisposable
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
-            AppState.SaveFile = SaveUtil.GetVariantSAV(data, selectedFile.Name);
 
-            if (AppState.SaveFile is null)
+            if (!SaveUtil.TryGetSaveFile(data, out var saveFile, selectedFile.Name))
             {
                 const string message =
                     "The selected save file is invalid. If this save file came from a ROM hack, it is not supported. Otherwise, try saving in-game and re-exporting / re-uploading the save file.";
@@ -110,7 +109,7 @@ public partial class MainLayout : IDisposable
         }
 
         AppState.ShowProgressIndicator = true;
-        await WriteFile(AppState.SaveFile.Write(), browserLoadSaveFile?.Name ?? "save.sav", ".sav", "Save File");
+        await WriteFile(AppState.SaveFile.Write().ToArray(), browserLoadSaveFile?.Name ?? "save.sav", ".sav", "Save File");
         AppState.ShowProgressIndicator = false;
     }
 
