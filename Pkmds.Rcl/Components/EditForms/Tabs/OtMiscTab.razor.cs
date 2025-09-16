@@ -73,4 +73,14 @@ public partial class OtMiscTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
         RefreshService.Refresh();
     }
+
+    private void SetPokemonHomeTracker(string newPidHex)
+    {
+        if (Pokemon is not IHomeTrack homeTrack || !uint.TryParse(newPidHex, NumberStyles.HexNumber, null, out var parsedPid))
+        {
+            return;
+        }
+
+        homeTrack.Tracker = parsedPid;
+    }
 }

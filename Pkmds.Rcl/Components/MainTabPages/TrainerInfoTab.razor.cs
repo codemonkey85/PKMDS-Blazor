@@ -2,13 +2,52 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class TrainerInfoTab : IDisposable
 {
-    private DateTime? GameStartedDate { get; set; }
+    private DateTime? GameStartedDate
+    {
+        get;
+        set
+        {
+            field = value;
+            UpdateGameStarted();
+        }
+    }
 
-    private TimeSpan? GameStartedTime { get; set; }
+    private TimeSpan? GameStartedTime
+    {
+        get;
+        set
+        {
+            field = value;
+            UpdateGameStarted();
+        }
+    }
 
-    private DateTime? HallOfFameDate { get; set; }
+    private DateTime? HallOfFameDate
+    {
+        get;
+        set
+        {
+            field = value;
+            UpdateHallOfFame();
+        }
+    }
 
-    private TimeSpan? HallOfFameTime { get; set; }
+    private TimeSpan? HallOfFameTime
+    {
+        get;
+        set
+        {
+            field = value;
+            UpdateHallOfFame();
+        }
+    }
+
+    private InputDateType GameStartType => AppState.SaveFile switch
+    {
+        SAV4 or SAV5 or SAV6 or SAV7 or SAV8SWSH or SAV8BS or SAV8LA => InputDateType.DateTimeLocal,
+        SAV9SV => InputDateType.Date,
+        _ => InputDateType.Date
+    };
 
     private List<ComboItem> Countries { get; set; } = [];
 
@@ -172,6 +211,19 @@ public partial class TrainerInfoTab : IDisposable
             case SAV7 sav:
                 DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
                 break;
+            case SAV8SWSH sav:
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                break;
+            case SAV8BS sav:
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                break;
+            case SAV8LA sav:
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                break;
+            case SAV9SV sav:
+                date = sav.EnrollmentDate.Timestamp;
+                time = sav.EnrollmentDate.Timestamp;
+                break;
             default:
                 return (null, null);
         }
@@ -207,6 +259,21 @@ public partial class TrainerInfoTab : IDisposable
                 sav.SecondsToStart =
                     (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
+            case SAV8SWSH sav:
+                sav.SecondsToStart =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV8BS sav:
+                sav.SecondsToStart =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV8LA sav:
+                sav.SecondsToStart =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV9SV sav:
+                sav.EnrollmentDate.Timestamp = date;
+                break;
             default:
                 return;
         }
@@ -234,6 +301,18 @@ public partial class TrainerInfoTab : IDisposable
                 DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
                 break;
             case SAV7 sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            case SAV8SWSH sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            case SAV8BS sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            case SAV8LA sav:
+                DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
+                break;
+            case SAV9SV sav:
                 DateUtil.GetDateTime2000(sav.SecondsToFame, out date, out time);
                 break;
             default:
@@ -268,6 +347,22 @@ public partial class TrainerInfoTab : IDisposable
                     (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV7 sav:
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV8SWSH sav:
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV8BS sav:
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV8LA sav:
+                sav.SecondsToFame =
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                break;
+            case SAV9SV sav:
                 sav.SecondsToFame =
                     (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;

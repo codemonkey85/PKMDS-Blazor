@@ -2,7 +2,6 @@
 
 @if (AppState is { SaveFile: { } saveFile, BoxEdit: { } boxEdit })
 {
-
     if (saveFile.Version is not GameVersion.RSBOX)
     {
         <PartyGrid/>
@@ -52,6 +51,6 @@
             </MudIconButton>
         </div>
 
-        <BoxComponent BoxNumber="@boxEdit.CurrentBox" />
+        <BoxComponent BoxNumber="@boxEdit.CurrentBox"/>
     }
 }

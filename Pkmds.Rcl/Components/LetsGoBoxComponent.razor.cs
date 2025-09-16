@@ -14,10 +14,7 @@ public partial class LetsGoBoxComponent : IDisposable
         RefreshService.OnBoxStateChanged += ReloadBox;
     }
 
-    protected override void OnParametersSet()
-    {
-        ReloadBox();
-    }
+    protected override void OnParametersSet() => ReloadBox();
 
     private void ReloadBox()
     {

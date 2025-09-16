@@ -142,39 +142,35 @@
         @if (saveGeneration >= 4)
         {
             <div class="form-field">
-                <MudDatePicker Label="Day Started"
-                               @bind-Date="@GameStartedDate"
-                               @bind-Date:after="@UpdateGameStarted"
-                               Variant="@Variant.Outlined"
-                               PickerVariant="@PickerVariant.Inline"/>
-            </div>
-
-            <div class="form-field">
-                <MudTimePicker Label="Time Started"
-                               @bind-Time="@GameStartedTime"
-                               @bind-Time:after="@UpdateGameStarted"
-                               TimeFormat="HH:mm:ss"
-                               Variant="@Variant.Outlined"
-                               PickerVariant="@PickerVariant.Inline"/>
+                <label for="game-start">
+                    Game Start
+                </label>
+                <InputDate Type="@GameStartType"
+                           id="game-start"
+                           @bind-Value="@GameStartedDate"/>
             </div>
 
             @if (saveGeneration <= 7)
             {
                 <div class="form-field">
-                    <MudDatePicker Label="Hall of Fame Day"
-                                   @bind-Date="@HallOfFameDate"
-                                   @bind-Date:after="@UpdateHallOfFame"
-                                   Variant="@Variant.Outlined"
-                                   PickerVariant="@PickerVariant.Inline"/>
+                    <label for="hall-of-fame">
+                        Hall of Fame
+                    </label>
+                    <InputDate Type="@InputDateType.DateTimeLocal"
+                               id="hall-of-fame"
+                               @bind-Value="@HallOfFameDate"/>
                 </div>
+            }
 
+            @if (saveFile is SAV9SV sv9)
+            {
                 <div class="form-field">
-                    <MudTimePicker Label="Hall of Fame Time"
-                                   @bind-Time="@HallOfFameTime"
-                                   @bind-Time:after="@UpdateHallOfFame"
-                                   TimeFormat="HH:mm:ss"
-                                   Variant="@Variant.Outlined"
-                                   PickerVariant="@PickerVariant.Inline"/>
+                    <label for="last-saved">
+                        Last Saved
+                    </label>
+                    <InputDate Type="@InputDateType.DateTimeLocal"
+                               id="last-saved"
+                               @bind-Value="@sv9.LastSaved.Timestamp"/>
                 </div>
             }
         }

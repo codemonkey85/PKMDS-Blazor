@@ -17,10 +17,7 @@ public partial class BoxComponent : IDisposable
         RefreshService.OnBoxStateChanged += ReloadBox;
     }
 
-    protected override void OnParametersSet()
-    {
-        ReloadBox();
-    }
+    protected override void OnParametersSet() => ReloadBox();
 
     private void ReloadBox()
     {

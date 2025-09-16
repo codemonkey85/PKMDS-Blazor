@@ -37,6 +37,7 @@
                      @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
                      @bind-Value:set="@(species =>
                                       {
+                                          if (species is null) return;
                                           Pokemon.Species = (ushort)species.Value;
                                           AppService.LoadPokemonStats(Pokemon);
                                           RefreshService.Refresh();
@@ -259,13 +260,13 @@
 
     @switch (saveGeneration)
     {
-        case 3:
+        case 3 when Pokemon is IPersonalAbility personalAbility:
             <MudSelect Label="Ability"
                        Variant="@Variant.Outlined"
                        @bind-Value:get="@Pokemon.Ability"
                        @bind-Value:set="@(ability => Pokemon.SetAbility(ability))"
                        For="@(() => Pokemon.Ability)">
-                @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon).DistinctBy(ability => ability.Value))
+                @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(personalAbility).DistinctBy(ability => ability.Value))
                 {
                     <MudSelectItem Value="@ability.Value"
                                    @key="ability.Value">

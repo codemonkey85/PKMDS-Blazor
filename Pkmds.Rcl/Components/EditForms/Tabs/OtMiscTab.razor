@@ -16,53 +16,53 @@
         @switch (saveFile.GetTrainerIDFormat())
         {
             case TrainerIDFormat.SixteenBit:
+            {
+                <MudItem xs="6"
+                         Class="@ColumnClass">
+                    <MudNumericField Label="Trainer ID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@Pokemon.TID16"
+                                     Format="@AppService.GetIdFormatString()"
+                                     For="@(() => Pokemon.TID16)"/>
+                </MudItem>
+
+                @if (saveGeneration >= 3)
                 {
                     <MudItem xs="6"
                              Class="@ColumnClass">
-                        <MudNumericField Label="Trainer ID"
+                        <MudNumericField Label="Trainer SID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value="@Pokemon.TID16"
-                                         Format="@AppService.GetIdFormatString()"
-                                         For="@(() => Pokemon.TID16)"/>
+                                         @bind-Value="@Pokemon.SID16"
+                                         Format="@AppService.GetIdFormatString(true)"
+                                         For="@(() => Pokemon.SID16)"/>
                     </MudItem>
-
-                    @if (saveGeneration >= 3)
-                    {
-                        <MudItem xs="6"
-                                 Class="@ColumnClass">
-                            <MudNumericField Label="Trainer SID"
-                                             Variant="@Variant.Outlined"
-                                             @bind-Value="@Pokemon.SID16"
-                                             Format="@AppService.GetIdFormatString(true)"
-                                             For="@(() => Pokemon.SID16)"/>
-                        </MudItem>
-                    }
                 }
+            }
                 break;
 
             case TrainerIDFormat.SixDigit:
+            {
+                <MudItem xs="6"
+                         Class="@ColumnClass">
+                    <MudNumericField Label="Trainer ID"
+                                     Variant="@Variant.Outlined"
+                                     @bind-Value="@Pokemon.TrainerTID7"
+                                     Format="@AppService.GetIdFormatString()"
+                                     For="@(() => Pokemon.TrainerTID7)"/>
+                </MudItem>
+
+                @if (saveGeneration >= 3)
                 {
                     <MudItem xs="6"
                              Class="@ColumnClass">
-                        <MudNumericField Label="Trainer ID"
+                        <MudNumericField Label="Trainer SID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value="@Pokemon.TrainerTID7"
-                                         Format="@AppService.GetIdFormatString()"
-                                         For="@(() => Pokemon.TrainerTID7)"/>
+                                         @bind-Value="@Pokemon.TrainerSID7"
+                                         Format="@AppService.GetIdFormatString(true)"
+                                         For="@(() => Pokemon.TrainerSID7)"/>
                     </MudItem>
-
-                    @if (saveGeneration >= 3)
-                    {
-                        <MudItem xs="6"
-                                 Class="@ColumnClass">
-                            <MudNumericField Label="Trainer SID"
-                                             Variant="@Variant.Outlined"
-                                             @bind-Value="@Pokemon.TrainerSID7"
-                                             Format="@AppService.GetIdFormatString(true)"
-                                             For="@(() => Pokemon.TrainerSID7)"/>
-                        </MudItem>
-                    }
                 }
+            }
                 break;
         }
 
@@ -116,6 +116,31 @@
                               Mask="@Constants.HexMask"
                               @bind-Value:get="@Pokemon.EncryptionConstant.ToString("X8")"
                               @bind-Value:set="@((string newEcHex) => SetPokemonEc(newEcHex))"/>
+            </MudItem>
+        }
+
+        @if (Pokemon is IHomeTrack homeTrack)
+        {
+            <MudItem xs="6"
+                     Class="@ColumnClass">
+
+                <MudCheckBox Label="Has Home Tracker"
+                             Value="@homeTrack.HasTracker"
+                             For="@(() => homeTrack.HasTracker)"
+                             ReadOnly/>
+
+            </MudItem>
+
+            <MudItem xs="6"
+                     Class="@ColumnClass">
+
+                <MudTextField Label="Home Tracker"
+                              Variant="@Variant.Outlined"
+                              MaxLength="16"
+                              Mask="@Constants.HexMask"
+                              @bind-Value:get="@homeTrack.Tracker.ToString("X16")"
+                              @bind-Value:set="@((string newHomeTrackerHex) => SetPokemonHomeTracker(newHomeTrackerHex))"/>
+
             </MudItem>
         }
 

@@ -357,7 +357,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             return Task.CompletedTask;
         }
 
-        gifts[index] = (DataMysteryGift)gift.Clone();
+        gifts[index] = gift.Clone();
 
         List<string> receivedFlags = [];
 
@@ -374,7 +374,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             for (var i = 0; i < album.Length; i++)
             {
                 var exist = album[i];
-                if (!exist.Empty)
+                if (!exist.IsEmpty)
                 {
                     continue;
                 }
@@ -462,7 +462,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             if (cards is MysteryBlock4 s4)
             {
                 // Replace the line causing the error with the following code
-                s4.IsDeliveryManActive = album.Any(g => !g.Empty);
+                s4.IsDeliveryManActive = album.Any(g => !g.IsEmpty);
                 MysteryBlock4.UpdateSlotPGT(album, saveFile is SAV4HGSS);
                 if (saveFile is SAV4HGSS hgss)
                 {

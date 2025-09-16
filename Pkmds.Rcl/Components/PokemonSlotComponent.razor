@@ -8,11 +8,11 @@
         {
             var title = GetPokemonTitle();
             <object class="pkm-sprite"
-                type="image/png"
-                data="@(Pokemon is { Species: > 0 }
-                          ? SpriteHelper.GetPokemonSpriteFilename(Pokemon)
-                          : null)"
-                title="@title">
+                    type="image/png"
+                    data="@(Pokemon is { Species: > 0 }
+                              ? SpriteHelper.GetPokemonSpriteFilename(Pokemon)
+                              : null)"
+                    title="@title">
                 <img class="pkm-sprite"
                      src="@SpriteHelper.PokemonFallbackImageFileName"
                      title="@title"
