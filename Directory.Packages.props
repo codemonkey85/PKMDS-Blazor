@@ -4,13 +4,13 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.3.0"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.110"/>
-        <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9"/>
-        <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.110"/>
-        <PackageVersion Include="MudBlazor" Version="8.12.0"/>
-        <PackageVersion Include="PKHeX.Core" Version="25.8.31"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="9.0.10"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.120"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.10"/>
+        <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.120"/>
+        <PackageVersion Include="MudBlazor" Version="8.13.0"/>
+        <PackageVersion Include="PKHeX.Core" Version="25.9.25"/>
     </ItemGroup>
 </Project>

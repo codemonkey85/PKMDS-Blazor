@@ -103,6 +103,7 @@ public partial class MainLayout : IDisposable
         }
 
         RefreshService.Refresh();
+        RefreshService.RefreshBoxAndPartyState();
     }
 
     private async Task ExportSaveFile()
