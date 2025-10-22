@@ -665,23 +665,24 @@
             </MudItem>
         }
 
-        @if (Pokemon is IAlphaReadOnly alphaReadOnly)
+        @switch (Pokemon)
         {
-            <MudItem xs="3">
-                <MudCheckBox Label="Alpha"
-                             Value="@alphaReadOnly.IsAlpha"
-                             Readonly/>
-            </MudItem>
+            case IAlpha alpha:
+                <MudItem xs="3">
+                    <MudCheckBox Label="Alpha"
+                                 @bind-Value="@alpha.IsAlpha"
+                                 For="@(() => alpha.IsAlpha)"/>
+                </MudItem>
+                break;
+            case IAlphaReadOnly alphaReadOnly:
+                <MudItem xs="3">
+                    <MudCheckBox Label="Alpha"
+                                 Value="@alphaReadOnly.IsAlpha"
+                                 Readonly/>
+                </MudItem>
+                break;
         }
 
-        @if (Pokemon is IAlpha alpha)
-        {
-            <MudItem xs="3">
-                <MudCheckBox Label="Alpha"
-                             @bind-Value="@alpha.IsAlpha"
-                             For="@(() => alpha.IsAlpha)"/>
-            </MudItem>
-        }
     </MudGrid>
 
     @if (Pokemon is ITeraType tt)
