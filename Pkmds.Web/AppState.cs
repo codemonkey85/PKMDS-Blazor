@@ -28,7 +28,7 @@ public record AppState : IAppState
         }
     }
 
-    public BoxEdit? BoxEdit { get; internal set; }
+    public BoxEdit? BoxEdit { get; private set; }
 
     public int CurrentLanguageId => SaveFile?.Language ?? (int)LanguageID.English;
 

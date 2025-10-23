@@ -79,6 +79,7 @@ public partial class MainLayout : IDisposable
             if (SaveUtil.TryGetSaveFile(data, out var saveFile, selectedFile.Name))
             {
                 AppState.SaveFile = saveFile;
+                AppState.BoxEdit?.LoadBox(saveFile.CurrentBox);
             }
             else
             {
