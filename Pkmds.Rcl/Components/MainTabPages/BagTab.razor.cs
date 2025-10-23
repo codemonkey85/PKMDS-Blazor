@@ -23,6 +23,8 @@ public partial class BagTab
 
     private bool IsSortedByIndex { get; set; } = true; // Set as true so first sort is ascending
 
+    private bool ShouldVirtualize { get; set; }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -84,21 +86,13 @@ public partial class BagTab
 
     private static string GetPouchName(InventoryPouch pouch) => pouch.Type switch
     {
-        InventoryType.None => "None",
-        InventoryType.Items => "Items",
-        InventoryType.KeyItems => "Key Items",
         InventoryType.TMHMs => "TMs/HMs",
-        InventoryType.Medicine => "Medicine",
-        InventoryType.Berries => "Berries",
-        InventoryType.Balls => "Balls",
+        InventoryType.KeyItems => "Key Items",
         InventoryType.BattleItems => "Battle Items",
         InventoryType.MailItems => "Mail Items",
         InventoryType.PCItems => "PC Items",
         InventoryType.FreeSpace => "Free Space",
         InventoryType.ZCrystals => "Z-Crystals",
-        InventoryType.Candy => "Candy",
-        InventoryType.Treasure => "Treasure",
-        InventoryType.Ingredients => "Ingredients",
         _ => pouch.Type.ToString()
     };
 
