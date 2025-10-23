@@ -14,6 +14,7 @@ public partial class PokemonStorageComponent : IDisposable
         }
 
         AppState.BoxEdit.MoveRight();
+        AppState.SaveFile.CurrentBox = AppState.BoxEdit.CurrentBox;
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
@@ -29,6 +30,7 @@ public partial class PokemonStorageComponent : IDisposable
         }
 
         AppState.BoxEdit.MoveLeft();
+        AppState.SaveFile.CurrentBox = AppState.BoxEdit.CurrentBox;
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
@@ -44,6 +46,7 @@ public partial class PokemonStorageComponent : IDisposable
         }
 
         AppState.BoxEdit.LoadBox(newBox);
+        AppState.SaveFile.CurrentBox = AppState.BoxEdit.CurrentBox;
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
