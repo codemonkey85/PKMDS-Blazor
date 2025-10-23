@@ -14,6 +14,8 @@ public partial class MysteryGiftDatabaseTab
 
     private string SearchText { get; set; } = string.Empty;
 
+    private bool ShinyOnly { get; set; }
+
     private IEnumerable<MysteryGift> EncounterDatabase { get; set; } = [];
 
     [Parameter]
@@ -29,12 +31,26 @@ public partial class MysteryGiftDatabaseTab
 
     private void OnSortOrFilterChanged()
     {
-        mysteryGiftsList = [.. EncounterDatabase];
+        IEnumerable<MysteryGift> mysteryGifts = [.. EncounterDatabase];
 
         if (!string.IsNullOrEmpty(SearchText))
         {
-            mysteryGiftsList = mysteryGiftsList.Where(g => g.Name.Contains(SearchText)).ToList();
+            mysteryGifts = mysteryGifts
+                .Where(g => TextMatch(g, SearchText));
         }
+
+        if (ShinyOnly)
+        {
+            mysteryGifts =
+                mysteryGifts.Where(g => g.Shiny.IsShiny());
+        }
+
+        mysteryGiftsList = mysteryGifts.ToList();
+        UpdatePaginatedItems();
+
+        static bool TextMatch(MysteryGift g, string searchText) =>
+            g.GetTextLines()
+                .Any(tl => tl.Contains(searchText, StringComparison.OrdinalIgnoreCase));
     }
 
     private void LoadData()
@@ -104,7 +120,8 @@ public partial class MysteryGiftDatabaseTab
 
             if (!convertedEntity.IsSuccess() || pokemon is null)
             {
-                await DialogService.ShowMessageBox("Error", convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));
+                await DialogService.ShowMessageBox("Error",
+                    convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));
                 return;
             }
         }
@@ -147,6 +164,6 @@ public partial class MysteryGiftDatabaseTab
     private enum SortOptions
     {
         PokemonName = 0,
-        EventDate = 1,
+        EventDate = 1
     }
 }

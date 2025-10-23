@@ -1,7 +1,7 @@
 ﻿@using Pkmds.Rcl.Extensions
 @inherits BasePkmdsComponent
 
-@if (AppState is { SaveFile: not null } && mysteryGiftsList.Count > 0)
+@if (AppState is { SaveFile: not null })
 {
     <MudPagination @bind-Selected="@currentPage"
                    @bind-Selected:after="@GoToPage"
@@ -24,6 +24,11 @@
                   Variant="@Variant.Outlined"
                   @bind-Value="@SearchText"
                   @bind-Value:after="@OnSortOrFilterChanged"/>
+
+    <MudSwitch @bind-Value="@ShinyOnly"
+               Color="@Color.Primary"
+               Label="Shiny only"
+               @bind-Value:after="@OnSortOrFilterChanged"/>
 
     <div class="overflow-scroll"
          style="height: calc(100vh - 300px);">

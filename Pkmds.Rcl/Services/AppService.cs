@@ -1,4 +1,5 @@
-﻿using Pkmds.Rcl.Extensions;
+﻿using Pkmds.Rcl.Components;
+using Pkmds.Rcl.Extensions;
 
 namespace Pkmds.Rcl.Services;
 
@@ -308,66 +309,75 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
     public Task ImportMysteryGift(DataMysteryGift gift, out bool isSuccessful, out string resultsMessage)
     {
-        if (AppState.SaveFile is not { } saveFile)
+        try
         {
-            isSuccessful = false;
-            resultsMessage = "No save file loaded.";
+            if (AppState.SaveFile is not { } saveFile)
+            {
+                isSuccessful = false;
+                resultsMessage = "No save file loaded.";
+                return Task.CompletedTask;
+            }
+
+            if (!gift.IsCardCompatible(saveFile, out var msg))
+            {
+                isSuccessful = false;
+                resultsMessage = msg;
+                return Task.CompletedTask;
+            }
+
+            var cards = GetMysteryGiftProvider(saveFile);
+            var album = LoadMysteryGifts(saveFile, cards);
+            var flags = cards as IMysteryGiftFlags;
+            var index = 0;
+
+            var lastUnfilled = GetLastUnfilledByType(gift, album);
+            if (lastUnfilled > -1)
+            {
+                index = lastUnfilled;
+            }
+
+            if (gift is PCD { IsLockCapsule: true })
+            {
+                index = 11;
+            }
+
+            var gifts = album;
+            var other = gifts[index];
+            if (gift is PCD { CanConvertToPGT: true } pcd && other is PGT)
+            {
+                gift = pcd.Gift;
+            }
+            else if (gift.Type != other.Type)
+            {
+                isSuccessful = false;
+                resultsMessage = $"{gift.Type} != {other.Type}";
+                return Task.CompletedTask;
+            }
+            else if (gift is PCD g && g is { IsLockCapsule: true } != (index == 11))
+            {
+                isSuccessful = false;
+                resultsMessage = $"{GameInfo.Strings.Item[533]} slot not valid.";
+                return Task.CompletedTask;
+            }
+
+            gifts[index] = gift.Clone();
+
+            List<string> receivedFlags = [];
+
+            SetCardId(gift.CardID, flags, receivedFlags);
+            SaveReceivedFlags(flags, receivedFlags);
+            SaveReceivedCards(saveFile, cards, album);
+
+            isSuccessful = true;
+            resultsMessage = "The Mystery Gift has been successfully imported.";
             return Task.CompletedTask;
         }
-
-        if (!gift.IsCardCompatible(saveFile, out var msg))
+        catch (Exception ex)
         {
+            resultsMessage = ex.Message;
             isSuccessful = false;
-            resultsMessage = msg;
             return Task.CompletedTask;
         }
-
-        var cards = GetMysteryGiftProvider(saveFile);
-        var album = LoadMysteryGifts(saveFile, cards);
-        var flags = cards as IMysteryGiftFlags;
-        var index = 0;
-
-        var lastUnfilled = GetLastUnfilledByType(gift, album);
-        if (lastUnfilled > -1)
-        {
-            index = lastUnfilled;
-        }
-
-        if (gift is PCD { IsLockCapsule: true })
-        {
-            index = 11;
-        }
-
-        var gifts = album;
-        var other = gifts[index];
-        if (gift is PCD { CanConvertToPGT: true } pcd && other is PGT)
-        {
-            gift = pcd.Gift;
-        }
-        else if (gift.Type != other.Type)
-        {
-            isSuccessful = false;
-            resultsMessage = $"{gift.Type} != {other.Type}";
-            return Task.CompletedTask;
-        }
-        else if (gift is PCD g && g is { IsLockCapsule: true } != (index == 11))
-        {
-            isSuccessful = false;
-            resultsMessage = $"{GameInfo.Strings.Item[533]} slot not valid.";
-            return Task.CompletedTask;
-        }
-
-        gifts[index] = gift.Clone();
-
-        List<string> receivedFlags = [];
-
-        SetCardId(gift.CardID, flags, receivedFlags);
-        SaveReceivedFlags(flags, receivedFlags);
-        SaveReceivedCards(saveFile, cards, album);
-
-        isSuccessful = true;
-        resultsMessage = "The Mystery Gift has been successfully imported.";
-        return Task.CompletedTask;
 
         static int GetLastUnfilledByType(DataMysteryGift gift, DataMysteryGift[] album)
         {
@@ -410,9 +420,11 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             return result;
         }
 
-        static IMysteryGiftStorage GetMysteryGiftProvider(SaveFile saveFile) => saveFile is IMysteryGiftStorageProvider provider
-            ? provider.MysteryGiftStorage
-            : throw new ArgumentException("Save file does not support Mystery Gifts.", nameof(saveFile));
+        static IMysteryGiftStorage GetMysteryGiftProvider(SaveFile saveFile) =>
+            saveFile is IMysteryGiftStorageProvider provider
+                ? provider.MysteryGiftStorage
+                : throw new Exception(
+                    $"{SaveFileNameDisplay.FriendlyGameName(saveFile.Version)} does not support Mystery Gifts.");
 
         static void SetCardId(int cardId, IMysteryGiftFlags? flags, List<string> receivedFlags)
         {

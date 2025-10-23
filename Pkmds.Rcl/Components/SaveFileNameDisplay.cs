@@ -39,7 +39,7 @@ public static class SaveFileNameDisplay
         return sbTitle.ToString();
     }
 
-    private static string FriendlyGameName(GameVersion gameVersion) => gameVersion switch
+    public static string FriendlyGameName(GameVersion gameVersion) => gameVersion switch
     {
         Invalid => "Invalid",
         S => "Sapphire",
