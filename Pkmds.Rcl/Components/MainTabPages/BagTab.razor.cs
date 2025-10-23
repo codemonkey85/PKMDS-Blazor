@@ -23,6 +23,8 @@ public partial class BagTab
 
     private bool IsSortedByIndex { get; set; } = true; // Set as true so first sort is ascending
 
+    private bool ShouldVirtualize { get; set; }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
