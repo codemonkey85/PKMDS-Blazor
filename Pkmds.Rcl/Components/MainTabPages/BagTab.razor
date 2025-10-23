@@ -50,8 +50,11 @@
                                        StartIcon="@Icons.Material.Filled.Sort">
                                 Sort By Index
                             </MudButton>
+                            <MudSwitch @bind-Value="@ShouldVirtualize"
+                                       Color="@Color.Primary"
+                                       Label="Virtualize (may cause scrolling issues)"/>
                         </MudStack>
-                        <MudDataGrid T="InventoryItem"
+                        <MudDataGrid T="@InventoryItem"
                                      Items="@pouch.Items"
                                      ReadOnly="@false"
                                      EditMode="@DataGridEditMode.Cell"
@@ -62,7 +65,7 @@
                                      FixedHeader
                                      EditTrigger="@DataGridEditTrigger.OnRowClick"
                                      Height="calc(100vh - 300px)"
-                                     Virtualize>
+                                     Virtualize="@ShouldVirtualize">
                             <Columns>
                                 <PropertyColumn Property="@(item => item.Index)"
                                                 Title="Item">
