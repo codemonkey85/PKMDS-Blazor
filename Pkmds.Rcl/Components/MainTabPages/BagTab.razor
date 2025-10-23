@@ -65,7 +65,7 @@
                                      FixedHeader
                                      EditTrigger="@DataGridEditTrigger.OnRowClick"
                                      Height="calc(100vh - 300px)"
-                                     @bind-Virtualize="@ShouldVirtualize">
+                                     Virtualize="@ShouldVirtualize">
                             <Columns>
                                 <PropertyColumn Property="@(item => item.Index)"
                                                 Title="Item">
