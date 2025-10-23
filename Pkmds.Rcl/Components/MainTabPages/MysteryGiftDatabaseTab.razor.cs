@@ -12,6 +12,10 @@ public partial class MysteryGiftDatabaseTab
 
     private List<MysteryGift> paginatedItems = [];
 
+    private string SearchText { get; set; } = string.Empty;
+
+    private IEnumerable<MysteryGift> EncounterDatabase { get; set; } = [];
+
     [Parameter]
     public bool FilterUnavailableSpecies { get; set; } = true;
 
@@ -23,6 +27,16 @@ public partial class MysteryGiftDatabaseTab
         LoadData();
     }
 
+    private void OnSortOrFilterChanged()
+    {
+        mysteryGiftsList = [.. EncounterDatabase];
+
+        if (!string.IsNullOrEmpty(SearchText))
+        {
+            mysteryGiftsList = mysteryGiftsList.Where(g => g.Name.Contains(SearchText)).ToList();
+        }
+    }
+
     private void LoadData()
     {
         if (AppState.SaveFile is not { } saveFile)
@@ -30,23 +44,23 @@ public partial class MysteryGiftDatabaseTab
             return;
         }
 
-        var encounterDatabase = EncounterEvent.GetAllEvents();
+        EncounterDatabase = EncounterEvent.GetAllEvents();
 
         if (FilterUnavailableSpecies)
         {
-            encounterDatabase = saveFile switch
+            EncounterDatabase = saveFile switch
             {
-                SAV9SV sav9Sv => encounterDatabase.Where(IsPresent(sav9Sv.Personal)),
-                SAV8SWSH sav8Swsh => encounterDatabase.Where(IsPresent(sav8Swsh.Personal)),
-                SAV8BS sav8Bs => encounterDatabase.Where(IsPresent(sav8Bs.Personal)),
-                SAV8LA sav8La => encounterDatabase.Where(IsPresent(sav8La.Personal)),
-                SAV7b => encounterDatabase.Where(mysteryGift => mysteryGift is WB7),
-                SAV7 => encounterDatabase.Where(mysteryGift => mysteryGift.Generation < 7 || mysteryGift is WC7),
-                _ => encounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation)
+                SAV9SV sav9Sv => EncounterDatabase.Where(IsPresent(sav9Sv.Personal)),
+                SAV8SWSH sav8Swsh => EncounterDatabase.Where(IsPresent(sav8Swsh.Personal)),
+                SAV8BS sav8Bs => EncounterDatabase.Where(IsPresent(sav8Bs.Personal)),
+                SAV8LA sav8La => EncounterDatabase.Where(IsPresent(sav8La.Personal)),
+                SAV7b => EncounterDatabase.Where(mysteryGift => mysteryGift is WB7),
+                SAV7 => EncounterDatabase.Where(mysteryGift => mysteryGift.Generation < 7 || mysteryGift is WC7),
+                _ => EncounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation)
             };
         }
 
-        mysteryGiftsList = [.. encounterDatabase];
+        mysteryGiftsList = [.. EncounterDatabase];
 
         foreach (var mysteryGift in mysteryGiftsList)
         {
@@ -128,5 +142,11 @@ public partial class MysteryGiftDatabaseTab
         }
 
         return builder.ToString();
+    }
+
+    private enum SortOptions
+    {
+        PokemonName = 0,
+        EventDate = 1,
     }
 }

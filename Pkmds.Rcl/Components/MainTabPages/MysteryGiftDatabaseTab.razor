@@ -20,6 +20,11 @@
         }
     </MudSelect>
 
+    <MudTextField Label="Search"
+                  Variant="@Variant.Outlined"
+                  @bind-Value="@SearchText"
+                  @bind-Value:after="@OnSortOrFilterChanged"/>
+
     <div class="overflow-scroll"
          style="height: calc(100vh - 300px);">
         <MudGrid Spacing="1">
