@@ -50,9 +50,9 @@
                                        StartIcon="@Icons.Material.Filled.Sort">
                                 Sort By Index
                             </MudButton>
-                            <MudSwitch @bind-Value="@ShouldVirtualize">
-                                Virtualize (may cause scrolling issues)
-                            </MudSwitch>
+                            <MudSwitch @bind-Value="@ShouldVirtualize"
+                                       Color="@Color.Primary"
+                                       Label="Virtualize (may cause scrolling issues)"/>
                         </MudStack>
                         <MudDataGrid T="@InventoryItem"
                                      Items="@pouch.Items"
