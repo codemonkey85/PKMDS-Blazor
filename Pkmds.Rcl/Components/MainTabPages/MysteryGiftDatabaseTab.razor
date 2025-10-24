@@ -8,7 +8,7 @@
                    Count="@TotalPages"
                    ShowNextButton/>
 
-    <MudSelect T="int"
+    <MudSelect T="@int"
                @bind-Value="itemsPerPage"
                @bind-Value:after="OnPageSizeChange"
                Label="Items per page">
@@ -20,42 +20,51 @@
         }
     </MudSelect>
 
-    <MudTextField Label="Search"
-                  Variant="@Variant.Outlined"
-                  @bind-Value="@SearchText"
-                  @bind-Value:after="@OnSortOrFilterChanged"/>
+    <MudStack Row>
 
-    <MudSwitch @bind-Value="@ShinyOnly"
-               Color="@Color.Primary"
-               Label="Shiny only"
-               @bind-Value:after="@OnSortOrFilterChanged"/>
+        <MudTextField Label="Search"
+                      Variant="@Variant.Outlined"
+                      @bind-Value="@SearchText"
+                      @bind-Value:after="@OnSortOrFilterChanged"
+                      Clearable/>
 
-    <MudSelect Label="Sort By"
-               Variant="@Variant.Outlined"
-               @bind-Value="@SelectedSortOption"
-               @bind-Value:after="@OnSortOrFilterChanged">
-        @foreach (var sortOption in Enum.GetValues<SortOptions>())
-        {
-            <MudSelectItem Value="@sortOption"
-                           @key="@sortOption">
-                @sortOption.ToString()
-            </MudSelectItem>
-        }
-    </MudSelect>
-    
-    <MudSelect Label="Sort Direction"
-               Variant="@Variant.Outlined"
-               @bind-Value="@SelectedSortDirection"
-               @bind-Value:after="@OnSortOrFilterChanged">
-        @foreach (var sortOption in Enum.GetValues<SortDirection>())
-        {
-            <MudSelectItem Value="@sortOption"
-                           @key="@sortOption">
-                @sortOption.ToString()
-            </MudSelectItem>
-        }
-    </MudSelect>
-    
+        <MudSwitch @bind-Value="@ShinyOnly"
+                   Color="@Color.Primary"
+                   Label="Shiny only"
+                   @bind-Value:after="@OnSortOrFilterChanged"/>
+
+    </MudStack>
+
+    <MudStack Row>
+
+        <MudSelect Label="Sort By"
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@SelectedSortOption"
+                   @bind-Value:after="@OnSortOrFilterChanged">
+            @foreach (var sortOption in Enum.GetValues<SortOptions>())
+            {
+                <MudSelectItem Value="@sortOption"
+                               @key="@sortOption">
+                    @sortOption.ToString()
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudSelect Label="Sort Direction"
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@SelectedSortDirection"
+                   @bind-Value:after="@OnSortOrFilterChanged">
+            @foreach (var sortOption in Enum.GetValues<SortDirection>())
+            {
+                <MudSelectItem Value="@sortOption"
+                               @key="@sortOption">
+                    @sortOption.ToString()
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+    </MudStack>
+
     <div class="overflow-scroll"
          style="height: calc(100vh - 300px);">
         <MudGrid Spacing="1">
