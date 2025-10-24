@@ -16,6 +16,10 @@ public partial class MysteryGiftDatabaseTab
 
     private bool ShinyOnly { get; set; }
 
+    private SortOptions SelectedSortOption { get; set; } = SortOptions.None;
+
+    private SortDirection SelectedSortDirection { get; set; } = SortDirection.Ascending;
+
     private IEnumerable<MysteryGift> EncounterDatabase { get; set; } = [];
 
     [Parameter]
@@ -43,6 +47,16 @@ public partial class MysteryGiftDatabaseTab
         {
             mysteryGifts =
                 mysteryGifts.Where(g => g.Shiny.IsShiny());
+        }
+
+        if (SelectedSortOption == SortOptions.PokemonId)
+        {
+            mysteryGifts = SelectedSortDirection switch
+            {
+                SortDirection.Ascending => mysteryGifts.OrderBy(g => g.Species),
+                SortDirection.Descending => mysteryGifts.OrderByDescending(g => g.Species),
+                _ => mysteryGifts
+            };
         }
 
         mysteryGiftsList = mysteryGifts.ToList();
@@ -163,7 +177,13 @@ public partial class MysteryGiftDatabaseTab
 
     private enum SortOptions
     {
-        PokemonName = 0,
-        EventDate = 1
+        None,
+        PokemonId
+    }
+
+    private enum SortDirection
+    {
+        Ascending,
+        Descending
     }
 }

@@ -30,6 +30,32 @@
                Label="Shiny only"
                @bind-Value:after="@OnSortOrFilterChanged"/>
 
+    <MudSelect Label="Sort By"
+               Variant="@Variant.Outlined"
+               @bind-Value="@SelectedSortOption"
+               @bind-Value:after="@OnSortOrFilterChanged">
+        @foreach (var sortOption in Enum.GetValues<SortOptions>())
+        {
+            <MudSelectItem Value="@sortOption"
+                           @key="@sortOption">
+                @sortOption.ToString()
+            </MudSelectItem>
+        }
+    </MudSelect>
+    
+    <MudSelect Label="Sort Direction"
+               Variant="@Variant.Outlined"
+               @bind-Value="@SelectedSortDirection"
+               @bind-Value:after="@OnSortOrFilterChanged">
+        @foreach (var sortOption in Enum.GetValues<SortDirection>())
+        {
+            <MudSelectItem Value="@sortOption"
+                           @key="@sortOption">
+                @sortOption.ToString()
+            </MudSelectItem>
+        }
+    </MudSelect>
+    
     <div class="overflow-scroll"
          style="height: calc(100vh - 300px);">
         <MudGrid Spacing="1">
