@@ -1,6 +1,4 @@
-﻿using Pkmds.Rcl.Extensions;
-
-namespace Pkmds.Rcl.Components.MainTabPages;
+﻿namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class MysteryGiftDatabaseTab
 {
@@ -11,6 +9,16 @@ public partial class MysteryGiftDatabaseTab
     private List<MysteryGift> mysteryGiftsList = [];
 
     private List<MysteryGift> paginatedItems = [];
+
+    private string SearchText { get; set; } = string.Empty;
+
+    private bool ShinyOnly { get; set; }
+
+    private SortOptions SelectedSortOption { get; set; } = SortOptions.None;
+
+    private SortDirection SelectedSortDirection { get; set; } = SortDirection.Ascending;
+
+    private IEnumerable<MysteryGift> EncounterDatabase { get; set; } = [];
 
     [Parameter]
     public bool FilterUnavailableSpecies { get; set; } = true;
@@ -23,6 +31,40 @@ public partial class MysteryGiftDatabaseTab
         LoadData();
     }
 
+    private void OnSortOrFilterChanged()
+    {
+        IEnumerable<MysteryGift> mysteryGifts = [.. EncounterDatabase];
+
+        if (!string.IsNullOrEmpty(SearchText))
+        {
+            mysteryGifts = mysteryGifts
+                .Where(g => TextMatch(g, SearchText));
+        }
+
+        if (ShinyOnly)
+        {
+            mysteryGifts =
+                mysteryGifts.Where(g => g.Shiny.IsShiny());
+        }
+
+        if (SelectedSortOption == SortOptions.PokemonId)
+        {
+            mysteryGifts = SelectedSortDirection switch
+            {
+                SortDirection.Ascending => mysteryGifts.OrderBy(g => g.Species),
+                SortDirection.Descending => mysteryGifts.OrderByDescending(g => g.Species),
+                _ => mysteryGifts
+            };
+        }
+
+        mysteryGiftsList = mysteryGifts.ToList();
+        UpdatePaginatedItems();
+
+        static bool TextMatch(MysteryGift g, string searchText) =>
+            g.GetTextLines()
+                .Any(tl => tl.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+    }
+
     private void LoadData()
     {
         if (AppState.SaveFile is not { } saveFile)
@@ -30,23 +72,23 @@ public partial class MysteryGiftDatabaseTab
             return;
         }
 
-        var encounterDatabase = EncounterEvent.GetAllEvents();
+        EncounterDatabase = EncounterEvent.GetAllEvents();
 
         if (FilterUnavailableSpecies)
         {
-            encounterDatabase = saveFile switch
+            EncounterDatabase = saveFile switch
             {
-                SAV9SV sav9Sv => encounterDatabase.Where(IsPresent(sav9Sv.Personal)),
-                SAV8SWSH sav8Swsh => encounterDatabase.Where(IsPresent(sav8Swsh.Personal)),
-                SAV8BS sav8Bs => encounterDatabase.Where(IsPresent(sav8Bs.Personal)),
-                SAV8LA sav8La => encounterDatabase.Where(IsPresent(sav8La.Personal)),
-                SAV7b => encounterDatabase.Where(mysteryGift => mysteryGift is WB7),
-                SAV7 => encounterDatabase.Where(mysteryGift => mysteryGift.Generation < 7 || mysteryGift is WC7),
-                _ => encounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation)
+                SAV9SV sav9Sv => EncounterDatabase.Where(IsPresent(sav9Sv.Personal)),
+                SAV8SWSH sav8Swsh => EncounterDatabase.Where(IsPresent(sav8Swsh.Personal)),
+                SAV8BS sav8Bs => EncounterDatabase.Where(IsPresent(sav8Bs.Personal)),
+                SAV8LA sav8La => EncounterDatabase.Where(IsPresent(sav8La.Personal)),
+                SAV7b => EncounterDatabase.Where(mysteryGift => mysteryGift is WB7),
+                SAV7 => EncounterDatabase.Where(mysteryGift => mysteryGift.Generation < 7 || mysteryGift is WC7),
+                _ => EncounterDatabase.Where(mysteryGift => mysteryGift.Generation <= saveFile.Generation)
             };
         }
 
-        mysteryGiftsList = [.. encounterDatabase];
+        mysteryGiftsList = [.. EncounterDatabase];
 
         foreach (var mysteryGift in mysteryGiftsList)
         {
@@ -90,7 +132,8 @@ public partial class MysteryGiftDatabaseTab
 
             if (!convertedEntity.IsSuccess() || pokemon is null)
             {
-                await DialogService.ShowMessageBox("Error", convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));
+                await DialogService.ShowMessageBox("Error",
+                    convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));
                 return;
             }
         }
@@ -128,5 +171,19 @@ public partial class MysteryGiftDatabaseTab
         }
 
         return builder.ToString();
+    }
+
+    private enum SortOptions
+    {
+        None,
+
+        [Description("Pokémon")]
+        PokemonId
+    }
+
+    private enum SortDirection
+    {
+        Ascending,
+        Descending
     }
 }
