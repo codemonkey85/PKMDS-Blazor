@@ -1,5 +1,4 @@
-﻿@using Pkmds.Rcl.Extensions
-@inherits BasePkmdsComponent
+﻿@inherits BasePkmdsComponent
 
 @if (AppState is { SaveFile: not null })
 {
@@ -45,7 +44,7 @@
             {
                 <MudSelectItem Value="@sortOption"
                                @key="@sortOption">
-                    @sortOption.ToString()
+                    @sortOption.Humanize()
                 </MudSelectItem>
             }
         </MudSelect>

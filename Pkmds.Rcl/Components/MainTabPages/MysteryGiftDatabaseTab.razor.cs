@@ -1,6 +1,4 @@
-﻿using Pkmds.Rcl.Extensions;
-
-namespace Pkmds.Rcl.Components.MainTabPages;
+﻿namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class MysteryGiftDatabaseTab
 {
@@ -178,6 +176,8 @@ public partial class MysteryGiftDatabaseTab
     private enum SortOptions
     {
         None,
+
+        [Description("Pokémon")]
         PokemonId
     }
 
