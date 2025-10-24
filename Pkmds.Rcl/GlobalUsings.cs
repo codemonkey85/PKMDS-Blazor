@@ -16,3 +16,5 @@ global using MudBlazor;
 global using MudBlazor.Services;
 global using PKHeX.Core;
 global using Severity = MudBlazor.Severity;
+global using System.ComponentModel;
+global using Pkmds.Rcl.Extensions;

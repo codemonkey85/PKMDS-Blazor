@@ -1,14 +1,13 @@
-﻿@using Pkmds.Rcl.Extensions
-@inherits BasePkmdsComponent
+﻿@inherits BasePkmdsComponent
 
-@if (AppState is { SaveFile: not null } && mysteryGiftsList.Count > 0)
+@if (AppState is { SaveFile: not null })
 {
     <MudPagination @bind-Selected="@currentPage"
                    @bind-Selected:after="@GoToPage"
                    Count="@TotalPages"
                    ShowNextButton/>
 
-    <MudSelect T="int"
+    <MudSelect T="@int"
                @bind-Value="itemsPerPage"
                @bind-Value:after="OnPageSizeChange"
                Label="Items per page">
@@ -19,6 +18,51 @@
             </MudSelectItem>
         }
     </MudSelect>
+
+    <MudStack Row>
+
+        <MudTextField Label="Search"
+                      Variant="@Variant.Outlined"
+                      @bind-Value="@SearchText"
+                      @bind-Value:after="@OnSortOrFilterChanged"
+                      Clearable/>
+
+        <MudSwitch @bind-Value="@ShinyOnly"
+                   Color="@Color.Primary"
+                   Label="Shiny only"
+                   @bind-Value:after="@OnSortOrFilterChanged"/>
+
+    </MudStack>
+
+    <MudStack Row>
+
+        <MudSelect Label="Sort By"
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@SelectedSortOption"
+                   @bind-Value:after="@OnSortOrFilterChanged">
+            @foreach (var sortOption in Enum.GetValues<SortOptions>())
+            {
+                <MudSelectItem Value="@sortOption"
+                               @key="@sortOption">
+                    @sortOption.Humanize()
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudSelect Label="Sort Direction"
+                   Variant="@Variant.Outlined"
+                   @bind-Value="@SelectedSortDirection"
+                   @bind-Value:after="@OnSortOrFilterChanged">
+            @foreach (var sortOption in Enum.GetValues<SortDirection>())
+            {
+                <MudSelectItem Value="@sortOption"
+                               @key="@sortOption">
+                    @sortOption.ToString()
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+    </MudStack>
 
     <div class="overflow-scroll"
          style="height: calc(100vh - 300px);">

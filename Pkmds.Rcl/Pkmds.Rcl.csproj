@@ -5,6 +5,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Humanizer"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web"/>
         <PackageReference Include="MudBlazor"/>
         <PackageReference Include="PKHeX.Core"/>
