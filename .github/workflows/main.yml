@@ -54,7 +54,7 @@ jobs:
           replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
 
       - name: Commit wwwroot to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.7.3
+        uses: JamesIves/github-pages-deploy-action@v4.7.4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
