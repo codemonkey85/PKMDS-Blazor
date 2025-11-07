@@ -1,5 +1,4 @@
-﻿@using Pkmds.Rcl.Extensions
-@inherits BasePkmdsComponent
+﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
      AppState.SaveFile is
@@ -22,6 +21,13 @@
                 var i = counter;
                 var displayNumber = i + 1;
                 var moveId = Pokemon.Moves[i];
+                var showPlusMove = saveFileEntityContext.GetSingleGameVersion() == GameVersion.ZA;
+
+                var moveTextColumns = 6;
+                if (UseTextSearch)
+                    moveTextColumns--;
+                if (showPlusMove)
+                    moveTextColumns--;
 
                 <MudGrid Spacing="1">
                     @if (UseTextSearch)
@@ -39,9 +45,7 @@
                         </MudItem>
                     }
 
-                    <MudItem xs="@(UseTextSearch
-                                     ? 5
-                                     : 6)"
+                    <MudItem xs="@moveTextColumns"
                              Class="@ColumnClass">
                         @if (UseTextSearch)
                         {
@@ -116,6 +120,20 @@
                                          Margin="@Margin.Dense"
                                          HideSpinButtons/>
                     </MudItem>
+
+                    @if (showPlusMove)
+                    {
+                        var moveId = Pokemon.GetMove(i);
+                        var plusFlagIndex = PersonalInfo9ZA.PlusMoves.IndexOf(moveId);
+                        <MudItem xs="1"
+                                 Class="@ColumnClass">
+                            <MudCheckBox Label="+"
+                                         Dense
+                                         title="Plus Move"
+                                         @bind-Value:get="@GetPokemonMoveIsPlus(plusFlagIndex)"
+                                         @bind-Value:set="@(newValue => SetPokemonMoveIsPlus(plusFlagIndex, newValue))"/>
+                        </MudItem>
+                    }
                 </MudGrid>
             }
         </MudStack>

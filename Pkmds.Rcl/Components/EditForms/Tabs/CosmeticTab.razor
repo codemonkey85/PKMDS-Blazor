@@ -12,3 +12,29 @@
 {
     <MarkingsContainer Pokemon="@Pokemon"/>
 }
+
+@if (Pokemon is IScaledSize scaledSize)
+{
+    <MudNumericField T="@byte"
+                     Label="Scale"
+                     Max="byte.MaxValue"
+                     Min="0"
+                     @bind-Value="@scaledSize.HeightScalar"/>
+
+    <MudNumericField T="@byte"
+                     Label="Scale"
+                     Max="byte.MaxValue"
+                     Min="0"
+                     @bind-Value="@scaledSize.WeightScalar"/>
+}
+
+@if (Pokemon is IScaledSize3 scaledSize3)
+{
+    <MudNumericField T="@byte"
+                     Label="Scale"
+                     Max="byte.MaxValue"
+                     Min="0"
+                     AdornmentText="@GetScaleRating(scaledSize3)"
+                     Adornment="@Adornment.End"
+                     @bind-Value="@scaledSize3.Scale"/>
+}
