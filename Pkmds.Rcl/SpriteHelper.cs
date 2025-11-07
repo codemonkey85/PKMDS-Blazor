@@ -103,6 +103,7 @@ public static class SpriteHelper
         InventoryType.TMHMs => "Tech",
         InventoryType.Treasure => "Treasure",
         InventoryType.ZCrystals => "Z",
+        InventoryType.MegaStones => "Mega",
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
     };
 

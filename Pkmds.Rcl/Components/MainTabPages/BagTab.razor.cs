@@ -93,6 +93,7 @@ public partial class BagTab
         InventoryType.PCItems => "PC Items",
         InventoryType.FreeSpace => "Free Space",
         InventoryType.ZCrystals => "Z-Crystals",
+        InventoryType.MegaStones => "Mega Stones",
         _ => pouch.Type.ToString()
     };
 
