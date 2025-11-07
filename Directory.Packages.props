@@ -11,7 +11,7 @@
         <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.120"/>
         <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.10"/>
         <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.120"/>
-        <PackageVersion Include="MudBlazor" Version="8.13.0"/>
-        <PackageVersion Include="PKHeX.Core" Version="25.9.25"/>
+        <PackageVersion Include="MudBlazor" Version="8.14.0" />
+        <PackageVersion Include="PKHeX.Core" Version="25.10.27" />
     </ItemGroup>
 </Project>

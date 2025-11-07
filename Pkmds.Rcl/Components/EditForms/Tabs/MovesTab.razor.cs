@@ -1,10 +1,9 @@
-using Pkmds.Rcl.Extensions;
-
 namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
 public partial class MovesTab
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
     private bool UseTextSearch { get; set; } = true;
@@ -43,4 +42,17 @@ public partial class MovesTab
     // ReSharper disable once InconsistentNaming
     private void SetPokemonPPUps(int moveIndex, int ppUps) =>
         Pokemon?.SetPPUps(moveIndex, ppUps);
+
+    private bool GetPokemonMoveIsPlus(int moveIndex) =>
+        Pokemon is PA9 pa9 && pa9.GetMovePlusFlag(moveIndex);
+
+    private void SetPokemonMoveIsPlus(int moveIndex, bool isPlus)
+    {
+        if (Pokemon is not PA9 pa9)
+        {
+            return;
+        }
+
+        pa9.SetMovePlusFlag(moveIndex, isPlus);
+    }
 }
