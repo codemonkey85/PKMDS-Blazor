@@ -50,6 +50,7 @@ A: A Pokémon save file is a file that contains the data for a Pokémon game. It
 Q: What games are supported by PKMDS?
 
 A: PKMDS currently supports the following games:
+- Pokémon Legends: Z-A
 - Pokémon Scarlet and Violet
 - Pokémon Legends: Arceus
 - Pokémon Brilliant Diamond and Shining Pearl
