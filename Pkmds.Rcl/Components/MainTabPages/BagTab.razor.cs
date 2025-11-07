@@ -2,7 +2,8 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class BagTab
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public IReadOnlyList<InventoryPouch>? Inventory { get; set; }
 
     private MudTabs? PouchTabs { get; set; }

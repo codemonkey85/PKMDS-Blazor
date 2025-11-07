@@ -1,6 +1,4 @@
-﻿using Pkmds.Rcl.Extensions;
-
-namespace Pkmds.Rcl;
+﻿namespace Pkmds.Rcl;
 
 public static class SpriteHelper
 {

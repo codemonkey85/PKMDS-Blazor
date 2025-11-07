@@ -1,5 +1,4 @@
-﻿@using Pkmds.Rcl.Extensions
-@inherits BasePkmdsComponent
+﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
      AppState.SaveFile is
@@ -15,7 +14,7 @@
 
         <MudStack Spacing="1">
             <MudCheckBox @bind-Value="@UseTextSearch"
-                         Label="Use text search" />
+                         Label="Use text search"/>
 
             @for (var counter = 0; counter < Pokemon.Moves.Length; counter++)
             {
@@ -95,7 +94,7 @@
                                          Min="0"
                                          Margin="@Margin.Dense"
                                          @bind-Value:get="@GetPokemonPP(i)"
-                                         @bind-Value:set="@(newValue => SetPokemonPP(i, newValue))" />
+                                         @bind-Value:set="@(newValue => SetPokemonPP(i, newValue))"/>
 
                     </MudItem>
 
@@ -108,7 +107,7 @@
                                          Min="0"
                                          Margin="@Margin.Dense"
                                          @bind-Value:get="@GetPokemonPPUps(i)"
-                                         @bind-Value:set="@(newValue => SetPokemonPPUps(i, newValue))" />
+                                         @bind-Value:set="@(newValue => SetPokemonPPUps(i, newValue))"/>
                     </MudItem>
 
                     <MudItem xs="2"
@@ -119,7 +118,7 @@
                                          Value="@Pokemon.GetMaxPP(i)"
                                          ReadOnly
                                          Margin="@Margin.Dense"
-                                         HideSpinButtons />
+                                         HideSpinButtons/>
                     </MudItem>
 
                     @if (showPlusMove)
@@ -132,7 +131,7 @@
                                          Dense
                                          title="Plus Move"
                                          @bind-Value:get="@GetPokemonMoveIsPlus(plusFlagIndex)"
-                                         @bind-Value:set="@(newValue => SetPokemonMoveIsPlus(plusFlagIndex, newValue))" />
+                                         @bind-Value:set="@(newValue => SetPokemonMoveIsPlus(plusFlagIndex, newValue))"/>
                         </MudItem>
                     }
                 </MudGrid>
@@ -141,7 +140,7 @@
 
         @if (GameInfo.FilteredSources.Moves.Any(m => m.Value == (int)Move.HiddenPower) && Pokemon is not { Context: EntityContext.Gen8 or EntityContext.Gen9 })
         {
-            <HiddenPowerChooser Pokemon="@Pokemon" />
+            <HiddenPowerChooser Pokemon="@Pokemon"/>
         }
 
     </MudStack>
@@ -157,14 +156,14 @@
         }
 
         return @<MudStack Row>
-        @if (move.Value != 0)
-        {
-            @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
-        }
-            <MudText>
-                @move.Text
-            </MudText>
-        </MudStack>;
+                   @if (move.Value != 0)
+                   {
+                       @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
+                   }
+                   <MudText>
+                       @move.Text
+                   </MudText>
+               </MudStack>;
     }
 
 }
