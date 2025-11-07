@@ -43,4 +43,17 @@ public partial class MovesTab
     // ReSharper disable once InconsistentNaming
     private void SetPokemonPPUps(int moveIndex, int ppUps) =>
         Pokemon?.SetPPUps(moveIndex, ppUps);
+
+    private bool GetPokemonMoveIsPlus(int moveIndex) =>
+        Pokemon is PA9 pa9 && pa9.GetMovePlusFlag(moveIndex);
+
+    private void SetPokemonMoveIsPlus(int moveIndex, bool isPlus)
+    {
+        if (Pokemon is not PA9 pa9)
+        {
+            return;
+        }
+
+        pa9.SetMovePlusFlag(moveIndex, isPlus);
+    }
 }
