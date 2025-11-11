@@ -14,26 +14,48 @@
         const supportsFS = !!window.showSaveFilePicker;
         if (!supportsFS || /Android/i.test(navigator.userAgent)) {
             console.warn('[showFilePickerAndWrite] Falling back to anchor download for this platform.');
+
             const uint8 = byteArray instanceof Uint8Array ? byteArray : new Uint8Array(byteArray);
-            const blob = new Blob([uint8], { type: 'application/octet-stream' });
+
+            // Use a more "specific" looking type instead of generic octet-stream.
+            const blob = new Blob([uint8], {type: 'application/x-pokemon-savedata'});
+
+            // Normalize and enforce the extension in a case-insensitive way
+            let ext = (extension || '').trim();
+            if (!ext) {
+                ext = '.sav'; // sensible default
+            }
+            if (!ext.startsWith('.')) {
+                ext = '.' + ext;
+            }
+
+            const hasExt = fileName.toLowerCase().endsWith(ext.toLowerCase());
+            const finalName = hasExt ? fileName : fileName + ext;
+
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = fileName.endsWith(extension) ? fileName : fileName + extension;
+            a.download = finalName;
             document.body.appendChild(a);
             a.click();
             setTimeout(() => {
                 URL.revokeObjectURL(a.href);
                 a.remove();
             }, 0);
+
             return;
         }
 
         const opts = {
-            suggestedName: fileName,
+            suggestedName: fileName.toLowerCase().endsWith(extension.toLowerCase())
+                ? fileName
+                : fileName + (extension.startsWith('.') ? extension : '.' + extension),
             types: [{
                 description: description || 'File',
-                // Ensure extension has leading dot
-                accept: { 'application/octet-stream': [extension.startsWith('.') ? extension : '.' + extension] }
+                accept: {
+                    'application/x-pokemon-savedata': [
+                        extension.startsWith('.') ? extension : '.' + extension
+                    ]
+                }
             }]
         };
 
