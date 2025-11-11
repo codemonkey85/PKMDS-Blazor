@@ -1,5 +1,3 @@
-using Pkmds.Rcl.Extensions;
-
 namespace Pkmds.Rcl.Components.Layout;
 
 public partial class MainLayout : IDisposable
@@ -107,6 +105,22 @@ public partial class MainLayout : IDisposable
         RefreshService.RefreshBoxAndPartyState();
     }
 
+    private static string EnsureExtension(string fileName, string extension)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            fileName = "save";
+        }
+
+        extension = extension.StartsWith('.')
+            ? extension
+            : $".{extension}";
+
+        return fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase)
+            ? fileName
+            : $"{fileName}{extension}";
+    }
+
     private async Task ExportSaveFile()
     {
         if (AppState.SaveFile is null)
@@ -115,7 +129,18 @@ public partial class MainLayout : IDisposable
         }
 
         AppState.ShowProgressIndicator = true;
-        await WriteFile(AppState.SaveFile.Write().ToArray(), browserLoadSaveFile?.Name ?? "save.sav", ".sav", "Save File");
+
+        var originalName = browserLoadSaveFile?.Name ?? "save";
+        var fileExtensionFromName = Path.GetExtension(originalName) ?? ".sav";
+
+        var finalName = EnsureExtension(originalName, fileExtensionFromName);
+
+        await WriteFile(
+            AppState.SaveFile.Write().ToArray(),
+            finalName,
+            fileExtensionFromName,
+            "Save File");
+
         AppState.ShowProgressIndicator = false;
     }
 
@@ -297,14 +322,17 @@ public partial class MainLayout : IDisposable
     {
         if (!await FileSystemAccessService.IsSupportedAsync())
         {
-            await WriteFileOldWay(data, fileName);
+            await WriteFileOldWay(data, fileName, fileTypeExtension);
             return;
         }
 
         try
         {
-            // Ensure that the FilePicker API is invoked correctly within a user gesture context
-            await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite", fileName, data, fileTypeExtension,
+            await JSRuntime.InvokeVoidAsync(
+                "showFilePickerAndWrite",
+                fileName,
+                data,
+                fileTypeExtension,
                 fileTypeDescription);
         }
         catch (JSException ex)
@@ -313,21 +341,25 @@ public partial class MainLayout : IDisposable
         }
     }
 
-    private async Task WriteFileOldWay(byte[] data, string fileName)
+    private async Task WriteFileOldWay(byte[] data, string fileName, string fileTypeExtension)
     {
-        // Convert the byte array to a base64 string
+        var finalName = EnsureExtension(fileName, fileTypeExtension);
+
         var base64String = Convert.ToBase64String(data);
 
-        // Create a download link element
-        var element = await JSRuntime.InvokeAsync<IJSObjectReference>("eval", "document.createElement('a')");
+        var element = await JSRuntime.InvokeAsync<IJSObjectReference>(
+            "eval",
+            "document.createElement('a')");
 
-        // Set the download link properties
-        await element.InvokeVoidAsync("setAttribute", "href", "data:application/octet-stream;base64," + base64String);
-        await element.InvokeVoidAsync("setAttribute", "target", "_blank");
-        await element.InvokeVoidAsync("setAttribute", "rel", "noopener noreferrer");
-        await element.InvokeVoidAsync("setAttribute", "download", fileName);
+        // You can keep octet-stream or mirror the JS type.
+        await element.InvokeVoidAsync(
+            "setAttribute",
+            "href",
+            $"data:application/x-pokemon-savedata;base64,{base64String}");
 
-        // Programmatically click the download link
+        await element.InvokeVoidAsync("setAttribute", "download", finalName);
+
+        // No need for target/rel; we're just triggering a download.
         await element.InvokeVoidAsync("click");
     }
 }
