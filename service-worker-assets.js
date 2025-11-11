@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "35RCFBMA",
+  "version": "+IlILahu",
   "assets": [
     {
       "hash": "sha256-ocTTuvwGdfwNBTdUQMJ40/QJlTMHjVFuE+zeR5fqjLA=",
@@ -58,7 +58,7 @@ self.assetsManifest = {
       "url": "_content/Pkmds.Rcl/icon-512.png"
     },
     {
-      "hash": "sha256-TUN701S+lFP4C/Hj+ZswLYqBIeeAu2YcfYAEc1BxkNM=",
+      "hash": "sha256-7p+b778KPvRBISrlHDy1VOz6OXG/XYTocKaoR7gq2a4=",
       "url": "_content/Pkmds.Rcl/js/fileSave.js"
     },
     {
@@ -10850,12 +10850,12 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.vtvo0k0xsr.wasm"
     },
     {
-      "hash": "sha256-ISo8AWfJCRgx+aXiJK8AA7n2M1OZbyu78H95nqRsam8=",
-      "url": "_framework/Pkmds.Rcl.9yl4mv7rpu.wasm"
+      "hash": "sha256-hgDAitq0erpBhH8I0RBU4XAtYIwQJhAcKtk/4aXKQEw=",
+      "url": "_framework/Pkmds.Rcl.251ft4gyek.wasm"
     },
     {
-      "hash": "sha256-wId9Df4y4CcRPbCHNuZysgGLSoVFQoMmdZoKpSv1uT0=",
-      "url": "_framework/Pkmds.Web.kj4rguzzni.wasm"
+      "hash": "sha256-vPpfuAvWUCHgwENASOdb2ppr5KGyerT47dK78VNtj18=",
+      "url": "_framework/Pkmds.Web.obyqx1354v.wasm"
     },
     {
       "hash": "sha256-NN6R9x8ZK56q4nw15gfuRD4/MwPE4VSU8zQLMmy57eo=",
@@ -11042,16 +11042,16 @@ self.assetsManifest = {
       "url": "_framework/de/Humanizer.resources.t03mf22q2d.wasm"
     },
     {
+      "hash": "sha256-xWmHd1m+nXNQonT+2OKhC9MW0PGeYT6lPsHo37tr+E0=",
+      "url": "_framework/dotnet.hlkix8dyvs.js"
+    },
+    {
       "hash": "sha256-+m86a7cjGgnJsfKR1qGaRlkZCG+5jOWh77WYfj2X9gY=",
       "url": "_framework/dotnet.native.2xy5oyrzj1.js"
     },
     {
       "hash": "sha256-zuJJyiCFug/HRwmQxcWUUJQHuSnW57IMkoZXxEDRBxg=",
       "url": "_framework/dotnet.native.ysulmi3g28.wasm"
-    },
-    {
-      "hash": "sha256-zzVxohBwaxaQwsYCEUTO78apzloyWPAVfKGMNbovO2Y=",
-      "url": "_framework/dotnet.py9b3svg9s.js"
     },
     {
       "hash": "sha256-yJvgPPUUvavYVmu9VD/fYtMcoEnLVaB0Cr7JAE29btw=",
@@ -11230,7 +11230,7 @@ self.assetsManifest = {
       "url": "_framework/zh-Hant/Humanizer.resources.q9i86svuax.wasm"
     },
     {
-      "hash": "sha256-/j+ngLS7+8gpDqCRQ8cVihmuXqpzVZr1KXHkAXPveoA=",
+      "hash": "sha256-1QCgNXUtIaBWWNTdTKX2hw284aPNx72SbYWoNdteAdg=",
       "url": "index.html"
     },
     {
