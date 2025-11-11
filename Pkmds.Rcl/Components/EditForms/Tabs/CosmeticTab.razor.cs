@@ -14,15 +14,7 @@ public partial class CosmeticTab : IDisposable
 
     private string GetScaleRating(IScaledSize3 scaledSize3) => Pokemon switch
     {
-        PK9 => GetString(PokeSizeDetailedUtil.GetSizeRating(scaledSize3.Scale)),
-        _ => GetString(PokeSizeUtil.GetSizeRating(scaledSize3.Scale))
+        PK9 => PokeSizeDetailedUtil.GetSizeRating(scaledSize3.Scale).ToString(),
+        _ => PokeSizeUtil.GetSizeRating(scaledSize3.Scale).ToString()
     };
-
-    private static string GetString(PokeSize size) => size is PokeSize.AV
-        ? "M"
-        : size.ToString();
-
-    private static string GetString(PokeSizeDetailed size) => size is PokeSizeDetailed.AV
-        ? "M"
-        : size.ToString();
 }
