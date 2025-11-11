@@ -16,13 +16,13 @@
 @if (Pokemon is IScaledSize scaledSize)
 {
     <MudNumericField T="@byte"
-                     Label="Scale"
+                     Label="Height"
                      Max="byte.MaxValue"
                      Min="0"
                      @bind-Value="@scaledSize.HeightScalar"/>
 
     <MudNumericField T="@byte"
-                     Label="Scale"
+                     Label="Weight"
                      Max="byte.MaxValue"
                      Min="0"
                      @bind-Value="@scaledSize.WeightScalar"/>
