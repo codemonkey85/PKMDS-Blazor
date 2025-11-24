@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+  <Project Path="Pkmds.Maui/Pkmds.Maui.csproj">
+    <Build Solution="Debug|*" Project="false" />
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="Pkmds.Rcl/Pkmds.Rcl.csproj" />
+  <Project Path="Pkmds.Web/Pkmds.Web.csproj" />
+</Solution>
