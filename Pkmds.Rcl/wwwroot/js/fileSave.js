@@ -10,6 +10,19 @@
             return;
         }
 
+        // Normalize the extension - allow empty/null for no extension
+        let ext = (extension || '').trim();
+        
+        // If extension is just a dot, treat it as no extension
+        if (ext === '.') {
+            ext = '';
+        }
+        
+        // Add leading dot if we have an extension that doesn't start with one
+        if (ext && !ext.startsWith('.')) {
+            ext = '.' + ext;
+        }
+
         // Chrome Android may have partial / flaky support for File System Access API.
         const supportsFS = !!window.showSaveFilePicker;
         if (!supportsFS || /Android/i.test(navigator.userAgent)) {
@@ -20,17 +33,8 @@
             // Use a more "specific" looking type instead of generic octet-stream.
             const blob = new Blob([uint8], {type: 'application/x-pokemon-savedata'});
 
-            // Normalize and enforce the extension in a case-insensitive way
-            let ext = (extension || '').trim();
-            if (!ext) {
-                ext = '.sav'; // sensible default
-            }
-            if (!ext.startsWith('.')) {
-                ext = '.' + ext;
-            }
-
-            const hasExt = fileName.toLowerCase().endsWith(ext.toLowerCase());
-            const finalName = hasExt ? fileName : fileName + ext;
+            const hasExt = ext && fileName.toLowerCase().endsWith(ext.toLowerCase());
+            const finalName = (ext && !hasExt) ? fileName + ext : fileName;
 
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -45,19 +49,22 @@
             return;
         }
 
+        // Build options for File System Access API
         const opts = {
-            suggestedName: fileName.toLowerCase().endsWith(extension.toLowerCase())
+            suggestedName: (ext && fileName.toLowerCase().endsWith(ext.toLowerCase()))
                 ? fileName
-                : fileName + (extension.startsWith('.') ? extension : '.' + extension),
-            types: [{
+                : fileName + ext
+        };
+
+        // Only add types if we have an extension
+        if (ext) {
+            opts.types = [{
                 description: description || 'File',
                 accept: {
-                    'application/x-pokemon-savedata': [
-                        extension.startsWith('.') ? extension : '.' + extension
-                    ]
+                    'application/x-pokemon-savedata': [ext]
                 }
-            }]
-        };
+            }];
+        }
 
         // Must be called during a user gesture on some platforms.
         const handle = await window.showSaveFilePicker(opts);
