@@ -130,16 +130,32 @@ public partial class MainLayout : IDisposable
 
         AppState.ShowProgressIndicator = true;
 
-        var originalName = browserLoadSaveFile?.Name ?? "save";
-        var fileExtensionFromName = Path.GetExtension(originalName) ?? ".sav";
-
-        var finalName = EnsureExtension(originalName, fileExtensionFromName);
-
-        await WriteFile(
-            AppState.SaveFile.Write().ToArray(),
-            finalName,
-            fileExtensionFromName,
-            "Save File");
+        var originalName = browserLoadSaveFile?.Name;
+        
+        // Only default to "save.sav" if we have no original filename at all
+        if (string.IsNullOrWhiteSpace(originalName))
+        {
+            originalName = "save";
+            var fileExtensionFromName = ".sav";
+            var finalName = EnsureExtension(originalName, fileExtensionFromName);
+            
+            await WriteFile(
+                AppState.SaveFile.Write().ToArray(),
+                finalName,
+                fileExtensionFromName,
+                "Save File");
+        }
+        else
+        {
+            // Preserve the original filename exactly as it was (with or without extension)
+            var fileExtensionFromName = Path.GetExtension(originalName);
+            
+            await WriteFile(
+                AppState.SaveFile.Write().ToArray(),
+                originalName,
+                fileExtensionFromName,
+                "Save File");
+        }
 
         AppState.ShowProgressIndicator = false;
     }
