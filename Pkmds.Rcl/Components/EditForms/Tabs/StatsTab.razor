@@ -11,12 +11,15 @@
      } &&
      AppState.SelectedSlotsAreValid)
 {
-    <MudPaper>
-        <StatsChart
-            Pokemon="@Pokemon"/>
-    </MudPaper>
-
     <MudGrid>
+
+        <MudItem xs="12">
+            <MudPaper Width="300px"
+                      Class="pa-1">
+                <StatsChart
+                    Pokemon="@Pokemon"/>
+            </MudPaper>
+        </MudItem>
 
         <MudItem xs="3">
             <MudStack>
