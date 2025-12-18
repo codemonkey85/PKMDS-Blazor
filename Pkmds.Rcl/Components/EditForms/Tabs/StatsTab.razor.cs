@@ -2,7 +2,8 @@ namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
 public partial class StatsTab : IDisposable
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
     public void Dispose() =>
@@ -170,6 +171,8 @@ public partial class StatsTab : IDisposable
                 pk2.IV_SPD = (byte)newValue;
             }
         }
+
+        AppService.LoadPokemonStats(Pokemon);
     }
 
     private void OnSetIv(Stats stat, int newValue)

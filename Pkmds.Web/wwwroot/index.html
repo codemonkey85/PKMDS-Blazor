@@ -2,36 +2,36 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0"
-          name="viewport" />
+          name="viewport"/>
     <title>PKMDS: Pokémon Save Editor for Web</title>
-    <base href="/" />
+    <base href="/"/>
     <link href="manifest.webmanifest"
-          rel="manifest" />
+          rel="manifest"/>
     <link href="_content/MudBlazor/MudBlazor.min.css"
-          rel="stylesheet" />
+          rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          rel="stylesheet" />
+          rel="stylesheet"/>
     <link href="_content/Pkmds.Rcl/css/app.css"
-          rel="stylesheet" />
+          rel="stylesheet"/>
     <link href="Pkmds.Web.styles.css"
-          rel="stylesheet" />
+          rel="stylesheet"/>
     <link href="_content/Pkmds.Rcl/icon-512.png"
           rel="apple-touch-icon"
           sizes="512x512"
-          type="image/png" />
+          type="image/png"/>
     <link href="_content/Pkmds.Rcl/icon-192.png"
           rel="apple-touch-icon"
           sizes="192x192"
-          type="image/png" />
+          type="image/png"/>
     <link href="_content/Pkmds.Rcl/icon-32.png"
           rel="apple-touch-icon"
           sizes="32x32"
-          type="image/png" />
+          type="image/png"/>
     <link href="_content/Pkmds.Rcl/icon-32.png"
           rel="icon"
-          type="image/png" />
+          type="image/png"/>
     <script type="importmap"></script>
 </head>
 
@@ -67,10 +67,25 @@
 </div>
 
 <script src="_content/Pkmds.Rcl/js/fileSave.js"></script>
+<!-- Add custom chart helper -->
+<script src="_content/Pkmds.Rcl/js/chartHelper.js"></script>
 
 <!--prevent autostarting-->
 <script autostart="false"
         src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+
+<!-- Add a reference to Chart.js. -->
+<script crossorigin="anonymous"
+        integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3ZSTk7kajkaj4D292NLuduDCO1c/NT8Id+jE58KYLKT7hXnbtryGmMg=="
+        referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<!-- Add a reference to chartjs-plugin-datalabels.min.js if your application uses chart components with the data labels feature. -->
+<script crossorigin="anonymous"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        referrerpolicy="no-referrer"
+        src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<!-- Add a reference to blazorexpress.chartjs.js. -->
+<script src="_content/BlazorExpress.ChartJS/blazorexpress.chartjs.js"></script>
+
 <script>
     navigator.serviceWorker.register('service-worker.published.js', {updateViaCache: 'none'}).then(registration => {
         setInterval(() => registration.update(), 1 * 60 * 60 * 1000); // check for updates every hour

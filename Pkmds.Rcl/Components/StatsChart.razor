@@ -1,0 +1,8 @@
+﻿@using BlazorExpress.ChartJS
+
+@if (Pokemon is null || AppState.SaveFile is null)
+{
+    return;
+}
+
+<RadarChart @ref="radarChart"/>
