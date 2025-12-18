@@ -30,8 +30,36 @@ public partial class MainLayout : IDisposable
     private Task OnSystemPreferenceChanged(bool newValue)
     {
         isDarkMode = newValue;
+        RefreshService.RefreshTheme(isDarkMode);
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    private void OnIsDarkModeChanged(bool newValue)
+    {
+        isDarkMode = newValue;
+        Console.WriteLine($"MainLayout.OnIsDarkModeChanged: isDarkMode = {isDarkMode}");
+        RefreshService.RefreshTheme(isDarkMode);
+        Console.WriteLine("MainLayout.OnIsDarkModeChanged: RefreshTheme called");
+        StateHasChanged();
+    }
+
+    private void OnThemeSwitchChanged(bool newValue)
+    {
+        isDarkMode = newValue;
+        Console.WriteLine($"MainLayout.OnThemeSwitchChanged: isDarkMode = {isDarkMode}");
+        RefreshService.RefreshTheme(isDarkMode);
+        Console.WriteLine("MainLayout.OnThemeSwitchChanged: RefreshTheme called");
+        StateHasChanged();
+    }
+
+    private void OnThemeToggleChanged(bool? newValue)
+    {
+        isDarkMode = newValue ?? false;
+        Console.WriteLine($"MainLayout.OnThemeToggleChanged: isDarkMode = {isDarkMode}");
+        RefreshService.RefreshTheme(isDarkMode);
+        Console.WriteLine("MainLayout.OnThemeToggleChanged: RefreshTheme called");
+        StateHasChanged();
     }
 
     private void DrawerToggle() => AppService.ToggleDrawer();

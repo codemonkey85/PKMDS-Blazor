@@ -20,13 +20,35 @@ public partial class StatsChart : IDisposable
     [EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    public void Dispose() =>
+    public void Dispose()
+    {
         RefreshService.OnAppStateChanged -= OnStateChanged;
+        RefreshService.OnThemeChanged -= OnThemeChanged;
+    }
 
     protected override void OnInitialized()
     {
         RefreshService.OnAppStateChanged += OnStateChanged;
+        RefreshService.OnThemeChanged += OnThemeChanged;
         InitializeChartData();
+    }
+
+    private async void OnThemeChanged(bool isDarkMode)
+    {
+        Console.WriteLine($"StatsChart.OnThemeChanged called with isDarkMode: {isDarkMode}. Chart initialized: {isChartInitialized}");
+        if (isChartInitialized)
+        {
+            try
+            {
+                Console.WriteLine($"Calling refreshChartColorsWithTheme for chart: {radarChart.Id}");
+                await JSRuntime.InvokeVoidAsync("chartHelper.refreshChartColorsWithTheme", radarChart.Id, isDarkMode);
+                Console.WriteLine("refreshChartColorsWithTheme completed successfully");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error refreshing chart colors: {ex.Message}");
+            }
+        }
     }
 
     private async void OnStateChanged()
@@ -97,13 +119,13 @@ public partial class StatsChart : IDisposable
                     Label = "Stats",
                     Data = stats,
                     Fill = true,
-                    BackgroundColor = "rgba(54, 162, 235, 0.5)",
-                    BorderColor = "rgb(54, 162, 235)",
+                    BackgroundColor = "rgba(100, 181, 246, 0.4)",
+                    BorderColor = "rgb(66, 165, 245)",
                     BorderWidth = 2,
-                    PointBackgroundColor = ["rgb(54, 162, 235)"],
-                    PointBorderColor = ["#fff"],
-                    PointHoverBackgroundColor = ["#fff"],
-                    PointHoverBorderColor = ["rgb(54, 162, 235)"]
+                    PointBackgroundColor = ["rgb(66, 165, 245)"],
+                    PointBorderColor = ["rgba(255, 255, 255, 0.8)"],
+                    PointHoverBackgroundColor = ["rgba(255, 255, 255, 0.8)"],
+                    PointHoverBorderColor = ["rgb(66, 165, 245)"]
                 }
             ]
         };
