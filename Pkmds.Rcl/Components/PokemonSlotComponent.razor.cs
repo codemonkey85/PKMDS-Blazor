@@ -71,16 +71,21 @@ public partial class PokemonSlotComponent : IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error preparing external drag: {ex.Message}");
+            // Non-critical failure - just log, don't show to user
+            Console.Error.WriteLine($"Error preparing external drag: {ex}");
         }
     }
 
     private async Task HandleDragEnd(DragEventArgs e)
     {
         // Check if drag ended outside the app (potential export)
-        if (e.DataTransfer.DropEffect == "none" && Pokemon is { Species: > 0 })
+        // Note: DropEffect may not be reliable across all browsers
+        // As a fallback, we also check if the drag didn't result in an internal move
+        var wasInternalDrop = DragDropService.IsDragging && e.DataTransfer.DropEffect != "none";
+        
+        if (!wasInternalDrop && Pokemon is { Species: > 0 })
         {
-            // Drag ended outside - trigger download
+            // Drag ended without internal drop - likely dragged outside, trigger export
             await TriggerPokemonExport();
         }
 
@@ -102,7 +107,9 @@ public partial class PokemonSlotComponent : IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error exporting Pokemon: {ex.Message}");
+            Snackbar.Add("Failed to export Pokémon", Severity.Error);
+            // TODO: Add proper logging with ILogger when available
+            Console.Error.WriteLine($"Error exporting Pokemon: {ex}");
         }
     }
 
@@ -218,7 +225,8 @@ public partial class PokemonSlotComponent : IDisposable
         catch (Exception ex)
         {
             Snackbar.Add($"Error importing Pokémon: {ex.Message}", Severity.Error);
-            Console.WriteLine($"Error in HandleFileDropAsync: {ex}");
+            // TODO: Add proper logging with ILogger when available
+            Console.Error.WriteLine($"Error in HandleFileDropAsync: {ex}");
         }
         finally
         {

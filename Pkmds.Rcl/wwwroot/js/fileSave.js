@@ -57,12 +57,9 @@ window.readDroppedFile = async function(index) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = function(e) {
-            // Convert ArrayBuffer to base64
+            // Convert ArrayBuffer to base64 efficiently
             const bytes = new Uint8Array(e.target.result);
-            let binary = '';
-            for (let i = 0; i < bytes.length; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
+            const binary = Array.from(bytes, byte => String.fromCharCode(byte)).join('');
             const base64 = btoa(binary);
             resolve(base64);
         };
