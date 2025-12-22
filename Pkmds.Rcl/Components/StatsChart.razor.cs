@@ -152,7 +152,7 @@ public partial class StatsChart : IDisposable
             await radarChart.InitializeAsync(chartData, radarChartOptions);
             isChartInitialized = true;
 
-            // Set scale to 0-300 for better visualization of calculated stats
+            // Set radar scale using MinStatValue and dynamically calculated MaxStatValue for better visualization of stats
             await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, MaxStatValue, StatStepSize);
 
             await UpdateChartLabelsAsync();
