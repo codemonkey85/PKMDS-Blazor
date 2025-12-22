@@ -7,13 +7,13 @@ public partial class StatsChart : IDisposable
     private const int MinStatValue = 0;
     private const int DefaultMaxStatValue = 650;
     private const int StatStepSize = 50;
-
-    private readonly RadarChart radarChart = null!;
     private ChartData chartData = null!;
     private bool isChartInitialized;
     private int maxStatValue = DefaultMaxStatValue;
     private PKM? previousPokemon;
     private int previousStatsHash;
+
+    private RadarChart radarChart = null!;
     private RadarChartOptions radarChartOptions = null!;
 
     [Parameter, EditorRequired]

@@ -41,11 +41,11 @@ window.chartHelper = {
 
         // Force a complete re-render by updating with 'active' mode
         chart.update('active');
-        // Then do a full update
-        setTimeout(() => {
+        // Then do a full update on the next animation frame
+        requestAnimationFrame(() => {
             chart.update();
             console.log('Chart colors refreshed successfully');
-        }, 0);
+        });
     },
 
     isDarkMode: function () {
