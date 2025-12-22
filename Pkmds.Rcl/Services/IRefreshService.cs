@@ -10,6 +10,8 @@ public interface IRefreshService
 
     event Action? OnUpdateAvailable;
 
+    event Action<bool>? OnThemeChanged;
+
     void Refresh();
 
     void RefreshBoxState();
@@ -17,6 +19,8 @@ public interface IRefreshService
     void RefreshPartyState();
 
     void RefreshBoxAndPartyState();
+
+    void RefreshTheme(bool isDarkMode);
 
     // ReSharper disable once UnusedMember.Global
     void ShowUpdateMessage();

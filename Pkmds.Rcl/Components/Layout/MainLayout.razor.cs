@@ -30,8 +30,27 @@ public partial class MainLayout : IDisposable
     private Task OnSystemPreferenceChanged(bool newValue)
     {
         isDarkMode = newValue;
+        RefreshService.RefreshTheme(isDarkMode);
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    private void OnIsDarkModeChanged(bool newValue)
+    {
+        isDarkMode = newValue;
+        Console.WriteLine($"MainLayout.OnIsDarkModeChanged: isDarkMode = {isDarkMode}");
+        RefreshService.RefreshTheme(isDarkMode);
+        Console.WriteLine("MainLayout.OnIsDarkModeChanged: RefreshTheme called");
+        StateHasChanged();
+    }
+
+    private void OnThemeSwitchChanged(bool newValue)
+    {
+        isDarkMode = newValue;
+        Console.WriteLine($"MainLayout.OnThemeSwitchChanged: isDarkMode = {isDarkMode}");
+        RefreshService.RefreshTheme(isDarkMode);
+        Console.WriteLine("MainLayout.OnThemeSwitchChanged: RefreshTheme called");
+        StateHasChanged();
     }
 
     private void DrawerToggle() => AppService.ToggleDrawer();
@@ -131,14 +150,14 @@ public partial class MainLayout : IDisposable
         AppState.ShowProgressIndicator = true;
 
         var originalName = browserLoadSaveFile?.Name;
-        
+
         // Only default to "save.sav" if we have no original filename at all
         if (string.IsNullOrWhiteSpace(originalName))
         {
             originalName = "save";
             var fileExtensionFromName = ".sav";
             var finalName = EnsureExtension(originalName, fileExtensionFromName);
-            
+
             await WriteFile(
                 AppState.SaveFile.Write().ToArray(),
                 finalName,
@@ -149,7 +168,7 @@ public partial class MainLayout : IDisposable
         {
             // Preserve the original filename exactly as it was (with or without extension)
             var fileExtensionFromName = Path.GetExtension(originalName);
-            
+
             await WriteFile(
                 AppState.SaveFile.Write().ToArray(),
                 originalName,

@@ -9,6 +9,7 @@ public class RefreshService : IRefreshService
     public event Action? OnBoxStateChanged;
     public event Action? OnPartyStateChanged;
     public event Action? OnUpdateAvailable;
+    public event Action<bool>? OnThemeChanged;
 
     void IRefreshService.ShowUpdateMessage() => ShowUpdateMessage();
 
@@ -23,6 +24,8 @@ public class RefreshService : IRefreshService
         RefreshBoxState();
         RefreshPartyState();
     }
+
+    public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
 
     [JSInvokable(nameof(ShowUpdateMessage))]
     public static void ShowUpdateMessage() => Instance?.OnUpdateAvailable?.Invoke();

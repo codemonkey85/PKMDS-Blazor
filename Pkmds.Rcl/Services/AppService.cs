@@ -1,5 +1,4 @@
 ﻿using Pkmds.Rcl.Components;
-using Pkmds.Rcl.Extensions;
 
 namespace Pkmds.Rcl.Services;
 
@@ -55,9 +54,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 .Where(species => species.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(species => species.Text);
 
-    public ComboItem? GetSpeciesComboItem(ushort speciesId) => GameInfo.FilteredSources.Species
+    public ComboItem GetSpeciesComboItem(ushort speciesId) => GameInfo.FilteredSources.Species
         .DistinctBy(species => species.Value)
-        .FirstOrDefault(species => species.Value == speciesId) ?? null;
+        .FirstOrDefault(species => species.Value == speciesId) ?? new(string.Empty, (int)Species.None);
 
     public IEnumerable<ComboItem> SearchItemNames(string searchString) =>
         AppState.SaveFile is null || searchString is not { Length: > 0 }

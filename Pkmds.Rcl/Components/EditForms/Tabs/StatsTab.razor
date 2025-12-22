@@ -13,6 +13,22 @@
 {
     <MudGrid>
 
+        <MudItem xs="12">
+            <MudStack>
+                <MudSwitch @bind-Value="@ShowStatsChart"
+                           Color="@Color.Primary"
+                           Label="Show Stats Chart"/>
+                @if (ShowStatsChart)
+                {
+                    <MudPaper Width="300px"
+                              Class="pa-1">
+                        <StatsChart
+                            Pokemon="@Pokemon"/>
+                    </MudPaper>
+                }
+            </MudStack>
+        </MudItem>
+
         <MudItem xs="3">
             <MudStack>
                 <MudText>

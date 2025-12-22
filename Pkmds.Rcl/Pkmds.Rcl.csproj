@@ -10,6 +10,7 @@
         <PackageReference Include="MudBlazor"/>
         <PackageReference Include="PKHeX.Core"/>
         <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess"/>
+        <PackageReference Include="BlazorExpress.ChartJS"/>
     </ItemGroup>
 
 </Project>

@@ -5,6 +5,8 @@ public partial class StatsTab : IDisposable
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
+    private bool ShowStatsChart { get; set; }
+
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
@@ -170,6 +172,8 @@ public partial class StatsTab : IDisposable
                 pk2.IV_SPD = (byte)newValue;
             }
         }
+
+        AppService.LoadPokemonStats(Pokemon);
     }
 
     private void OnSetIv(Stats stat, int newValue)

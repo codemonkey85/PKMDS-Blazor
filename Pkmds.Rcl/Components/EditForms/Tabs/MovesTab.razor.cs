@@ -2,8 +2,7 @@ namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
 public partial class MovesTab
 {
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
     private bool UseTextSearch { get; set; } = true;
