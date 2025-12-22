@@ -5,7 +5,7 @@
           draggable="@(Pokemon is { Species: > 0 })"
           @ondragstart="@HandleDragStart"
           @ondragend="@HandleDragEnd"
-          @ondragover="@HandleDragOver"
+          @ondragover:preventDefault
           @ondrop="@HandleDrop"
           Class="@($"square-slot {GetClass()} {GetDragClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
     <div class="pokemon-slot">

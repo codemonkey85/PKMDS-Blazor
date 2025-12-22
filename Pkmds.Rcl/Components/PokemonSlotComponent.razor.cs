@@ -56,25 +56,6 @@ public partial class PokemonSlotComponent : IDisposable
         StateHasChanged();
     }
 
-    private void HandleDragOver(DragEventArgs e)
-    {
-        if (!DragDropService.IsDragging)
-        {
-            return;
-        }
-
-        // Prevent dropping onto the same slot
-        if (DragDropService.IsDragSourceParty == IsPartySlot &&
-            DragDropService.DragSourceBoxNumber == BoxNumber &&
-            DragDropService.DragSourceSlotNumber == SlotNumber)
-        {
-            e.DataTransfer.DropEffect = "none";
-            return;
-        }
-
-        e.DataTransfer.DropEffect = "move";
-    }
-
     private void HandleDrop(DragEventArgs e)
     {
         if (!DragDropService.IsDragging)
