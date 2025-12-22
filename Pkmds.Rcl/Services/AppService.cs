@@ -507,6 +507,95 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         return Task.CompletedTask;
     }
 
+    public void MovePokemon(int? sourceBoxNumber, int sourceSlotNumber, bool isSourceParty,
+        int? destBoxNumber, int destSlotNumber, bool isDestParty)
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            return;
+        }
+
+        // Get source Pokémon
+        PKM? sourcePokemon;
+        if (isSourceParty)
+        {
+            sourcePokemon = saveFile.GetPartySlotAtIndex(sourceSlotNumber);
+        }
+        else if (sourceBoxNumber.HasValue)
+        {
+            sourcePokemon = saveFile.GetBoxSlotAtIndex(sourceBoxNumber.Value, sourceSlotNumber);
+        }
+        else // LetsGo storage
+        {
+            sourcePokemon = saveFile.GetBoxSlotAtIndex(sourceSlotNumber);
+        }
+
+        // Get destination Pokémon
+        PKM? destPokemon;
+        if (isDestParty)
+        {
+            destPokemon = destSlotNumber < saveFile.PartyCount 
+                ? saveFile.GetPartySlotAtIndex(destSlotNumber)
+                : null;
+        }
+        else if (destBoxNumber.HasValue)
+        {
+            destPokemon = saveFile.GetBoxSlotAtIndex(destBoxNumber.Value, destSlotNumber);
+        }
+        else // LetsGo storage
+        {
+            destPokemon = saveFile.GetBoxSlotAtIndex(destSlotNumber);
+        }
+
+        // Swap the Pokémon
+        if (isSourceParty)
+        {
+            saveFile.SetPartySlotAtIndex(destPokemon ?? saveFile.BlankPKM, sourceSlotNumber);
+        }
+        else if (sourceBoxNumber.HasValue)
+        {
+            saveFile.SetBoxSlotAtIndex(destPokemon ?? saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
+        }
+        else // LetsGo storage
+        {
+            saveFile.SetBoxSlotAtIndex(destPokemon ?? saveFile.BlankPKM, sourceSlotNumber);
+        }
+
+        if (isDestParty)
+        {
+            saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+        }
+        else if (destBoxNumber.HasValue)
+        {
+            saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destBoxNumber.Value, destSlotNumber);
+        }
+        else // LetsGo storage
+        {
+            saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+        }
+
+        // Refresh the UI based on what changed
+        if (isSourceParty || isDestParty)
+        {
+            if (saveFile is SAV7b)
+            {
+                RefreshService.RefreshBoxAndPartyState();
+            }
+            else
+            {
+                RefreshService.RefreshPartyState();
+                if (!isSourceParty || !isDestParty)
+                {
+                    RefreshService.RefreshBoxState();
+                }
+            }
+        }
+        else
+        {
+            RefreshService.RefreshBoxState();
+        }
+    }
+
     private void HandleNullOrEmptyPokemon()
     {
         if (AppState.SaveFile is not { } saveFile)
