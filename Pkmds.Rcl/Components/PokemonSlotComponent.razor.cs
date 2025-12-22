@@ -38,7 +38,7 @@ public partial class PokemonSlotComponent : IDisposable
         ? AppService.GetPokemonSpeciesName(Pokemon.Species) ?? "Unknown"
         : "Unknown";
 
-    private void HandleDragStart(DragEventArgs e)
+    private async Task HandleDragStart(DragEventArgs e)
     {
         if (Pokemon is not { Species: > 0 })
         {
@@ -46,17 +46,76 @@ public partial class PokemonSlotComponent : IDisposable
         }
 
         DragDropService.StartDrag(Pokemon, BoxNumber, SlotNumber, IsPartySlot);
-        e.DataTransfer.EffectAllowed = "move";
+        e.DataTransfer.EffectAllowed = "copyMove";
+        
+        // Prepare for potential external drag (export)
+        await PrepareExternalDrag();
     }
 
-    private void HandleDragEnd(DragEventArgs e)
+    private async Task PrepareExternalDrag()
     {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        try
+        {
+            // Store the Pokemon data for potential export
+            Pokemon.RefreshChecksum();
+            var cleanFileName = AppService.GetCleanFileName(Pokemon);
+            var data = Pokemon.DecryptedPartyData;
+            
+            // Store in JavaScript for potential download
+            await JSRuntime.InvokeVoidAsync("storePokemonForExport", cleanFileName, data);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error preparing external drag: {ex.Message}");
+        }
+    }
+
+    private async Task HandleDragEnd(DragEventArgs e)
+    {
+        // Check if drag ended outside the app (potential export)
+        if (e.DataTransfer.DropEffect == "none" && Pokemon is { Species: > 0 })
+        {
+            // Drag ended outside - trigger download
+            await TriggerPokemonExport();
+        }
+
         DragDropService.EndDrag();
         StateHasChanged();
     }
 
-    private void HandleDrop(DragEventArgs e)
+    private async Task TriggerPokemonExport()
     {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("downloadStoredPokemon");
+            Snackbar.Add($"Exported {AppService.GetPokemonSpeciesName(Pokemon.Species) ?? "Pokémon"}", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error exporting Pokemon: {ex.Message}");
+        }
+    }
+
+    private async Task HandleDrop(DragEventArgs e)
+    {
+        // Check if this is a file drop from external source
+        if (e.DataTransfer.Files.Length > 0)
+        {
+            await HandleFileDropAsync(e.DataTransfer.Files);
+            return;
+        }
+
+        // Handle internal drag and drop
         if (!DragDropService.IsDragging)
         {
             return;
@@ -84,6 +143,87 @@ public partial class PokemonSlotComponent : IDisposable
 
         DragDropService.ClearDrag();
         StateHasChanged();
+    }
+
+    private async Task HandleFileDropAsync(string[] fileNames)
+    {
+        if (AppState.SaveFile is not { } saveFile)
+        {
+            Snackbar.Add("No save file loaded. Please load a save file first.", Severity.Warning);
+            return;
+        }
+
+        if (fileNames.Length == 0)
+        {
+            return;
+        }
+
+        var fileName = fileNames[0];
+
+        try
+        {
+            AppState.ShowProgressIndicator = true;
+
+            // Use JavaScript interop to read the file
+            var fileDataBase64 = await JSRuntime.InvokeAsync<string>("readDroppedFile", 0);
+            if (string.IsNullOrEmpty(fileDataBase64))
+            {
+                Snackbar.Add("Failed to read the dropped file.", Severity.Error);
+                return;
+            }
+
+            var data = Convert.FromBase64String(fileDataBase64);
+
+            // Try to parse as Pokemon file
+            if (!FileUtil.TryGetPKM(data, out var pkm, Path.GetExtension(fileName), saveFile))
+            {
+                Snackbar.Add($"The file '{fileName}' is not a supported Pokémon file.", Severity.Error);
+                return;
+            }
+
+            var pokemon = pkm.Clone();
+
+            // Convert if needed
+            if (pkm.GetType() != saveFile.PKMType)
+            {
+                pokemon = EntityConverter.ConvertToType(pkm, saveFile.PKMType, out var c);
+                if (!c.IsSuccess() || pokemon is null)
+                {
+                    Snackbar.Add($"Failed to convert Pokémon: {c.GetDisplayString(pkm, saveFile.PKMType)}", Severity.Error);
+                    return;
+                }
+            }
+
+            saveFile.AdaptToSaveFile(pokemon);
+
+            // Place the Pokemon in the dropped slot
+            if (IsPartySlot)
+            {
+                saveFile.SetPartySlotAtIndex(pokemon, SlotNumber);
+                RefreshService.RefreshPartyState();
+            }
+            else if (BoxNumber.HasValue)
+            {
+                saveFile.SetBoxSlotAtIndex(pokemon, BoxNumber.Value, SlotNumber);
+                RefreshService.RefreshBoxState();
+            }
+            else // LetsGo storage
+            {
+                saveFile.SetBoxSlotAtIndex(pokemon, SlotNumber);
+                RefreshService.RefreshBoxState();
+            }
+
+            Snackbar.Add($"Successfully imported {AppService.GetPokemonSpeciesName(pokemon.Species) ?? "Pokémon"} from {fileName}", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error importing Pokémon: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Error in HandleFileDropAsync: {ex}");
+        }
+        finally
+        {
+            AppState.ShowProgressIndicator = false;
+        }
     }
 
     private string GetDragClass()

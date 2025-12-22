@@ -1,4 +1,79 @@
-﻿window.showFilePickerAndWrite = async function (fileName, byteArray, extension, description) {
+﻿// Track the last drag event for external file drag
+window.lastDragEvent = null;
+window.droppedFiles = null;
+window.storedPokemonData = null;
+window.storedPokemonFileName = null;
+
+// Capture dragstart events globally
+document.addEventListener('dragstart', function(e) {
+    window.lastDragEvent = e;
+}, true);
+
+// Capture drop events to store files
+document.addEventListener('drop', function(e) {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        window.droppedFiles = e.dataTransfer.files;
+    }
+}, true);
+
+// Store Pokemon data for potential export
+window.storePokemonForExport = function(fileName, byteArray) {
+    window.storedPokemonFileName = fileName;
+    window.storedPokemonData = byteArray;
+};
+
+// Download the stored Pokemon
+window.downloadStoredPokemon = function() {
+    if (!window.storedPokemonData || !window.storedPokemonFileName) {
+        return;
+    }
+    
+    const uint8 = window.storedPokemonData instanceof Uint8Array 
+        ? window.storedPokemonData 
+        : new Uint8Array(window.storedPokemonData);
+    
+    const blob = new Blob([uint8], {type: 'application/octet-stream'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = window.storedPokemonFileName;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+        // Clear stored data
+        window.storedPokemonData = null;
+        window.storedPokemonFileName = null;
+    }, 0);
+};
+
+// Function to read a dropped file and return as base64
+window.readDroppedFile = async function(index) {
+    if (!window.droppedFiles || index >= window.droppedFiles.length) {
+        return null;
+    }
+    
+    const file = window.droppedFiles[index];
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Convert ArrayBuffer to base64
+            const bytes = new Uint8Array(e.target.result);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            const base64 = btoa(binary);
+            resolve(base64);
+        };
+        reader.onerror = function(e) {
+            reject(e);
+        };
+        reader.readAsArrayBuffer(file);
+    });
+};
+
+window.showFilePickerAndWrite = async function (fileName, byteArray, extension, description) {
     // byteArray is expected to be a JS array of numbers coming from a Blazor byte[]
     try {
         if (!byteArray) throw new Error('byteArray is null/undefined');
