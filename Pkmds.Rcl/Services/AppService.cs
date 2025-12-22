@@ -515,8 +515,30 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             return;
         }
 
-        // Validate slot numbers
+        // Validate slot numbers are non-negative
         if (sourceSlotNumber < 0 || destSlotNumber < 0)
+        {
+            return;
+        }
+
+        // Validate party slot bounds
+        if (isSourceParty && sourceSlotNumber >= 6)
+        {
+            return;
+        }
+
+        if (isDestParty && destSlotNumber >= 6)
+        {
+            return;
+        }
+
+        // Validate box slot bounds
+        if (!isSourceParty && sourceBoxNumber.HasValue && sourceSlotNumber >= saveFile.BoxSlotCount)
+        {
+            return;
+        }
+
+        if (!isDestParty && destBoxNumber.HasValue && destSlotNumber >= saveFile.BoxSlotCount)
         {
             return;
         }
@@ -540,9 +562,14 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         PKM? destPokemon;
         if (isDestParty)
         {
-            destPokemon = destSlotNumber < saveFile.PartyCount 
-                ? saveFile.GetPartySlotAtIndex(destSlotNumber)
-                : null;
+            if (destSlotNumber < 0 || destSlotNumber >= saveFile.PartyCount)
+            {
+                destPokemon = null;
+            }
+            else
+            {
+                destPokemon = saveFile.GetPartySlotAtIndex(destSlotNumber);
+            }
         }
         else if (destBoxNumber.HasValue)
         {
