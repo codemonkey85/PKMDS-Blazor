@@ -17,13 +17,13 @@
 {
     <MudNumericField T="@byte"
                      Label="Height"
-                     Max="byte.MaxValue"
+                     Max="@byte.MaxValue"
                      Min="0"
                      @bind-Value="@scaledSize.HeightScalar"/>
 
     <MudNumericField T="@byte"
                      Label="Weight"
-                     Max="byte.MaxValue"
+                     Max="@byte.MaxValue"
                      Min="0"
                      @bind-Value="@scaledSize.WeightScalar"/>
 }
@@ -32,7 +32,7 @@
 {
     <MudNumericField T="@byte"
                      Label="Scale"
-                     Max="byte.MaxValue"
+                     Max="@byte.MaxValue"
                      Min="0"
                      AdornmentText="@GetScaleRating(scaledSize3)"
                      Adornment="@Adornment.End"

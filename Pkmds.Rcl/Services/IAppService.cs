@@ -18,7 +18,7 @@ public interface IAppService
 
     IEnumerable<ComboItem> SearchPokemonNames(string searchString);
 
-    ComboItem? GetSpeciesComboItem(ushort speciesId);
+    ComboItem GetSpeciesComboItem(ushort speciesId);
 
     string GetStatModifierString(Nature nature);
 

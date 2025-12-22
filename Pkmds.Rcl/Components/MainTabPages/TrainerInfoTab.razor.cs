@@ -173,7 +173,7 @@ public partial class TrainerInfoTab : IDisposable
     private Task<IEnumerable<ComboItem>> SearchPokemonNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchPokemonNames(searchString));
 
-    private ComboItem? GetTrainerCardPokemon(SAV3FRLG sav, int index)
+    private ComboItem GetTrainerCardPokemon(SAV3FRLG sav, int index)
     {
         var g3Species = sav.GetWork(0x43 + index);
         var species = SpeciesConverter.GetNational3(g3Species);
@@ -371,7 +371,7 @@ public partial class TrainerInfoTab : IDisposable
         }
     }
 
-    private ComboItem? GetGen1RivalStarter(SAV1 sav1)
+    private ComboItem GetGen1RivalStarter(SAV1 sav1)
     {
         var nationalSpeciesId = SpeciesConverter.GetNational1(sav1.RivalStarter);
         return AppService.GetSpeciesComboItem(nationalSpeciesId);
