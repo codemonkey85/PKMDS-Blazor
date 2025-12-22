@@ -7,14 +7,14 @@ public partial class StatsChart : IDisposable
     private const int MinStatValue = 0;
     private const int DefaultMaxStatValue = 650;
     private const int StatStepSize = 50;
-    private ChartData chartData = default!;
+
+    private readonly RadarChart radarChart = null!;
+    private ChartData chartData = null!;
     private bool isChartInitialized;
-    private int MaxStatValue = DefaultMaxStatValue;
+    private int maxStatValue = DefaultMaxStatValue;
     private PKM? previousPokemon;
     private int previousStatsHash;
-
-    private RadarChart radarChart = default!;
-    private RadarChartOptions radarChartOptions = default!;
+    private RadarChartOptions radarChartOptions = null!;
 
     [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
@@ -32,32 +32,38 @@ public partial class StatsChart : IDisposable
         InitializeChartData();
     }
 
+    // ReSharper disable once AsyncVoidMethod
     private async void OnThemeChanged(bool isDarkMode)
     {
         Console.WriteLine($"StatsChart.OnThemeChanged called with isDarkMode: {isDarkMode}. Chart initialized: {isChartInitialized}");
-        if (isChartInitialized)
+        if (!isChartInitialized)
         {
-            try
-            {
-                Console.WriteLine($"Calling refreshChartColorsWithTheme for chart: {radarChart.Id}");
-                await JSRuntime.InvokeVoidAsync("chartHelper.refreshChartColorsWithTheme", radarChart.Id, isDarkMode);
-                Console.WriteLine("refreshChartColorsWithTheme completed successfully");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error refreshing chart colors: {ex.Message}");
-            }
+            return;
+        }
+
+        try
+        {
+            Console.WriteLine($"Calling refreshChartColorsWithTheme for chart: {radarChart.Id}");
+            await JSRuntime.InvokeVoidAsync("chartHelper.refreshChartColorsWithTheme", radarChart.Id, isDarkMode);
+            Console.WriteLine("refreshChartColorsWithTheme completed successfully");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error refreshing chart colors: {ex.Message}");
         }
     }
 
+    // ReSharper disable once AsyncVoidMethod
     private async void OnStateChanged()
     {
         StateHasChanged();
-        if (isChartInitialized)
+        if (!isChartInitialized)
         {
-            InitializeChartData();
-            await UpdateChartAsync();
+            return;
         }
+
+        InitializeChartData();
+        await UpdateChartAsync();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -91,23 +97,25 @@ public partial class StatsChart : IDisposable
         return hash.ToHashCode();
     }
 
+    private static List<string> GetLabels(byte generation, PKM? pkm) =>
+        (generation, pkm) switch
+        {
+            (1, PK1) => ["HP", "Attack", "Defense", "Speed", "Special"],
+            _ => ["HP", "Attack", "Defense", "Speed", "Sp. Def", "Sp. Atk"]
+        };
+
     private void InitializeChartData()
     {
-        if (Pokemon is null || AppState.SaveFile is not { Generation: { } saveGeneration } saveFile)
+        if (Pokemon is null || AppState.SaveFile is not { Generation: var saveGeneration })
         {
             return;
         }
 
-        List<string> labels = (saveGeneration, Pokemon) switch
-        {
-            (1, PK1) => ["HP", "Attack", "Defense", "Speed", "Special"],
-            (2, PK2) => ["HP", "Attack", "Defense", "Speed", "Sp. Def", "Sp. Atk"],
-            _ => ["HP", "Attack", "Defense", "Speed", "Sp. Def", "Sp. Atk"]
-        };
+        var labels = GetLabels(saveGeneration, Pokemon);
 
         var stats = GetPokemonStats();
 
-        MaxStatValue = CalculateMaxStatValue(stats);
+        maxStatValue = CalculateMaxStatValue(stats);
 
         chartData = new ChartData
         {
@@ -143,7 +151,7 @@ public partial class StatsChart : IDisposable
                 pk1.Stat_SPE,
                 pk1.Stat_SPC
             ]
-            : (List<double?>)[.. Pokemon.Stats];
+            : [.. Pokemon.Stats];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -153,7 +161,7 @@ public partial class StatsChart : IDisposable
             isChartInitialized = true;
 
             // Set scale to 0-300 for better visualization of calculated stats
-            await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, MaxStatValue, StatStepSize);
+            await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, maxStatValue, StatStepSize);
 
             await UpdateChartLabelsAsync();
         }
@@ -172,23 +180,18 @@ public partial class StatsChart : IDisposable
 
         // Reapply scale customizations after update
         // chartId, min, max, stepSize
-        await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, MaxStatValue, StatStepSize);
+        await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, maxStatValue, StatStepSize);
         await UpdateChartLabelsAsync();
     }
 
     private async Task UpdateChartLabelsAsync()
     {
-        if (Pokemon is null || AppState.SaveFile is not { Generation: { } saveGeneration })
+        if (Pokemon is null || AppState.SaveFile is not { Generation: var saveGeneration })
         {
             return;
         }
 
-        List<string> labels = (saveGeneration, Pokemon) switch
-        {
-            (1, PK1) => ["HP", "Attack", "Defense", "Speed", "Special"],
-            (2, PK2) => ["HP", "Attack", "Defense", "Speed", "Sp. Def", "Sp. Atk"],
-            _ => ["HP", "Attack", "Defense", "Speed", "Sp. Def", "Sp. Atk"]
-        };
+        var labels = GetLabels(saveGeneration, Pokemon);
 
         var values = GetPokemonStats();
 
