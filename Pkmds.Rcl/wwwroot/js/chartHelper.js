@@ -53,14 +53,14 @@ window.chartHelper = {
         const hasDarkClass = document.documentElement.classList.contains('mud-theme-dark') ||
             document.body.classList.contains('mud-theme-dark');
         const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
+
         console.log('isDarkMode check:', {
             documentElement: document.documentElement.classList.contains('mud-theme-dark'),
             body: document.body.classList.contains('mud-theme-dark'),
             systemPreference: systemPreference,
             result: hasDarkClass || systemPreference
         });
-        
+
         return hasDarkClass || systemPreference;
     },
 
@@ -85,7 +85,7 @@ window.chartHelper = {
         }
 
         const darkMode = this.isDarkMode();
-        
+
         // Store the initial theme on the chart
         chart._isDarkMode = darkMode;
 
@@ -155,7 +155,7 @@ window.chartHelper = {
         }
 
         const darkMode = this.isDarkMode();
-        
+
         // Store theme on chart
         chart._isDarkMode = darkMode;
 

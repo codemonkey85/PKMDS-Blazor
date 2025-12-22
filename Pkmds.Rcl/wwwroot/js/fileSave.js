@@ -12,12 +12,12 @@
 
         // Normalize the extension - allow empty/null for no extension
         let ext = (extension || '').trim();
-        
+
         // If extension is just a dot, treat it as no extension
         if (ext === '.') {
             ext = '';
         }
-        
+
         // Add leading dot if we have an extension that doesn't start with one
         if (ext && !ext.startsWith('.')) {
             ext = '.' + ext;

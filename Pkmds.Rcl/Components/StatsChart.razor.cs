@@ -7,17 +7,16 @@ public partial class StatsChart : IDisposable
     private const int MinStatValue = 0;
     private const int DefaultMaxStatValue = 650;
     private const int StatStepSize = 50;
+    private ChartData chartData = default!;
+    private bool isChartInitialized;
+    private int MaxStatValue = DefaultMaxStatValue;
+    private PKM? previousPokemon;
+    private int previousStatsHash;
 
     private RadarChart radarChart = default!;
     private RadarChartOptions radarChartOptions = default!;
-    private ChartData chartData = default!;
-    private PKM? previousPokemon;
-    private bool isChartInitialized;
-    private int MaxStatValue = DefaultMaxStatValue;
-    private int previousStatsHash;
 
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
     public void Dispose()
@@ -64,13 +63,13 @@ public partial class StatsChart : IDisposable
     protected override async Task OnParametersSetAsync()
     {
         var statsChanged = Pokemon is not null && GetStatsHash() != previousStatsHash;
-        
+
         if ((Pokemon != previousPokemon || statsChanged) && isChartInitialized)
         {
             InitializeChartData();
             await UpdateChartAsync();
         }
-        
+
         previousPokemon = Pokemon;
         previousStatsHash = GetStatsHash();
     }
@@ -88,6 +87,7 @@ public partial class StatsChart : IDisposable
         {
             hash.Add(stat);
         }
+
         return hash.ToHashCode();
     }
 
@@ -129,16 +129,14 @@ public partial class StatsChart : IDisposable
                 }
             ]
         };
-        radarChartOptions = new()
-        {
-            Responsive = true
-        };
+        radarChartOptions = new() { Responsive = true };
     }
 
     private List<double?> GetPokemonStats() => Pokemon is null
-            ? []
-            : AppState.SaveFile?.Generation == 1 && Pokemon is PK1 pk1
-            ? [
+        ? []
+        : AppState.SaveFile?.Generation == 1 && Pokemon is PK1 pk1
+            ?
+            [
                 pk1.Stat_HPMax,
                 pk1.Stat_ATK,
                 pk1.Stat_DEF,
@@ -156,9 +154,10 @@ public partial class StatsChart : IDisposable
 
             // Set scale to 0-300 for better visualization of calculated stats
             await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, MaxStatValue, StatStepSize);
-            
+
             await UpdateChartLabelsAsync();
         }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -235,9 +234,9 @@ public partial class StatsChart : IDisposable
         }
 
         var maxStat = stats.Where(s => s.HasValue).Max(s => s!.Value);
-        
+
         var roundedMax = (int)Math.Ceiling(maxStat / StatStepSize) * StatStepSize;
-        
+
         return Math.Max(roundedMax + StatStepSize, StatStepSize * 2);
     }
 }

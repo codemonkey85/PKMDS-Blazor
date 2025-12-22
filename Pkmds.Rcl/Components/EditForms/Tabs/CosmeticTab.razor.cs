@@ -2,8 +2,7 @@ namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
 public partial class CosmeticTab : IDisposable
 {
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
 
     public void Dispose() =>
