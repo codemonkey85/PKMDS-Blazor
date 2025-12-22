@@ -15,13 +15,12 @@ public partial class PokemonSlotComponent : IDisposable
     public Func<string>? GetClassFunction { get; set; }
 
     [Parameter]
-    public int? BoxNumber { get; set; }
-
-    [Parameter]
     public bool IsPartySlot { get; set; }
 
     [Inject]
     private IDragDropService DragDropService { get; set; } = default!;
+
+    protected virtual int? BoxNumber => null;
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
@@ -76,7 +75,7 @@ public partial class PokemonSlotComponent : IDisposable
         // Move the Pokémon
         AppService.MovePokemon(
             DragDropService.DragSourceBoxNumber,
-            DragDropService.DragSourceSlotNumber!.Value,
+            DragDropService.DragSourceSlotNumber,
             DragDropService.IsDragSourceParty,
             BoxNumber,
             SlotNumber,

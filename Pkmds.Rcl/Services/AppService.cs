@@ -515,6 +515,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             return;
         }
 
+        // Validate slot numbers
+        if (sourceSlotNumber < 0 || destSlotNumber < 0)
+        {
+            return;
+        }
+
         // Get source Pokémon
         PKM? sourcePokemon;
         if (isSourceParty)

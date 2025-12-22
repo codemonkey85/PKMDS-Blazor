@@ -6,7 +6,7 @@ public interface IDragDropService
     
     int? DragSourceBoxNumber { get; set; }
     
-    int? DragSourceSlotNumber { get; set; }
+    int DragSourceSlotNumber { get; set; }
     
     bool IsDragSourceParty { get; set; }
     

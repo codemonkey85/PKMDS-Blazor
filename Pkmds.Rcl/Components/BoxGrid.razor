@@ -8,7 +8,7 @@
             var slotNum = i;
             var pkm = AppState.BoxEdit[slotNum];
 
-            <BoxSlotComponent BoxNumber="@BoxNumber"
+            <BoxSlotComponent BoxNumberParam="@BoxNumber"
                               SlotNumber="@slotNum"
                               Pokemon="@pkm"
                               OnSlotClick="@(() => SetSelectedPokemon(pkm, BoxNumber, slotNum))"

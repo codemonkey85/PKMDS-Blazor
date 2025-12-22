@@ -6,7 +6,7 @@ public class DragDropService : IDragDropService
     
     public int? DragSourceBoxNumber { get; set; }
     
-    public int? DragSourceSlotNumber { get; set; }
+    public int DragSourceSlotNumber { get; set; } = -1;
     
     public bool IsDragSourceParty { get; set; }
     
@@ -29,7 +29,7 @@ public class DragDropService : IDragDropService
     {
         DraggedPokemon = null;
         DragSourceBoxNumber = null;
-        DragSourceSlotNumber = null;
+        DragSourceSlotNumber = -1;
         IsDragSourceParty = false;
     }
 }
