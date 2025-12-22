@@ -2,9 +2,10 @@ namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
 public partial class StatsTab : IDisposable
 {
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public PKM? Pokemon { get; set; }
+
+    private bool ShowStatsChart { get; set; }
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
