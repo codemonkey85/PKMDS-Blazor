@@ -66,6 +66,6 @@ public interface IAppService
 
     Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage);
 
-    void MovePokemon(int? sourceBoxNumber, int sourceSlotNumber, bool isSourceParty, 
+    void MovePokemon(int? sourceBoxNumber, int sourceSlotNumber, bool isSourceParty,
         int? destBoxNumber, int destSlotNumber, bool isDestParty);
 }

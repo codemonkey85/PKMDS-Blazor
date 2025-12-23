@@ -2,6 +2,8 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
+    private bool _isDragOverWithFile;
+
     [Parameter, EditorRequired]
     public int SlotNumber { get; set; }
 
@@ -21,8 +23,6 @@ public partial class PokemonSlotComponent : IDisposable
     private IDragDropService DragDropService { get; set; } = default!;
 
     protected virtual int? BoxNumber => null;
-
-    private bool _isDragOverWithFile = false;
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
@@ -57,7 +57,7 @@ public partial class PokemonSlotComponent : IDisposable
         return true;
     }
 
-    private async Task HandleDragStart(DragEventArgs e)
+    private void HandleDragStart(DragEventArgs e)
     {
         if (Pokemon is not { Species: > 0 })
         {
@@ -68,10 +68,7 @@ public partial class PokemonSlotComponent : IDisposable
         e.DataTransfer.EffectAllowed = "copyMove";
     }
 
-    private void HandleDragEnd(DragEventArgs e)
-    {
-        DragDropService.ClearDrag();
-    }
+    private void HandleDragEnd(DragEventArgs e) => DragDropService.ClearDrag();
 
     private bool IsLastBattleReadyPokemon()
     {
@@ -80,7 +77,7 @@ public partial class PokemonSlotComponent : IDisposable
             return false;
         }
 
-        int battleReadyCount = GetBattleReadyCount(saveFile);
+        var battleReadyCount = GetBattleReadyCount(saveFile);
 
         // This is the last battle-ready Pokémon if there's only 1 and this is it
         return battleReadyCount == 1 && Pokemon is { Species: > 0, IsEgg: false };
@@ -89,8 +86,8 @@ public partial class PokemonSlotComponent : IDisposable
     private int GetBattleReadyCount(SaveFile saveFile)
     {
         // Count battle-ready Pokémon in party (non-Eggs with Species > 0)
-        int count = 0;
-        for (int i = 0; i < saveFile.PartyCount; i++)
+        var count = 0;
+        for (var i = 0; i < saveFile.PartyCount; i++)
         {
             var partyMon = saveFile.GetPartySlotAtIndex(i);
             if (partyMon?.Species > 0 && !partyMon.IsEgg)
@@ -98,6 +95,7 @@ public partial class PokemonSlotComponent : IDisposable
                 count++;
             }
         }
+
         return count;
     }
 
@@ -167,7 +165,6 @@ public partial class PokemonSlotComponent : IDisposable
         if (e.DataTransfer.Files.Length > 0)
         {
             await HandleFileDropAsync(e.DataTransfer.Files);
-            return;
         }
     }
 
@@ -293,7 +290,7 @@ public partial class PokemonSlotComponent : IDisposable
             return false;
         }
 
-        int battleReadyCount = GetBattleReadyCount(saveFile);
+        var battleReadyCount = GetBattleReadyCount(saveFile);
 
         // Check if the drag source is the last battle-ready Pokémon
         var dragSourcePokemon = DragDropService.DraggedPokemon;

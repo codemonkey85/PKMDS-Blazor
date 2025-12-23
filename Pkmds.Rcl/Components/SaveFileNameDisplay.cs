@@ -1,5 +1,4 @@
-﻿using Pkmds.Rcl.Services;
-using static PKHeX.Core.GameVersion;
+﻿using static PKHeX.Core.GameVersion;
 
 namespace Pkmds.Rcl.Components;
 

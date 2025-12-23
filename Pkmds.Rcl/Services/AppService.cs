@@ -227,18 +227,21 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         }
 
         // Validate party requirements: must keep at least one non-Egg battle-ready Pokémon
-        int battleReadyCount = 0;
-        for (int i = 0; i < saveFile.PartyCount; i++)
+        var battleReadyCount = 0;
+        for (var i = 0; i < saveFile.PartyCount; i++)
         {
-            if (i == partySlotNumber) continue; // Skip the one being deleted
-            
+            if (i == partySlotNumber)
+            {
+                continue; // Skip the one being deleted
+            }
+
             var partyMon = saveFile.GetPartySlotAtIndex(i);
             if (partyMon?.Species > 0 && !partyMon.IsEgg)
             {
                 battleReadyCount++;
             }
         }
-        
+
         // Prevent deletion if it would leave no battle-ready Pokémon
         if (battleReadyCount == 0)
         {
@@ -594,25 +597,28 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         }
 
         // Determine if this is a swap or a move
-        bool isSwap = (sourcePokemon?.Species ?? 0) > 0 && (destPokemon?.Species ?? 0) > 0;
-        
+        var isSwap = (sourcePokemon?.Species ?? 0) > 0 && (destPokemon?.Species ?? 0) > 0;
+
         // Validate party requirements: must keep at least one non-Egg battle-ready Pokémon
         if (isSourceParty && !isDestParty && !isSwap)
         {
             // Moving from party to box (not a swap)
             // Count remaining battle-ready Pokémon after this move
-            int battleReadyCount = 0;
-            for (int i = 0; i < saveFile.PartyCount; i++)
+            var battleReadyCount = 0;
+            for (var i = 0; i < saveFile.PartyCount; i++)
             {
-                if (i == sourceSlotNumber) continue; // Skip the one being moved
-                
+                if (i == sourceSlotNumber)
+                {
+                    continue; // Skip the one being moved
+                }
+
                 var partyMon = saveFile.GetPartySlotAtIndex(i);
                 if (partyMon?.Species > 0 && !partyMon.IsEgg)
                 {
                     battleReadyCount++;
                 }
             }
-            
+
             // Prevent move if it would leave no battle-ready Pokémon
             if (battleReadyCount == 0)
             {
@@ -620,7 +626,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 return;
             }
         }
-        
+
         // Special handling when moving from party: PKHeX.Core auto-compacts party
         // We need to use DeletePartySlot instead of SetPartySlotAtIndex for proper compacting
         if (isSourceParty && !isDestParty && !isSwap)
@@ -636,7 +642,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             {
                 saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
             }
-            
+
             // Delete from party using DeletePartySlot (properly compacts the party)
             saveFile.DeletePartySlot(sourceSlotNumber);
         }
@@ -652,18 +658,18 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             {
                 saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
             }
-            
+
             // Add to party at the first available empty slot (or the specified slot if within PartyCount)
             // PKHeX.Core's party is kept compact, so we should add at PartyCount position
             // unless the user explicitly dropped on an occupied slot (which would be a swap)
             // or on an empty slot within the current party range
-            int targetSlot = destSlotNumber;
+            var targetSlot = destSlotNumber;
             if (destSlotNumber >= saveFile.PartyCount)
             {
                 // User dropped beyond current party - add at end of party (PartyCount position)
                 targetSlot = saveFile.PartyCount;
             }
-            
+
             saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, targetSlot);
         }
         else if (isSwap)
@@ -712,7 +718,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             {
                 saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
             }
-            
+
             // Then blank out source
             if (isSourceParty)
             {
