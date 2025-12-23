@@ -98,3 +98,28 @@ body, html {
 .loading-progress-text:after {
     content: var(--blazor-load-percentage-text, "Loading");
 }
+
+/* Drag and drop styles */
+.slot-dragging {
+    opacity: 0.5;
+    cursor: grabbing !important;
+}
+
+.slot-drop-target {
+    outline: 2px dashed #1976d2;
+    outline-offset: -2px;
+}
+
+.slot-file-drop {
+    outline: 3px solid #4caf50;
+    outline-offset: -3px;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.square-slot[draggable="true"] {
+    cursor: grab;
+}
+
+.square-slot[draggable="true"]:active {
+    cursor: grabbing;
+}

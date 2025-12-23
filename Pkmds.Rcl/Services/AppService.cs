@@ -226,6 +226,26 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             return;
         }
 
+        // Validate party requirements: must keep at least one non-Egg battle-ready Pokémon
+        int battleReadyCount = 0;
+        for (int i = 0; i < saveFile.PartyCount; i++)
+        {
+            if (i == partySlotNumber) continue; // Skip the one being deleted
+            
+            var partyMon = saveFile.GetPartySlotAtIndex(i);
+            if (partyMon?.Species > 0 && !partyMon.IsEgg)
+            {
+                battleReadyCount++;
+            }
+        }
+        
+        // Prevent deletion if it would leave no battle-ready Pokémon
+        if (battleReadyCount == 0)
+        {
+            // Cannot delete the last battle-ready Pokémon - silently prevent
+            return;
+        }
+
         saveFile.DeletePartySlot(partySlotNumber);
 
         AppState.SelectedPartySlotNumber = null;
@@ -575,6 +595,31 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         // Determine if this is a swap or a move
         bool isSwap = (sourcePokemon?.Species ?? 0) > 0 && (destPokemon?.Species ?? 0) > 0;
+        
+        // Validate party requirements: must keep at least one non-Egg battle-ready Pokémon
+        if (isSourceParty && !isDestParty && !isSwap)
+        {
+            // Moving from party to box (not a swap)
+            // Count remaining battle-ready Pokémon after this move
+            int battleReadyCount = 0;
+            for (int i = 0; i < saveFile.PartyCount; i++)
+            {
+                if (i == sourceSlotNumber) continue; // Skip the one being moved
+                
+                var partyMon = saveFile.GetPartySlotAtIndex(i);
+                if (partyMon?.Species > 0 && !partyMon.IsEgg)
+                {
+                    battleReadyCount++;
+                }
+            }
+            
+            // Prevent move if it would leave no battle-ready Pokémon
+            if (battleReadyCount == 0)
+            {
+                // Cannot move the last battle-ready Pokémon - silently prevent
+                return;
+            }
+        }
         
         // Special handling when moving from party: PKHeX.Core auto-compacts party
         // We need to use DeletePartySlot instead of SetPartySlotAtIndex for proper compacting

@@ -32,27 +32,3 @@
 .pokemon-slot object:empty {
     display: none;
 }
-
-::deep .slot-dragging {
-    opacity: 0.5;
-    cursor: grabbing !important;
-}
-
-::deep .slot-drop-target {
-    outline: 2px dashed #1976d2;
-    outline-offset: -2px;
-}
-
-::deep .slot-file-drop {
-    outline: 3px solid #4caf50;
-    outline-offset: -3px;
-    background-color: rgba(76, 175, 80, 0.1);
-}
-
-::deep .square-slot[draggable="true"] {
-    cursor: grab;
-}
-
-::deep .square-slot[draggable="true"]:active {
-    cursor: grabbing;
-}
