@@ -51,6 +51,9 @@ public partial class PokemonSlotComponent : IDisposable
         if (IsPartySlot && IsLastBattleReadyPokemon())
         {
             // Don't allow dragging the last battle-ready Pokémon
+            // We need to prevent the default drag behavior to avoid the browser
+            // trying to drag the image file which causes the PNG drop error
+            e.DataTransfer.EffectAllowed = "none";
             return;
         }
 
@@ -97,22 +100,25 @@ public partial class PokemonSlotComponent : IDisposable
         if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0)
         {
             _isDragOverWithFile = true;
+            StateHasChanged();
         }
     }
 
     private void HandleDragOver(DragEventArgs e)
     {
         // Required for drop to work - preventDefault handled by global handler
-        // Keep drop indicator active during drag over
-        if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0)
+        // Only show indicator if we don't already have it active
+        if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0 && !_isDragOverWithFile)
         {
             _isDragOverWithFile = true;
+            StateHasChanged();
         }
     }
 
     private void HandleDragLeave(DragEventArgs e)
     {
         _isDragOverWithFile = false;
+        StateHasChanged();
     }
 
     private async Task HandleDrop(DragEventArgs e)

@@ -643,7 +643,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         else if (!isSourceParty && isDestParty && !isSwap)
         {
             // Moving FROM box TO party (non-swap case)
-            // Delete from box first, then add to party
+            // Delete from box first
             if (sourceBoxNumber.HasValue)
             {
                 saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
@@ -653,7 +653,18 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
             }
             
-            saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+            // Add to party at the first available empty slot (or the specified slot if within PartyCount)
+            // PKHeX.Core's party is kept compact, so we should add at PartyCount position
+            // unless the user explicitly dropped on an occupied slot (which would be a swap)
+            // or on an empty slot within the current party range
+            int targetSlot = destSlotNumber;
+            if (destSlotNumber >= saveFile.PartyCount)
+            {
+                // User dropped beyond current party - add at end of party (PartyCount position)
+                targetSlot = saveFile.PartyCount;
+            }
+            
+            saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, targetSlot);
         }
         else if (isSwap)
         {
