@@ -745,6 +745,17 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             {
                 saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
             }
+            
+            // For Gen 1/2: If we just moved within the same box or moved into a box, compact the destination box too
+            if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2 && !isDestParty && destBoxNumber.HasValue)
+            {
+                // Check if destination box differs from source box, or if we're moving within same box
+                // Either way, compact the destination box to ensure proper list format
+                if (!isSourceParty)
+                {
+                    CompactBox(saveFile, destBoxNumber.Value);
+                }
+            }
         }
 
         // Refresh the UI based on what changed
