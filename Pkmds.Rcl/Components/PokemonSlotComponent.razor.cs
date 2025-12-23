@@ -157,7 +157,7 @@ public partial class PokemonSlotComponent : IDisposable
             {
                 var isPartyToBoxDrag = DragDropService.IsDragSourceParty && !IsPartySlot;
                 var isBoxToPartyDrag = !DragDropService.IsDragSourceParty && IsPartySlot;
-                
+
                 if (isPartyToBoxDrag || isBoxToPartyDrag)
                 {
                     // Silently prevent party-box dragging for Let's Go games
