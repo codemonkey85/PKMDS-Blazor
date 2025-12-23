@@ -20,7 +20,7 @@ public partial class PokemonSlotComponent : IDisposable
     public bool IsPartySlot { get; set; }
 
     [Inject]
-    private IDragDropService DragDropService { get; set; } = default!;
+    private IDragDropService DragDropService { get; set; } = null!;
 
     protected virtual int? BoxNumber => null;
 
