@@ -53,7 +53,7 @@ public partial class PokemonSlotComponent : IDisposable
 
     private void HandleDragEnd(DragEventArgs e)
     {
-        DragDropService.EndDrag();
+        DragDropService.ClearDrag();
         StateHasChanged();
     }
 
