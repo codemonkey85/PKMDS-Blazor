@@ -2,7 +2,14 @@
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
-          Class="@($"square-slot {GetClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
+          draggable="@IsDraggable()"
+          @ondragstart="@HandleDragStart"
+          @ondragend="@HandleDragEnd"
+          @ondragenter="@HandleDragEnter"
+          @ondragover="@HandleDragOver"
+          @ondragleave="@HandleDragLeave"
+          @ondrop="@HandleDrop"
+          Class="@($"square-slot {GetClass()} {GetDragClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
     <div class="pokemon-slot">
         @if (Pokemon is not null && Pokemon.Species > 0)
         {

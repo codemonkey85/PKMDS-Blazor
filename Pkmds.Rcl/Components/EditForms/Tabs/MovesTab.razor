@@ -1,14 +1,14 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-     AppState.SaveFile is
+     AppState is
      {
-         Context: var saveFileEntityContext and not
+         SaveFile.Context: var saveFileEntityContext and not
          (EntityContext.None or
          EntityContext.SplitInvalid or
-         EntityContext.MaxInvalid)
-     } &&
-     AppState.SelectedSlotsAreValid)
+         EntityContext.MaxInvalid),
+         SelectedSlotsAreValid: true
+     })
 {
     <MudStack Spacing="1">
 
@@ -123,8 +123,8 @@
 
                     @if (showPlusMove)
                     {
-                        var moveId = Pokemon.GetMove(i);
-                        var plusFlagIndex = PersonalInfo9ZA.PlusMoves.IndexOf(moveId);
+                        var localMoveId = Pokemon.GetMove(i);
+                        var plusFlagIndex = PersonalInfo9ZA.PlusMoves.IndexOf(localMoveId);
                         <MudItem xs="1"
                                  Class="@ColumnClass">
                             <MudCheckBox Label="+"

@@ -17,6 +17,7 @@ services
     .AddSingleton<IAppState, AppState>()
     .AddSingleton<IRefreshService, RefreshService>()
     .AddSingleton<IAppService, AppService>()
+    .AddSingleton<IDragDropService, DragDropService>()
     .AddSingleton<JsService>()
     .AddSingleton<BlazorAesProvider>()
     .AddSingleton<BlazorMd5Provider>();

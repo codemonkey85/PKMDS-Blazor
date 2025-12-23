@@ -1,15 +1,18 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-     AppState.SaveFile is
+     AppState is
      {
-         Context: not
-         (EntityContext.None or
-         EntityContext.SplitInvalid or
-         EntityContext.MaxInvalid),
-         Generation: var saveGeneration
-     } &&
-     AppState.SelectedSlotsAreValid)
+         SaveFile:
+         {
+             Context: not
+             (EntityContext.None or
+             EntityContext.SplitInvalid or
+             EntityContext.MaxInvalid),
+             Generation: var saveGeneration
+         },
+         SelectedSlotsAreValid: true
+     })
 {
     <MudGrid>
 
@@ -125,7 +128,7 @@
                                           ? 15
                                           : 31)"
                                  Value="@Pokemon.IV_HP"
-                                 ValueChanged="@((int newValue) => OnSetIv(Stats.HP, newValue))"
+                                 ValueChanged="@((int newValue) => OnSetIv(Stats.Hp, newValue))"
                                  For="@(() => Pokemon.IV_HP)"
                                  ReadOnly="@(saveGeneration == 1 && Pokemon is PK1)"
                                  HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)"/>

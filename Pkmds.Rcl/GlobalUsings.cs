@@ -1,5 +1,6 @@
 ﻿global using System.Collections.Generic;
 global using System.Collections.ObjectModel;
+global using System.ComponentModel;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
 global using System.Linq.Expressions;
@@ -15,6 +16,6 @@ global using Microsoft.JSInterop;
 global using MudBlazor;
 global using MudBlazor.Services;
 global using PKHeX.Core;
-global using Severity = MudBlazor.Severity;
-global using System.ComponentModel;
 global using Pkmds.Rcl.Extensions;
+global using Pkmds.Rcl.Services;
+global using Severity = MudBlazor.Severity;

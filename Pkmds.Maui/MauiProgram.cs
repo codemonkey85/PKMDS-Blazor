@@ -36,7 +36,8 @@ public static class MauiProgram
             .AddFileSystemAccessService()
             .AddSingleton<IAppState, AppState>()
             .AddSingleton<IRefreshService, RefreshService>()
-            .AddSingleton<IAppService, AppService>();
+            .AddSingleton<IAppService, AppService>()
+            .AddSingleton<IDragDropService, DragDropService>();
 
         return builder.Build();
     }

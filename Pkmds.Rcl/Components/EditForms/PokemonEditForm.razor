@@ -2,15 +2,18 @@
 @inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-     AppState.SaveFile is
+     AppState is
      {
-         Context: not
-         (EntityContext.None or
-         EntityContext.SplitInvalid or
-         EntityContext.MaxInvalid),
-         Generation: var saveGeneration
-     } &&
-     AppState.SelectedSlotsAreValid)
+         SaveFile:
+         {
+             Context: not
+             (EntityContext.None or
+             EntityContext.SplitInvalid or
+             EntityContext.MaxInvalid),
+             Generation: var saveGeneration
+         },
+         SelectedSlotsAreValid: true
+     })
 {
     <div class="button-container">
 

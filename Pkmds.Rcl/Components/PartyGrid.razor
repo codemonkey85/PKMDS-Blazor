@@ -14,6 +14,7 @@
                 <MudItem xs="2">
                     <PokemonSlotComponent Pokemon="@pkm"
                                           SlotNumber="@slotNum"
+                                          IsPartySlot
                                           OnSlotClick="@(() => SetSelectedPokemon(pkm, slotNum))"
                                           GetClassFunction="@(() => GetClass(slotNum))"/>
                 </MudItem>

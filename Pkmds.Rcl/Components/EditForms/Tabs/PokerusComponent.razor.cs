@@ -82,7 +82,7 @@ public partial class PokerusComponent
             Pokemon.PokerusDays = 1;
         }
 
-        if (!cured && Pokemon.IsPokerusInfected && Pokemon.PokerusDays == 0)
+        if (!cured && Pokemon is { IsPokerusInfected: true, PokerusDays: 0 })
         {
             Pokemon.PokerusDays = 1;
         }
