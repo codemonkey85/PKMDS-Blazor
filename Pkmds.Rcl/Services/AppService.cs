@@ -44,7 +44,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         RefreshService.Refresh();
     }
 
-    public string? GetPokemonSpeciesName(ushort speciesId) => GetSpeciesComboItem(speciesId)?.Text;
+    public string GetPokemonSpeciesName(ushort speciesId) => GetSpeciesComboItem(speciesId).Text;
 
     public IEnumerable<ComboItem> SearchPokemonNames(string searchString) =>
         AppState.SaveFile is null || searchString is not { Length: > 0 }
@@ -236,7 +236,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             }
 
             var partyMon = saveFile.GetPartySlotAtIndex(i);
-            if (partyMon?.Species > 0 && !partyMon.IsEgg)
+            if (partyMon is { Species: > 0, IsEgg: false })
             {
                 battleReadyCount++;
             }
@@ -597,7 +597,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         }
 
         // Determine if this is a swap or a move
-        var isSwap = (sourcePokemon?.Species ?? 0) > 0 && (destPokemon?.Species ?? 0) > 0;
+        var isSwap = sourcePokemon.Species > 0 && destPokemon.Species > 0;
 
         // Validate party requirements: must keep at least one non-Egg battle-ready Pokémon
         if (isSourceParty && !isDestParty && !isSwap)
@@ -613,7 +613,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 }
 
                 var partyMon = saveFile.GetPartySlotAtIndex(i);
-                if (partyMon?.Species > 0 && !partyMon.IsEgg)
+                if (partyMon is { Species: > 0, IsEgg: false })
                 {
                     battleReadyCount++;
                 }
@@ -636,11 +636,11 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             // PKHeX will automatically compact the party
             if (destBoxNumber.HasValue)
             {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destBoxNumber.Value, destSlotNumber);
+                saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
             }
             else // LetsGo storage
             {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+                saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
             }
 
             // Delete from party using DeletePartySlot (properly compacts the party)
@@ -670,7 +670,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 targetSlot = saveFile.PartyCount;
             }
 
-            saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, targetSlot);
+            saveFile.SetPartySlotAtIndex(sourcePokemon, targetSlot);
         }
         else if (isSwap)
         {
@@ -678,28 +678,28 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             // For swaps, we can set both at once since we're not creating/deleting slots
             if (isSourceParty)
             {
-                saveFile.SetPartySlotAtIndex(destPokemon!, sourceSlotNumber);
+                saveFile.SetPartySlotAtIndex(destPokemon, sourceSlotNumber);
             }
             else if (sourceBoxNumber.HasValue)
             {
-                saveFile.SetBoxSlotAtIndex(destPokemon!, sourceBoxNumber.Value, sourceSlotNumber);
+                saveFile.SetBoxSlotAtIndex(destPokemon, sourceBoxNumber.Value, sourceSlotNumber);
             }
             else // LetsGo storage
             {
-                saveFile.SetBoxSlotAtIndex(destPokemon!, sourceSlotNumber);
+                saveFile.SetBoxSlotAtIndex(destPokemon, sourceSlotNumber);
             }
 
             if (isDestParty)
             {
-                saveFile.SetPartySlotAtIndex(sourcePokemon!, destSlotNumber);
+                saveFile.SetPartySlotAtIndex(sourcePokemon, destSlotNumber);
             }
             else if (destBoxNumber.HasValue)
             {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon!, destBoxNumber.Value, destSlotNumber);
+                saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
             }
             else // LetsGo storage
             {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon!, destSlotNumber);
+                saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
             }
         }
         else
@@ -708,15 +708,15 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             // Set destination first
             if (isDestParty)
             {
-                saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+                saveFile.SetPartySlotAtIndex(sourcePokemon, destSlotNumber);
             }
             else if (destBoxNumber.HasValue)
             {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destBoxNumber.Value, destSlotNumber);
+                saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
             }
             else // LetsGo storage
             {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+                saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
             }
 
             // Then blank out source

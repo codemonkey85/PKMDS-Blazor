@@ -2,7 +2,7 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
-    private bool _isDragOverWithFile;
+    private bool isDragOverWithFile;
 
     [Parameter, EditorRequired]
     public int SlotNumber { get; set; }
@@ -49,6 +49,7 @@ public partial class PokemonSlotComponent : IDisposable
         }
 
         // Don't allow dragging the last battle-ready Pokémon in the party
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (IsPartySlot && IsLastBattleReadyPokemon())
         {
             return false;
@@ -83,14 +84,14 @@ public partial class PokemonSlotComponent : IDisposable
         return battleReadyCount == 1 && Pokemon is { Species: > 0, IsEgg: false };
     }
 
-    private int GetBattleReadyCount(SaveFile saveFile)
+    private static int GetBattleReadyCount(SaveFile saveFile)
     {
         // Count battle-ready Pokémon in party (non-Eggs with Species > 0)
         var count = 0;
         for (var i = 0; i < saveFile.PartyCount; i++)
         {
             var partyMon = saveFile.GetPartySlotAtIndex(i);
-            if (partyMon?.Species > 0 && !partyMon.IsEgg)
+            if (partyMon is { Species: > 0, IsEgg: false })
             {
                 count++;
             }
@@ -102,14 +103,18 @@ public partial class PokemonSlotComponent : IDisposable
     private void HandleDragEnter(DragEventArgs e)
     {
         // Check if this is a file drag from external source
-        if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0)
+        if (DragDropService.IsDragging || e.DataTransfer.Files.Length <= 0)
         {
-            if (!_isDragOverWithFile)
-            {
-                _isDragOverWithFile = true;
-                StateHasChanged();
-            }
+            return;
         }
+
+        if (isDragOverWithFile)
+        {
+            return;
+        }
+
+        isDragOverWithFile = true;
+        StateHasChanged();
     }
 
     private void HandleDragOver(DragEventArgs e)
@@ -120,17 +125,19 @@ public partial class PokemonSlotComponent : IDisposable
 
     private void HandleDragLeave(DragEventArgs e)
     {
-        if (_isDragOverWithFile)
+        if (!isDragOverWithFile)
         {
-            _isDragOverWithFile = false;
-            StateHasChanged();
+            return;
         }
+
+        isDragOverWithFile = false;
+        StateHasChanged();
     }
 
     private async Task HandleDrop(DragEventArgs e)
     {
         // Clear drag over state
-        _isDragOverWithFile = false;
+        isDragOverWithFile = false;
 
         // Check for internal drag first - this takes priority over file drops
         if (DragDropService.IsDragging)
@@ -242,7 +249,7 @@ public partial class PokemonSlotComponent : IDisposable
         {
             Snackbar.Add($"Error importing Pokémon: {ex.Message}", Severity.Error);
             // TODO: Add proper logging with ILogger when available
-            Console.Error.WriteLine($"Error in HandleFileDropAsync: {ex}");
+            await Console.Error.WriteLineAsync($"Error in HandleFileDropAsync: {ex}");
         }
         finally
         {
@@ -253,7 +260,7 @@ public partial class PokemonSlotComponent : IDisposable
     private string GetDragClass()
     {
         // Show drop indicator when file is being dragged over
-        if (_isDragOverWithFile)
+        if (isDragOverWithFile)
         {
             return "slot-drop-target slot-file-drop";
         }

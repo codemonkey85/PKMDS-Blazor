@@ -1,14 +1,17 @@
 ﻿@inherits BasePkmdsComponent
 
 @if (Pokemon is not null &&
-     AppState.SaveFile is
+     AppState is
      {
-         Context: var saveFileEntityContext and not
-         (EntityContext.None or
-         EntityContext.SplitInvalid or
-         EntityContext.MaxInvalid)
-     } &&
-     AppState.SelectedSlotsAreValid)
+         SaveFile:
+         {
+             Context: var saveFileEntityContext and not
+             (EntityContext.None or
+             EntityContext.SplitInvalid or
+             EntityContext.MaxInvalid)
+         },
+         SelectedSlotsAreValid: true
+     })
 {
     <MudStack Spacing="1">
 
