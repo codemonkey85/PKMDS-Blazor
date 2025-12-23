@@ -152,6 +152,21 @@ public partial class PokemonSlotComponent : IDisposable
                 return;
             }
 
+            // For Let's Go games, disable party-box dragging (but allow party reordering)
+            if (AppState.SaveFile is SAV7b)
+            {
+                var isPartyToBoxDrag = DragDropService.IsDragSourceParty && !IsPartySlot;
+                var isBoxToPartyDrag = !DragDropService.IsDragSourceParty && IsPartySlot;
+                
+                if (isPartyToBoxDrag || isBoxToPartyDrag)
+                {
+                    // Silently prevent party-box dragging for Let's Go games
+                    DragDropService.ClearDrag();
+                    StateHasChanged();
+                    return;
+                }
+            }
+
             // Move the Pokémon
             AppService.MovePokemon(
                 DragDropService.DragSourceBoxNumber,
