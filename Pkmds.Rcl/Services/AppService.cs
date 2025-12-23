@@ -637,6 +637,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             if (destBoxNumber.HasValue)
             {
                 saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
+                
+                // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
+                if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+                {
+                    CompactBox(saveFile, destBoxNumber.Value);
+                }
             }
             else // LetsGo storage
             {
