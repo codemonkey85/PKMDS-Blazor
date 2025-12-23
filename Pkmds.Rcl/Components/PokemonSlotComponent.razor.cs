@@ -40,20 +40,27 @@ public partial class PokemonSlotComponent : IDisposable
         ? AppService.GetPokemonSpeciesName(Pokemon.Species) ?? "Unknown"
         : "Unknown";
 
+    private bool IsDraggable()
+    {
+        // Don't allow dragging if no Pokémon
+        if (Pokemon is not { Species: > 0 })
+        {
+            return false;
+        }
+
+        // Don't allow dragging the last battle-ready Pokémon in the party
+        if (IsPartySlot && IsLastBattleReadyPokemon())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private async Task HandleDragStart(DragEventArgs e)
     {
         if (Pokemon is not { Species: > 0 })
         {
-            return;
-        }
-
-        // Check if this is the last battle-ready Pokémon in the party
-        if (IsPartySlot && IsLastBattleReadyPokemon())
-        {
-            // Don't allow dragging the last battle-ready Pokémon
-            // We need to prevent the default drag behavior to avoid the browser
-            // trying to drag the image file which causes the PNG drop error
-            e.DataTransfer.EffectAllowed = "none";
             return;
         }
 
@@ -99,26 +106,27 @@ public partial class PokemonSlotComponent : IDisposable
         // Check if this is a file drag from external source
         if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0)
         {
-            _isDragOverWithFile = true;
-            StateHasChanged();
+            if (!_isDragOverWithFile)
+            {
+                _isDragOverWithFile = true;
+                StateHasChanged();
+            }
         }
     }
 
     private void HandleDragOver(DragEventArgs e)
     {
-        // Required for drop to work - preventDefault handled by global handler
-        // Only show indicator if we don't already have it active
-        if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0 && !_isDragOverWithFile)
-        {
-            _isDragOverWithFile = true;
-            StateHasChanged();
-        }
+        // Required for drop to work - already has preventDefault in razor
+        // Do nothing - indicator was set in HandleDragEnter
     }
 
     private void HandleDragLeave(DragEventArgs e)
     {
-        _isDragOverWithFile = false;
-        StateHasChanged();
+        if (_isDragOverWithFile)
+        {
+            _isDragOverWithFile = false;
+            StateHasChanged();
+        }
     }
 
     private async Task HandleDrop(DragEventArgs e)

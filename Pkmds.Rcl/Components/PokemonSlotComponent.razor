@@ -2,7 +2,7 @@
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
-          draggable="@(Pokemon is { Species: > 0 })"
+          draggable="@IsDraggable()"
           @ondragstart="@HandleDragStart"
           @ondragend="@HandleDragEnd"
           @ondragenter="@HandleDragEnter"
