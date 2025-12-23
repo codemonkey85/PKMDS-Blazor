@@ -115,41 +115,41 @@ public partial class PokemonSlotComponent : IDisposable
 
     private async Task HandleDrop(DragEventArgs e)
     {
-        // Check if this is a file drop from external source
-        if (e.DataTransfer.Files.Length > 0)
+        // Check for internal drag first - this takes priority over file drops
+        if (DragDropService.IsDragging)
         {
-            await HandleFileDropAsync(e.DataTransfer.Files);
-            return;
-        }
+            // Don't drop onto the same slot
+            if (DragDropService.IsDragSourceParty == IsPartySlot &&
+                DragDropService.DragSourceBoxNumber == BoxNumber &&
+                DragDropService.DragSourceSlotNumber == SlotNumber)
+            {
+                DragDropService.ClearDrag();
+                StateHasChanged();
+                return;
+            }
 
-        // Handle internal drag and drop
-        if (!DragDropService.IsDragging)
-        {
-            return;
-        }
+            // Move the Pokémon
+            AppService.MovePokemon(
+                DragDropService.DragSourceBoxNumber,
+                DragDropService.DragSourceSlotNumber,
+                DragDropService.IsDragSourceParty,
+                BoxNumber,
+                SlotNumber,
+                IsPartySlot
+            );
 
-        // Don't drop onto the same slot
-        if (DragDropService.IsDragSourceParty == IsPartySlot &&
-            DragDropService.DragSourceBoxNumber == BoxNumber &&
-            DragDropService.DragSourceSlotNumber == SlotNumber)
-        {
             DragDropService.ClearDrag();
             StateHasChanged();
             return;
         }
 
-        // Move the Pokémon
-        AppService.MovePokemon(
-            DragDropService.DragSourceBoxNumber,
-            DragDropService.DragSourceSlotNumber,
-            DragDropService.IsDragSourceParty,
-            BoxNumber,
-            SlotNumber,
-            IsPartySlot
-        );
-
-        DragDropService.ClearDrag();
-        StateHasChanged();
+        // Check if this is a file drop from external source
+        // Only process if we're not in an internal drag operation
+        if (e.DataTransfer.Files.Length > 0)
+        {
+            await HandleFileDropAsync(e.DataTransfer.Files);
+            return;
+        }
     }
 
     private async Task HandleFileDropAsync(string[] fileNames)
