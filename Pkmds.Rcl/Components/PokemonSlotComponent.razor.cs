@@ -2,7 +2,7 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
-    private bool isDragOverWithFile;
+    // Removed isDragOverWithFile field - no longer showing drag indicators
 
     [Parameter, EditorRequired]
     public int SlotNumber { get; set; }
@@ -102,43 +102,21 @@ public partial class PokemonSlotComponent : IDisposable
 
     private void HandleDragEnter(DragEventArgs e)
     {
-        // Check if this is a file drag from external source
-        if (DragDropService.IsDragging || e.DataTransfer.Files.Length <= 0)
-        {
-            return;
-        }
-
-        if (isDragOverWithFile)
-        {
-            return;
-        }
-
-        isDragOverWithFile = true;
-        StateHasChanged();
+        // No visual indicators - just allow drop to work
     }
 
     private void HandleDragOver(DragEventArgs e)
     {
-        // Required for drop to work - already has preventDefault in razor
-        // Do nothing - indicator was set in HandleDragEnter
+        // Required for drop to work - preventDefault handled in razor
     }
 
     private void HandleDragLeave(DragEventArgs e)
     {
-        if (!isDragOverWithFile)
-        {
-            return;
-        }
-
-        isDragOverWithFile = false;
-        StateHasChanged();
+        // No visual indicators to clear
     }
 
     private async Task HandleDrop(DragEventArgs e)
     {
-        // Clear drag over state
-        isDragOverWithFile = false;
-
         // Check for internal drag first - this takes priority over file drops
         if (DragDropService.IsDragging)
         {
@@ -274,11 +252,7 @@ public partial class PokemonSlotComponent : IDisposable
 
     private string GetDragClass()
     {
-        // Show drop indicator when file is being dragged over
-        if (isDragOverWithFile)
-        {
-            return "slot-drop-target slot-file-drop";
-        }
+        // No visual indicators - removed to prevent persistent trail issue
 
         if (!DragDropService.IsDragging)
         {
@@ -293,29 +267,7 @@ public partial class PokemonSlotComponent : IDisposable
             return "slot-dragging";
         }
 
-        // Don't show drop indicator if this is a party slot and the drag source
-        // is the last battle-ready Pokémon (which shouldn't be allowed to move out of party)
-        if (IsPartySlot && DragDropService.IsDragSourceParty && IsDragSourceLastBattleReadyPokemon())
-        {
-            // Don't show drop indicators when dragging the last battle-ready Pokémon
-            return string.Empty;
-        }
-
-        // This is a potential drop target
-        return "slot-drop-target";
-    }
-
-    private bool IsDragSourceLastBattleReadyPokemon()
-    {
-        if (!DragDropService.IsDragSourceParty || AppState.SaveFile is not { } saveFile)
-        {
-            return false;
-        }
-
-        var battleReadyCount = GetBattleReadyCount(saveFile);
-
-        // Check if the drag source is the last battle-ready Pokémon
-        var dragSourcePokemon = DragDropService.DraggedPokemon;
-        return battleReadyCount == 1 && dragSourcePokemon is { Species: > 0, IsEgg: false };
+        // No drop indicators
+        return string.Empty;
     }
 }
