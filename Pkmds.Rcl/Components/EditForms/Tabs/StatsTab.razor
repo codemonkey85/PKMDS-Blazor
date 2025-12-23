@@ -128,7 +128,7 @@
                                           ? 15
                                           : 31)"
                                  Value="@Pokemon.IV_HP"
-                                 ValueChanged="@((int newValue) => OnSetIv(Stats.HP, newValue))"
+                                 ValueChanged="@((int newValue) => OnSetIv(Stats.Hp, newValue))"
                                  For="@(() => Pokemon.IV_HP)"
                                  ReadOnly="@(saveGeneration == 1 && Pokemon is PK1)"
                                  HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)"/>

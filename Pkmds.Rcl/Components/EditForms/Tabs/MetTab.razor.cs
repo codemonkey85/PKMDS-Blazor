@@ -151,6 +151,7 @@ public partial class MetTab : IDisposable
         }
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
     private enum MetTimeOfDay
     {
         None,

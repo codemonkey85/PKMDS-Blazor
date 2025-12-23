@@ -97,12 +97,12 @@ public partial class StatsTab : IDisposable
         }
 
         var saveGeneration = AppState?.SaveFile?.Generation;
-        if (saveGeneration is not 1 or 2)
+        if (saveGeneration is not 1 and not 2)
         {
             return;
         }
 
-        if (Pokemon is PK1 && stat == Stats.HP)
+        if (Pokemon is PK1 && stat == Stats.Hp)
         {
             return;
         }
@@ -117,60 +117,54 @@ public partial class StatsTab : IDisposable
             newValue = 15;
         }
 
-        if (saveGeneration == 1 && Pokemon is PK1 pk1)
+        switch (saveGeneration)
         {
-            if (stat == Stats.Attack)
-            {
-                pk1.IV_ATK = (byte)newValue;
-            }
+            case 1 when Pokemon is PK1 pk1:
+                {
+                    switch (stat)
+                    {
+                        case Stats.Attack:
+                            pk1.IV_ATK = (byte)newValue;
+                            break;
+                        case Stats.Defense:
+                            pk1.IV_DEF = (byte)newValue;
+                            break;
+                        case Stats.Speed:
+                            pk1.IV_SPE = (byte)newValue;
+                            break;
+                        case Stats.Special:
+                            pk1.IV_SPC = (byte)newValue;
+                            break;
+                    }
 
-            if (stat == Stats.Defense)
-            {
-                pk1.IV_DEF = (byte)newValue;
-            }
+                    break;
+                }
+            case 2 when Pokemon is PK2 pk2:
+                {
+                    switch (stat)
+                    {
+                        case Stats.Hp:
+                            pk2.IV_HP = (byte)newValue;
+                            break;
+                        case Stats.Attack:
+                            pk2.IV_ATK = (byte)newValue;
+                            break;
+                        case Stats.Defense:
+                            pk2.IV_DEF = (byte)newValue;
+                            break;
+                        case Stats.Speed:
+                            pk2.IV_SPE = (byte)newValue;
+                            break;
+                        case Stats.SpecialAttack:
+                            pk2.IV_SPA = (byte)newValue;
+                            break;
+                        case Stats.SpecialDefense:
+                            pk2.IV_SPD = (byte)newValue;
+                            break;
+                    }
 
-            if (stat == Stats.Speed)
-            {
-                pk1.IV_SPE = (byte)newValue;
-            }
-
-            if (stat == Stats.Special)
-            {
-                pk1.IV_SPC = (byte)newValue;
-            }
-        }
-
-        if (saveGeneration == 2 && Pokemon is PK2 pk2)
-        {
-            if (stat == Stats.HP)
-            {
-                pk2.IV_HP = (byte)newValue;
-            }
-
-            if (stat == Stats.Attack)
-            {
-                pk2.IV_ATK = (byte)newValue;
-            }
-
-            if (stat == Stats.Defense)
-            {
-                pk2.IV_DEF = (byte)newValue;
-            }
-
-            if (stat == Stats.Speed)
-            {
-                pk2.IV_SPE = (byte)newValue;
-            }
-
-            if (stat == Stats.SpecialAttack)
-            {
-                pk2.IV_SPA = (byte)newValue;
-            }
-
-            if (stat == Stats.SpecialDefense)
-            {
-                pk2.IV_SPD = (byte)newValue;
-            }
+                    break;
+                }
         }
 
         AppService.LoadPokemonStats(Pokemon);
@@ -189,7 +183,7 @@ public partial class StatsTab : IDisposable
             return;
         }
 
-        if (saveGeneration == 1 && Pokemon is PK1 && stat == Stats.HP)
+        if (saveGeneration == 1 && Pokemon is PK1 && stat == Stats.Hp)
         {
             return;
         }
@@ -211,7 +205,7 @@ public partial class StatsTab : IDisposable
 
         var statIndex = stat switch
         {
-            Stats.HP => 0,
+            Stats.Hp => 0,
             Stats.Attack => 1,
             Stats.Defense => 2,
             Stats.Speed => 3,
@@ -227,7 +221,7 @@ public partial class StatsTab : IDisposable
 
     private enum Stats
     {
-        HP = -1,
+        Hp = -1,
         Attack = 0,
         Defense,
         Speed,

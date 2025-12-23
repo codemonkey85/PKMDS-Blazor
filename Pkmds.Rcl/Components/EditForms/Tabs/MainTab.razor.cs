@@ -64,7 +64,7 @@ public partial class MainTab : IDisposable
     private Task<IEnumerable<ComboItem>> SearchAbilityNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchAbilityNames(searchString));
 
-    private bool? OnShinySet(bool shiny) => Pokemon?.SetIsShinySafe(shiny);
+    private void OnShinySet(bool shiny) => Pokemon?.SetIsShinySafe(shiny);
 
     private void OnGenderToggle(Gender newGender)
     {

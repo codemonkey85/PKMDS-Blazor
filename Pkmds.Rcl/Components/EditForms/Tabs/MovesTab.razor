@@ -3,13 +3,10 @@
 @if (Pokemon is not null &&
      AppState is
      {
-         SaveFile:
-         {
-             Context: var saveFileEntityContext and not
-             (EntityContext.None or
-             EntityContext.SplitInvalid or
-             EntityContext.MaxInvalid)
-         },
+         SaveFile.Context: var saveFileEntityContext and not
+         (EntityContext.None or
+         EntityContext.SplitInvalid or
+         EntityContext.MaxInvalid),
          SelectedSlotsAreValid: true
      })
 {
@@ -126,8 +123,8 @@
 
                     @if (showPlusMove)
                     {
-                        var moveId = Pokemon.GetMove(i);
-                        var plusFlagIndex = PersonalInfo9ZA.PlusMoves.IndexOf(moveId);
+                        var localMoveId = Pokemon.GetMove(i);
+                        var plusFlagIndex = PersonalInfo9ZA.PlusMoves.IndexOf(localMoveId);
                         <MudItem xs="1"
                                  Class="@ColumnClass">
                             <MudCheckBox Label="+"
