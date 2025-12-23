@@ -573,31 +573,103 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             destPokemon = saveFile.GetBoxSlotAtIndex(destSlotNumber);
         }
 
-        // Swap the Pokémon
-        if (isSourceParty)
+        // Determine if this is a swap or a move
+        bool isSwap = (sourcePokemon?.Species ?? 0) > 0 && (destPokemon?.Species ?? 0) > 0;
+        
+        // Special handling when moving from party: PKHeX.Core auto-compacts party
+        // We need to be careful about the order of operations
+        if (isSourceParty && !isDestParty && !isSwap)
         {
-            saveFile.SetPartySlotAtIndex(destPokemon ?? saveFile.BlankPKM, sourceSlotNumber);
+            // Moving FROM party TO box (non-swap case)
+            // Set the box slot first, then delete from party
+            // PKHeX will automatically compact the party
+            if (destBoxNumber.HasValue)
+            {
+                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destBoxNumber.Value, destSlotNumber);
+            }
+            else // LetsGo storage
+            {
+                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+            }
+            
+            // Delete from party (PKHeX.Core will auto-compact)
+            saveFile.SetPartySlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
         }
-        else if (sourceBoxNumber.HasValue)
+        else if (!isSourceParty && isDestParty && !isSwap)
         {
-            saveFile.SetBoxSlotAtIndex(destPokemon ?? saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
-        }
-        else // LetsGo storage
-        {
-            saveFile.SetBoxSlotAtIndex(destPokemon ?? saveFile.BlankPKM, sourceSlotNumber);
-        }
-
-        if (isDestParty)
-        {
+            // Moving FROM box TO party (non-swap case)
+            // Delete from box first, then add to party
+            if (sourceBoxNumber.HasValue)
+            {
+                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
+            }
+            else // LetsGo storage
+            {
+                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
+            }
+            
             saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
         }
-        else if (destBoxNumber.HasValue)
+        else if (isSwap)
         {
-            saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destBoxNumber.Value, destSlotNumber);
+            // Swap: exchange the two Pokémon
+            // For swaps, we can set both at once since we're not creating/deleting slots
+            if (isSourceParty)
+            {
+                saveFile.SetPartySlotAtIndex(destPokemon!, sourceSlotNumber);
+            }
+            else if (sourceBoxNumber.HasValue)
+            {
+                saveFile.SetBoxSlotAtIndex(destPokemon!, sourceBoxNumber.Value, sourceSlotNumber);
+            }
+            else // LetsGo storage
+            {
+                saveFile.SetBoxSlotAtIndex(destPokemon!, sourceSlotNumber);
+            }
+
+            if (isDestParty)
+            {
+                saveFile.SetPartySlotAtIndex(sourcePokemon!, destSlotNumber);
+            }
+            else if (destBoxNumber.HasValue)
+            {
+                saveFile.SetBoxSlotAtIndex(sourcePokemon!, destBoxNumber.Value, destSlotNumber);
+            }
+            else // LetsGo storage
+            {
+                saveFile.SetBoxSlotAtIndex(sourcePokemon!, destSlotNumber);
+            }
         }
-        else // LetsGo storage
+        else
         {
-            saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+            // General case: move between boxes or within same storage
+            // Set destination first
+            if (isDestParty)
+            {
+                saveFile.SetPartySlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+            }
+            else if (destBoxNumber.HasValue)
+            {
+                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destBoxNumber.Value, destSlotNumber);
+            }
+            else // LetsGo storage
+            {
+                saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
+            }
+            
+            // Then blank out source
+            if (isSourceParty)
+            {
+                saveFile.SetPartySlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
+            }
+            else if (sourceBoxNumber.HasValue)
+            {
+                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
+            }
+            else // LetsGo storage
+            {
+                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
+            }
         }
 
         // Refresh the UI based on what changed
