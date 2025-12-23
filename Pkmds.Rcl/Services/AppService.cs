@@ -363,8 +363,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 index = 11;
             }
 
-            var gifts = album;
-            var other = gifts[index];
+            var other = album[index];
             if (gift is PCD { CanConvertToPGT: true } pcd && other is PGT)
             {
                 gift = pcd.Gift;
@@ -382,7 +381,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 return Task.CompletedTask;
             }
 
-            gifts[index] = gift.Clone();
+            album[index] = gift.Clone();
 
             List<string> receivedFlags = [];
 
@@ -627,141 +626,151 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             }
         }
 
-        // Special handling when moving from party: PKHeX.Core auto-compacts party
-        // We need to use DeletePartySlot instead of SetPartySlotAtIndex for proper compacting
-        if (isSourceParty && !isDestParty && !isSwap)
+        switch (isSourceParty)
         {
-            // Moving FROM party TO box (non-swap case)
-            // Set the box slot first, then delete from party
-            // PKHeX will automatically compact the party
-            if (destBoxNumber.HasValue)
-            {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
-                
-                // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
-                if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+            // Special handling when moving from party: PKHeX.Core auto-compacts party
+            // We need to use DeletePartySlot instead of SetPartySlotAtIndex for proper compacting
+            case true when !isDestParty && !isSwap:
                 {
-                    CompactBox(saveFile, destBoxNumber.Value);
-                }
-            }
-            else // LetsGo storage
-            {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
-            }
+                    // Moving FROM party TO box (non-swap case)
+                    // Set the box slot first, then delete from party
+                    // PKHeX will automatically compact the party
+                    if (destBoxNumber.HasValue)
+                    {
+                        saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
 
-            // Delete from party using DeletePartySlot (properly compacts the party)
-            saveFile.DeletePartySlot(sourceSlotNumber);
-        }
-        else if (!isSourceParty && isDestParty && !isSwap)
-        {
-            // Moving FROM box TO party (non-swap case)
-            // Delete from box first
-            if (sourceBoxNumber.HasValue)
-            {
-                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
-                
-                // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
-                if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+                        // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
+                        if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+                        {
+                            CompactBox(saveFile, destBoxNumber.Value);
+                        }
+                    }
+                    else // LetsGo storage
+                    {
+                        saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
+                    }
+
+                    // Delete from party using DeletePartySlot (properly compacts the party)
+                    saveFile.DeletePartySlot(sourceSlotNumber);
+                    break;
+                }
+            case false when isDestParty && !isSwap:
                 {
-                    CompactBox(saveFile, sourceBoxNumber.Value);
+                    // Moving FROM box TO party (non-swap case)
+                    // Delete from box first
+                    if (sourceBoxNumber.HasValue)
+                    {
+                        saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
+
+                        // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
+                        if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+                        {
+                            CompactBox(saveFile, sourceBoxNumber.Value);
+                        }
+                    }
+                    else // LetsGo storage
+                    {
+                        saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
+                    }
+
+                    // Add to party at the first available empty slot (or the specified slot if within PartyCount)
+                    // PKHeX.Core's party is kept compact, so we should add at PartyCount position
+                    // unless the user explicitly dropped on an occupied slot (which would be a swap)
+                    // or on an empty slot within the current party range
+                    var targetSlot = destSlotNumber;
+                    if (destSlotNumber >= saveFile.PartyCount)
+                    {
+                        // User dropped beyond current party - add at end of party (PartyCount position)
+                        targetSlot = saveFile.PartyCount;
+                    }
+
+                    saveFile.SetPartySlotAtIndex(sourcePokemon, targetSlot);
+                    break;
                 }
-            }
-            else // LetsGo storage
-            {
-                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
-            }
-
-            // Add to party at the first available empty slot (or the specified slot if within PartyCount)
-            // PKHeX.Core's party is kept compact, so we should add at PartyCount position
-            // unless the user explicitly dropped on an occupied slot (which would be a swap)
-            // or on an empty slot within the current party range
-            var targetSlot = destSlotNumber;
-            if (destSlotNumber >= saveFile.PartyCount)
-            {
-                // User dropped beyond current party - add at end of party (PartyCount position)
-                targetSlot = saveFile.PartyCount;
-            }
-
-            saveFile.SetPartySlotAtIndex(sourcePokemon, targetSlot);
-        }
-        else if (isSwap)
-        {
-            // Swap: exchange the two Pokémon
-            // For swaps, we can set both at once since we're not creating/deleting slots
-            if (isSourceParty)
-            {
-                saveFile.SetPartySlotAtIndex(destPokemon, sourceSlotNumber);
-            }
-            else if (sourceBoxNumber.HasValue)
-            {
-                saveFile.SetBoxSlotAtIndex(destPokemon, sourceBoxNumber.Value, sourceSlotNumber);
-            }
-            else // LetsGo storage
-            {
-                saveFile.SetBoxSlotAtIndex(destPokemon, sourceSlotNumber);
-            }
-
-            if (isDestParty)
-            {
-                saveFile.SetPartySlotAtIndex(sourcePokemon, destSlotNumber);
-            }
-            else if (destBoxNumber.HasValue)
-            {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
-            }
-            else // LetsGo storage
-            {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
-            }
-        }
-        else
-        {
-            // General case: move between boxes or within same storage
-            // Set destination first
-            if (isDestParty)
-            {
-                saveFile.SetPartySlotAtIndex(sourcePokemon, destSlotNumber);
-            }
-            else if (destBoxNumber.HasValue)
-            {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
-            }
-            else // LetsGo storage
-            {
-                saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
-            }
-
-            // Then blank out source
-            if (isSourceParty)
-            {
-                // Use DeletePartySlot for proper party compacting
-                saveFile.DeletePartySlot(sourceSlotNumber);
-            }
-            else if (sourceBoxNumber.HasValue)
-            {
-                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
-                
-                // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
-                if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+            default:
                 {
-                    CompactBox(saveFile, sourceBoxNumber.Value);
+                    if (isSwap)
+                    {
+                        // Swap: exchange the two Pokémon
+                        // For swaps, we can set both at once since we're not creating/deleting slots
+                        if (isSourceParty)
+                        {
+                            saveFile.SetPartySlotAtIndex(destPokemon, sourceSlotNumber);
+                        }
+                        else if (sourceBoxNumber.HasValue)
+                        {
+                            saveFile.SetBoxSlotAtIndex(destPokemon, sourceBoxNumber.Value, sourceSlotNumber);
+                        }
+                        else // LetsGo storage
+                        {
+                            saveFile.SetBoxSlotAtIndex(destPokemon, sourceSlotNumber);
+                        }
+
+                        if (isDestParty)
+                        {
+                            saveFile.SetPartySlotAtIndex(sourcePokemon, destSlotNumber);
+                        }
+                        else if (destBoxNumber.HasValue)
+                        {
+                            saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
+                        }
+                        else // LetsGo storage
+                        {
+                            saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
+                        }
+                    }
+                    else
+                    {
+                        // General case: move between boxes or within same storage
+                        // Set destination first
+                        if (isDestParty)
+                        {
+                            saveFile.SetPartySlotAtIndex(sourcePokemon, destSlotNumber);
+                        }
+                        else if (destBoxNumber.HasValue)
+                        {
+                            saveFile.SetBoxSlotAtIndex(sourcePokemon, destBoxNumber.Value, destSlotNumber);
+                        }
+                        else // LetsGo storage
+                        {
+                            saveFile.SetBoxSlotAtIndex(sourcePokemon, destSlotNumber);
+                        }
+
+                        // Then blank out source
+                        if (isSourceParty)
+                        {
+                            // Use DeletePartySlot for proper party compacting
+                            saveFile.DeletePartySlot(sourceSlotNumber);
+                        }
+                        else if (sourceBoxNumber.HasValue)
+                        {
+                            saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
+
+                            // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
+                            if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+                            {
+                                CompactBox(saveFile, sourceBoxNumber.Value);
+                            }
+                        }
+                        else // LetsGo storage
+                        {
+                            saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
+                        }
+
+                        // For Gen 1/2: If we just moved within the same box or moved into a box, compact the destination box too
+                        if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2 && !isDestParty && destBoxNumber.HasValue)
+                        {
+                            // Check if destination box differs from source box, or if we're moving within same box
+                            // Either way, compact the destination box to ensure proper list format
+                            if (!isSourceParty)
+                            {
+                                CompactBox(saveFile, destBoxNumber.Value);
+                            }
+                        }
+                    }
+
+                    break;
                 }
-            }
-            else // LetsGo storage
-            {
-                saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
-            }
-            
-            // For Gen 1/2: If we just moved within the same box or moved into a box, compact the destination box too
-            if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2 && !isDestParty && destBoxNumber.HasValue)
-            {
-                // Check if destination box differs from source box, or if we're moving within same box
-                // Either way, compact the destination box to ensure proper list format
-                if (!isSourceParty)
-                {
-                    CompactBox(saveFile, destBoxNumber.Value);
-                }
-            }
         }
 
         // Refresh the UI based on what changed
