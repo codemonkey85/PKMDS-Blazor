@@ -653,6 +653,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             if (sourceBoxNumber.HasValue)
             {
                 saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
+                
+                // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
+                if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+                {
+                    CompactBox(saveFile, sourceBoxNumber.Value);
+                }
             }
             else // LetsGo storage
             {
@@ -728,6 +734,12 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             else if (sourceBoxNumber.HasValue)
             {
                 saveFile.SetBoxSlotAtIndex(saveFile.BlankPKM, sourceBoxNumber.Value, sourceSlotNumber);
+                
+                // Gen 1 and Gen 2 boxes should be compacted like party (they were lists, not grids)
+                if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2)
+                {
+                    CompactBox(saveFile, sourceBoxNumber.Value);
+                }
             }
             else // LetsGo storage
             {
@@ -769,6 +781,39 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         if (EditFormPokemon.Species.IsInvalidSpecies())
         {
             EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
+        }
+    }
+
+    /// <summary>
+    /// Compacts a box by shifting all Pokémon left to fill gaps (for Gen 1 and Gen 2 games).
+    /// In these generations, boxes were lists, not grids, so they should have no gaps.
+    /// </summary>
+    private static void CompactBox(SaveFile saveFile, int boxNumber)
+    {
+        var boxSlotCount = saveFile.BoxSlotCount;
+        var compacted = new PKM[boxSlotCount];
+        var writeIndex = 0;
+
+        // Collect all non-blank Pokémon
+        for (var i = 0; i < boxSlotCount; i++)
+        {
+            var pkm = saveFile.GetBoxSlotAtIndex(boxNumber, i);
+            if (pkm.Species > 0)
+            {
+                compacted[writeIndex++] = pkm;
+            }
+        }
+
+        // Fill remaining slots with blank Pokémon
+        for (var i = writeIndex; i < boxSlotCount; i++)
+        {
+            compacted[i] = saveFile.BlankPKM;
+        }
+
+        // Write the compacted box back
+        for (var i = 0; i < boxSlotCount; i++)
+        {
+            saveFile.SetBoxSlotAtIndex(compacted[i], boxNumber, i);
         }
     }
 }
