@@ -1,51 +1,40 @@
 ﻿// Track the last drag event for external file drag
 window.lastDragEvent = null;
 window.droppedFiles = null;
-window.storedPokemonData = null;
-window.storedPokemonFileName = null;
+
+// Prevent browser from opening files when dropped outside of valid drop zones
+document.addEventListener('dragover', function(e) {
+    e.preventDefault();
+}, false);
+
+document.addEventListener('drop', function(e) {
+    // Check if the drop target is a valid drop zone (has ondrop handler)
+    // If not, prevent the browser from opening the file
+    let target = e.target;
+    let hasDropHandler = false;
+    
+    // Check if any parent element has a drop handler
+    while (target && target !== document) {
+        if (target.ondrop || target.getAttribute('data-drop-zone')) {
+            hasDropHandler = true;
+            break;
+        }
+        target = target.parentElement;
+    }
+    
+    // Always prevent default to stop browser from opening files
+    e.preventDefault();
+    
+    // Store files if dropped
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        window.droppedFiles = e.dataTransfer.files;
+    }
+}, false);
 
 // Capture dragstart events globally
 document.addEventListener('dragstart', function(e) {
     window.lastDragEvent = e;
 }, true);
-
-// Capture drop events to store files
-document.addEventListener('drop', function(e) {
-    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        window.droppedFiles = e.dataTransfer.files;
-    }
-}, true);
-
-// Store Pokemon data for potential export
-window.storePokemonForExport = function(fileName, byteArray) {
-    window.storedPokemonFileName = fileName;
-    window.storedPokemonData = byteArray;
-};
-
-// Download the stored Pokemon
-window.downloadStoredPokemon = function() {
-    if (!window.storedPokemonData || !window.storedPokemonFileName) {
-        return;
-    }
-    
-    const uint8 = window.storedPokemonData instanceof Uint8Array 
-        ? window.storedPokemonData 
-        : new Uint8Array(window.storedPokemonData);
-    
-    const blob = new Blob([uint8], {type: 'application/octet-stream'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = window.storedPokemonFileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-        URL.revokeObjectURL(a.href);
-        a.remove();
-        // Clear stored data
-        window.storedPokemonData = null;
-        window.storedPokemonFileName = null;
-    }, 0);
-};
 
 // Function to read a dropped file and return as base64
 window.readDroppedFile = async function(index) {

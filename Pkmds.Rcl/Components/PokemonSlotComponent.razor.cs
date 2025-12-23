@@ -22,6 +22,8 @@ public partial class PokemonSlotComponent : IDisposable
 
     protected virtual int? BoxNumber => null;
 
+    private bool _isDragOverWithFile = false;
+
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
@@ -47,74 +49,35 @@ public partial class PokemonSlotComponent : IDisposable
 
         DragDropService.StartDrag(Pokemon, BoxNumber, SlotNumber, IsPartySlot);
         e.DataTransfer.EffectAllowed = "copyMove";
-        
-        // Prepare for potential external drag (export)
-        await PrepareExternalDrag();
     }
 
-    private async Task PrepareExternalDrag()
+    private void HandleDragEnd(DragEventArgs e)
     {
-        if (Pokemon is null)
-        {
-            return;
-        }
-
-        try
-        {
-            // Store the Pokemon data for potential export
-            Pokemon.RefreshChecksum();
-            var cleanFileName = AppService.GetCleanFileName(Pokemon);
-            var data = Pokemon.DecryptedPartyData;
-            
-            // Store in JavaScript for potential download
-            await JSRuntime.InvokeVoidAsync("storePokemonForExport", cleanFileName, data);
-        }
-        catch (Exception ex)
-        {
-            // Non-critical failure - just log, don't show to user
-            Console.Error.WriteLine($"Error preparing external drag: {ex}");
-        }
-    }
-
-    private async Task HandleDragEnd(DragEventArgs e)
-    {
-        // Check if drag ended outside the app (potential export)
-        // Note: DropEffect may not be reliable across all browsers
-        // As a fallback, we also check if the drag didn't result in an internal move
-        var wasInternalDrop = DragDropService.IsDragging && e.DataTransfer.DropEffect != "none";
-        
-        if (!wasInternalDrop && Pokemon is { Species: > 0 })
-        {
-            // Drag ended without internal drop - likely dragged outside, trigger export
-            await TriggerPokemonExport();
-        }
-
         DragDropService.EndDrag();
         StateHasChanged();
     }
 
-    private async Task TriggerPokemonExport()
+    private void HandleDragEnter(DragEventArgs e)
     {
-        if (Pokemon is null)
+        // Check if this is a file drag from external source
+        if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0)
         {
-            return;
+            _isDragOverWithFile = true;
+            StateHasChanged();
         }
+    }
 
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("downloadStoredPokemon");
-            Snackbar.Add($"Exported {AppService.GetPokemonSpeciesName(Pokemon.Species) ?? "Pokémon"}", Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add("Failed to export Pokémon", Severity.Error);
-            // TODO: Add proper logging with ILogger when available
-            Console.Error.WriteLine($"Error exporting Pokemon: {ex}");
-        }
+    private void HandleDragLeave(DragEventArgs e)
+    {
+        _isDragOverWithFile = false;
+        StateHasChanged();
     }
 
     private async Task HandleDrop(DragEventArgs e)
     {
+        // Clear drag over state
+        _isDragOverWithFile = false;
+
         // Check for internal drag first - this takes priority over file drops
         if (DragDropService.IsDragging)
         {
@@ -236,6 +199,12 @@ public partial class PokemonSlotComponent : IDisposable
 
     private string GetDragClass()
     {
+        // Show drop indicator when file is being dragged over
+        if (_isDragOverWithFile)
+        {
+            return "slot-drop-target slot-file-drop";
+        }
+
         if (!DragDropService.IsDragging)
         {
             return string.Empty;
