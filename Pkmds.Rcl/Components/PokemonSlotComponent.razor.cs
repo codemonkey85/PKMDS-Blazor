@@ -47,6 +47,13 @@ public partial class PokemonSlotComponent : IDisposable
             return;
         }
 
+        // Check if this is the last battle-ready Pokémon in the party
+        if (IsPartySlot && IsLastBattleReadyPokemon())
+        {
+            // Don't allow dragging the last battle-ready Pokémon
+            return;
+        }
+
         DragDropService.StartDrag(Pokemon, BoxNumber, SlotNumber, IsPartySlot);
         e.DataTransfer.EffectAllowed = "copyMove";
     }
@@ -54,7 +61,28 @@ public partial class PokemonSlotComponent : IDisposable
     private void HandleDragEnd(DragEventArgs e)
     {
         DragDropService.ClearDrag();
-        StateHasChanged();
+    }
+
+    private bool IsLastBattleReadyPokemon()
+    {
+        if (!IsPartySlot || AppState.SaveFile is not { } saveFile)
+        {
+            return false;
+        }
+
+        // Count battle-ready Pokémon in party (non-Eggs with Species > 0)
+        int battleReadyCount = 0;
+        for (int i = 0; i < saveFile.PartyCount; i++)
+        {
+            var partyMon = saveFile.GetPartySlotAtIndex(i);
+            if (partyMon?.Species > 0 && !partyMon.IsEgg)
+            {
+                battleReadyCount++;
+            }
+        }
+
+        // This is the last battle-ready Pokémon if there's only 1 and this is it
+        return battleReadyCount == 1 && Pokemon is { Species: > 0, IsEgg: false };
     }
 
     private void HandleDragEnter(DragEventArgs e)
@@ -63,19 +91,22 @@ public partial class PokemonSlotComponent : IDisposable
         if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0)
         {
             _isDragOverWithFile = true;
-            StateHasChanged();
         }
     }
 
     private void HandleDragOver(DragEventArgs e)
     {
         // Required for drop to work - preventDefault handled by global handler
+        // Keep drop indicator active during drag over
+        if (!DragDropService.IsDragging && e.DataTransfer.Files.Length > 0)
+        {
+            _isDragOverWithFile = true;
+        }
     }
 
     private void HandleDragLeave(DragEventArgs e)
     {
         _isDragOverWithFile = false;
-        StateHasChanged();
     }
 
     private async Task HandleDrop(DragEventArgs e)
@@ -223,7 +254,38 @@ public partial class PokemonSlotComponent : IDisposable
             return "slot-dragging";
         }
 
+        // Don't show drop indicator if this is a party slot and the drag source
+        // is the last battle-ready Pokémon (which shouldn't be allowed to move out of party)
+        if (IsPartySlot && DragDropService.IsDragSourceParty && IsDragSourceLastBattleReadyPokemon())
+        {
+            // Don't show drop indicators when dragging the last battle-ready Pokémon
+            return string.Empty;
+        }
+
         // This is a potential drop target
         return "slot-drop-target";
+    }
+
+    private bool IsDragSourceLastBattleReadyPokemon()
+    {
+        if (!DragDropService.IsDragSourceParty || AppState.SaveFile is not { } saveFile)
+        {
+            return false;
+        }
+
+        // Count battle-ready Pokémon in party (non-Eggs with Species > 0)
+        int battleReadyCount = 0;
+        for (int i = 0; i < saveFile.PartyCount; i++)
+        {
+            var partyMon = saveFile.GetPartySlotAtIndex(i);
+            if (partyMon?.Species > 0 && !partyMon.IsEgg)
+            {
+                battleReadyCount++;
+            }
+        }
+
+        // Check if the drag source is the last battle-ready Pokémon
+        var dragSourcePokemon = DragDropService.DraggedPokemon;
+        return battleReadyCount == 1 && dragSourcePokemon is { Species: > 0, IsEgg: false };
     }
 }
