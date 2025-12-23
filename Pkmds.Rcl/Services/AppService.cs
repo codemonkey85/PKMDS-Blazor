@@ -577,7 +577,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         bool isSwap = (sourcePokemon?.Species ?? 0) > 0 && (destPokemon?.Species ?? 0) > 0;
         
         // Special handling when moving from party: PKHeX.Core auto-compacts party
-        // We need to be careful about the order of operations
+        // We need to use DeletePartySlot instead of SetPartySlotAtIndex for proper compacting
         if (isSourceParty && !isDestParty && !isSwap)
         {
             // Moving FROM party TO box (non-swap case)
@@ -592,8 +592,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 saveFile.SetBoxSlotAtIndex(sourcePokemon ?? saveFile.BlankPKM, destSlotNumber);
             }
             
-            // Delete from party (PKHeX.Core will auto-compact)
-            saveFile.SetPartySlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
+            // Delete from party using DeletePartySlot (properly compacts the party)
+            saveFile.DeletePartySlot(sourceSlotNumber);
         }
         else if (!isSourceParty && isDestParty && !isSwap)
         {
@@ -660,7 +660,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             // Then blank out source
             if (isSourceParty)
             {
-                saveFile.SetPartySlotAtIndex(saveFile.BlankPKM, sourceSlotNumber);
+                // Use DeletePartySlot for proper party compacting
+                saveFile.DeletePartySlot(sourceSlotNumber);
             }
             else if (sourceBoxNumber.HasValue)
             {
