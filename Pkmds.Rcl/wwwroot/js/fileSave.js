@@ -2,26 +2,12 @@
 window.lastDragEvent = null;
 window.droppedFiles = null;
 
-// Prevent browser from opening files when dropped outside of valid drop zones
+// Prevent browser from opening files - always preventDefault on dragover and drop
 document.addEventListener('dragover', function(e) {
     e.preventDefault();
 }, false);
 
 document.addEventListener('drop', function(e) {
-    // Check if the drop target is a valid drop zone (has ondrop handler)
-    // If not, prevent the browser from opening the file
-    let target = e.target;
-    let hasDropHandler = false;
-    
-    // Check if any parent element has a drop handler
-    while (target && target !== document) {
-        if (target.ondrop || target.getAttribute('data-drop-zone')) {
-            hasDropHandler = true;
-            break;
-        }
-        target = target.parentElement;
-    }
-    
     // Always prevent default to stop browser from opening files
     e.preventDefault();
     

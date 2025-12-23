@@ -67,6 +67,11 @@ public partial class PokemonSlotComponent : IDisposable
         }
     }
 
+    private void HandleDragOver(DragEventArgs e)
+    {
+        // Required for drop to work - preventDefault handled by global handler
+    }
+
     private void HandleDragLeave(DragEventArgs e)
     {
         _isDragOverWithFile = false;

@@ -6,6 +6,7 @@
           @ondragstart="@HandleDragStart"
           @ondragend="@HandleDragEnd"
           @ondragenter="@HandleDragEnter"
+          @ondragover="@HandleDragOver"
           @ondragleave="@HandleDragLeave"
           @ondrop="@HandleDrop"
           Class="@($"square-slot {GetClass()} {GetDragClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
