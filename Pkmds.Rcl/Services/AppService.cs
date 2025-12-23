@@ -562,14 +562,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         PKM? destPokemon;
         if (isDestParty)
         {
-            if (destSlotNumber < 0 || destSlotNumber >= saveFile.PartyCount)
-            {
-                destPokemon = null;
-            }
-            else
-            {
-                destPokemon = saveFile.GetPartySlotAtIndex(destSlotNumber);
-            }
+            destPokemon = saveFile.GetPartySlotAtIndex(destSlotNumber);
         }
         else if (destBoxNumber.HasValue)
         {
