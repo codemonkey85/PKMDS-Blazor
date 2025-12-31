@@ -2,9 +2,9 @@
 
 public class JsService(IJSRuntime js)
 {
-    private IJSInProcessRuntime SyncJs => js as IJSInProcessRuntime ??
-                                          throw new NotSupportedException(
-                                              "Requested an in process javascript interop, but none was found");
+    private IJSInProcessRuntime SyncJs =>
+        js as IJSInProcessRuntime
+        ?? throw new NotSupportedException("Requested an in process javascript interop, but none was found");
 
     public void EncryptAes(ReadOnlySpan<byte> origin, Span<byte> destination, ReadOnlySpan<byte> key, CipherMode mode)
     {

@@ -13,8 +13,6 @@ public partial class PokedexTab
 
         for (ushort i = 1; i < saveFile.MaxSpeciesID + 1; i++)
         {
-            Console.WriteLine($"Species {i:000} seen: {saveFile.GetSeen(i)}");
-
             if (saveFile.GetSeen(i))
             {
                 count++;

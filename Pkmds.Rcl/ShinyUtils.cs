@@ -2,47 +2,50 @@
 
 public static class ShinyUtils
 {
-    public static bool GetIsShinySafe(this PKM pk)
+    extension(PKM pk)
     {
-        if (pk.Format <= 2) // Gen I / II
+        public bool GetIsShinySafe()
         {
-            // In Gen I / II, shininess is determined by the DV values
-            return pk switch
+            if (pk.Format <= 2) // Gen I / II
             {
-                PK1 pk1 => GetIsShinyGb(pk1.DV16),
-                PK2 pk2 => GetIsShinyGb(pk2.DV16),
-                _ => false
-            };
+                // In Gen I / II, shininess is determined by the DV values
+                return pk switch
+                {
+                    PK1 pk1 => GetIsShinyGb(pk1.DV16),
+                    PK2 pk2 => GetIsShinyGb(pk2.DV16),
+                    _ => false
+                };
+            }
+
+            // For Gen III and later, shininess is determined by the PID
+            return pk.IsShiny;
+
+            static bool GetIsShinyGb(ushort dv16) => (dv16 & 0x2FFF) == 0x2AAA;
         }
 
-        // For Gen III and later, shininess is determined by the PID
-        return pk.IsShiny;
-
-        static bool GetIsShinyGb(ushort dv16) => (dv16 & 0x2FFF) == 0x2AAA;
-    }
-
-    public static bool SetIsShinySafe(this PKM pk, bool shiny)
-    {
-        if (pk.Format > 2) // Gen I / II
+        public void SetIsShinySafe(bool shiny)
         {
-            return pk.SetIsShiny(shiny);
+            if (pk.Format > 2) // Gen I / II
+            {
+                pk.SetIsShiny(shiny);
+                return;
+            }
+
+            if (shiny)
+            {
+                pk.SetIsShiny(true);
+                return;
+            }
+
+            if (!pk.IsShiny)
+            {
+                return;
+            }
+
+            do
+            {
+                pk.SetRandomIVs();
+            } while (pk.GetIsShinySafe());
         }
-
-        if (shiny)
-        {
-            return pk.SetIsShiny(true);
-        }
-
-        if (!pk.IsShiny)
-        {
-            return false;
-        }
-
-        do
-        {
-            pk.SetRandomIVs();
-        } while (pk.GetIsShinySafe());
-
-        return true;
     }
 }

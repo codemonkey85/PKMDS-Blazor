@@ -1,6 +1,4 @@
-﻿using Pkmds.Rcl.Components;
-
-namespace Pkmds.Rcl.Services;
+﻿namespace Pkmds.Rcl.Services;
 
 public class AppService(IAppState appState, IRefreshService refreshService) : IAppService
 {
@@ -288,8 +286,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         {
             var pkm = saveFile.GetPartySlotAtIndex(slot);
 
-            sbShowdown.AppendLine(ShowdownParsing.GetShowdownText(pkm));
-            sbShowdown.AppendLine();
+            sbShowdown
+                .AppendLine(ShowdownParsing.GetShowdownText(pkm))
+                .AppendLine();
         }
 
         return sbShowdown.ToString().Trim();
@@ -566,34 +565,18 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         }
 
         // Get source Pokémon
-        PKM? sourcePokemon;
-        if (isSourceParty)
-        {
-            sourcePokemon = saveFile.GetPartySlotAtIndex(sourceSlotNumber);
-        }
-        else if (sourceBoxNumber.HasValue)
-        {
-            sourcePokemon = saveFile.GetBoxSlotAtIndex(sourceBoxNumber.Value, sourceSlotNumber);
-        }
-        else // LetsGo storage
-        {
-            sourcePokemon = saveFile.GetBoxSlotAtIndex(sourceSlotNumber);
-        }
+        var sourcePokemon = isSourceParty
+            ? saveFile.GetPartySlotAtIndex(sourceSlotNumber)
+            : sourceBoxNumber.HasValue
+                ? saveFile.GetBoxSlotAtIndex(sourceBoxNumber.Value, sourceSlotNumber)
+                : saveFile.GetBoxSlotAtIndex(sourceSlotNumber);
 
         // Get destination Pokémon
-        PKM? destPokemon;
-        if (isDestParty)
-        {
-            destPokemon = saveFile.GetPartySlotAtIndex(destSlotNumber);
-        }
-        else if (destBoxNumber.HasValue)
-        {
-            destPokemon = saveFile.GetBoxSlotAtIndex(destBoxNumber.Value, destSlotNumber);
-        }
-        else // LetsGo storage
-        {
-            destPokemon = saveFile.GetBoxSlotAtIndex(destSlotNumber);
-        }
+        var destPokemon = isDestParty
+            ? saveFile.GetPartySlotAtIndex(destSlotNumber)
+            : destBoxNumber.HasValue
+                ? saveFile.GetBoxSlotAtIndex(destBoxNumber.Value, destSlotNumber)
+                : saveFile.GetBoxSlotAtIndex(destSlotNumber);
 
         // Determine if this is a swap or a move
         var isSwap = sourcePokemon.Species > 0 && destPokemon.Species > 0;

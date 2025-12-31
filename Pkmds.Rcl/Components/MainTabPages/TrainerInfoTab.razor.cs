@@ -45,7 +45,6 @@ public partial class TrainerInfoTab : IDisposable
     private InputDateType GameStartType => AppState.SaveFile switch
     {
         SAV4 or SAV5 or SAV6 or SAV7 or SAV8SWSH or SAV8BS or SAV8LA => InputDateType.DateTimeLocal,
-        SAV9SV => InputDateType.Date,
         _ => InputDateType.Date
     };
 
@@ -74,8 +73,6 @@ public partial class TrainerInfoTab : IDisposable
         {
             4 => "gen4_countries",
             5 => "gen5_countries",
-            6 => "countries",
-            7 => "countries",
             _ => "countries"
         };
 
@@ -377,7 +374,7 @@ public partial class TrainerInfoTab : IDisposable
         return AppService.GetSpeciesComboItem(nationalSpeciesId);
     }
 
-    private void SetGen1RivalStarter(SAV1 sav1, ComboItem species)
+    private static void SetGen1RivalStarter(SAV1 sav1, ComboItem species)
     {
         var internalSpeciesId = SpeciesConverter.GetInternal1((byte)species.Value);
         sav1.RivalStarter = internalSpeciesId;
