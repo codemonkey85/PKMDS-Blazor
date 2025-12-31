@@ -25,7 +25,8 @@ services
 var app = builder.Build();
 
 // Although Blazor WASM can target the whole .NET Framework API surface,
-// during the Runtime, Microsoft has disabled the native support to some APIs under the System.Security.Cryptography namespace
+// during the Runtime, Microsoft has disabled the native support to some APIs
+// under the System.Security.Cryptography namespace
 // During startup we replace PKHeX unsupported cryptography APIs with a javascript-based alternative 
 RuntimeCryptographyProvider.Aes = app.Services.GetRequiredService<BlazorAesProvider>();
 RuntimeCryptographyProvider.Md5 = app.Services.GetRequiredService<BlazorMd5Provider>();

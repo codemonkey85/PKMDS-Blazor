@@ -178,12 +178,7 @@ public partial class StatsTab : IDisposable
         }
 
         var saveGeneration = AppState?.SaveFile?.Generation;
-        if (saveGeneration is null)
-        {
-            return;
-        }
-
-        if (saveGeneration == 1 && Pokemon is PK1 && stat == Stats.Hp)
+        if (saveGeneration is null || saveGeneration == 1 && Pokemon is PK1 && stat == Stats.Hp)
         {
             return;
         }
@@ -193,7 +188,7 @@ public partial class StatsTab : IDisposable
             newValue = 0;
         }
 
-        if ((saveGeneration == 1 || saveGeneration == 2) &&
+        if (saveGeneration is 1 or 2 &&
             Pokemon is PK1 or PK2 && newValue > 15)
         {
             newValue = 15;

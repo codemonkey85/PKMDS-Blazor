@@ -77,7 +77,7 @@ public partial class BadgesComponent : IDisposable
                 break;
 
             case EntityContext.Gen7b when saveFile is SAV7b:
-                // TODO: Figure out why this isn't available
+                // https://github.com/codemonkey85/PKMDS-Blazor/issues/59
                 //badgeFlagInt = sav7b.Badges;
                 break;
 
@@ -86,7 +86,7 @@ public partial class BadgesComponent : IDisposable
                 break;
 
             case EntityContext.Gen9 when saveFile is SAV9SV:
-                // TODO: Figure out why this isn't available
+                // https://github.com/codemonkey85/PKMDS-Blazor/issues/60
                 //badgeFlagInt = sav9sv.Badges;
                 break;
         }

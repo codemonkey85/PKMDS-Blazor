@@ -151,7 +151,7 @@ public partial class MainLayout : IDisposable
         if (string.IsNullOrWhiteSpace(originalName))
         {
             originalName = "save";
-            var fileExtensionFromName = ".sav";
+            const string fileExtensionFromName = ".sav";
             var finalName = EnsureExtension(originalName, fileExtensionFromName);
 
             await WriteFile(
