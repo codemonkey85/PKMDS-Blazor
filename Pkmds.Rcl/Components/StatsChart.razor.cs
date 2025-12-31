@@ -35,7 +35,6 @@ public partial class StatsChart : IDisposable
     // ReSharper disable once AsyncVoidMethod
     private async void OnThemeChanged(bool isDarkMode)
     {
-        Console.WriteLine($"StatsChart.OnThemeChanged called with isDarkMode: {isDarkMode}. Chart initialized: {isChartInitialized}");
         if (!isChartInitialized)
         {
             return;
@@ -43,13 +42,13 @@ public partial class StatsChart : IDisposable
 
         try
         {
-            Console.WriteLine($"Calling refreshChartColorsWithTheme for chart: {radarChart.Id}");
             await JSRuntime.InvokeVoidAsync("chartHelper.refreshChartColorsWithTheme", radarChart.Id, isDarkMode);
-            Console.WriteLine("refreshChartColorsWithTheme completed successfully");
         }
         catch (Exception ex)
         {
+            // TODO: Add proper logging with ILogger when available
             Console.WriteLine($"Error refreshing chart colors: {ex.Message}");
+            throw;
         }
     }
 

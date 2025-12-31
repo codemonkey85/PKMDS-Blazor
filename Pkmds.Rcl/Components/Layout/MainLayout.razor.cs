@@ -38,18 +38,14 @@ public partial class MainLayout : IDisposable
     private void OnIsDarkModeChanged(bool newValue)
     {
         isDarkMode = newValue;
-        Console.WriteLine($"MainLayout.OnIsDarkModeChanged: isDarkMode = {isDarkMode}");
         RefreshService.RefreshTheme(isDarkMode);
-        Console.WriteLine("MainLayout.OnIsDarkModeChanged: RefreshTheme called");
         StateHasChanged();
     }
 
     private void OnThemeSwitchChanged(bool newValue)
     {
         isDarkMode = newValue;
-        Console.WriteLine($"MainLayout.OnThemeSwitchChanged: isDarkMode = {isDarkMode}");
         RefreshService.RefreshTheme(isDarkMode);
-        Console.WriteLine("MainLayout.OnThemeSwitchChanged: RefreshTheme called");
         StateHasChanged();
     }
 
@@ -372,6 +368,7 @@ public partial class MainLayout : IDisposable
         }
         catch (JSException ex)
         {
+            // TODO: Add proper logging with ILogger when available
             Console.WriteLine(ex);
         }
     }
