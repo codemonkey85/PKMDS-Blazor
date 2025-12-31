@@ -14,5 +14,8 @@
         <PackageVersion Include="MudBlazor" Version="8.15.0"/>
         <PackageVersion Include="PKHeX.Core" Version="25.12.21"/>
         <PackageVersion Include="BlazorExpress.ChartJS" Version="1.2.0"/>
+        <PackageVersion Include="Serilog" Version="4.2.0"/>
+        <PackageVersion Include="Serilog.Extensions.Logging" Version="9.0.0"/>
+        <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="2.0.0"/>
     </ItemGroup>
 </Project>

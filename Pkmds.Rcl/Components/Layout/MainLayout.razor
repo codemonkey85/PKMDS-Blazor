@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject ILogger<MainLayout> Logger
 
 <MudThemeProvider @ref="@mudThemeProvider"
                   IsDarkMode="@isDarkMode"
@@ -35,6 +36,11 @@
                        Label="@(isDarkMode
                                   ? "Dark"
                                   : "Light")"/>
+            <MudSwitch Value="@LoggingService.IsVerboseLoggingEnabled"
+                       ValueChanged="@((bool value) => OnVerboseLoggingChanged(value))"
+                       Color="@Color.Secondary"
+                       Label="Verbose Logging"
+                       title="Enable verbose logging to browser console"/>
             <MudButton Class="d-none d-md-flex"
                        EndIcon="@Icons.Custom.Brands.GitHub"
                        Href="@GitHubRepoLink"

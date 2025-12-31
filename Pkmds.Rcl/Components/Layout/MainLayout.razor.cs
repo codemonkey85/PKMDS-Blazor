@@ -49,6 +49,13 @@ public partial class MainLayout : IDisposable
         StateHasChanged();
     }
 
+    private void OnVerboseLoggingChanged(bool newValue)
+    {
+        LoggingService.IsVerboseLoggingEnabled = newValue;
+        Logger.LogInformation("Verbose logging {Status}", newValue ? "enabled" : "disabled");
+        StateHasChanged();
+    }
+
     private void DrawerToggle() => AppService.ToggleDrawer();
 
     private async Task ShowLoadSaveFileDialog()
@@ -73,10 +80,12 @@ public partial class MainLayout : IDisposable
     {
         if (browserLoadSaveFile is null)
         {
+            Logger.LogWarning("Attempted to load save file but no file was selected");
             await DialogService.ShowMessageBox("No file selected", "Please select a file to load.");
             return;
         }
 
+        Logger.LogInformation("Loading save file: {FileName}", selectedFile.Name);
         AppState.SaveFile = null;
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
@@ -88,14 +97,18 @@ public partial class MainLayout : IDisposable
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
+            Logger.LogDebug("Read {ByteCount} bytes from save file", data.Length);
 
             if (SaveUtil.TryGetSaveFile(data, out var saveFile, selectedFile.Name))
             {
                 AppState.SaveFile = saveFile;
                 AppState.BoxEdit?.LoadBox(saveFile.CurrentBox);
+                Logger.LogInformation("Successfully loaded save file: {SaveType}, Generation: {Generation}", 
+                    saveFile.GetType().Name, saveFile.Generation);
             }
             else
             {
+                Logger.LogError("Failed to load save file: {FileName} - Invalid save file format", selectedFile.Name);
                 const string message =
                     "The selected save file is invalid. If this save file came from a ROM hack, it is not supported. Otherwise, try saving in-game and re-exporting / re-uploading the save file.";
                 await DialogService.ShowMessageBox("Error", message);
@@ -104,6 +117,7 @@ public partial class MainLayout : IDisposable
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "Error loading save file: {FileName}", selectedFile.Name);
             await DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
         }
         finally
@@ -140,9 +154,11 @@ public partial class MainLayout : IDisposable
     {
         if (AppState.SaveFile is null)
         {
+            Logger.LogWarning("Attempted to export save file but no save file is loaded");
             return;
         }
 
+        Logger.LogInformation("Exporting save file");
         AppState.ShowProgressIndicator = true;
 
         var originalName = browserLoadSaveFile?.Name;
@@ -153,6 +169,7 @@ public partial class MainLayout : IDisposable
             originalName = "save";
             const string fileExtensionFromName = ".sav";
             var finalName = EnsureExtension(originalName, fileExtensionFromName);
+            Logger.LogDebug("Exporting save file as: {FileName}", finalName);
 
             await WriteFile(
                 AppState.SaveFile.Write().ToArray(),
@@ -164,6 +181,7 @@ public partial class MainLayout : IDisposable
         {
             // Preserve the original filename exactly as it was (with or without extension)
             var fileExtensionFromName = Path.GetExtension(originalName);
+            Logger.LogDebug("Exporting save file as: {FileName}", originalName);
 
             await WriteFile(
                 AppState.SaveFile.Write().ToArray(),
@@ -172,6 +190,7 @@ public partial class MainLayout : IDisposable
                 "Save File");
         }
 
+        Logger.LogInformation("Save file exported successfully");
         AppState.ShowProgressIndicator = false;
     }
 
@@ -217,9 +236,11 @@ public partial class MainLayout : IDisposable
     {
         if (AppState.SaveFile is not { } saveFile)
         {
+            Logger.LogWarning("Attempted to load Pokémon file but no save file is loaded");
             return;
         }
 
+        Logger.LogInformation("Loading Pokémon file: {FileName}", browserLoadPokemonFile.Name);
         AppState.ShowProgressIndicator = true;
 
         try
@@ -228,9 +249,11 @@ public partial class MainLayout : IDisposable
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
+            Logger.LogDebug("Read {ByteCount} bytes from Pokémon file", data.Length);
 
             if (!FileUtil.TryGetPKM(data, out var pkm, Path.GetExtension(browserLoadPokemonFile.Name), saveFile))
             {
+                Logger.LogError("Failed to load Pokémon file: {FileName} - Not a supported format", browserLoadPokemonFile.Name);
                 await DialogService.ShowMessageBox("Error", "The file is not a supported Pokémon file.");
                 return;
             }
@@ -239,9 +262,11 @@ public partial class MainLayout : IDisposable
 
             if (pkm.GetType() != saveFile.PKMType)
             {
+                Logger.LogDebug("Converting Pokémon from {SourceType} to {TargetType}", pkm.GetType().Name, saveFile.PKMType.Name);
                 pokemon = EntityConverter.ConvertToType(pkm, saveFile.PKMType, out var c);
                 if (!c.IsSuccess() || pokemon is null)
                 {
+                    Logger.LogError("Failed to convert Pokémon: {ConversionResult}", c.GetDisplayString(pkm, saveFile.PKMType));
                     await DialogService.ShowMessageBox("Error", c.GetDisplayString(pkm, saveFile.PKMType));
                     return;
                 }
@@ -252,11 +277,13 @@ public partial class MainLayout : IDisposable
             var index = saveFile.NextOpenBoxSlot();
             if (index < 0)
             {
+                Logger.LogWarning("No available box slots for importing Pokémon");
                 return;
             }
 
             saveFile.GetBoxSlotFromIndex(index, out var box, out var slot);
             saveFile.SetBoxSlotAtIndex(pokemon, index);
+            Logger.LogInformation("Pokémon imported successfully to Box {Box}, Slot {Slot}", box + 1, slot + 1);
 
             const string messageStart = "The Pokémon has been imported and stored in";
 
@@ -270,6 +297,7 @@ public partial class MainLayout : IDisposable
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "Error loading Pokémon file: {FileName}", browserLoadPokemonFile.Name);
             await DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
         }
         finally
@@ -284,9 +312,11 @@ public partial class MainLayout : IDisposable
     {
         if (AppState.SaveFile is null)
         {
+            Logger.LogWarning("Attempted to load Mystery Gift file but no save file is loaded");
             return;
         }
 
+        Logger.LogInformation("Loading Mystery Gift file: {FileName}", browserLoadMysteryGiftFile.Name);
         AppState.ShowProgressIndicator = true;
 
         try
@@ -295,26 +325,39 @@ public partial class MainLayout : IDisposable
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
+            Logger.LogDebug("Read {ByteCount} bytes from Mystery Gift file", data.Length);
 
             if (!FileUtil.TryGetMysteryGift(data, out var mysteryGift,
                     Path.GetExtension(browserLoadMysteryGiftFile.Name)))
             {
+                Logger.LogError("Failed to load Mystery Gift file: {FileName} - Not a supported format", browserLoadMysteryGiftFile.Name);
                 await DialogService.ShowMessageBox("Error", "The file is not a supported Mystery Gift file.");
                 return;
             }
 
             if (mysteryGift.Species.IsInvalidSpecies())
             {
+                Logger.LogError("Mystery Gift Pokémon is invalid: Species {Species}", mysteryGift.Species);
                 await DialogService.ShowMessageBox("Error", "The Mystery Gift Pokémon is invalid.");
                 return;
             }
 
-            await AppService.ImportMysteryGift(data, Path.GetExtension(browserLoadMysteryGiftFile.Name), out _, out var resultsMessage);
+            await AppService.ImportMysteryGift(data, Path.GetExtension(browserLoadMysteryGiftFile.Name), out var isSuccessful, out var resultsMessage);
+            
+            if (isSuccessful)
+            {
+                Logger.LogInformation("Mystery Gift imported successfully");
+            }
+            else
+            {
+                Logger.LogWarning("Mystery Gift import failed: {Message}", resultsMessage);
+            }
 
             await DialogService.ShowMessageBox(title, resultsMessage);
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "Error loading Mystery Gift file: {FileName}", browserLoadMysteryGiftFile.Name);
             await DialogService.ShowMessageBox("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
         }
         finally
@@ -329,17 +372,22 @@ public partial class MainLayout : IDisposable
     {
         if (AppService.EditFormPokemon is null)
         {
+            Logger.LogWarning("Attempted to export Pokémon but no Pokémon is selected");
             return;
         }
 
         var pkm = AppService.EditFormPokemon;
+        Logger.LogInformation("Exporting Pokémon: {Species}", pkm.Species);
 
         AppState.ShowProgressIndicator = true;
 
         pkm.RefreshChecksum();
         var cleanFileName = AppService.GetCleanFileName(pkm);
         var data = GetPokemonFileData(pkm);
+        Logger.LogDebug("Exporting Pokémon as: {FileName}, Size: {Size} bytes", cleanFileName, data.Length);
+        
         await WriteFile(data, cleanFileName, $".{pkm.Extension}", "Pokémon File");
+        Logger.LogInformation("Pokémon exported successfully");
 
         AppState.ShowProgressIndicator = false;
     }
@@ -351,8 +399,11 @@ public partial class MainLayout : IDisposable
 
     private async Task WriteFile(byte[] data, string fileName, string fileTypeExtension, string fileTypeDescription)
     {
+        Logger.LogDebug("Writing file: {FileName}, Size: {Size} bytes", fileName, data.Length);
+        
         if (!await FileSystemAccessService.IsSupportedAsync())
         {
+            Logger.LogDebug("File System Access API not supported, using legacy method");
             await WriteFileOldWay(data, fileName, fileTypeExtension);
             return;
         }
@@ -365,11 +416,11 @@ public partial class MainLayout : IDisposable
                 data,
                 fileTypeExtension,
                 fileTypeDescription);
+            Logger.LogDebug("File written successfully using File System Access API");
         }
         catch (JSException ex)
         {
-            // TODO: Add proper logging with ILogger when available
-            Console.WriteLine(ex);
+            Logger.LogError(ex, "Error writing file using File System Access API: {FileName}", fileName);
         }
     }
 
