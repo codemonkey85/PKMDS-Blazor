@@ -2,18 +2,18 @@ namespace Pkmds.Rcl.Services;
 
 public class LoggingService : ILoggingService
 {
-    private bool _isVerboseLoggingEnabled;
-
     public bool IsVerboseLoggingEnabled
     {
-        get => _isVerboseLoggingEnabled;
+        get;
         set
         {
-            if (_isVerboseLoggingEnabled != value)
+            if (field == value)
             {
-                _isVerboseLoggingEnabled = value;
-                OnLoggingConfigurationChanged?.Invoke();
+                return;
             }
+
+            field = value;
+            OnLoggingConfigurationChanged?.Invoke();
         }
     }
 

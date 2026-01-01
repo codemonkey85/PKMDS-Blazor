@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Serilog;
 using Serilog.Core;
+using Serilog.Events;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var services = builder.Services;
 
 // Configure Serilog with browser console sink
-var levelSwitch = new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Information);
+var levelSwitch = new LoggingLevelSwitch();
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.ControlledBy(levelSwitch)
@@ -54,8 +54,8 @@ var loggingService = app.Services.GetRequiredService<ILoggingService>();
 loggingService.OnLoggingConfigurationChanged += () =>
 {
     levelSwitch.MinimumLevel = loggingService.IsVerboseLoggingEnabled
-        ? Serilog.Events.LogEventLevel.Debug
-        : Serilog.Events.LogEventLevel.Information;
+        ? LogEventLevel.Debug
+        : LogEventLevel.Information;
 };
 
 await app.RunAsync();

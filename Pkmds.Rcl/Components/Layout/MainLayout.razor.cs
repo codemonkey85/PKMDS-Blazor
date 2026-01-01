@@ -52,7 +52,9 @@ public partial class MainLayout : IDisposable
     private void OnVerboseLoggingChanged(bool newValue)
     {
         LoggingService.IsVerboseLoggingEnabled = newValue;
-        Logger.LogInformation("Verbose logging {Status}", newValue ? "enabled" : "disabled");
+        Logger.LogInformation("Verbose logging {Status}", newValue
+            ? "enabled"
+            : "disabled");
         StateHasChanged();
     }
 
@@ -103,7 +105,7 @@ public partial class MainLayout : IDisposable
             {
                 AppState.SaveFile = saveFile;
                 AppState.BoxEdit?.LoadBox(saveFile.CurrentBox);
-                Logger.LogInformation("Successfully loaded save file: {SaveType}, Generation: {Generation}", 
+                Logger.LogInformation("Successfully loaded save file: {SaveType}, Generation: {Generation}",
                     saveFile.GetType().Name, saveFile.Generation);
             }
             else
@@ -343,7 +345,7 @@ public partial class MainLayout : IDisposable
             }
 
             await AppService.ImportMysteryGift(data, Path.GetExtension(browserLoadMysteryGiftFile.Name), out var isSuccessful, out var resultsMessage);
-            
+
             if (isSuccessful)
             {
                 Logger.LogInformation("Mystery Gift imported successfully");
@@ -385,7 +387,7 @@ public partial class MainLayout : IDisposable
         var cleanFileName = AppService.GetCleanFileName(pkm);
         var data = GetPokemonFileData(pkm);
         Logger.LogDebug("Exporting Pokémon as: {FileName}, Size: {Size} bytes", cleanFileName, data.Length);
-        
+
         await WriteFile(data, cleanFileName, $".{pkm.Extension}", "Pokémon File");
         Logger.LogInformation("Pokémon exported successfully");
 
@@ -400,7 +402,7 @@ public partial class MainLayout : IDisposable
     private async Task WriteFile(byte[] data, string fileName, string fileTypeExtension, string fileTypeDescription)
     {
         Logger.LogDebug("Writing file: {FileName}, Size: {Size} bytes", fileName, data.Length);
-        
+
         if (!await FileSystemAccessService.IsSupportedAsync())
         {
             Logger.LogDebug("File System Access API not supported, using legacy method");
