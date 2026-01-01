@@ -11,6 +11,9 @@
         <PackageReference Include="PKHeX.Core"/>
         <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess"/>
         <PackageReference Include="BlazorExpress.ChartJS"/>
+        <PackageReference Include="Serilog"/>
+        <PackageReference Include="Serilog.Extensions.Logging"/>
+        <PackageReference Include="Serilog.Sinks.BrowserConsole"/>
     </ItemGroup>
 
 </Project>

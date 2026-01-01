@@ -1,20 +1,21 @@
-﻿@using KristofferStrube.Blazor.FileSystemAccess
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Text.RegularExpressions
+@using System.Web
+@using Humanizer
+@using KristofferStrube.Blazor.FileSystemAccess
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @using MudBlazor
 @using PKHeX.Core
 @using Pkmds.Rcl
-@using Pkmds.Rcl.Services
-@using System.Net.Http
-@using System.Net.Http.Json
-@using System.Text.RegularExpressions
-@using System.Web
-@using Severity = Severity
-@using Humanizer
 @using Pkmds.Rcl.Extensions
+@using Pkmds.Rcl.Services
+@using Severity = Severity
 
 @inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
@@ -23,3 +24,4 @@
 @inject IRefreshService RefreshService
 @inject IAppService AppService
 @inject IFileSystemAccessService FileSystemAccessService
+@inject ILoggingService LoggingService

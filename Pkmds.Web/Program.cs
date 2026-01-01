@@ -1,5 +1,21 @@
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
+
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var services = builder.Services;
+
+// Configure Serilog with browser console sink
+var levelSwitch = new LoggingLevelSwitch();
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.ControlledBy(levelSwitch)
+    .Enrich.FromLogContext()
+    .WriteTo.BrowserConsole()
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(Log.Logger, dispose: true);
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
@@ -18,6 +34,8 @@ services
     .AddSingleton<IRefreshService, RefreshService>()
     .AddSingleton<IAppService, AppService>()
     .AddSingleton<IDragDropService, DragDropService>()
+    .AddSingleton<ILoggingService, LoggingService>()
+    .AddSingleton(levelSwitch)
     .AddSingleton<JsService>()
     .AddSingleton<BlazorAesProvider>()
     .AddSingleton<BlazorMd5Provider>();
@@ -30,5 +48,14 @@ var app = builder.Build();
 // During startup we replace PKHeX unsupported cryptography APIs with a javascript-based alternative 
 RuntimeCryptographyProvider.Aes = app.Services.GetRequiredService<BlazorAesProvider>();
 RuntimeCryptographyProvider.Md5 = app.Services.GetRequiredService<BlazorMd5Provider>();
+
+// Configure logging service to control log levels
+var loggingService = app.Services.GetRequiredService<ILoggingService>();
+loggingService.OnLoggingConfigurationChanged += () =>
+{
+    levelSwitch.MinimumLevel = loggingService.IsVerboseLoggingEnabled
+        ? LogEventLevel.Debug
+        : LogEventLevel.Information;
+};
 
 await app.RunAsync();
