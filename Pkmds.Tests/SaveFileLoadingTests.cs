@@ -48,7 +48,7 @@ public class SaveFileLoadingTests
         // Assert
         success.Should().BeTrue();
         saveFile.Should().NotBeNull();
-        saveFile!.Data.Length.Should().BeGreaterThan(0);
+        saveFile!.State.Exportable.Should().BeTrue();
     }
 
     [Fact]
