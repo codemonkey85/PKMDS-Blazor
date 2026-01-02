@@ -787,10 +787,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         EditFormPokemon ??= saveFile.BlankPKM;
 
-        if (EditFormPokemon.Species.IsInvalidSpecies())
-        {
-            EditFormPokemon.Version = saveFile.Version.GetSingleVersion();
-        }
+        // Note: Removed the call to GetSingleVersion() as it can cause freezes for certain games (e.g., Legends Z-A).
+        // BlankPKM from PKHeX.Core should already have the correct version set.
     }
 
     /// <summary>
