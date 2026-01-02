@@ -16,7 +16,6 @@ public class ExtensionTests
     [InlineData((ushort)Species.Pikachu, true)]
     [InlineData((ushort)Species.Lucario, true)]
     [InlineData((ushort)Species.None, false)]
-    [InlineData((ushort)0, false)]
     public void IsValidSpecies_ReturnsCorrectResult(ushort speciesId, bool expected)
     {
         // Act
@@ -86,12 +85,13 @@ public class ExtensionTests
         // Arrange
         var filePath = Path.Combine(TestFilesPath, "Lucario_B06DDFAD.pk5");
         var data = File.ReadAllBytes(filePath);
-        FileUtil.TryGetPKM(data, out var pkm, ".pk5").Should().BeTrue();
+        var success = FileUtil.TryGetPKM(data, out var pkm, ".pk5");
+        success.Should().BeTrue();
         var testPP = 10;
 
         // Act
         pkm!.SetPP(0, testPP);
-        var pp = pkm.GetPP();
+        var pp = pkm!.GetPP();
 
         // Assert
         pp[0].Should().Be(testPP);
@@ -103,11 +103,12 @@ public class ExtensionTests
         // Arrange
         var filePath = Path.Combine(TestFilesPath, "Lucario_B06DDFAD.pk5");
         var data = File.ReadAllBytes(filePath);
-        FileUtil.TryGetPKM(data, out var pkm, ".pk5").Should().BeTrue();
+        var success = FileUtil.TryGetPKM(data, out var pkm, ".pk5");
+        success.Should().BeTrue();
 
         // Act
         pkm!.SetPP(0, -5);
-        var pp = pkm.GetPP();
+        var pp = pkm!.GetPP();
 
         // Assert
         pp[0].Should().Be(0);

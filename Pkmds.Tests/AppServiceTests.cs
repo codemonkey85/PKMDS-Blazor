@@ -34,11 +34,13 @@ public class AppServiceTests
         public int RefreshPartyStateCount { get; private set; }
         public int RefreshBoxAndPartyStateCount { get; private set; }
 
+#pragma warning disable CS0067 // Event is never used - these are required by interface but not needed in test mock
         public event Action? OnAppStateChanged;
         public event Action? OnBoxStateChanged;
         public event Action? OnPartyStateChanged;
         public event Action? OnUpdateAvailable;
         public event Action<bool>? OnThemeChanged;
+#pragma warning restore CS0067
 
         public void Refresh() => RefreshCount++;
         public void RefreshBoxState() => RefreshBoxStateCount++;
