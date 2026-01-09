@@ -14,6 +14,8 @@ global using Microsoft.JSInterop;
 global using MudBlazor;
 global using PKHeX.Core;
 global using Pkmds.Rcl.Components;
+global using Pkmds.Rcl.Components.Dialogs;
 global using Pkmds.Rcl.Extensions;
 global using Pkmds.Rcl.Services;
+global using Serilog.Events;
 global using Severity = MudBlazor.Severity;

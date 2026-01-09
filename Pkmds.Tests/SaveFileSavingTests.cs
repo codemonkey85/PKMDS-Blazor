@@ -1,6 +1,3 @@
-using FluentAssertions;
-using PKHeX.Core;
-
 namespace Pkmds.Tests;
 
 /// <summary>
@@ -10,20 +7,14 @@ public class SaveFileSavingTests
 {
     private const string TestFilesPath = "../../../TestFiles";
 
-    [Theory]
-    [InlineData("POKEMON RED-0.sav")]
-    [InlineData("POKEMON RUBY_AXVE-0.sav")]
-    [InlineData("x.sav")]
-    [InlineData("sun.sav")]
-    [InlineData("Test-Save-Shield.sav")]
-    [InlineData("Test-Save-Scarlet.sav")]
+    [Theory, InlineData("POKEMON RED-0.sav"), InlineData("POKEMON RUBY_AXVE-0.sav"), InlineData("x.sav"), InlineData("sun.sav"), InlineData("Test-Save-Shield.sav"), InlineData("Test-Save-Scarlet.sav")]
     public void SaveFile_WritesAndReloads_MaintainsIntegrity(string fileName)
     {
         // Arrange
         var filePath = Path.Combine(TestFilesPath, fileName);
         var originalData = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(originalData, out var saveFile, fileName).Should().BeTrue();
-        
+
         // Act - Write and reload
         var savedData = saveFile!.Write();
         var success = SaveUtil.TryGetSaveFile(savedData, out var reloadedSave, fileName);
@@ -43,7 +34,7 @@ public class SaveFileSavingTests
         var originalData = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(originalData, out var saveFile, "Black - Full Completion.sav").Should().BeTrue();
         var pokemon = saveFile!.GetPartySlotAtIndex(0);
-        
+
         if (pokemon.Species == 0)
         {
             return; // Skip if no Pokémon
@@ -55,7 +46,7 @@ public class SaveFileSavingTests
         pokemon.Nickname = testNickname;
         saveFile.SetPartySlotAtIndex(pokemon, 0);
         var savedData = saveFile.Write();
-        
+
         // Reload and verify
         SaveUtil.TryGetSaveFile(savedData, out var reloadedSave, "Black - Full Completion.sav").Should().BeTrue();
         var reloadedPokemon = reloadedSave!.GetPartySlotAtIndex(0);
@@ -75,7 +66,7 @@ public class SaveFileSavingTests
         var originalData = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(originalData, out var saveFile, "Black - Full Completion.sav").Should().BeTrue();
         var pokemon = saveFile!.GetBoxSlotAtIndex(0, 0);
-        
+
         if (pokemon.Species == 0)
         {
             return; // Skip if no Pokémon
@@ -88,7 +79,7 @@ public class SaveFileSavingTests
         pokemon.RefreshChecksum();
         saveFile.SetBoxSlotAtIndex(pokemon, 0, 0);
         var savedData = saveFile.Write();
-        
+
         // Reload and verify
         SaveUtil.TryGetSaveFile(savedData, out var reloadedSave, "Black - Full Completion.sav").Should().BeTrue();
         var reloadedPokemon = reloadedSave!.GetBoxSlotAtIndex(0, 0);
@@ -112,7 +103,7 @@ public class SaveFileSavingTests
         // Act - Modify trainer money
         saveFile!.Money = testMoney;
         var savedData = saveFile.Write();
-        
+
         // Reload and verify
         SaveUtil.TryGetSaveFile(savedData, out var reloadedSave, "Black - Full Completion.sav").Should().BeTrue();
 
@@ -129,12 +120,12 @@ public class SaveFileSavingTests
         var filePath = Path.Combine(TestFilesPath, "Black - Full Completion.sav");
         var originalData = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(originalData, out var saveFile, "Black - Full Completion.sav").Should().BeTrue();
-        
+
         // Act - Create a blank Pokémon
         var blankPokemon = saveFile!.BlankPKM;
         saveFile.SetBoxSlotAtIndex(blankPokemon, 0, 5);
         var savedData = saveFile.Write();
-        
+
         // Reload and verify
         SaveUtil.TryGetSaveFile(savedData, out var reloadedSave, "Black - Full Completion.sav").Should().BeTrue();
         var reloadedPokemon = reloadedSave!.GetBoxSlotAtIndex(0, 5);

@@ -1,7 +1,3 @@
-using Serilog;
-using Serilog.Core;
-using Serilog.Events;
-
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var services = builder.Services;
 var logging = builder.Logging;
@@ -52,8 +48,6 @@ RuntimeCryptographyProvider.Md5 = app.Services.GetRequiredService<BlazorMd5Provi
 
 // Configure logging service to control log levels
 var loggingService = app.Services.GetRequiredService<ILoggingService>();
-loggingService.OnLoggingConfigurationChanged += () => levelSwitch.MinimumLevel = loggingService.IsVerboseLoggingEnabled
-    ? LogEventLevel.Debug
-    : LogEventLevel.Information;
+loggingService.OnLoggingConfigurationChanged += level => levelSwitch.MinimumLevel = level;
 
 await app.RunAsync();

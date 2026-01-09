@@ -4,5 +4,5 @@ public interface ILoggingService
 {
     bool IsVerboseLoggingEnabled { get; set; }
 
-    event Action? OnLoggingConfigurationChanged;
+    event Action<LogEventLevel>? OnLoggingConfigurationChanged;
 }

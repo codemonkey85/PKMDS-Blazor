@@ -1,6 +1,3 @@
-using FluentAssertions;
-using PKHeX.Core;
-
 namespace Pkmds.Tests;
 
 /// <summary>
@@ -27,10 +24,7 @@ public class PokemonEncryptionTests
         pkm.ChecksumValid.Should().BeTrue();
     }
 
-    [Theory]
-    [InlineData("POKEMON RED-0.sav")]
-    [InlineData("POKEMON RUBY_AXVE-0.sav")]
-    [InlineData("Black - Full Completion.sav")]
+    [Theory, InlineData("POKEMON RED-0.sav"), InlineData("POKEMON RUBY_AXVE-0.sav"), InlineData("Black - Full Completion.sav")]
     public void ExtractPokemonFromSave_ValidatesChecksum(string fileName)
     {
         // Arrange
@@ -96,7 +90,7 @@ public class PokemonEncryptionTests
         var data = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(data, out var saveFile, "Black - Full Completion.sav").Should().BeTrue();
         var pokemon = saveFile!.GetBoxSlotAtIndex(0, 0);
-        
+
         if (pokemon.Species == 0)
         {
             return; // Skip if no Pokémon
@@ -106,7 +100,7 @@ public class PokemonEncryptionTests
         pokemon.Nickname = "TEST";
         pokemon.RefreshChecksum();
         saveFile.SetBoxSlotAtIndex(pokemon, 0, 0);
-        
+
         // Re-read the Pokémon from save
         var modifiedPokemon = saveFile.GetBoxSlotAtIndex(0, 0);
 

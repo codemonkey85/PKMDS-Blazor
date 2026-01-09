@@ -13,9 +13,11 @@ public class LoggingService : ILoggingService
             }
 
             field = value;
-            OnLoggingConfigurationChanged?.Invoke();
+            OnLoggingConfigurationChanged?.Invoke(value
+                ? LogEventLevel.Debug
+                : LogEventLevel.Information);
         }
     }
 
-    public event Action? OnLoggingConfigurationChanged;
+    public event Action<LogEventLevel>? OnLoggingConfigurationChanged;
 }
