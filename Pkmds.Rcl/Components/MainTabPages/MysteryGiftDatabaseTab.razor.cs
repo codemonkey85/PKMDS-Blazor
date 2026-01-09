@@ -130,7 +130,7 @@ public partial class MysteryGiftDatabaseTab
         {
             pokemon = EntityConverter.ConvertToType(tempPokemon, saveFile.PKMType, out var convertedEntity);
 
-            if (!convertedEntity.IsSuccess() || pokemon is null)
+            if (!convertedEntity.IsSuccess || pokemon is null)
             {
                 await DialogService.ShowMessageBox("Error",
                     convertedEntity.GetDisplayString(tempPokemon, saveFile.PKMType));

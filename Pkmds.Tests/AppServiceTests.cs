@@ -1,8 +1,3 @@
-using FluentAssertions;
-using PKHeX.Core;
-using Pkmds.Rcl;
-using Pkmds.Rcl.Services;
-
 namespace Pkmds.Tests;
 
 /// <summary>
@@ -11,44 +6,6 @@ namespace Pkmds.Tests;
 public class AppServiceTests
 {
     private const string TestFilesPath = "../../../TestFiles";
-
-    private class TestAppState : IAppState
-    {
-        public string CurrentLanguage { get; set; } = "en";
-        public int CurrentLanguageId => 2;
-        public SaveFile? SaveFile { get; set; }
-        public BoxEdit? BoxEdit => null;
-        public PKM? CopiedPokemon { get; set; }
-        public int? SelectedBoxNumber { get; set; }
-        public int? SelectedBoxSlotNumber { get; set; }
-        public int? SelectedPartySlotNumber { get; set; }
-        public bool ShowProgressIndicator { get; set; }
-        public string? AppVersion => "Test";
-        public bool SelectedSlotsAreValid => true;
-    }
-
-    private class TestRefreshService : IRefreshService
-    {
-        public int RefreshCount { get; private set; }
-        public int RefreshBoxStateCount { get; private set; }
-        public int RefreshPartyStateCount { get; private set; }
-        public int RefreshBoxAndPartyStateCount { get; private set; }
-
-#pragma warning disable CS0067 // Event is never used - these are required by interface but not needed in test mock
-        public event Action? OnAppStateChanged;
-        public event Action? OnBoxStateChanged;
-        public event Action? OnPartyStateChanged;
-        public event Action? OnUpdateAvailable;
-        public event Action<bool>? OnThemeChanged;
-#pragma warning restore CS0067
-
-        public void Refresh() => RefreshCount++;
-        public void RefreshBoxState() => RefreshBoxStateCount++;
-        public void RefreshPartyState() => RefreshPartyStateCount++;
-        public void RefreshBoxAndPartyState() => RefreshBoxAndPartyStateCount++;
-        public void RefreshTheme(bool isDarkMode) { }
-        public void ShowUpdateMessage() { }
-    }
 
     [Fact]
     public void GetCleanFileName_Gen5Pokemon_ReturnsCorrectFormat()
@@ -123,21 +80,13 @@ public class AppServiceTests
     public void ClearSelection_ResetsAllSelections()
     {
         // Arrange
-        var appState = new TestAppState
-        {
-            SelectedBoxNumber = 1,
-            SelectedBoxSlotNumber = 5,
-            SelectedPartySlotNumber = 2
-        };
+        var appState = new TestAppState { SelectedBoxNumber = 1, SelectedBoxSlotNumber = 5, SelectedPartySlotNumber = 2 };
         var refreshService = new TestRefreshService();
         var filePath = Path.Combine(TestFilesPath, "Lucario_B06DDFAD.pk5");
         var data = File.ReadAllBytes(filePath);
         FileUtil.TryGetPKM(data, out var pokemon, ".pk5").Should().BeTrue();
-        
-        var appService = new AppService(appState, refreshService)
-        {
-            EditFormPokemon = pokemon
-        };
+
+        var appService = new AppService(appState, refreshService) { EditFormPokemon = pokemon };
 
         // Act
         appService.ClearSelection();
@@ -154,10 +103,7 @@ public class AppServiceTests
     public void GetSelectedPokemonSlot_PartySlot_ReturnsPartyType()
     {
         // Arrange
-        var appState = new TestAppState
-        {
-            SelectedPartySlotNumber = 0
-        };
+        var appState = new TestAppState { SelectedPartySlotNumber = 0 };
         var refreshService = new TestRefreshService();
         var appService = new AppService(appState, refreshService);
 
@@ -178,7 +124,7 @@ public class AppServiceTests
         var filePath = Path.Combine(TestFilesPath, "Lucario_B06DDFAD.pk5");
         var data = File.ReadAllBytes(filePath);
         FileUtil.TryGetPKM(data, out var pokemon, ".pk5").Should().BeTrue();
-        
+
         var appState = new TestAppState();
         var refreshService = new TestRefreshService();
         var appService = new AppService(appState, refreshService);
@@ -204,5 +150,43 @@ public class AppServiceTests
 
         // Assert
         showdown.Should().BeEmpty();
+    }
+
+    private class TestAppState : IAppState
+    {
+        public string CurrentLanguage { get; set; } = "en";
+        public int CurrentLanguageId => 2;
+        public SaveFile? SaveFile { get; set; }
+        public BoxEdit? BoxEdit => null;
+        public PKM? CopiedPokemon { get; set; }
+        public int? SelectedBoxNumber { get; set; }
+        public int? SelectedBoxSlotNumber { get; set; }
+        public int? SelectedPartySlotNumber { get; set; }
+        public bool ShowProgressIndicator { get; set; }
+        public string? AppVersion => "Test";
+        public bool SelectedSlotsAreValid => true;
+    }
+
+    private class TestRefreshService : IRefreshService
+    {
+        public int RefreshCount { get; private set; }
+        public int RefreshBoxStateCount { get; private set; }
+        public int RefreshPartyStateCount { get; private set; }
+        public int RefreshBoxAndPartyStateCount { get; private set; }
+
+        public void Refresh() => RefreshCount++;
+        public void RefreshBoxState() => RefreshBoxStateCount++;
+        public void RefreshPartyState() => RefreshPartyStateCount++;
+        public void RefreshBoxAndPartyState() => RefreshBoxAndPartyStateCount++;
+        public void RefreshTheme(bool isDarkMode) { }
+        public void ShowUpdateMessage() { }
+
+#pragma warning disable CS0067 // Event is never used - these are required by interface but not needed in test mock
+        public event Action? OnAppStateChanged;
+        public event Action? OnBoxStateChanged;
+        public event Action? OnPartyStateChanged;
+        public event Action? OnUpdateAvailable;
+        public event Action<bool>? OnThemeChanged;
+#pragma warning restore CS0067
     }
 }

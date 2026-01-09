@@ -1,7 +1,3 @@
-using FluentAssertions;
-using PKHeX.Core;
-using Pkmds.Rcl.Extensions;
-
 namespace Pkmds.Tests;
 
 /// <summary>
@@ -142,6 +138,6 @@ public class ExtensionTests
 
         // Assert
         types.Type1.Should().BeGreaterThan(0);
-        types.Type2.Should().BeGreaterOrEqualTo(0);
+        types.Type2.Should().BeGreaterThanOrEqualTo(0);
     }
 }

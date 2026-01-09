@@ -1,6 +1,3 @@
-using FluentAssertions;
-using PKHeX.Core;
-
 namespace Pkmds.Tests;
 
 /// <summary>
