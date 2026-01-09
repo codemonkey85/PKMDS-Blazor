@@ -7,7 +7,11 @@ public class ExtensionTests
 {
     private const string TestFilesPath = "../../../TestFiles";
 
-    [Theory, InlineData((ushort)Species.Bulbasaur, true), InlineData((ushort)Species.Pikachu, true), InlineData((ushort)Species.Lucario, true), InlineData((ushort)Species.None, false)]
+    [Theory]
+    [InlineData((ushort)Species.Bulbasaur, true)]
+    [InlineData((ushort)Species.Pikachu, true)]
+    [InlineData((ushort)Species.Lucario, true)]
+    [InlineData((ushort)Species.None, false)]
     public void IsValidSpecies_ReturnsCorrectResult(ushort speciesId, bool expected)
     {
         // Act
