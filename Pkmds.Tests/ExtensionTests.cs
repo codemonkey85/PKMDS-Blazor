@@ -21,7 +21,9 @@ public class ExtensionTests
         result.Should().Be(expected);
     }
 
-    [Theory, InlineData((ushort)Species.Bulbasaur, false), InlineData((ushort)Species.None, true)]
+    [Theory]
+    [InlineData((ushort)Species.Bulbasaur, false)]
+    [InlineData((ushort)Species.None, true)]
     public void IsInvalidSpecies_ReturnsCorrectResult(ushort speciesId, bool expected)
     {
         // Act
