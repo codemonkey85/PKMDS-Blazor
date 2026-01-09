@@ -7,7 +7,13 @@ public class SaveFileSavingTests
 {
     private const string TestFilesPath = "../../../TestFiles";
 
-    [Theory, InlineData("POKEMON RED-0.sav"), InlineData("POKEMON RUBY_AXVE-0.sav"), InlineData("x.sav"), InlineData("sun.sav"), InlineData("Test-Save-Shield.sav"), InlineData("Test-Save-Scarlet.sav")]
+    [Theory]
+    [InlineData("POKEMON RED-0.sav")]
+    [InlineData("POKEMON RUBY_AXVE-0.sav")]
+    [InlineData("x.sav")]
+    [InlineData("sun.sav")]
+    [InlineData("Test-Save-Shield.sav")]
+    [InlineData("Test-Save-Scarlet.sav")]
     public void SaveFile_WritesAndReloads_MaintainsIntegrity(string fileName)
     {
         // Arrange

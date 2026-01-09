@@ -24,7 +24,10 @@ public class PokemonEncryptionTests
         pkm.ChecksumValid.Should().BeTrue();
     }
 
-    [Theory, InlineData("POKEMON RED-0.sav"), InlineData("POKEMON RUBY_AXVE-0.sav"), InlineData("Black - Full Completion.sav")]
+    [Theory]
+    [InlineData("POKEMON RED-0.sav")]
+    [InlineData("POKEMON RUBY_AXVE-0.sav")]
+    [InlineData("Black - Full Completion.sav")]
     public void ExtractPokemonFromSave_ValidatesChecksum(string fileName)
     {
         // Arrange
