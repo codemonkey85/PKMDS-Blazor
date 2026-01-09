@@ -266,7 +266,7 @@ public partial class MainLayout : IDisposable
             {
                 Logger.LogDebug("Converting Pokémon from {SourceType} to {TargetType}", pkm.GetType().Name, saveFile.PKMType.Name);
                 pokemon = EntityConverter.ConvertToType(pkm, saveFile.PKMType, out var c);
-                if (!c.IsSuccess() || pokemon is null)
+                if (!c.IsSuccess || pokemon is null)
                 {
                     Logger.LogError("Failed to convert Pokémon: {ConversionResult}", c.GetDisplayString(pkm, saveFile.PKMType));
                     await DialogService.ShowMessageBox("Error", c.GetDisplayString(pkm, saveFile.PKMType));

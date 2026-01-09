@@ -11,11 +11,7 @@ public class ExtensionTests
 {
     private const string TestFilesPath = "../../../TestFiles";
 
-    [Theory]
-    [InlineData((ushort)Species.Bulbasaur, true)]
-    [InlineData((ushort)Species.Pikachu, true)]
-    [InlineData((ushort)Species.Lucario, true)]
-    [InlineData((ushort)Species.None, false)]
+    [Theory, InlineData((ushort)Species.Bulbasaur, true), InlineData((ushort)Species.Pikachu, true), InlineData((ushort)Species.Lucario, true), InlineData((ushort)Species.None, false)]
     public void IsValidSpecies_ReturnsCorrectResult(ushort speciesId, bool expected)
     {
         // Act
@@ -25,9 +21,7 @@ public class ExtensionTests
         result.Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData((ushort)Species.Bulbasaur, false)]
-    [InlineData((ushort)Species.None, true)]
+    [Theory, InlineData((ushort)Species.Bulbasaur, false), InlineData((ushort)Species.None, true)]
     public void IsInvalidSpecies_ReturnsCorrectResult(ushort speciesId, bool expected)
     {
         // Act
@@ -142,6 +136,6 @@ public class ExtensionTests
 
         // Assert
         types.Type1.Should().BeGreaterThan(0);
-        types.Type2.Should().BeGreaterOrEqualTo(0);
+        types.Type2.Should().BeGreaterThanOrEqualTo(0);
     }
 }

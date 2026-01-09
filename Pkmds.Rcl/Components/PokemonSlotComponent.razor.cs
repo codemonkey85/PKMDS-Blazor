@@ -210,7 +210,7 @@ public partial class PokemonSlotComponent : IDisposable
             if (pkm.GetType() != saveFile.PKMType)
             {
                 pokemon = EntityConverter.ConvertToType(pkm, saveFile.PKMType, out var c);
-                if (!c.IsSuccess() || pokemon is null)
+                if (!c.IsSuccess || pokemon is null)
                 {
                     Snackbar.Add($"Failed to convert Pokémon: {c.GetDisplayString(pkm, saveFile.PKMType)}", Severity.Error);
                     return;
