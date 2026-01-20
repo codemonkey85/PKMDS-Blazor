@@ -5,6 +5,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Exclude Tailwind input CSS from publish output -->
+        <Content Remove="wwwroot/css/tailwind.input.css" />
+        <None Include="wwwroot/css/tailwind.input.css" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Humanizer"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web"/>
         <PackageReference Include="MudBlazor"/>
@@ -15,5 +21,7 @@
         <PackageReference Include="Serilog.Extensions.Logging"/>
         <PackageReference Include="Serilog.Sinks.BrowserConsole"/>
     </ItemGroup>
+
+    <Import Project="Tailwind.targets" />
 
 </Project>
