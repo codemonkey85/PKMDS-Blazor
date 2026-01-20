@@ -7,8 +7,8 @@ public partial class BoxGrid : IDisposable
 
     private string BoxGridClass =>
         AppState.SaveFile?.BoxSlotCount == 20
-            ? "box-grid-20"
-            : "box-grid-30";
+            ? "w-80 h-[400px] grid grid-cols-4 grid-rows-5"
+            : "grid grid-cols-6 gap-1 w-full aspect-[6/5] mx-auto";
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;

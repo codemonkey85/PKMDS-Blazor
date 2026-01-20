@@ -13,19 +13,19 @@
     }
     else
     {
-        <div class="controls-container">
+        <div class="flex m-[5px] p-[5px] items-center h-[50px]">
             <MudIconButton OnClick="@GoToPreviousBox"
                            title="Previous Box"
                            ButtonType="@ButtonType.Button"
                            Icon="@Icons.Material.Filled.ArrowLeft"
                            Variant="@Variant.Filled"
-                           Class="navigate-button">
+                           Class="m-1.5 p-1.5">
             </MudIconButton>
 
-            <div class="select-container">
+            <div class="w-[300px] m-1.5 p-1.5">
                 <MudSelect Value="@boxEdit.CurrentBox"
                            ValueChanged="@((int newBox) => OnBoxChanged(newBox))"
-                           Class="box-select">
+                           Class="m-1.5 p-1.5">
                     @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
                     {
                         var localBoxId = boxId;
@@ -47,7 +47,7 @@
                            ButtonType="@ButtonType.Button"
                            Icon="@Icons.Material.Filled.ArrowRight"
                            Variant="@Variant.Filled"
-                           Class="navigate-button">
+                           Class="m-1.5 p-1.5">
             </MudIconButton>
         </div>
 

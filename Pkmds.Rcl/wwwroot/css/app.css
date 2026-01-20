@@ -14,16 +14,15 @@ body, html {
 }
 
 .item-sprite {
-    object-fit: contain;
-    align-self: center;
+    @apply object-contain self-center;
 }
 
 .square-slot {
-    aspect-ratio: 1 / 1;
+    @apply aspect-square;
 }
 
 .slot-selected {
-    background-color: orange;
+    @apply bg-orange-500;
 }
 
 .slot-fill :hover {
@@ -46,24 +45,19 @@ body, html {
 }
 
 .plus-nature > div > div {
-    color: red;
-    font-weight: bold;
+    @apply text-red-600 font-bold;
 }
 
 .minus-nature > div > div {
-    color: blue;
-    font-weight: bold;
+    @apply text-blue-600 font-bold;
 }
 
 .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    padding: 16px;
+    @apply grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 p-4;
 }
 
 .form-field {
-    margin-bottom: 8px;
+    @apply mb-2;
 }
 
 .loading-progress {
