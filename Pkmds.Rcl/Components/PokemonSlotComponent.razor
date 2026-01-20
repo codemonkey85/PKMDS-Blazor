@@ -10,17 +10,17 @@
           @ondragleave="@HandleDragLeave"
           @ondrop="@HandleDrop"
           Class="@($"square-slot {GetClass()} {GetDragClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
-    <div class="pokemon-slot">
+    <div class="w-full h-full aspect-square flex items-center justify-center overflow-hidden p-0 box-border border border-transparent">
         @if (Pokemon is not null && Pokemon.Species > 0)
         {
             var title = GetPokemonTitle();
-            <object class="pkm-sprite"
+            <object class="pkm-sprite w-full h-auto object-contain block"
                     type="image/png"
                     data="@(Pokemon is { Species: > 0 }
                               ? SpriteHelper.GetPokemonSpriteFilename(Pokemon)
                               : null)"
                     title="@title">
-                <img class="pkm-sprite"
+                <img class="pkm-sprite w-full h-auto object-contain block"
                      src="@SpriteHelper.PokemonFallbackImageFileName"
                      title="@title"
                      alt="@title">
