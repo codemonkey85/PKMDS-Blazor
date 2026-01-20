@@ -15,7 +15,7 @@
     <TailwindBinaryName Condition="'$(OS)' != 'Windows_NT'">tailwindcss-$(TailwindOS)-$(TailwindArch)</TailwindBinaryName>
     
     <TailwindDownloadUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/$(TailwindBinaryName)</TailwindDownloadUrl>
-    <TailwindCliPath>$(MSBuildThisFileDirectory)bin\tailwindcss$(Suffix)</TailwindCliPath>
+    <TailwindCliPath Condition="'$(OS)' != 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss</TailwindCliPath>
     <TailwindCliPath Condition="'$(OS)' == 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss.exe</TailwindCliPath>
     
     <TailwindInputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.input.css</TailwindInputCss>
