@@ -1,11 +1,28 @@
 @page "/404"
 @using Pkmds.Rcl.Components.Layout
-@layout MainLayout
+@layout MinimalLayout
 
 <PageTitle>
-    Not found
+    Not Found
 </PageTitle>
 
-<p role="alert">
-    Sorry, there's nothing at this address.
-</p>
+<MudContainer Class="d-flex flex-column align-center justify-center"
+              Style="min-height: 100vh;">
+    <MudText Typo="@Typo.h1"
+             Style="font-size: 6rem;">404
+    </MudText>
+    <MudText Typo="@Typo.h2"
+             Class="mt-4">Page Not Found
+    </MudText>
+    <MudText Typo="@Typo.body1"
+             Class="mt-4"
+             role="alert">
+        Sorry, there's nothing at this address.
+    </MudText>
+    <MudButton Href="/"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Class="mt-8">
+        Return to Home
+    </MudButton>
+</MudContainer>
