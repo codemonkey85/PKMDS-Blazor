@@ -22,7 +22,7 @@ body, html {
 }
 
 .slot-selected {
-    @apply bg-orange-500;
+    background-color: orange;
 }
 
 .slot-fill :hover {
