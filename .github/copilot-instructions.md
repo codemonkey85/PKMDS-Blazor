@@ -7,3 +7,5 @@ Please note, in order to build Pkmds.Web, you will need to first install the was
 ```
 dotnet workload install wasm-tools
 ```
+
+When creating a new PR for an issue or otherwise, please branch from the dev branch, and plan to merge into dev. I'll take it from there to merge to main.
