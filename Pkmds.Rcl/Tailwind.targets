@@ -33,8 +33,8 @@
     <Message Text="Tailwind CSS CLI downloaded successfully." Importance="high" />
   </Target>
 
-  <!-- Build Tailwind CSS -->
-  <Target Name="TailwindBuild" BeforeTargets="BeforeBuild">
+  <!-- Build Tailwind CSS early enough for static web assets to pick it up -->
+  <Target Name="TailwindBuild" BeforeTargets="BeforeCompile;ResolveStaticWebAssetsInputs">
     <PropertyGroup>
       <TailwindMinify Condition="'$(Configuration)' == 'Release'">--minify</TailwindMinify>
       <TailwindMinify Condition="'$(Configuration)' != 'Release'"></TailwindMinify>
@@ -43,11 +43,15 @@
     <Exec Command="&quot;$(TailwindCliPath)&quot; -i &quot;$(TailwindInputCss)&quot; -o &quot;$(TailwindOutputCss)&quot; -c &quot;$(TailwindConfigJs)&quot; $(TailwindMinify)" 
           WorkingDirectory="$(MSBuildThisFileDirectory)" />
     <Message Text="Tailwind CSS built successfully." Importance="high" />
+    <!-- Touch the file to ensure it has a recent timestamp -->
+    <Touch Files="$(TailwindOutputCss)" AlwaysCreate="false" />
   </Target>
 
-  <!-- Clean generated files -->
+
+  <!-- Clean is a no-op since tailwind.css is now committed to source control -->
+  <!-- Developers can manually rebuild with: dotnet build -->
   <Target Name="TailwindClean" AfterTargets="Clean">
-    <Delete Files="$(TailwindOutputCss)" />
+    <!-- Don't delete tailwind.css since it's committed to source control -->
   </Target>
 
 </Project>

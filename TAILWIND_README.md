@@ -2,7 +2,7 @@
 
 This project uses Tailwind CSS for utility-first styling. The integration is designed to be seamless and requires no manual intervention.
 
-## How it works
+## Configuration
 
 1. **Automatic CLI Download**: The Tailwind CSS CLI binary is automatically downloaded during the first build if not present. The binary is platform-specific (Windows, Linux, or macOS) and is excluded from source control via `.gitignore`.
 
@@ -11,7 +11,9 @@ This project uses Tailwind CSS for utility-first styling. The integration is des
 3. **Configuration**: 
    - `Pkmds.Rcl/tailwind.config.js` - Tailwind configuration file
    - `Pkmds.Rcl/wwwroot/css/tailwind.input.css` - Input CSS with Tailwind directives
-   - `Pkmds.Rcl/wwwroot/css/tailwind.css` - Generated output CSS (gitignored)
+   - `Pkmds.Rcl/wwwroot/css/tailwind.css` - Generated output CSS (**committed to source control**)
+
+**Note**: The generated `tailwind.css` file is committed to source control to ensure it's included in published builds. The file is automatically regenerated during builds to reflect any changes to Tailwind classes used in the code.
 
 ## Development Workflow
 

@@ -352,7 +352,6 @@ MigrationBackup/
 *thumbs.db*
 
 .vscode
-Pkmds.Rcl/wwwroot/css/tailwind.css
 Pkmds.Blazor/wwwroot/css/tailwind.css
 Pkmds.Maui/wwwroot/css/tailwind.css
 Pkmds.Rcl/bin/tailwindcss*
