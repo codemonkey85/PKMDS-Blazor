@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "/5Q0X4sb",
+  "version": "UAUj/YP6",
   "assets": [
     {
       "hash": "sha256-ocTTuvwGdfwNBTdUQMJ40/QJlTMHjVFuE+zeR5fqjLA=",
@@ -48,6 +48,10 @@ self.assetsManifest = {
     {
       "hash": "sha256-AVEJqdQTDs+zwG6S/+gceBKFZrKvpZk2rmz0MKKR6vc=",
       "url": "_content/Pkmds.Rcl/css/app.css"
+    },
+    {
+      "hash": "sha256-H0uU1/jPgXzWFW9oFGkEWvutvaX6gb+GlCNkG+j9sms=",
+      "url": "_content/Pkmds.Rcl/css/tailwind.css"
     },
     {
       "hash": "sha256-32Q2dgUJgYODFd9Gq18a/vtpyTXWNut4+dp2kZk8v64=",
@@ -10866,12 +10870,12 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.ada0fikmep.wasm"
     },
     {
-      "hash": "sha256-XdBoODBKqmQmuDkVhzrS0Q3L6rni96/VwJAT56WrOvA=",
-      "url": "_framework/Pkmds.Rcl.xnwgv2g8ur.wasm"
+      "hash": "sha256-t7Hang///VCms10F+QiVxGczjDlhYx5GovvSePleIsk=",
+      "url": "_framework/Pkmds.Rcl.tflnamigzt.wasm"
     },
     {
-      "hash": "sha256-Upay3Akl8H6yUGWT5KXkKZl2VuXA0YPE76T/kVkk74o=",
-      "url": "_framework/Pkmds.Web.eczrijw0om.wasm"
+      "hash": "sha256-nY5sAZcBt0Wu9mnx2TWthT05RAs6j5EUQqTqpF/JGUI=",
+      "url": "_framework/Pkmds.Web.bm0piw9d3z.wasm"
     },
     {
       "hash": "sha256-iydmY0nPFdyc2khBWOwsyV89Y27bc8WSjwUHlPSdZDQ=",
@@ -11082,6 +11086,10 @@ self.assetsManifest = {
       "url": "_framework/de/Humanizer.resources.78uskj3x9s.wasm"
     },
     {
+      "hash": "sha256-QS1t/z6TwKztukcqD04kc5cJvRwCHTm5WJd+YFY9fyI=",
+      "url": "_framework/dotnet.7yzf7a2egp.js"
+    },
+    {
       "hash": "sha256-UeQVbKduZ7ndRN2EmZVucsBstNy3LZG2EMXqIdvXMko=",
       "url": "_framework/dotnet.native.j7uzcnlcdl.js"
     },
@@ -11092,10 +11100,6 @@ self.assetsManifest = {
     {
       "hash": "sha256-2lZh9yO0fnzm3Xt7yV+Kox3DH3nK7L8hDhm84VT1xco=",
       "url": "_framework/dotnet.runtime.2tx45g8lli.js"
-    },
-    {
-      "hash": "sha256-LmYdrhRkfFftrpsbbOY9pHlAcNmnCFJSdwueeaj7kwU=",
-      "url": "_framework/dotnet.u970t2vol6.js"
     },
     {
       "hash": "sha256-8Z9TJEFQWeS+TY1kD2h4jni6NY5SOMN+NGEdFFi5kNs=",
@@ -11278,7 +11282,7 @@ self.assetsManifest = {
       "url": "_framework/zh-Hant/Humanizer.resources.wnrtortf6t.wasm"
     },
     {
-      "hash": "sha256-U+VqRekPGgBxkBS8dbrGenC60zRFHl5Png6X88p4rlM=",
+      "hash": "sha256-ecXCIvABCcS7m8LFM5lUGd8ZpA41fv+yemJ2S5U3bnw=",
       "url": "index.html"
     },
     {
