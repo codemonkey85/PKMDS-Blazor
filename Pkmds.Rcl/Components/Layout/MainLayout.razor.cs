@@ -132,7 +132,6 @@ public partial class MainLayout : IDisposable
             return;
         }
 
-        RefreshService.Refresh();
         RefreshService.RefreshBoxAndPartyState();
     }
 

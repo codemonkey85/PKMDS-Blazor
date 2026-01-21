@@ -1,12 +1,8 @@
 namespace Pkmds.Rcl.Components;
 
-public partial class PartyGrid : IDisposable
+public partial class PartyGrid : RefreshAwareComponent
 {
-    public void Dispose()
-    {
-        RefreshService.OnAppStateChanged -= StateHasChanged;
-        RefreshService.OnPartyStateChanged -= StateHasChanged;
-    }
+    protected override RefreshEvents SubscribeTo => RefreshEvents.AppState | RefreshEvents.PartyState;
 
     private void SetSelectedPokemon(PKM? pokemon, int slotNumber) =>
         AppService.SetSelectedPartyPokemon(pokemon, slotNumber);
@@ -14,12 +10,6 @@ public partial class PartyGrid : IDisposable
     private string GetClass(int slotNumber) => AppState.SelectedPartySlotNumber == slotNumber
         ? Constants.SelectedSlotClass
         : string.Empty;
-
-    protected override void OnInitialized()
-    {
-        RefreshService.OnAppStateChanged += StateHasChanged;
-        RefreshService.OnPartyStateChanged += StateHasChanged;
-    }
 
     private void ExportAsShowdown() =>
         DialogService.ShowAsync<ShowdownExportDialog>(
