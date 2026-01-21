@@ -1,8 +1,5 @@
 namespace Pkmds.Rcl.Components;
 
-public partial class SaveFileComponent : IDisposable
+public partial class SaveFileComponent : RefreshAwareComponent
 {
-    public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
-
-    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
 }

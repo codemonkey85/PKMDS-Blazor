@@ -1,11 +1,7 @@
 namespace Pkmds.Rcl.Components;
 
-public partial class PokemonStorageComponent : IDisposable
+public partial class PokemonStorageComponent : RefreshAwareComponent
 {
-    public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
-
-    protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
-
     private void GoToNextBox()
     {
         if (AppState.SaveFile is null || AppState.BoxEdit is null)
@@ -19,7 +15,7 @@ public partial class PokemonStorageComponent : IDisposable
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        RefreshService.Refresh();
+        RefreshService.RefreshBoxState();
     }
 
     private void GoToPreviousBox()
@@ -35,7 +31,7 @@ public partial class PokemonStorageComponent : IDisposable
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        RefreshService.Refresh();
+        RefreshService.RefreshBoxState();
     }
 
     private void OnBoxChanged(int newBox)
@@ -51,6 +47,6 @@ public partial class PokemonStorageComponent : IDisposable
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        RefreshService.Refresh();
+        RefreshService.RefreshBoxState();
     }
 }

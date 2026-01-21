@@ -1,20 +1,24 @@
 namespace Pkmds.Rcl.Components;
 
-public partial class BoxComponent : IDisposable
+public partial class BoxComponent : RefreshAwareComponent
 {
     [Parameter]
     public int BoxNumber { get; set; }
 
-    public void Dispose()
-    {
-        RefreshService.OnAppStateChanged -= StateHasChanged;
-        RefreshService.OnBoxStateChanged -= ReloadBox;
-    }
+    protected override RefreshEvents SubscribeTo => RefreshEvents.AppState | RefreshEvents.BoxState;
 
     protected override void OnInitialized()
     {
-        RefreshService.OnAppStateChanged += StateHasChanged;
+        base.OnInitialized();
         RefreshService.OnBoxStateChanged += ReloadBox;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            RefreshService.OnBoxStateChanged -= ReloadBox;
+        }
     }
 
     protected override void OnParametersSet() => ReloadBox();
@@ -31,6 +35,6 @@ public partial class BoxComponent : IDisposable
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
 
-        RefreshService.Refresh();
+        StateHasChanged();
     }
 }
