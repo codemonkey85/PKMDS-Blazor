@@ -2,7 +2,8 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class RecordsTab
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public SAV3? SaveFile { get; set; }
 
     private int CurrentRecordIndex { get; set; }

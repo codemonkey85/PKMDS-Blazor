@@ -6,6 +6,9 @@ namespace Pkmds.Rcl.Components;
 /// </summary>
 public abstract class RefreshAwareComponent : ComponentBase, IDisposable
 {
+    // Cache the subscription flags to avoid evaluating SubscribeTo during disposal
+    private RefreshEvents _subscribedEvents = RefreshEvents.None;
+
     // Note: Services are injected via _Imports.razor, not here
     // This avoids property hiding conflicts
     [Inject]
@@ -13,14 +16,33 @@ public abstract class RefreshAwareComponent : ComponentBase, IDisposable
 
     private IRefreshService RefreshServiceInternal => _refreshServiceField!;
 
-    // Cache the subscription flags to avoid evaluating SubscribeTo during disposal
-    private RefreshEvents _subscribedEvents = RefreshEvents.None;
-
     /// <summary>
     /// Override this property to control which refresh events trigger StateHasChanged.
     /// By default, only OnAppStateChanged is subscribed.
     /// </summary>
     protected virtual RefreshEvents SubscribeTo => RefreshEvents.AppState;
+
+    public void Dispose()
+    {
+        // Use the cached subscription flags instead of evaluating SubscribeTo
+        if (_subscribedEvents.HasFlag(RefreshEvents.AppState))
+        {
+            RefreshServiceInternal.OnAppStateChanged -= StateHasChanged;
+        }
+
+        if (_subscribedEvents.HasFlag(RefreshEvents.BoxState))
+        {
+            RefreshServiceInternal.OnBoxStateChanged -= StateHasChanged;
+        }
+
+        if (_subscribedEvents.HasFlag(RefreshEvents.PartyState))
+        {
+            RefreshServiceInternal.OnPartyStateChanged -= StateHasChanged;
+        }
+
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 
     protected override void OnInitialized()
     {
@@ -43,28 +65,6 @@ public abstract class RefreshAwareComponent : ComponentBase, IDisposable
         {
             RefreshServiceInternal.OnPartyStateChanged += StateHasChanged;
         }
-    }
-
-    public void Dispose()
-    {
-        // Use the cached subscription flags instead of evaluating SubscribeTo
-        if (_subscribedEvents.HasFlag(RefreshEvents.AppState))
-        {
-            RefreshServiceInternal.OnAppStateChanged -= StateHasChanged;
-        }
-
-        if (_subscribedEvents.HasFlag(RefreshEvents.BoxState))
-        {
-            RefreshServiceInternal.OnBoxStateChanged -= StateHasChanged;
-        }
-
-        if (_subscribedEvents.HasFlag(RefreshEvents.PartyState))
-        {
-            RefreshServiceInternal.OnPartyStateChanged -= StateHasChanged;
-        }
-
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
     }
 
     /// <summary>

@@ -13,7 +13,8 @@ public partial class MetTab : IDisposable
     /// </summary>
     private GameVersion origintrack;
 
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
     private MetTimeOfDay GetMetTimeOfDay => Pokemon is not (PK2 and ICaughtData2 c2)
