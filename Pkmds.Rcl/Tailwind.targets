@@ -21,6 +21,7 @@
     <TailwindInputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.input.css</TailwindInputCss>
     <TailwindOutputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.css</TailwindOutputCss>
     <TailwindConfigJs>$(MSBuildThisFileDirectory)tailwind.config.js</TailwindConfigJs>
+    <TailwindMarkerFile>$(MSBuildThisFileDirectory)obj\tailwind.$(Configuration).marker</TailwindMarkerFile>
   </PropertyGroup>
 
   <!-- Download Tailwind CSS CLI if not present -->
@@ -34,17 +35,22 @@
   </Target>
 
   <!-- Build Tailwind CSS early enough for static web assets to pick it up -->
-  <Target Name="TailwindBuild" BeforeTargets="BeforeCompile;ResolveStaticWebAssetsInputs">
+  <!-- Use Inputs/Outputs for incremental build to prevent rebuilding when unnecessary -->
+  <Target Name="TailwindBuild" 
+          BeforeTargets="BeforeCompile;ResolveStaticWebAssetsInputs"
+          Inputs="$(TailwindInputCss);$(TailwindConfigJs);$(MSBuildThisFileDirectory)Tailwind.targets"
+          Outputs="$(TailwindMarkerFile)">
     <PropertyGroup>
       <TailwindMinify Condition="'$(Configuration)' == 'Release'">--minify</TailwindMinify>
       <TailwindMinify Condition="'$(Configuration)' != 'Release'"></TailwindMinify>
     </PropertyGroup>
     <Message Text="Building Tailwind CSS..." Importance="high" />
+    <MakeDir Directories="$(MSBuildThisFileDirectory)obj" />
     <Exec Command="&quot;$(TailwindCliPath)&quot; -i &quot;$(TailwindInputCss)&quot; -o &quot;$(TailwindOutputCss)&quot; -c &quot;$(TailwindConfigJs)&quot; $(TailwindMinify)" 
           WorkingDirectory="$(MSBuildThisFileDirectory)" />
     <Message Text="Tailwind CSS built successfully." Importance="high" />
-    <!-- Touch the file to ensure it has a recent timestamp -->
-    <Touch Files="$(TailwindOutputCss)" AlwaysCreate="false" />
+    <!-- Touch the marker file to track when Tailwind was last built for this configuration -->
+    <Touch Files="$(TailwindMarkerFile)" AlwaysCreate="true" />
   </Target>
 
 
