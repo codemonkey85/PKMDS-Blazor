@@ -15,14 +15,23 @@ public class RefreshService : IRefreshService
 
     public void Refresh() => OnAppStateChanged?.Invoke();
 
-    public void RefreshBoxState() => OnBoxStateChanged?.Invoke();
+    public void RefreshBoxState()
+    {
+        OnBoxStateChanged?.Invoke();
+        Refresh(); // Also trigger general app state change for components that only subscribe to OnAppStateChanged
+    }
 
-    public void RefreshPartyState() => OnPartyStateChanged?.Invoke();
+    public void RefreshPartyState()
+    {
+        OnPartyStateChanged?.Invoke();
+        Refresh(); // Also trigger general app state change for components that only subscribe to OnAppStateChanged
+    }
 
     public void RefreshBoxAndPartyState()
     {
-        RefreshBoxState();
-        RefreshPartyState();
+        OnBoxStateChanged?.Invoke();
+        OnPartyStateChanged?.Invoke();
+        Refresh(); // Trigger general app state change once for both events
     }
 
     public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
