@@ -75,13 +75,10 @@ public class RefreshAwareComponentTests
         public TestComponent(TestRefreshService refreshService)
         {
             _testRefreshService = refreshService;
-            _refreshServiceField = refreshService;
+            RefreshServiceField = refreshService;
         }
 
-        public void Initialize()
-        {
-            OnInitialized();
-        }
+        public void Initialize() => OnInitialized();
     }
 
     private class TestComponentWithMultipleSubscriptions : RefreshAwareComponent
@@ -91,15 +88,12 @@ public class RefreshAwareComponentTests
         public TestComponentWithMultipleSubscriptions(TestRefreshService refreshService)
         {
             _testRefreshService = refreshService;
-            _refreshServiceField = refreshService;
+            RefreshServiceField = refreshService;
         }
 
         protected override RefreshEvents SubscribeTo => RefreshEvents.AppState | RefreshEvents.PartyState;
 
-        public void Initialize()
-        {
-            OnInitialized();
-        }
+        public void Initialize() => OnInitialized();
     }
 
     private class TestComponentWithAllSubscriptions : RefreshAwareComponent
@@ -109,23 +103,16 @@ public class RefreshAwareComponentTests
         public TestComponentWithAllSubscriptions(TestRefreshService refreshService)
         {
             _testRefreshService = refreshService;
-            _refreshServiceField = refreshService;
+            RefreshServiceField = refreshService;
         }
 
         protected override RefreshEvents SubscribeTo => RefreshEvents.All;
 
-        public void Initialize()
-        {
-            OnInitialized();
-        }
+        public void Initialize() => OnInitialized();
     }
 
     private class TestRefreshService : IRefreshService
     {
-        private event Action? _onAppStateChanged;
-        private event Action? _onBoxStateChanged;
-        private event Action? _onPartyStateChanged;
-
         public int AppStateSubscriberCount => _onAppStateChanged?.GetInvocationList().Length ?? 0;
         public int BoxStateSubscriberCount => _onBoxStateChanged?.GetInvocationList().Length ?? 0;
         public int PartyStateSubscriberCount => _onPartyStateChanged?.GetInvocationList().Length ?? 0;
@@ -154,6 +141,7 @@ public class RefreshAwareComponentTests
         public void Refresh() => _onAppStateChanged?.Invoke();
         public void RefreshBoxState() => _onBoxStateChanged?.Invoke();
         public void RefreshPartyState() => _onPartyStateChanged?.Invoke();
+
         public void RefreshBoxAndPartyState()
         {
             RefreshBoxState();
@@ -162,5 +150,8 @@ public class RefreshAwareComponentTests
 
         public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
         public void ShowUpdateMessage() => OnUpdateAvailable?.Invoke();
+        private event Action? _onAppStateChanged;
+        private event Action? _onBoxStateChanged;
+        private event Action? _onPartyStateChanged;
     }
 }

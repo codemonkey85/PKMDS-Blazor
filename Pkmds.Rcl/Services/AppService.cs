@@ -82,7 +82,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
     public string GetStatModifierString(Nature nature)
     {
-        var (up, down) = NatureAmp.GetNatureModification(nature);
+        var (up, down) = nature.GetNatureModification();
         return up == down
             ? "(neutral)"
             : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";

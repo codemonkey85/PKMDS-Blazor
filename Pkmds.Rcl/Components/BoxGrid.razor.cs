@@ -2,7 +2,8 @@ namespace Pkmds.Rcl.Components;
 
 public partial class BoxGrid : RefreshAwareComponent
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public int BoxNumber { get; set; }
 
     private string BoxGridClass =>

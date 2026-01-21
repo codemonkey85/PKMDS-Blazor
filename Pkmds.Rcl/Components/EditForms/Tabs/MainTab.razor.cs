@@ -2,7 +2,8 @@ namespace Pkmds.Rcl.Components.EditForms.Tabs;
 
 public partial class MainTab : IDisposable
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
     private MudSelect<byte>? FormSelect { get; set; }

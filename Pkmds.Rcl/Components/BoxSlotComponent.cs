@@ -2,7 +2,8 @@ namespace Pkmds.Rcl.Components;
 
 public class BoxSlotComponent : PokemonSlotComponent
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public int BoxNumberParam { get; set; }
 
     protected override int? BoxNumber => BoxNumberParam;

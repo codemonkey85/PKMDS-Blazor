@@ -2,7 +2,8 @@ namespace Pkmds.Rcl.Components.EditForms;
 
 public partial class PokemonEditForm : IDisposable
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
     public void Dispose() =>

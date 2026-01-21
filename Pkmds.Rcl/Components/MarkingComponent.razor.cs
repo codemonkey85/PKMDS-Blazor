@@ -4,10 +4,12 @@ namespace Pkmds.Rcl.Components;
 
 public partial class MarkingComponent
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public Markings Shape { get; set; }
 
     private string DisplayString => Shape switch

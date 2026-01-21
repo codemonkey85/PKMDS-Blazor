@@ -16,7 +16,8 @@ public partial class StatsChart : IDisposable
     private RadarChart radarChart = null!;
     private RadarChartOptions radarChartOptions = null!;
 
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
     public void Dispose()

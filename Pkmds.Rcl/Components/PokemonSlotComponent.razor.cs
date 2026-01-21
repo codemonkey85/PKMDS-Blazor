@@ -4,16 +4,20 @@ public partial class PokemonSlotComponent : IDisposable
 {
     // Removed isDragOverWithFile field - no longer showing drag indicators
 
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public int SlotNumber { get; set; }
 
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public PKM? Pokemon { get; set; }
 
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public EventCallback OnSlotClick { get; set; }
 
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public Func<string>? GetClassFunction { get; set; }
 
     [Parameter]
