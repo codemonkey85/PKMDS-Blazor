@@ -39,7 +39,7 @@
     <Target Name="TailwindBuild"
             BeforeTargets="BeforeCompile;ResolveStaticWebAssetsInputs"
             Inputs="$(TailwindInputCss);$(TailwindConfigJs);$(MSBuildThisFileDirectory)Tailwind.targets"
-            Outputs="$(TailwindMarkerFile)">
+            Outputs="$(TailwindMarkerFile);$(TailwindOutputCss)">
         <PropertyGroup>
             <TailwindMinify Condition="'$(Configuration)' == 'Release'">--minify</TailwindMinify>
             <TailwindMinify Condition="'$(Configuration)' != 'Release'"></TailwindMinify>
