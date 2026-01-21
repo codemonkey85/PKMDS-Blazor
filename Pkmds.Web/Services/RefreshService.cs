@@ -23,6 +23,7 @@ public class RefreshService : IRefreshService
     {
         RefreshBoxState();
         RefreshPartyState();
+        Refresh(); // Also trigger general app state change for components that only subscribe to OnAppStateChanged
     }
 
     public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
