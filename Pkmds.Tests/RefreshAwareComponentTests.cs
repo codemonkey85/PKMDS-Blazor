@@ -75,7 +75,7 @@ public class RefreshAwareComponentTests
         public TestComponent(TestRefreshService refreshService)
         {
             _testRefreshService = refreshService;
-            _refreshServiceField = refreshService;
+            RefreshServiceField = refreshService;
         }
 
         public void Initialize() => OnInitialized();
@@ -88,7 +88,7 @@ public class RefreshAwareComponentTests
         public TestComponentWithMultipleSubscriptions(TestRefreshService refreshService)
         {
             _testRefreshService = refreshService;
-            _refreshServiceField = refreshService;
+            RefreshServiceField = refreshService;
         }
 
         protected override RefreshEvents SubscribeTo => RefreshEvents.AppState | RefreshEvents.PartyState;
@@ -103,7 +103,7 @@ public class RefreshAwareComponentTests
         public TestComponentWithAllSubscriptions(TestRefreshService refreshService)
         {
             _testRefreshService = refreshService;
-            _refreshServiceField = refreshService;
+            RefreshServiceField = refreshService;
         }
 
         protected override RefreshEvents SubscribeTo => RefreshEvents.All;

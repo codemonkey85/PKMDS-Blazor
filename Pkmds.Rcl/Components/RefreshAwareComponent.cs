@@ -7,14 +7,14 @@ namespace Pkmds.Rcl.Components;
 public abstract class RefreshAwareComponent : ComponentBase, IDisposable
 {
     // Cache the subscription flags to avoid evaluating SubscribeTo during disposal
-    private RefreshEvents _subscribedEvents = RefreshEvents.None;
+    private RefreshEvents subscribedEvents = RefreshEvents.None;
 
     // Note: Services are injected via _Imports.razor, not here
     // This avoids property hiding conflicts
     [Inject]
-    protected IRefreshService? _refreshServiceField { get; set; }
+    protected IRefreshService? RefreshServiceField { get; set; }
 
-    private IRefreshService RefreshServiceInternal => _refreshServiceField!;
+    private IRefreshService RefreshServiceInternal => RefreshServiceField!;
 
     /// <summary>
     /// Override this property to control which refresh events trigger StateHasChanged.
@@ -25,17 +25,17 @@ public abstract class RefreshAwareComponent : ComponentBase, IDisposable
     public void Dispose()
     {
         // Use the cached subscription flags instead of evaluating SubscribeTo
-        if (_subscribedEvents.HasFlag(RefreshEvents.AppState))
+        if (subscribedEvents.HasFlag(RefreshEvents.AppState))
         {
             RefreshServiceInternal.OnAppStateChanged -= StateHasChanged;
         }
 
-        if (_subscribedEvents.HasFlag(RefreshEvents.BoxState))
+        if (subscribedEvents.HasFlag(RefreshEvents.BoxState))
         {
             RefreshServiceInternal.OnBoxStateChanged -= StateHasChanged;
         }
 
-        if (_subscribedEvents.HasFlag(RefreshEvents.PartyState))
+        if (subscribedEvents.HasFlag(RefreshEvents.PartyState))
         {
             RefreshServiceInternal.OnPartyStateChanged -= StateHasChanged;
         }
@@ -49,19 +49,19 @@ public abstract class RefreshAwareComponent : ComponentBase, IDisposable
         base.OnInitialized();
 
         // Cache the events we're subscribing to
-        _subscribedEvents = SubscribeTo;
+        subscribedEvents = SubscribeTo;
 
-        if (_subscribedEvents.HasFlag(RefreshEvents.AppState))
+        if (subscribedEvents.HasFlag(RefreshEvents.AppState))
         {
             RefreshServiceInternal.OnAppStateChanged += StateHasChanged;
         }
 
-        if (_subscribedEvents.HasFlag(RefreshEvents.BoxState))
+        if (subscribedEvents.HasFlag(RefreshEvents.BoxState))
         {
             RefreshServiceInternal.OnBoxStateChanged += StateHasChanged;
         }
 
-        if (_subscribedEvents.HasFlag(RefreshEvents.PartyState))
+        if (subscribedEvents.HasFlag(RefreshEvents.PartyState))
         {
             RefreshServiceInternal.OnPartyStateChanged += StateHasChanged;
         }
