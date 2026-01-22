@@ -26,7 +26,7 @@ jobs:
     steps:
       # uses GitHub's checkout action to checkout code form the release branch
       - name: Checkout code
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       # sets up .NET SDK
       - name: Setup .NET
