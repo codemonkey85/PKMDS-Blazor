@@ -275,7 +275,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
     public string ExportPartyAsShowdown()
     {
-        if (AppState.SaveFile is not { HasParty: true, PartyCount: var partyCount } saveFile)
+        if (AppState.SaveFile is not { PartyCount: var partyCount } saveFile || partyCount == 0)
         {
             return string.Empty;
         }
