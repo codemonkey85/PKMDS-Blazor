@@ -107,6 +107,11 @@ Q: How can I support PKMDS?
 
 A: You can support PKMDS by starring the project on GitHub, sharing it with your friends, or contributing to the project by submitting bug reports, feature requests, or code changes.
 
+Q: Are there any known limitations with PKMDS?
+
+A: Yes, there are a few known limitations:
+- **Generation I and II Nickname Encoding**: When editing Pokémon from Generation I or II (Red, Blue, Yellow, Gold, Silver, Crystal) games, nicknames and OT names must use characters that are valid for the game's language encoding. For example, Japanese save files require Japanese characters for nicknames - English characters like "TEST" will be automatically replaced with the Pokémon's species name. This is due to the special character encoding used in these early games and is a limitation of the underlying PKHeX.Core library.
+
 Q: What are the system requirements for PKMDS?
 
 A: PKMDS is a web app, so it can be used on any device that has a web browser. You can use PKMDS on a desktop computer, laptop, tablet, or smartphone. Please note that the app runs best in Google Chrome or Chromium-based browsers - I've noticed some UI bugs in Safari for instance.
