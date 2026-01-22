@@ -73,7 +73,8 @@
                  Class="@ColumnClass">
             <MudTextField Label="OT"
                           Variant="@Variant.Outlined"
-                          @bind-Value="@Pokemon.OriginalTrainerName"
+                          Text="@Pokemon.OriginalTrainerName"
+                          TextChanged="SetPokemonOTName"
                           MaxLength="@saveFile.MaxStringLengthTrainer"
                           For="@(() => Pokemon.OriginalTrainerName)"/>
         </MudItem>
