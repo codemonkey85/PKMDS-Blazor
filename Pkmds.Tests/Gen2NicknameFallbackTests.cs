@@ -27,7 +27,7 @@ public class Gen2NicknameFallbackTests
         // Act - Simulating what MainTab.SetPokemonNickname does
         pokemon.IsNicknamed = true;
         pokemon.Nickname = testNickname;
-        
+
         // For Gen I/II, verify the nickname was set correctly
         if (pokemon.Format <= 2 && string.IsNullOrEmpty(pokemon.Nickname))
         {
@@ -61,7 +61,7 @@ public class Gen2NicknameFallbackTests
         var defaultName = SpeciesName.GetSpeciesNameGeneration(pokemon.Species, pokemon.Language, pokemon.Format);
         pokemon.IsNicknamed = true;
         pokemon.Nickname = testNickname;
-        
+
         // For Gen I/II, verify the nickname was set correctly
         // If it becomes empty, the characters were not valid for the Pokemon's language/encoding
         if (pokemon.Format <= 2 && string.IsNullOrEmpty(pokemon.Nickname))
@@ -97,7 +97,7 @@ public class Gen2NicknameFallbackTests
         var defaultName = SpeciesName.GetSpeciesNameGeneration(pokemon.Species, pokemon.Language, pokemon.Format);
         pokemon.IsNicknamed = true;
         pokemon.Nickname = testNickname;
-        
+
         // For Gen I/II, verify the nickname was set correctly
         if (pokemon.Format <= 2 && string.IsNullOrEmpty(pokemon.Nickname))
         {

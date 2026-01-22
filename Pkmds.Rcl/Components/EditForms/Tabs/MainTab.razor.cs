@@ -159,7 +159,7 @@ public partial class MainTab : IDisposable
 
         Pokemon.IsNicknamed = !string.Equals(newNickname, defaultName, StringComparison.Ordinal);
         Pokemon.Nickname = newNickname;
-        
+
         // For Gen I/II, verify the nickname was set correctly
         // If it becomes empty, the characters were not valid for the Pokemon's language/encoding
         if (Pokemon.Format <= 2 && string.IsNullOrEmpty(Pokemon.Nickname))

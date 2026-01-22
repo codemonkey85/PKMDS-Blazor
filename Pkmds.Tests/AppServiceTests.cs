@@ -159,7 +159,7 @@ public class AppServiceTests
         var filePath = Path.Combine(TestFilesPath, "Lets-Go-Pikachu-All-Pokemon.bin");
         var data = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(data, out var saveFile, "Lets-Go-Pikachu-All-Pokemon.bin").Should().BeTrue();
-        
+
         var appState = new TestAppState { SaveFile = saveFile };
         var refreshService = new TestRefreshService();
         var appService = new AppService(appState, refreshService);
