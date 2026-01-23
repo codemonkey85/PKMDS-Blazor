@@ -22,7 +22,7 @@ public class Gen2SilverTest
             return; // Skip if no Pokémon
         }
 
-        var testNickname = "TESTER";
+        const string testNickname = "TESTER";
 
         // Act - Set nickname
         pokemon.Nickname = testNickname;

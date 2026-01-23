@@ -21,8 +21,7 @@ public class Gen2NicknameFallbackTests
             return;
         }
 
-        var originalNickname = pokemon.Nickname;
-        var testNickname = "TESTER";
+        const string testNickname = "TESTER";
 
         // Act - Simulating what MainTab.SetPokemonNickname does
         pokemon.IsNicknamed = true;
@@ -55,7 +54,7 @@ public class Gen2NicknameFallbackTests
             return;
         }
 
-        var testNickname = "TEST"; // English characters - invalid for Japanese encoding
+        const string testNickname = "TEST"; // English characters - invalid for Japanese encoding
 
         // Act - Simulating what MainTab.SetPokemonNickname does
         var defaultName = SpeciesName.GetSpeciesNameGeneration(pokemon.Species, pokemon.Language, pokemon.Format);
@@ -91,7 +90,7 @@ public class Gen2NicknameFallbackTests
             return;
         }
 
-        var testNickname = "ピカ"; // Japanese characters - valid for Japanese encoding
+        const string testNickname = "ピカ"; // Japanese characters - valid for Japanese encoding
 
         // Act - Simulating what MainTab.SetPokemonNickname does
         var defaultName = SpeciesName.GetSpeciesNameGeneration(pokemon.Species, pokemon.Language, pokemon.Format);

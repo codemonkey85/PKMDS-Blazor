@@ -83,7 +83,8 @@ public class ExtensionTests
         var data = File.ReadAllBytes(filePath);
         var success = FileUtil.TryGetPKM(data, out var pkm, ".pk5");
         success.Should().BeTrue();
-        var testPP = 10;
+        // ReSharper disable once InconsistentNaming
+        const int testPP = 10;
 
         // Act
         pkm!.SetPP(0, testPP);
@@ -119,6 +120,7 @@ public class ExtensionTests
         FileUtil.TryGetPKM(data, out var pkm, ".pk5").Should().BeTrue();
 
         // Act
+        // ReSharper disable once InconsistentNaming
         var maxPP = pkm!.GetMaxPP(0);
 
         // Assert

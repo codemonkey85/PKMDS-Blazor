@@ -197,16 +197,16 @@ public class AppServiceTests
         public int? SelectedBoxSlotNumber { get; set; }
         public int? SelectedPartySlotNumber { get; set; }
         public bool ShowProgressIndicator { get; set; }
-        public string? AppVersion => "Test";
+        public string AppVersion => "Test";
         public bool SelectedSlotsAreValid => true;
     }
 
     private class TestRefreshService : IRefreshService
     {
         public int RefreshCount { get; private set; }
-        public int RefreshBoxStateCount { get; private set; }
-        public int RefreshPartyStateCount { get; private set; }
-        public int RefreshBoxAndPartyStateCount { get; private set; }
+        private int RefreshBoxStateCount { get; set; }
+        private int RefreshPartyStateCount { get; set; }
+        private int RefreshBoxAndPartyStateCount { get; set; }
 
         public void Refresh() => RefreshCount++;
         public void RefreshBoxState() => RefreshBoxStateCount++;
