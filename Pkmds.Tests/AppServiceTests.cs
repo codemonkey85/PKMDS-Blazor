@@ -152,6 +152,40 @@ public class AppServiceTests
         showdown.Should().BeEmpty();
     }
 
+    [Fact]
+    public void ExportPartyAsShowdown_LetsGoPikachu_ReturnsShowdownFormat()
+    {
+        // Arrange - Load Let's Go Pikachu save file
+        var filePath = Path.Combine(TestFilesPath, "Lets-Go-Pikachu-All-Pokemon.bin");
+        var data = File.ReadAllBytes(filePath);
+        SaveUtil.TryGetSaveFile(data, out var saveFile, "Lets-Go-Pikachu-All-Pokemon.bin").Should().BeTrue();
+
+        var appState = new TestAppState { SaveFile = saveFile };
+        var refreshService = new TestRefreshService();
+        var appService = new AppService(appState, refreshService);
+
+        // Act
+        var showdown = appService.ExportPartyAsShowdown();
+
+        // Assert
+        showdown.Should().NotBeNullOrEmpty("Let's Go save files should export party to Showdown format");
+    }
+
+    [Fact]
+    public void ExportPartyAsShowdown_NoSaveFile_ReturnsEmpty()
+    {
+        // Arrange
+        var appState = new TestAppState { SaveFile = null };
+        var refreshService = new TestRefreshService();
+        var appService = new AppService(appState, refreshService);
+
+        // Act
+        var showdown = appService.ExportPartyAsShowdown();
+
+        // Assert
+        showdown.Should().BeEmpty();
+    }
+
     private class TestAppState : IAppState
     {
         public string CurrentLanguage { get; set; } = "en";

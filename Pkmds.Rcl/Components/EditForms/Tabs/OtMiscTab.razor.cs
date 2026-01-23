@@ -41,6 +41,34 @@ public partial class OtMiscTab : IDisposable
 
     private void OnGenderToggle(Gender newGender) => Pokemon?.OriginalTrainerGender = (byte)newGender;
 
+    private void SetPokemonOTName(string newOTName)
+    {
+        if (Pokemon is null || AppState.SaveFile is not { } saveFile)
+        {
+            return;
+        }
+
+        if (newOTName is not { Length: > 0 })
+        {
+            newOTName = saveFile.OT;
+        }
+
+        if (newOTName is not { Length: > 0 })
+        {
+            return;
+        }
+
+        Pokemon.OriginalTrainerName = newOTName;
+
+        // For Gen I/II, verify the OT name was set correctly
+        // If it becomes empty, the characters were not valid for the Pokémon's language/encoding
+        if (Pokemon.Format <= 2 && string.IsNullOrEmpty(Pokemon.OriginalTrainerName) && newOTName.Length > 0)
+        {
+            // Fallback to save file's OT name if couldn't be encoded
+            Pokemon.OriginalTrainerName = saveFile.OT;
+        }
+    }
+
     private void SetPokemonEc(uint newEc)
     {
         if (Pokemon is null)
