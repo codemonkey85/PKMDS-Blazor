@@ -63,7 +63,7 @@ public class Gen2NicknameFallbackTests
         pokemon.Nickname = testNickname;
 
         // For Gen I/II, verify the nickname was set correctly
-        // If it becomes empty, the characters were not valid for the Pokemon's language/encoding
+        // If it becomes empty, the characters were not valid for the Pokémon's language/encoding
         if (pokemon.Format <= 2 && string.IsNullOrEmpty(pokemon.Nickname))
         {
             // Fallback to default name if nickname couldn't be encoded
