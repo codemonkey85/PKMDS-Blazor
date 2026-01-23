@@ -110,7 +110,7 @@ A: You can support PKMDS by starring the project on GitHub, sharing it with your
 Q: Are there any known limitations with PKMDS?
 
 A: Yes, there are a few known limitations:
-- **Generation I and II Nickname Encoding**: When editing Pokémon from Generation I or II (Red, Blue, Yellow, Gold, Silver, Crystal) games, nicknames and OT names must use characters that are valid for the game's language encoding. For example, Japanese save files require Japanese characters for nicknames - English characters like "TEST" will be automatically replaced with the Pokémon's species name. This is due to the special character encoding used in these early games and is a limitation of the underlying PKHeX.Core library.
+- **Generation I and II Nickname Encoding**: When editing Pokémon from Generation I or II (Red, Blue, Yellow, Gold, Silver, Crystal) games, nicknames and OT names must use characters that are valid for the game's language encoding. For example, Japanese save files require Japanese characters for nicknames – if you enter incompatible characters like English text "TEST", they cannot be encoded and the nickname will fall back to the Pokémon's species name. This is due to the special character encoding used in these early games and is a limitation of the underlying PKHeX.Core library.
 
 Q: What are the system requirements for PKMDS?
 
