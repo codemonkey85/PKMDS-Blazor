@@ -61,7 +61,7 @@ public partial class OtMiscTab : IDisposable
         Pokemon.OriginalTrainerName = newOTName;
 
         // For Gen I/II, verify the OT name was set correctly
-        // If it becomes empty, the characters were not valid for the Pokemon's language/encoding
+        // If it becomes empty, the characters were not valid for the Pokémon's language/encoding
         if (Pokemon.Format <= 2 && string.IsNullOrEmpty(Pokemon.OriginalTrainerName) && newOTName.Length > 0)
         {
             // Fallback to save file's OT name if couldn't be encoded
