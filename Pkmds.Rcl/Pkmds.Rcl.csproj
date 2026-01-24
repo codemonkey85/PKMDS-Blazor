@@ -18,7 +18,6 @@
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
         <PackageReference Include="MudBlazor" />
-        <PackageReference Include="PKHeX.Core" />
         <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" />
         <PackageReference Include="BlazorExpress.ChartJS" />
         <PackageReference Include="Serilog" />
