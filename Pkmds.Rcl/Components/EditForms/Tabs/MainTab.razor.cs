@@ -169,4 +169,16 @@ public partial class MainTab : IDisposable
             Pokemon.IsNicknamed = false;
         }
     }
+
+    private void SetSpecies(ushort species)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.Species = species;
+        AppService.LoadPokemonStats(Pokemon);
+        RefreshService.Refresh();
+    }
 }
