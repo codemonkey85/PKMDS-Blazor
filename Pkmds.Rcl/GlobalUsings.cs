@@ -13,6 +13,8 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.JSInterop;
 global using MudBlazor;
 global using PKHeX.Core;
+global using Pkmds.Core.Extensions;
+global using Pkmds.Core.Utilities;
 global using Pkmds.Rcl.Components;
 global using Pkmds.Rcl.Components.Dialogs;
 global using Pkmds.Rcl.Extensions;

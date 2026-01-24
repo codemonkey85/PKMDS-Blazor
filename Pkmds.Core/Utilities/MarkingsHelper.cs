@@ -1,4 +1,4 @@
-﻿namespace Pkmds.Rcl;
+﻿namespace Pkmds.Core.Utilities;
 
 public static class MarkingsHelper
 {

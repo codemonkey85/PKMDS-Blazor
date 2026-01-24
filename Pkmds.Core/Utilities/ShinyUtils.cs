@@ -1,4 +1,4 @@
-﻿namespace Pkmds.Rcl;
+﻿namespace Pkmds.Core.Utilities;
 
 public static class ShinyUtils
 {
@@ -25,7 +25,7 @@ public static class ShinyUtils
 
         public void SetIsShinySafe(bool shiny)
         {
-            if (pk.Format > 2) // Gen I / II
+            if (pk.Format > 2) // Gen III+
             {
                 pk.SetIsShiny(shiny);
                 return;
