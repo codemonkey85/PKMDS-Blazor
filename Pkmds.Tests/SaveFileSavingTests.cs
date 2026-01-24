@@ -29,7 +29,7 @@ public class SaveFileSavingTests
         success.Should().BeTrue();
         reloadedSave.Should().NotBeNull();
         reloadedSave.Should().BeOfType(saveFile.GetType());
-        reloadedSave!.ChecksumsValid.Should().BeTrue();
+        reloadedSave.ChecksumsValid.Should().BeTrue();
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class SaveFileSavingTests
             return; // Skip if no Pokémon
         }
 
-        var testNickname = "TESTMON";
+        const string testNickname = "TESTMON";
 
         // Act - Modify Pokémon and save
         pokemon.Nickname = testNickname;
@@ -78,7 +78,7 @@ public class SaveFileSavingTests
             return; // Skip if no Pokémon
         }
 
-        byte testLevel = 99;
+        const byte testLevel = 99;
 
         // Act - Modify Pokémon in box
         pokemon.CurrentLevel = testLevel;
@@ -104,7 +104,7 @@ public class SaveFileSavingTests
         var filePath = Path.Combine(TestFilesPath, "Black - Full Completion.sav");
         var originalData = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(originalData, out var saveFile, "Black - Full Completion.sav").Should().BeTrue();
-        uint testMoney = 123456;
+        const uint testMoney = 123456;
 
         // Act - Modify trainer money
         saveFile!.Money = testMoney;
@@ -115,7 +115,7 @@ public class SaveFileSavingTests
 
         // Assert
         reloadedSave.Should().NotBeNull();
-        reloadedSave!.Money.Should().Be(testMoney);
+        reloadedSave.Money.Should().Be(testMoney);
         reloadedSave.ChecksumsValid.Should().BeTrue();
     }
 

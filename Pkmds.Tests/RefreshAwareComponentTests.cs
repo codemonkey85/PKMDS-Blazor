@@ -70,11 +70,12 @@ public class RefreshAwareComponentTests
 
     private class TestComponent : RefreshAwareComponent
     {
-        private readonly TestRefreshService _testRefreshService;
+        // ReSharper disable once NotAccessedField.Local
+        private readonly TestRefreshService testRefreshService;
 
         public TestComponent(TestRefreshService refreshService)
         {
-            _testRefreshService = refreshService;
+            testRefreshService = refreshService;
             RefreshServiceField = refreshService;
         }
 
@@ -83,11 +84,12 @@ public class RefreshAwareComponentTests
 
     private class TestComponentWithMultipleSubscriptions : RefreshAwareComponent
     {
-        private readonly TestRefreshService _testRefreshService;
+        // ReSharper disable once NotAccessedField.Local
+        private readonly TestRefreshService testRefreshService;
 
         public TestComponentWithMultipleSubscriptions(TestRefreshService refreshService)
         {
-            _testRefreshService = refreshService;
+            testRefreshService = refreshService;
             RefreshServiceField = refreshService;
         }
 
@@ -98,11 +100,12 @@ public class RefreshAwareComponentTests
 
     private class TestComponentWithAllSubscriptions : RefreshAwareComponent
     {
-        private readonly TestRefreshService _testRefreshService;
+        // ReSharper disable once NotAccessedField.Local
+        private readonly TestRefreshService testRefreshService;
 
         public TestComponentWithAllSubscriptions(TestRefreshService refreshService)
         {
-            _testRefreshService = refreshService;
+            testRefreshService = refreshService;
             RefreshServiceField = refreshService;
         }
 
@@ -150,8 +153,14 @@ public class RefreshAwareComponentTests
 
         public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
         public void ShowUpdateMessage() => OnUpdateAvailable?.Invoke();
+
+        // ReSharper disable once InconsistentNaming
         private event Action? _onAppStateChanged;
+
+        // ReSharper disable once InconsistentNaming
         private event Action? _onBoxStateChanged;
+
+        // ReSharper disable once InconsistentNaming
         private event Action? _onPartyStateChanged;
     }
 }

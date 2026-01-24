@@ -1,6 +1,6 @@
-﻿namespace Pkmds.Rcl.Extensions;
+﻿namespace Pkmds.Core.Utilities;
 
-public static class GameInfoExtensions
+public static class GameInfoUtilities
 {
     public static string GetCategoryName(int categoryId) =>
         categoryId switch

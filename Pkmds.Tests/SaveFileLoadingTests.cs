@@ -45,7 +45,7 @@ public class SaveFileLoadingTests
         // Assert
         success.Should().BeTrue();
         saveFile.Should().NotBeNull();
-        saveFile!.State.Exportable.Should().BeTrue();
+        saveFile.State.Exportable.Should().BeTrue();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class SaveFileLoadingTests
         var invalidData = new byte[] { 0x00, 0x01, 0x02 };
 
         // Act
-        var success = SaveUtil.TryGetSaveFile(invalidData, out var saveFile, "invalid.sav");
+        var success = SaveUtil.TryGetSaveFile(invalidData, out _, "invalid.sav");
 
         // Assert
         success.Should().BeFalse();

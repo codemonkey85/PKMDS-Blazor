@@ -41,10 +41,11 @@ Publish locally (static site)
 - `Directory.Build.props`: sets global `TargetFramework` to `net10.0`, repo metadata, nullable + implicit usings, and `TreatWarningsAsErrors` in Debug.
 - `Directory.Packages.props`: central package management (PKHeX.Core, MudBlazor, Serilog, FileSystemAccess, etc.).
 - Projects
-  - `Pkmds.Rcl/` (Razor Class Library): shared UI/components and services. Tailwind integrated via `Tailwind.targets` (input at `Pkmds.Rcl/wwwroot/css/tailwind.input.css`).
+  - `Pkmds.Core/` (Class Library): PKHeX utilities and extensions. Reusable, UI-independent logic for working with PKHeX.Core (species validation, shiny handling, markings, etc.).
+  - `Pkmds.Rcl/` (Razor Class Library): shared UI/components and services. Tailwind integrated via `Tailwind.targets` (input at `Pkmds.Rcl/wwwroot/css/tailwind.input.css`). References `Pkmds.Core`.
   - `Pkmds.Web/` (Blazor WebAssembly): PWA host. Linking and compression enabled; service worker assets generated on publish. JS libs via `libman.json` (crypto-js).
   - `Pkmds.Maui/` (optional MAUI host): multi-targets `net9.0-*` platforms; reuses RCL.
-  - `Pkmds.Tests/` (tests): `net10.0`, references RCL.
+  - `Pkmds.Tests/` (tests): `net10.0`, references RCL and Core.
 
 Runtime wiring (Web)
 - Serilog to Browser Console with adjustable level (via `LoggingLevelSwitch`).

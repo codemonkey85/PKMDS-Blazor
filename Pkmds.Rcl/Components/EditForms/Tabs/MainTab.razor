@@ -37,12 +37,7 @@
                      Label="Species"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
-                     @bind-Value:set="@(species =>
-                                      {
-                                          Pokemon.Species = (ushort)species.Value;
-                                          AppService.LoadPokemonStats(Pokemon);
-                                          RefreshService.Refresh();
-                                      })"
+                     @bind-Value:set="@((ComboItem species) => SetSpecies((ushort)species.Value))"
                      SearchFunc="@SearchPokemonNames"
                      ToStringFunc="@(species => species?.Text)"/>
 

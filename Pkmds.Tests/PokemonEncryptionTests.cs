@@ -20,7 +20,7 @@ public class PokemonEncryptionTests
         // Assert
         success.Should().BeTrue();
         pkm.Should().NotBeNull();
-        pkm!.Species.Should().Be((ushort)Species.Lucario);
+        pkm.Species.Should().Be((ushort)Species.Lucario);
         pkm.ChecksumValid.Should().BeTrue();
     }
 
