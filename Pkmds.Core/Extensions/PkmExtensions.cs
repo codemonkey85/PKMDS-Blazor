@@ -131,5 +131,49 @@ public static class PkmExtensions
 
             return moveBasePP + moveBasePP * ppUps / 5;
         }
+
+        public bool GetIsShinySafe()
+        {
+            if (pkm.Format <= 2) // Gen I / II
+            {
+                // In Gen I / II, shininess is determined by the DV values
+                return pkm switch
+                {
+                    PK1 pk1 => GetIsShinyGb(pk1.DV16),
+                    PK2 pk2 => GetIsShinyGb(pk2.DV16),
+                    _ => false
+                };
+            }
+
+            // For Gen III and later, shininess is determined by the PID
+            return pkm.IsShiny;
+
+            static bool GetIsShinyGb(ushort dv16) => (dv16 & 0x2FFF) == 0x2AAA;
+        }
+
+        public void SetIsShinySafe(bool shiny)
+        {
+            if (pkm.Format > 2) // Gen III+
+            {
+                pkm.SetIsShiny(shiny);
+                return;
+            }
+
+            if (shiny)
+            {
+                pkm.SetIsShiny(true);
+                return;
+            }
+
+            if (!pkm.IsShiny)
+            {
+                return;
+            }
+
+            do
+            {
+                pkm.SetRandomIVs();
+            } while (pkm.GetIsShinySafe());
+        }
     }
 }

@@ -1,31 +1,30 @@
 # Pkmds.Core
 
-This library contains PKHeX-related utilities and extensions that are decoupled from the Blazor UI layer. It provides reusable functionality for working with PKHeX.Core.
+This library contains PKHeX-related utilities and extensions that are decoupled from the Blazor UI layer. It provides
+reusable functionality for working with PKHeX.Core.
 
 ## Contents
 
 ### Extensions
 
 - **PkmExtensions**: Extension methods for PKM objects including:
-  - Species validation
-  - Marking access and manipulation
-  - Type conversion between generations
-  - PP (Power Points) management
-  - Form argument handling
-  - Generation-specific type handling
-
-- **GameInfoExtensions**: Utility methods for game metadata:
-  - Move category name lookup
+    - Species validation
+    - Marking access and manipulation
+    - Type conversion between generations
+    - PP (Power Points) management
+    - Form argument handling
+    - Generation-specific type handling
+    - Safe shiny detection for Gen I/II (DV-based) and Gen III+ (PID-based)
+    - Safe shiny setting with proper generation handling
 
 ### Utilities
 
-- **ShinyUtils**: Generation-aware shiny Pokémon handling:
-  - Safe shiny detection for Gen I/II (DV-based) and Gen III+ (PID-based)
-  - Safe shiny setting with proper generation handling
-
 - **MarkingsHelper**: Constants and enums for Pokémon markings:
-  - Marking shapes (Circle, Triangle, Square, Heart, Star, Diamond)
-  - Unicode symbols for each marking
+    - Marking shapes (Circle, Triangle, Square, Heart, Star, Diamond)
+    - Unicode symbols for each marking
+
+- **GameInfoUtilities**: Utility methods for game metadata:
+    - Move category name lookup
 
 ## Usage
 
