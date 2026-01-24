@@ -1,4 +1,4 @@
-﻿namespace Pkmds.Rcl.Extensions;
+﻿namespace Pkmds.Core.Extensions;
 
 public static class GameInfoExtensions
 {

@@ -1,4 +1,4 @@
-using static Pkmds.Rcl.MarkingsHelper;
+using static Pkmds.Core.Utilities.MarkingsHelper;
 
 namespace Pkmds.Rcl.Components;
 

@@ -5,6 +5,7 @@
     <File Path="Directory.Packages.props" />
     <File Path="global.json" />
   </Folder>
+  <Project Path="Pkmds.Core/Pkmds.Core.csproj" />
   <Project Path="Pkmds.Maui/Pkmds.Maui.csproj">
     <Build Solution="Debug|*" Project="false" />
     <Deploy Solution="Debug|*" />
