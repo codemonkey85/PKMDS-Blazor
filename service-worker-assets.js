@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "cSt3qaQ6",
+  "version": "gX6TuKdP",
   "assets": [
     {
       "hash": "sha256-ocTTuvwGdfwNBTdUQMJ40/QJlTMHjVFuE+zeR5fqjLA=",
@@ -50,7 +50,7 @@ self.assetsManifest = {
       "url": "_content/Pkmds.Rcl/css/app.css"
     },
     {
-      "hash": "sha256-H0uU1/jPgXzWFW9oFGkEWvutvaX6gb+GlCNkG+j9sms=",
+      "hash": "sha256-Zy/UlfUrCZ/EX2x+hwaYYRpPUwaaNyDi+thpwq/hA4I=",
       "url": "_content/Pkmds.Rcl/css/tailwind.css"
     },
     {
@@ -10870,12 +10870,16 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.ada0fikmep.wasm"
     },
     {
-      "hash": "sha256-CGvcjgsvSYdXyRigmxWO319Nh19UQ8O2zMtTqERFXFc=",
-      "url": "_framework/Pkmds.Rcl.wuzuml9yv6.wasm"
+      "hash": "sha256-Lv4ur1lG444mmIAQ1doiJZt3WYLwHu1vvXYpi6oSJyo=",
+      "url": "_framework/Pkmds.Core.ad11d1bv3x.wasm"
     },
     {
-      "hash": "sha256-jkHzeg/WVv0Eoy5IBX8XpwMUchQ6WShY9vvwGo6XHH4=",
-      "url": "_framework/Pkmds.Web.meguryxbai.wasm"
+      "hash": "sha256-2llhODRkIPCRpkBm4pDGSe5OMVEjKi9Sw6Imkv/dDyM=",
+      "url": "_framework/Pkmds.Rcl.ylh0d0qyhp.wasm"
+    },
+    {
+      "hash": "sha256-yQQIEUplgL7BDNpUpdbVg20lnK0GPWCadNWrQWnvues=",
+      "url": "_framework/Pkmds.Web.f2qt2k81g1.wasm"
     },
     {
       "hash": "sha256-iydmY0nPFdyc2khBWOwsyV89Y27bc8WSjwUHlPSdZDQ=",
@@ -11098,8 +11102,8 @@ self.assetsManifest = {
       "url": "_framework/dotnet.runtime.2tx45g8lli.js"
     },
     {
-      "hash": "sha256-5El0X7ieI1HxsRNl0JUVoHPJWEm+VH1LbmEJNnACyZ0=",
-      "url": "_framework/dotnet.wbfaia5dkp.js"
+      "hash": "sha256-2Pljryp7Kt6qDc7iEFMPoV4/rtLL9HFTesu4G+nhcwM=",
+      "url": "_framework/dotnet.sze1ko1oyx.js"
     },
     {
       "hash": "sha256-8Z9TJEFQWeS+TY1kD2h4jni6NY5SOMN+NGEdFFi5kNs=",
@@ -11282,7 +11286,7 @@ self.assetsManifest = {
       "url": "_framework/zh-Hant/Humanizer.resources.wnrtortf6t.wasm"
     },
     {
-      "hash": "sha256-V2ozg2tQfh4bNV3M3u38u3yLAJMER10mna2qjyyjsho=",
+      "hash": "sha256-nGnmczNg9yN+hvWoks0YodL+/fTFTf9Zw9Tmhx35Qs0=",
       "url": "index.html"
     },
     {
