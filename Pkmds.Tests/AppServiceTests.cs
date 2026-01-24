@@ -197,7 +197,7 @@ public class AppServiceTests
         public int? SelectedBoxSlotNumber { get; set; }
         public int? SelectedPartySlotNumber { get; set; }
         public bool ShowProgressIndicator { get; set; }
-        public string AppVersion => "Test";
+        public string? AppVersion => "Test";
         public bool SelectedSlotsAreValid => true;
     }
 
