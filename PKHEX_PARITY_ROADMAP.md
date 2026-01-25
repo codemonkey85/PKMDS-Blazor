@@ -755,42 +755,42 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 
 ### Phase 1: Foundation (Q1 2026)
 **Goal:** Core editing parity
-- ✅ Complete Pokemon editor (ribbons, memories, contest stats, catch rate)
-- ✅ Implement legality checker
-- ✅ Add batch editor
-- ✅ Create database/bank system
+- 🎯 Complete Pokemon editor (ribbons, memories, contest stats, catch rate)
+- 🎯 Implement legality checker
+- 🎯 Add batch editor
+- 🎯 Create database/bank system
 
 ### Phase 2: Generation-Specific Features (Q2-Q3 2026)
 **Goal:** Support unique features for each generation
-- ✅ Implement Gen 9 specific features (raids, fashion, sandwiches)
-- ✅ Add Gen 8/8.5 features (raids, underground, poffins, research)
-- ✅ Complete Gen 7 features (festival plaza, pelago, zygarde)
-- ✅ Add Gen 6 features (secret bases, amie, super training)
+- 🎯 Implement Gen 9 specific features (raids, fashion, sandwiches)
+- 🎯 Add Gen 8/8.5 features (raids, underground, poffins, research)
+- 🎯 Complete Gen 7 features (festival plaza, pelago, zygarde)
+- 🎯 Add Gen 6 features (secret bases, amie, super training)
 
 ### Phase 3: Advanced Tools (Q4 2026)
 **Goal:** Power user features
-- ✅ Implement auto-legality mod
-- ✅ Add living dex builder
-- ✅ Create RNG tools
-- ✅ Add event flags editor
-- ✅ Implement block data editor
+- 🎯 Implement auto-legality mod
+- 🎯 Add living dex builder
+- 🎯 Create RNG tools
+- 🎯 Add event flags editor
+- 🎯 Implement block data editor
 
 ### Phase 4: Quality & Polish (Q1 2027)
 **Goal:** Production-ready, user-friendly
-- ✅ Complete UI/UX improvements
-- ✅ Add comprehensive help/documentation
-- ✅ Implement accessibility features
-- ✅ Add internationalization
-- ✅ Optimize performance
-- ✅ Increase test coverage
+- 🎯 Complete UI/UX improvements
+- 🎯 Add comprehensive help/documentation
+- 🎯 Implement accessibility features
+- 🎯 Add internationalization
+- 🎯 Optimize performance
+- 🎯 Increase test coverage
 
 ### Phase 5: Maintenance & Beyond (Q2 2027+)
 **Goal:** Stay current with Pokemon games and PKHeX
-- ✅ Support new Pokemon games as released
-- ✅ Update PKHeX.Core regularly
-- ✅ Add community-requested features
-- ✅ Fix bugs and improve stability
-- ✅ Maintain documentation
+- ♻️ Support new Pokemon games as released
+- ♻️ Update PKHeX.Core regularly
+- ♻️ Add community-requested features
+- ♻️ Fix bugs and improve stability
+- ♻️ Maintain documentation
 
 ---
 
