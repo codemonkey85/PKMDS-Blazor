@@ -7,7 +7,6 @@
   </Folder>
   <Project Path="Pkmds.Core/Pkmds.Core.csproj" />
   <Project Path="Pkmds.Maui/Pkmds.Maui.csproj">
-    <Build Solution="Debug|*" Project="false" />
     <Deploy Solution="Debug|*" />
   </Project>
   <Project Path="Pkmds.Rcl/Pkmds.Rcl.csproj" />
