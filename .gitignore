@@ -355,4 +355,5 @@ MigrationBackup/
 Pkmds.Blazor/wwwroot/css/tailwind.css
 Pkmds.Maui/wwwroot/css/tailwind.css
 Pkmds.Rcl/bin/tailwindcss*
+Pkmds.Rcl/bin/sha256sums.txt
 .idea
