@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "gX6TuKdP",
+  "version": "MePVpgd2",
   "assets": [
     {
       "hash": "sha256-ocTTuvwGdfwNBTdUQMJ40/QJlTMHjVFuE+zeR5fqjLA=",
@@ -10870,16 +10870,16 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.ada0fikmep.wasm"
     },
     {
-      "hash": "sha256-Lv4ur1lG444mmIAQ1doiJZt3WYLwHu1vvXYpi6oSJyo=",
-      "url": "_framework/Pkmds.Core.ad11d1bv3x.wasm"
+      "hash": "sha256-nKA5w6bpscCHBmJdxwQdFmf+b1kxU33GPOx0vcP2rTc=",
+      "url": "_framework/Pkmds.Core.or06umqmue.wasm"
     },
     {
-      "hash": "sha256-2llhODRkIPCRpkBm4pDGSe5OMVEjKi9Sw6Imkv/dDyM=",
-      "url": "_framework/Pkmds.Rcl.ylh0d0qyhp.wasm"
+      "hash": "sha256-k/z5Iz+i9XZ+0abz0hyrF7ttKOkBwiUW3KIuCbJkKeQ=",
+      "url": "_framework/Pkmds.Rcl.n7o8kbfdbm.wasm"
     },
     {
-      "hash": "sha256-yQQIEUplgL7BDNpUpdbVg20lnK0GPWCadNWrQWnvues=",
-      "url": "_framework/Pkmds.Web.f2qt2k81g1.wasm"
+      "hash": "sha256-GUma3epjbi4ZRoB7R/tnj6kWllwReq6xx//J2IJiN60=",
+      "url": "_framework/Pkmds.Web.xapcq9201u.wasm"
     },
     {
       "hash": "sha256-iydmY0nPFdyc2khBWOwsyV89Y27bc8WSjwUHlPSdZDQ=",
@@ -11090,6 +11090,10 @@ self.assetsManifest = {
       "url": "_framework/de/Humanizer.resources.78uskj3x9s.wasm"
     },
     {
+      "hash": "sha256-iZZ27s0ic8v21ZHG81CA+g/N1bhBZBpbsXfQQu9+J7k=",
+      "url": "_framework/dotnet.j1gtz0vq27.js"
+    },
+    {
       "hash": "sha256-UeQVbKduZ7ndRN2EmZVucsBstNy3LZG2EMXqIdvXMko=",
       "url": "_framework/dotnet.native.j7uzcnlcdl.js"
     },
@@ -11100,10 +11104,6 @@ self.assetsManifest = {
     {
       "hash": "sha256-2lZh9yO0fnzm3Xt7yV+Kox3DH3nK7L8hDhm84VT1xco=",
       "url": "_framework/dotnet.runtime.2tx45g8lli.js"
-    },
-    {
-      "hash": "sha256-2Pljryp7Kt6qDc7iEFMPoV4/rtLL9HFTesu4G+nhcwM=",
-      "url": "_framework/dotnet.sze1ko1oyx.js"
     },
     {
       "hash": "sha256-8Z9TJEFQWeS+TY1kD2h4jni6NY5SOMN+NGEdFFi5kNs=",
@@ -11286,7 +11286,7 @@ self.assetsManifest = {
       "url": "_framework/zh-Hant/Humanizer.resources.wnrtortf6t.wasm"
     },
     {
-      "hash": "sha256-nGnmczNg9yN+hvWoks0YodL+/fTFTf9Zw9Tmhx35Qs0=",
+      "hash": "sha256-t0WDAYMKuKXVY1GQiWP7MW+UlKRFkyPncXPEfZPXTTw=",
       "url": "index.html"
     },
     {
