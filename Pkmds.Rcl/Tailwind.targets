@@ -57,13 +57,19 @@
             <Output TaskParameter="Lines" ItemName="ChecksumLines"/>
         </ReadLinesFromFile>
         
-        <!-- Find the line matching our binary exactly (with space after filename) and extract the hash -->
+        <!-- Find the line matching our binary exactly and extract the hash -->
+        <!-- The checksum file format is: "<hash>  ./<filename>" with two spaces between hash and filename -->
+        <PropertyGroup>
+            <ChecksumLinePattern>  ./$(TailwindBinaryName)</ChecksumLinePattern>
+        </PropertyGroup>
+        
         <ItemGroup>
-            <MatchingChecksum Include="@(ChecksumLines)" Condition="$([System.String]::Copy('%(Identity)').EndsWith('  ./$(TailwindBinaryName)'))" />
+            <MatchingChecksum Include="@(ChecksumLines)" Condition="$([System.String]::Copy('%(Identity)').EndsWith('$(ChecksumLinePattern)'))" />
         </ItemGroup>
         
         <PropertyGroup>
-            <ExpectedChecksum>$([System.String]::Copy('%(MatchingChecksum.Identity)').Split(' ')[0])</ExpectedChecksum>
+            <!-- Extract the hash by removing the filename pattern from the end -->
+            <ExpectedChecksum>$([System.String]::Copy('%(MatchingChecksum.Identity)').Substring(0, $([MSBuild]::Subtract($([System.String]::Copy('%(MatchingChecksum.Identity)').Length), $(ChecksumLinePattern.Length)))))</ExpectedChecksum>
         </PropertyGroup>
         
         <Error Condition="'$(ExpectedChecksum)' == ''" Text="Failed to find checksum for $(TailwindBinaryName) in sha256sums.txt"/>
