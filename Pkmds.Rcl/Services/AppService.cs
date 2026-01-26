@@ -149,6 +149,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             case SelectedPokemonType.Party:
                 AppState.SaveFile.SetPartySlotAtIndex(pokemon, partySlot);
 
+                // Let's Go games store Pokémon in a unified storage system
+                // Changes to party affect box display, so refresh both
                 if (AppState.SaveFile is SAV7b)
                 {
                     RefreshService.RefreshBoxAndPartyState();
@@ -164,6 +166,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                 RefreshService.RefreshBoxState();
                 break;
             case SelectedPokemonType.None when AppState.SaveFile is SAV7b:
+                // Let's Go unified storage: save to box slot without box number
                 AppState.SaveFile.SetBoxSlotAtIndex(pokemon, boxSlot);
                 RefreshService.RefreshBoxAndPartyState();
                 break;
