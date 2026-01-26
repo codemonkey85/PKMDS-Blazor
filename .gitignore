@@ -354,5 +354,6 @@ MigrationBackup/
 .vscode
 Pkmds.Blazor/wwwroot/css/tailwind.css
 Pkmds.Maui/wwwroot/css/tailwind.css
+Pkmds.Rcl/wwwroot/css/tailwind.css
 Pkmds.Rcl/bin/tailwindcss*
 .idea
