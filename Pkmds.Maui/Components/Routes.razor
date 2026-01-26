@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
 @using Pkmds.Rcl.Components.Layout
+@using Pkmds.Rcl.Components.Pages
 <Router AppAssembly="@typeof(MainLayout).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData"
@@ -7,4 +8,7 @@
         <FocusOnNavigate RouteData="@routeData"
                          Selector="h1"/>
     </Found>
+    <NotFound>
+        <NotFound/>
+    </NotFound>
 </Router>

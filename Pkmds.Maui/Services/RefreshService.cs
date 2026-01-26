@@ -40,7 +40,5 @@ public class RefreshService : IRefreshService
     public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
 
     [JSInvokable(nameof(ShowUpdateMessage))]
-    public static void ShowUpdateMessage()
-    {
-    }
+    public static void ShowUpdateMessage() => Instance?.OnUpdateAvailable?.Invoke();
 }
