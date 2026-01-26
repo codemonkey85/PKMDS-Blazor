@@ -22,9 +22,11 @@
         <TailwindBinaryName Condition="'$(OS)' != 'Windows_NT'">tailwindcss-$(TailwindOS)-$(TailwindArch)</TailwindBinaryName>
 
         <TailwindDownloadUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/$(TailwindBinaryName)</TailwindDownloadUrl>
+        <TailwindChecksumsUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/sha256sums.txt</TailwindChecksumsUrl>
 
         <TailwindCliPath Condition="'$(OS)' != 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss</TailwindCliPath>
         <TailwindCliPath Condition="'$(OS)' == 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss.exe</TailwindCliPath>
+        <TailwindChecksumsPath>$(MSBuildThisFileDirectory)bin\sha256sums.txt</TailwindChecksumsPath>
 
         <TailwindInputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.input.css</TailwindInputCss>
         <TailwindOutputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.css</TailwindOutputCss>
@@ -36,15 +38,59 @@
     <Target Name="DownloadTailwindCli"
             BeforeTargets="TailwindBuild"
             Condition="'$(SkipTailwind)' != 'true' And !Exists('$(TailwindCliPath)')">
-        <Message Text="Downloading Tailwind CSS CLI from $(TailwindDownloadUrl)..." Importance="high"/>
+        <Message Text="Downloading Tailwind CSS CLI checksums from $(TailwindChecksumsUrl)..." Importance="high"/>
         <MakeDir Directories="$(MSBuildThisFileDirectory)bin"/>
+        
+        <!-- Download checksums file -->
+        <DownloadFile SourceUrl="$(TailwindChecksumsUrl)"
+                      DestinationFolder="$(MSBuildThisFileDirectory)bin"
+                      DestinationFileName="sha256sums.txt"/>
+        
+        <!-- Download the binary -->
+        <Message Text="Downloading Tailwind CSS CLI from $(TailwindDownloadUrl)..." Importance="high"/>
         <DownloadFile SourceUrl="$(TailwindDownloadUrl)"
                       DestinationFolder="$(MSBuildThisFileDirectory)bin"
                       DestinationFileName="$(TailwindBinaryName)"/>
-        <Move SourceFiles="$(MSBuildThisFileDirectory)bin\$(TailwindBinaryName)"
+        
+        <!-- Read checksums file and extract the expected hash for our binary -->
+        <ReadLinesFromFile File="$(TailwindChecksumsPath)">
+            <Output TaskParameter="Lines" ItemName="ChecksumLines"/>
+        </ReadLinesFromFile>
+        
+        <!-- Find the line matching our binary exactly (with space after filename) and extract the hash -->
+        <ItemGroup>
+            <MatchingChecksum Include="@(ChecksumLines)" Condition="$([System.String]::Copy('%(Identity)').EndsWith('  ./$(TailwindBinaryName)'))" />
+        </ItemGroup>
+        
+        <PropertyGroup>
+            <ExpectedChecksum>$([System.String]::Copy('%(MatchingChecksum.Identity)').Split(' ')[0])</ExpectedChecksum>
+        </PropertyGroup>
+        
+        <Error Condition="'$(ExpectedChecksum)' == ''" Text="Failed to find checksum for $(TailwindBinaryName) in sha256sums.txt"/>
+        
+        <!-- Compute actual checksum of downloaded binary -->
+        <PropertyGroup>
+            <TailwindBinaryPath>$(MSBuildThisFileDirectory)bin\$(TailwindBinaryName)</TailwindBinaryPath>
+        </PropertyGroup>
+        
+        <GetFileHash Files="$(TailwindBinaryPath)" Algorithm="SHA256">
+            <Output TaskParameter="Hash" PropertyName="ActualChecksum"/>
+        </GetFileHash>
+        
+        <!-- Verify checksum matches (case-insensitive comparison) -->
+        <Message Text="Expected checksum: $(ExpectedChecksum)" Importance="high"/>
+        <Message Text="Actual checksum:   $(ActualChecksum)" Importance="high"/>
+        
+        <Error Condition="!$([System.String]::Copy('$(ExpectedChecksum)').Equals('$(ActualChecksum)', StringComparison.OrdinalIgnoreCase))" 
+               Text="Checksum verification failed for $(TailwindBinaryName)! Expected: $(ExpectedChecksum), Got: $(ActualChecksum). The download may have been corrupted or tampered with."/>
+        
+        <Message Text="Checksum verification passed." Importance="high"/>
+        
+        <!-- Move binary to final location -->
+        <Move SourceFiles="$(TailwindBinaryPath)"
               DestinationFiles="$(TailwindCliPath)"/>
         <Exec Command="chmod +x $(TailwindCliPath)" Condition="'$(OS)' != 'Windows_NT'"/>
-        <Message Text="Tailwind CSS CLI downloaded successfully." Importance="high"/>
+        <Message Text="Tailwind CSS CLI downloaded and verified successfully." Importance="high"/>
     </Target>
 
     <!-- Build Tailwind CSS early enough for static web assets to pick it up -->
