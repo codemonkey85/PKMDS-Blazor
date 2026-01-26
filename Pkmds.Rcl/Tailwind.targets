@@ -68,8 +68,8 @@
         </ItemGroup>
 
         <PropertyGroup>
-            <!-- Extract the hash by removing the filename pattern from the end -->
-            <ExpectedChecksum>$([System.String]::Copy('%(MatchingChecksum.Identity)').Substring(0, $([MSBuild]::Subtract($([System.String]::Copy('%(MatchingChecksum.Identity)').Length), $(ChecksumLinePattern.Length)))))</ExpectedChecksum>
+            <!-- Extract the hash by removing the filename pattern from the end and trimming whitespace -->
+            <ExpectedChecksum>$([System.String]::Copy('%(MatchingChecksum.Identity)').Substring(0, $([MSBuild]::Subtract($([System.String]::Copy('%(MatchingChecksum.Identity)').Length), $(ChecksumLinePattern.Length)))).Trim())</ExpectedChecksum>
         </PropertyGroup>
 
         <Error Condition="'$(ExpectedChecksum)' == ''" Text="Failed to find checksum for $(TailwindBinaryName) in sha256sums.txt"/>
