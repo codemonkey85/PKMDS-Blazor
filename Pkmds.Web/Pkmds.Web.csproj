@@ -9,7 +9,16 @@
         <WasmEnableSIMD>false</WasmEnableSIMD>
     </PropertyGroup>
 
-    <PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DebugType>portable</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <BlazorWasmDebuggingEnabled>true</BlazorWasmDebuggingEnabled>
+        <WasmNativeDebugSymbols>true</WasmNativeDebugSymbols>
+        <BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
+        <BlazorEnableCompression>false</BlazorEnableCompression>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
         <BlazorEnableCompression>true</BlazorEnableCompression>
     </PropertyGroup>

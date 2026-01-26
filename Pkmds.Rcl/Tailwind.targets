@@ -1,78 +1,130 @@
 <Project>
 
-  <PropertyGroup>
-    <!-- Determine the OS and architecture for Tailwind CLI binary -->
-    <TailwindVersion>v4.0.11</TailwindVersion>
-
-    <TailwindOS Condition="'$(OS)' == 'Windows_NT'">windows</TailwindOS>
-    <TailwindOS Condition="'$(OS)' != 'Windows_NT' And '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">linux</TailwindOS>
-    <TailwindOS Condition="'$(OS)' != 'Windows_NT' And '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">macos</TailwindOS>
-
-    <!--
-      Tailwind v4 standalone does NOT currently ship a native windows-arm64 binary.
-      On Windows ARM64, force the x64 binary (works via Windows x64 emulation).
-    -->
-    <TailwindArch Condition="'$(TailwindOS)' == 'windows' And ('$(Platform)' == 'arm64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64')">x64</TailwindArch>
-
-    <TailwindArch Condition="'$(TailwindArch)' == '' And ('$(Platform)' == 'arm64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64')">arm64</TailwindArch>
-    <TailwindArch Condition="'$(TailwindArch)' == '' And ('$(Platform)' == 'x64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64')">x64</TailwindArch>
-    <TailwindArch Condition="'$(TailwindArch)' == ''">x64</TailwindArch>
-
-    <TailwindBinaryName Condition="'$(OS)' == 'Windows_NT'">tailwindcss-$(TailwindOS)-$(TailwindArch).exe</TailwindBinaryName>
-    <TailwindBinaryName Condition="'$(OS)' != 'Windows_NT'">tailwindcss-$(TailwindOS)-$(TailwindArch)</TailwindBinaryName>
-
-    <TailwindDownloadUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/$(TailwindBinaryName)</TailwindDownloadUrl>
-
-    <TailwindCliPath Condition="'$(OS)' != 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss</TailwindCliPath>
-    <TailwindCliPath Condition="'$(OS)' == 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss.exe</TailwindCliPath>
-
-    <TailwindInputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.input.css</TailwindInputCss>
-    <TailwindOutputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.css</TailwindOutputCss>
-    <TailwindConfigJs>$(MSBuildThisFileDirectory)tailwind.config.js</TailwindConfigJs>
-    <TailwindMarkerFile>$(MSBuildThisFileDirectory)obj\tailwind.$(Configuration).marker</TailwindMarkerFile>
-  </PropertyGroup>
-
-  <!-- Download Tailwind CSS CLI if not present -->
-  <Target Name="DownloadTailwindCli"
-          BeforeTargets="TailwindBuild"
-          Condition="'$(SkipTailwind)' != 'true' And !Exists('$(TailwindCliPath)')">
-    <Message Text="Downloading Tailwind CSS CLI from $(TailwindDownloadUrl)..." Importance="high" />
-    <MakeDir Directories="$(MSBuildThisFileDirectory)bin" />
-    <DownloadFile SourceUrl="$(TailwindDownloadUrl)"
-                  DestinationFolder="$(MSBuildThisFileDirectory)bin"
-                  DestinationFileName="$(TailwindBinaryName)" />
-    <Move SourceFiles="$(MSBuildThisFileDirectory)bin\$(TailwindBinaryName)"
-          DestinationFiles="$(TailwindCliPath)" />
-    <Exec Command="chmod +x $(TailwindCliPath)" Condition="'$(OS)' != 'Windows_NT'" />
-    <Message Text="Tailwind CSS CLI downloaded successfully." Importance="high" />
-  </Target>
-
-  <!-- Build Tailwind CSS early enough for static web assets to pick it up -->
-  <!-- Use Inputs/Outputs for incremental build to prevent rebuilding when unnecessary -->
-  <Target Name="TailwindBuild"
-          Condition="'$(SkipTailwind)' != 'true'"
-          BeforeTargets="BeforeCompile;ResolveStaticWebAssetsInputs"
-          Inputs="$(TailwindInputCss);$(TailwindConfigJs);$(MSBuildThisFileDirectory)Tailwind.targets"
-          Outputs="$(TailwindMarkerFile);$(TailwindOutputCss)">
     <PropertyGroup>
-      <TailwindMinify Condition="'$(Configuration)' == 'Release'">--minify</TailwindMinify>
-      <TailwindMinify Condition="'$(Configuration)' != 'Release'"></TailwindMinify>
+        <!-- Determine the OS and architecture for Tailwind CLI binary -->
+        <TailwindVersion>v4.0.11</TailwindVersion>
+
+        <TailwindOS Condition="'$(OS)' == 'Windows_NT'">windows</TailwindOS>
+        <TailwindOS Condition="'$(OS)' != 'Windows_NT' And '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">linux</TailwindOS>
+        <TailwindOS Condition="'$(OS)' != 'Windows_NT' And '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">macos</TailwindOS>
+
+        <!--
+          Tailwind v4 standalone does NOT currently ship a native windows-arm64 binary.
+          On Windows ARM64, force the x64 binary (works via Windows x64 emulation).
+        -->
+        <TailwindArch Condition="'$(TailwindOS)' == 'windows' And ('$(Platform)' == 'arm64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64')">x64</TailwindArch>
+
+        <TailwindArch Condition="'$(TailwindArch)' == '' And ('$(Platform)' == 'arm64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64')">arm64</TailwindArch>
+        <TailwindArch Condition="'$(TailwindArch)' == '' And ('$(Platform)' == 'x64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64')">x64</TailwindArch>
+        <TailwindArch Condition="'$(TailwindArch)' == ''">x64</TailwindArch>
+
+        <TailwindBinaryName Condition="'$(OS)' == 'Windows_NT'">tailwindcss-$(TailwindOS)-$(TailwindArch).exe</TailwindBinaryName>
+        <TailwindBinaryName Condition="'$(OS)' != 'Windows_NT'">tailwindcss-$(TailwindOS)-$(TailwindArch)</TailwindBinaryName>
+
+        <TailwindDownloadUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/$(TailwindBinaryName)</TailwindDownloadUrl>
+        <TailwindChecksumsUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/sha256sums.txt</TailwindChecksumsUrl>
+
+        <TailwindCliPath Condition="'$(OS)' != 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss</TailwindCliPath>
+        <TailwindCliPath Condition="'$(OS)' == 'Windows_NT'">$(MSBuildThisFileDirectory)bin\tailwindcss.exe</TailwindCliPath>
+        <TailwindChecksumsPath>$(MSBuildThisFileDirectory)bin\sha256sums.txt</TailwindChecksumsPath>
+
+        <TailwindInputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.input.css</TailwindInputCss>
+        <TailwindOutputCss>$(MSBuildThisFileDirectory)wwwroot\css\tailwind.css</TailwindOutputCss>
+        <TailwindConfigJs>$(MSBuildThisFileDirectory)tailwind.config.js</TailwindConfigJs>
+        <TailwindMarkerFile>$(MSBuildThisFileDirectory)obj\tailwind.$(Configuration).marker</TailwindMarkerFile>
     </PropertyGroup>
 
-    <Message Text="Building Tailwind CSS..." Importance="high" />
-    <MakeDir Directories="$(MSBuildThisFileDirectory)obj" />
-    <Exec Command="&quot;$(TailwindCliPath)&quot; -i &quot;$(TailwindInputCss)&quot; -o &quot;$(TailwindOutputCss)&quot; -c &quot;$(TailwindConfigJs)&quot; $(TailwindMinify)"
-          WorkingDirectory="$(MSBuildThisFileDirectory)" />
-    <Message Text="Tailwind CSS built successfully." Importance="high" />
+    <!-- Download Tailwind CSS CLI if not present -->
+    <Target Name="DownloadTailwindCli"
+            BeforeTargets="TailwindBuild"
+            Condition="'$(SkipTailwind)' != 'true' And !Exists('$(TailwindCliPath)')">
+        <Message Text="Downloading Tailwind CSS CLI checksums from $(TailwindChecksumsUrl)..." Importance="high"/>
+        <MakeDir Directories="$(MSBuildThisFileDirectory)bin"/>
 
-    <!-- Touch the marker file to track when Tailwind was last built for this configuration -->
-    <Touch Files="$(TailwindMarkerFile)" AlwaysCreate="true" />
-  </Target>
+        <!-- Download checksums file -->
+        <DownloadFile SourceUrl="$(TailwindChecksumsUrl)"
+                      DestinationFolder="$(MSBuildThisFileDirectory)bin"
+                      DestinationFileName="sha256sums.txt"/>
 
-  <!-- Clean is a no-op since tailwind.css is now committed to source control -->
-  <!-- Developers can manually rebuild with: dotnet build -->
-  <Target Name="TailwindClean" AfterTargets="Clean">
-    <!-- Don't delete tailwind.css since it's committed to source control -->
-  </Target>
+        <!-- Download the binary -->
+        <Message Text="Downloading Tailwind CSS CLI from $(TailwindDownloadUrl)..." Importance="high"/>
+        <DownloadFile SourceUrl="$(TailwindDownloadUrl)"
+                      DestinationFolder="$(MSBuildThisFileDirectory)bin"
+                      DestinationFileName="$(TailwindBinaryName)"/>
+
+        <!-- Read checksums file and extract the expected hash for our binary -->
+        <ReadLinesFromFile File="$(TailwindChecksumsPath)">
+            <Output TaskParameter="Lines" ItemName="ChecksumLines"/>
+        </ReadLinesFromFile>
+
+        <!-- Find the line matching our binary exactly and extract the hash -->
+        <!-- The checksum file format is: "<hash>  ./<filename>" with two spaces between hash and filename -->
+        <PropertyGroup>
+            <ChecksumLinePattern>./$(TailwindBinaryName)</ChecksumLinePattern>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <MatchingChecksum Include="@(ChecksumLines)" Condition="$([System.String]::Copy('%(Identity)').EndsWith('$(ChecksumLinePattern)'))"/>
+        </ItemGroup>
+
+        <PropertyGroup>
+            <!-- Extract the hash by removing the filename pattern from the end and trimming whitespace -->
+            <ExpectedChecksum>$([System.String]::Copy('%(MatchingChecksum.Identity)').Substring(0, $([MSBuild]::Subtract($([System.String]::Copy('%(MatchingChecksum.Identity)').Length), $(ChecksumLinePattern.Length)))).Trim())</ExpectedChecksum>
+        </PropertyGroup>
+
+        <Error Condition="'$(ExpectedChecksum)' == ''" Text="Failed to find checksum for $(TailwindBinaryName) in sha256sums.txt"/>
+
+        <!-- Compute actual checksum of downloaded binary -->
+        <PropertyGroup>
+            <TailwindBinaryPath>$(MSBuildThisFileDirectory)bin\$(TailwindBinaryName)</TailwindBinaryPath>
+        </PropertyGroup>
+
+        <GetFileHash Files="$(TailwindBinaryPath)" Algorithm="SHA256">
+            <Output TaskParameter="Hash" PropertyName="ActualChecksum"/>
+        </GetFileHash>
+
+        <!-- Verify checksum matches (case-insensitive comparison) -->
+        <Message Text="Expected checksum: $(ExpectedChecksum)" Importance="high"/>
+        <Message Text="Actual checksum:   $(ActualChecksum)" Importance="high"/>
+
+        <Error Condition="!$([System.String]::Copy('$(ExpectedChecksum)').Equals('$(ActualChecksum)', StringComparison.OrdinalIgnoreCase))"
+               Text="Checksum verification failed for $(TailwindBinaryName)! Expected: $(ExpectedChecksum), Got: $(ActualChecksum). The download may have been corrupted or tampered with."/>
+
+        <Message Text="Checksum verification passed." Importance="high"/>
+
+        <!-- Move binary to final location -->
+        <Move SourceFiles="$(TailwindBinaryPath)"
+              DestinationFiles="$(TailwindCliPath)"/>
+        <Exec Command="chmod +x $(TailwindCliPath)" Condition="'$(OS)' != 'Windows_NT'"/>
+        <Message Text="Tailwind CSS CLI downloaded and verified successfully." Importance="high"/>
+    </Target>
+
+    <!-- Build Tailwind CSS early enough for static web assets to pick it up -->
+    <!-- Use Inputs/Outputs for incremental build to prevent rebuilding when unnecessary -->
+    <Target Name="TailwindBuild"
+            Condition="'$(SkipTailwind)' != 'true'"
+            BeforeTargets="BeforeCompile;ResolveStaticWebAssetsInputs"
+            Inputs="$(TailwindInputCss);$(TailwindConfigJs);$(MSBuildThisFileDirectory)Tailwind.targets"
+            Outputs="$(TailwindMarkerFile);$(TailwindOutputCss)">
+        <PropertyGroup>
+            <TailwindMinify Condition="'$(Configuration)' == 'Release'">--minify</TailwindMinify>
+            <TailwindMinify Condition="'$(Configuration)' != 'Release'"></TailwindMinify>
+        </PropertyGroup>
+
+        <Message Text="Building Tailwind CSS..." Importance="high"/>
+        <MakeDir Directories="$(MSBuildThisFileDirectory)obj"/>
+        <Exec Command="&quot;$(TailwindCliPath)&quot; -i &quot;$(TailwindInputCss)&quot; -o &quot;$(TailwindOutputCss)&quot; -c &quot;$(TailwindConfigJs)&quot; $(TailwindMinify)"
+              WorkingDirectory="$(MSBuildThisFileDirectory)"/>
+        <Message Text="Tailwind CSS built successfully." Importance="high"/>
+
+        <!-- Touch the marker file to track when Tailwind was last built for this configuration -->
+        <Touch Files="$(TailwindMarkerFile)" AlwaysCreate="true"/>
+    </Target>
+
+    <!-- Clean is a no-op since tailwind.css is now committed to source control -->
+    <!-- Developers can manually rebuild with: dotnet build -->
+    <Target Name="TailwindClean" AfterTargets="Clean">
+        <!-- Don't delete tailwind.css since it's committed to source control -->
+    </Target>
 
 </Project>
