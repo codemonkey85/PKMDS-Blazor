@@ -12,6 +12,8 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
+        <BlazorWasmDebuggingEnabled>true</BlazorWasmDebuggingEnabled>
+        <WasmNativeDebugSymbols>true</WasmNativeDebugSymbols>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
