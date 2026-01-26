@@ -1,22 +1,56 @@
 ﻿namespace Pkmds.Core.Extensions;
 
+/// <summary>
+/// Extension methods for PKM (Pokémon) objects and related types.
+/// Provides utilities for species validation, type handling, markings, moves, shininess, and more.
+/// </summary>
 public static class PkmExtensions
 {
+    /// <summary>
+    /// Determines whether a species ID is valid (greater than None and less than MAX_COUNT).
+    /// </summary>
+    /// <param name="speciesId">The species ID to validate.</param>
+    /// <returns>True if the species ID is valid; otherwise, false.</returns>
     public static bool IsValidSpecies(this ushort speciesId) =>
         speciesId is > (ushort)Species.None and < (ushort)Species.MAX_COUNT;
 
+    /// <summary>
+    /// Determines whether a nullable species ID is valid.
+    /// </summary>
+    /// <param name="speciesId">The nullable species ID to validate.</param>
+    /// <returns>True if the species ID has a value and is valid; otherwise, false.</returns>
     public static bool IsValidSpecies(this ushort? speciesId) =>
         speciesId is { } species && species.IsValidSpecies();
 
+    /// <summary>
+    /// Determines whether a species ID is invalid (inverse of <see cref="IsValidSpecies(ushort)"/>).
+    /// </summary>
+    /// <param name="speciesId">The species ID to validate.</param>
+    /// <returns>True if the species ID is invalid; otherwise, false.</returns>
     public static bool IsInvalidSpecies(this ushort speciesId) => !speciesId.IsValidSpecies();
 
+    /// <summary>
+    /// Determines whether a nullable species ID is invalid.
+    /// </summary>
+    /// <param name="speciesId">The nullable species ID to validate.</param>
+    /// <returns>True if the species ID is null or invalid; otherwise, false.</returns>
     public static bool IsInvalidSpecies(this ushort? speciesId) => !speciesId.IsValidSpecies();
 
     extension(PKM pkm)
     {
+        /// <summary>
+        /// Gets the FormArgument value for Pokémon that implement IFormArgument (e.g., Alcremie).
+        /// </summary>
+        /// <param name="valueIfNull">The value to return if the Pokémon doesn't implement IFormArgument.</param>
+        /// <returns>The FormArgument value, or the specified default value.</returns>
         public uint? GetFormArgument(uint? valueIfNull = null) =>
             (pkm as IFormArgument)?.FormArgument ?? valueIfNull;
 
+        /// <summary>
+        /// Gets the type(s) of this Pokémon, converting Gen 1/2 type IDs to modern equivalents if needed.
+        /// In Gen 1/2, some type IDs differ from later generations due to the introduction of Dark and Steel types.
+        /// </summary>
+        /// <returns>A tuple containing the primary and secondary type IDs.</returns>
         public (byte Type1, byte Type2) GetGenerationTypes()
         {
             var type1 = pkm.PersonalInfo.Type1;
@@ -31,6 +65,14 @@ public static class PkmExtensions
                 (byte)((MoveType)type).GetMoveTypeGeneration(generation);
         }
 
+        /// <summary>
+        /// Gets the value of a specific marking for this Pokémon.
+        /// Different generations use different marking systems (boolean or color-based).
+        /// </summary>
+        /// <param name="index">The 0-based marking index.</param>
+        /// <returns>The marking value (0 for unmarked/false, 1+ for marked/color value).</returns>
+        /// <exception cref="Exception">Thrown if the Pokémon doesn't implement IAppliedMarkings.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the index is out of range.</exception>
         public int GetMarking(int index)
         {
             if (pkm is not IAppliedMarkings appliedMarkings)
@@ -53,6 +95,10 @@ public static class PkmExtensions
             };
         }
 
+        /// <summary>
+        /// Gets the current PP (Power Points) for all four move slots.
+        /// </summary>
+        /// <returns>A read-only collection of PP values for moves 1-4.</returns>
         // ReSharper disable once InconsistentNaming
         public ReadOnlyCollection<int> GetPP() => new(
         [
@@ -62,6 +108,11 @@ public static class PkmExtensions
             pkm.Move4_PP
         ]);
 
+        /// <summary>
+        /// Gets the PP Ups (Power Point upgrades) for all four move slots.
+        /// Each PP Up increases a move's max PP by 20% of its base PP.
+        /// </summary>
+        /// <returns>A read-only collection of PP Up values (0-3) for moves 1-4.</returns>
         // ReSharper disable once InconsistentNaming
         public ReadOnlyCollection<int> GetPPUps() => new(
         [
@@ -71,6 +122,11 @@ public static class PkmExtensions
             pkm.Move4_PPUps
         ]);
 
+        /// <summary>
+        /// Sets the current PP for a specific move slot.
+        /// </summary>
+        /// <param name="moveIndex">The move slot index (0-3).</param>
+        /// <param name="pp">The PP value to set (will be clamped to 0 if negative).</param>
         // ReSharper disable once InconsistentNaming
         public void SetPP(int moveIndex, int pp)
         {
@@ -96,6 +152,11 @@ public static class PkmExtensions
             }
         }
 
+        /// <summary>
+        /// Sets the PP Ups for a specific move slot.
+        /// </summary>
+        /// <param name="moveIndex">The move slot index (0-3).</param>
+        /// <param name="ppUps">The PP Ups value to set (will be clamped to 0 if negative).</param>
         // ReSharper disable once InconsistentNaming
         public void SetPPUps(int moveIndex, int ppUps)
         {
@@ -121,6 +182,12 @@ public static class PkmExtensions
             }
         }
 
+        /// <summary>
+        /// Calculates the maximum PP for a move slot based on the move's base PP and PP Ups applied.
+        /// Formula: maxPP = basePP + (basePP * ppUps / 5)
+        /// </summary>
+        /// <param name="moveIndex">The move slot index (0-3).</param>
+        /// <returns>The maximum PP for the move.</returns>
         // ReSharper disable once InconsistentNaming
         public int GetMaxPP(int moveIndex)
         {
@@ -132,6 +199,12 @@ public static class PkmExtensions
             return moveBasePP + moveBasePP * ppUps / 5;
         }
 
+        /// <summary>
+        /// Safely determines if the Pokémon is shiny, handling both Gen 1/2 (DV-based) and Gen 3+ (PID-based) shininess.
+        /// In Gen 1/2, shininess is determined by specific DV (Determinant Value) patterns.
+        /// In Gen 3+, shininess is determined by the PID (Personality ID) and trainer IDs.
+        /// </summary>
+        /// <returns>True if the Pokémon is shiny; otherwise, false.</returns>
         public bool GetIsShinySafe()
         {
             if (pkm.Format <= 2) // Gen I / II
@@ -148,9 +221,17 @@ public static class PkmExtensions
             // For Gen III and later, shininess is determined by the PID
             return pkm.IsShiny;
 
+            // Gen 1/2 shiny check: DVs must match the pattern 0x2AAA
+            // This corresponds to specific stat DVs that result in shininess
             static bool GetIsShinyGb(ushort dv16) => (dv16 & 0x2FFF) == 0x2AAA;
         }
 
+        /// <summary>
+        /// Safely sets the shininess of the Pokémon, handling both Gen 1/2 and Gen 3+ mechanics.
+        /// For Gen 3+, uses PKHeX.Core's SetIsShiny method.
+        /// For Gen 1/2, randomizes IVs until the desired shininess is achieved.
+        /// </summary>
+        /// <param name="shiny">True to make the Pokémon shiny; false to make it non-shiny.</param>
         public void SetIsShinySafe(bool shiny)
         {
             if (pkm.Format > 2) // Gen III+
@@ -170,6 +251,7 @@ public static class PkmExtensions
                 return;
             }
 
+            // For Gen 1/2: Keep randomizing IVs until the Pokémon is no longer shiny
             do
             {
                 pkm.SetRandomIVs();
