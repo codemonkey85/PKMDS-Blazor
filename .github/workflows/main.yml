@@ -35,14 +35,14 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore Pkmds.Web/Pkmds.Web.csproj
 
-      # publishes Blazor project to the release-folder
-      - name: Publish .NET Project
-        run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo
-
-      # Get the version number from the build
-      - name: Get version number
+      # Compute the version number once to ensure consistency
+      - name: Compute version number
         id: version
-        run: echo "VERSION=$(dotnet msbuild Pkmds.Web/Pkmds.Web.csproj -getProperty:Version -nologo)" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(date -u '+%Y.%m.%d.%H%M')" >> $GITHUB_OUTPUT
+
+      # publishes Blazor project to the release-folder with the computed version
+      - name: Publish .NET Project
+        run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo /p:Version=${{ steps.version.outputs.VERSION }}
 
       # Create and push git tag with the version number
       - name: Create and push tag
