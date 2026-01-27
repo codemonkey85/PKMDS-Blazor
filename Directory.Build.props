@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
-        <Version>2026.01.26.1</Version>
+        <Version>$([System.DateTime]::UtcNow.ToString("yyyy.MM.dd.HHmm"))</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <NeutralLanguage>en</NeutralLanguage>
