@@ -35,9 +35,22 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore Pkmds.Web/Pkmds.Web.csproj
 
-      # publishes Blazor project to the release-folder
+      # Compute the version number once to ensure consistency
+      - name: Compute version number
+        id: version
+        run: echo "VERSION=$(date -u '+%Y.%m.%d.%H%M')" >> $GITHUB_OUTPUT
+
+      # publishes Blazor project to the release-folder with the computed version
       - name: Publish .NET Project
-        run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo
+        run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo /p:Version=${{ steps.version.outputs.VERSION }}
+
+      # Create and push git tag with the version number
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.VERSION }}" -m "Release ${{ steps.version.outputs.VERSION }}"
+          git push origin "${{ steps.version.outputs.VERSION }}"
 
       # copy index.html to 404.html to serve the same file when a file is not found
       - name: copy index.html to 404.html
