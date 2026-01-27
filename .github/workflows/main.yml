@@ -39,6 +39,19 @@ jobs:
       - name: Publish .NET Project
         run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo
 
+      # Get the version number from the build
+      - name: Get version number
+        id: version
+        run: echo "VERSION=$(dotnet msbuild Pkmds.Web/Pkmds.Web.csproj -getProperty:Version -nologo)" >> $GITHUB_OUTPUT
+
+      # Create and push git tag with the version number
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.VERSION }}" -m "Release ${{ steps.version.outputs.VERSION }}"
+          git push origin "${{ steps.version.outputs.VERSION }}"
+
       # copy index.html to 404.html to serve the same file when a file is not found
       - name: copy index.html to 404.html
         run: cp release/wwwroot/index.html release/wwwroot/404.html
