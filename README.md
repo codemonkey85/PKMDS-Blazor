@@ -23,7 +23,6 @@ Some images from: https://github.com/msikma/PokeDings
 - **Pkmds.Core**: Reusable library containing PKHeX-related utilities and extensions (independent of UI)
 - **Pkmds.Rcl**: Razor Class Library containing Blazor UI components and services
 - **Pkmds.Web**: Blazor WebAssembly application (the main web app)
-- **Pkmds.Maui**: Optional MAUI application for cross-platform desktop/mobile support
 - **Pkmds.Tests**: Unit tests for the application
 
 [![Build and Test](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml)
