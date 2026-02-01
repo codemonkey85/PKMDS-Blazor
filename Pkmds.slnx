@@ -6,7 +6,6 @@
     <File Path="global.json" />
   </Folder>
   <Project Path="Pkmds.Core/Pkmds.Core.csproj" />
-  <Project Path="Pkmds.Maui/Pkmds.Maui.csproj" Id="84ef68d0-4a38-4d90-b787-d8cb3d135328" />
   <Project Path="Pkmds.Rcl/Pkmds.Rcl.csproj" />
   <Project Path="Pkmds.Tests/Pkmds.Tests.csproj" />
   <Project Path="Pkmds.Web/Pkmds.Web.csproj" />
