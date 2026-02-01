@@ -1,4 +1,4 @@
-# WARP.md
+# AGENTS.md
 
 Guidance for WARP (warp.dev) when working in this repository.
 
@@ -7,7 +7,6 @@ Guidance for WARP (warp.dev) when working in this repository.
 Prereqs
 - Install the .NET SDK from `global.json` (10.0.101): `dotnet --list-sdks` to verify.
 - Install Blazor WASM tooling once: `dotnet workload install wasm-tools`.
-- Optional (for MAUI app builds): `dotnet workload install maui`.
 - IDE users can open `Pkmds.slnx`. CLI builds target individual projects (e.g., `Pkmds.Web.csproj`).
 
 Local dev (Blazor WASM)
@@ -44,7 +43,6 @@ Publish locally (static site)
   - `Pkmds.Core/` (Class Library): PKHeX utilities and extensions. Reusable, UI-independent logic for working with PKHeX.Core (species validation, shiny handling, markings, etc.).
   - `Pkmds.Rcl/` (Razor Class Library): shared UI/components and services. Tailwind integrated via `Tailwind.targets` (input at `Pkmds.Rcl/wwwroot/css/tailwind.input.css`). References `Pkmds.Core`.
   - `Pkmds.Web/` (Blazor WebAssembly): PWA host. Linking and compression enabled; service worker assets generated on publish. JS libs via `libman.json` (crypto-js).
-  - `Pkmds.Maui/` (optional MAUI host): multi-targets `net9.0-*` platforms; reuses RCL.
   - `Pkmds.Tests/` (tests): `net10.0`, references RCL and Core.
 
 Runtime wiring (Web)
@@ -64,4 +62,3 @@ Runtime wiring (Web)
 
 - Use `watch.ps1` for a consistent local dev experience.
 - If WASM crypto errors occur, ensure `libman restore` has brought down `crypto-js` (or run LibMan in your IDE). CI publishes without requiring LibMan on the runner because the published output contains required assets.
-- MAUI builds require platform SDKs and the `maui` workload; Web development does not.
