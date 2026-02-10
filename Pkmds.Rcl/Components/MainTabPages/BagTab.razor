@@ -6,7 +6,7 @@
              Rounded
              Border
              @ref="@PouchTabs">
-        @foreach (var pouch in Inventory)
+        @foreach (var pouch in Inventory.Pouches)
         {
             <MudTabPanel ID="@pouch.Type.ToString()">
                 <TabContent>
