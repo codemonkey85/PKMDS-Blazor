@@ -55,7 +55,7 @@ public partial class BagTab
 
     private void SaveChanges()
     {
-        if (AppState?.SaveFile is null || Inventory is null)
+        if (AppState?.SaveFile is not { } saveFile || Inventory is null)
         {
             return;
         }
@@ -64,6 +64,8 @@ public partial class BagTab
         {
             pouch.ClearCount0();
         }
+
+        Inventory.CopyTo(saveFile); // Persist pouch edits back to the save data
     }
 
     private ComboItem GetItem(CellContext<InventoryItem> context) =>
