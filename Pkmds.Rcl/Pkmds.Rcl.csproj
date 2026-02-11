@@ -5,30 +5,28 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <SupportedPlatform Include="browser" />
+        <SupportedPlatform Include="browser"/>
     </ItemGroup>
 
     <ItemGroup>
         <!-- Exclude Tailwind input CSS from publish output -->
-        <Content Remove="wwwroot/css/tailwind.input.css" />
-        <None Include="wwwroot/css/tailwind.input.css" />
+        <Content Remove="wwwroot/css/tailwind.input.css"/>
+        <None Include="wwwroot/css/tailwind.input.css"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Humanizer" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
-        <PackageReference Include="MudBlazor" />
-        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess" />
-        <PackageReference Include="BlazorExpress.ChartJS" />
-        <PackageReference Include="Serilog" />
-        <PackageReference Include="Serilog.Extensions.Logging" />
-        <PackageReference Include="Serilog.Sinks.BrowserConsole" />
+        <PackageReference Include="Humanizer"/>
+        <PackageReference Include="MudBlazor"/>
+        <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess"/>
+        <PackageReference Include="BlazorExpress.ChartJS"/>
+        <PackageReference Include="Serilog.Extensions.Logging"/>
+        <PackageReference Include="Serilog.Sinks.BrowserConsole"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pkmds.Core\Pkmds.Core.csproj" />
+        <ProjectReference Include="..\Pkmds.Core\Pkmds.Core.csproj"/>
     </ItemGroup>
 
-    <Import Project="Tailwind.targets" />
+    <Import Project="Tailwind.targets"/>
 
 </Project>

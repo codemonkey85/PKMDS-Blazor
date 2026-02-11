@@ -4,7 +4,7 @@ public partial class BagTab
 {
     [Parameter]
     [EditorRequired]
-    public IReadOnlyList<InventoryPouch>? Inventory { get; set; }
+    public PlayerBag? Inventory { get; set; }
 
     private MudTabs? PouchTabs { get; set; }
 
@@ -45,7 +45,7 @@ public partial class BagTab
             }
         }
 
-        var item0 = Inventory[0].Items[0];
+        var item0 = Inventory.Pouches[0].Items[0];
 
         HasFreeSpace = item0 is IItemFreeSpace;
         HasFreeSpaceIndex = item0 is IItemFreeSpaceIndex;
@@ -55,17 +55,17 @@ public partial class BagTab
 
     private void SaveChanges()
     {
-        if (AppState?.SaveFile is null || Inventory is null)
+        if (AppState?.SaveFile is not { } saveFile || Inventory is null)
         {
             return;
         }
 
-        foreach (var pouch in Inventory)
+        foreach (var pouch in Inventory.Pouches)
         {
             pouch.ClearCount0();
         }
 
-        AppState.SaveFile.Inventory = Inventory;
+        Inventory.CopyTo(saveFile); // Persist pouch edits back to the save data
     }
 
     private ComboItem GetItem(CellContext<InventoryItem> context) =>

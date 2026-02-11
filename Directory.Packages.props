@@ -3,25 +3,21 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
+        <PackageVersion Include="BlazorExpress.ChartJS" Version="1.2.0"/>
         <PackageVersion Include="bUnit" Version="2.5.3"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
         <PackageVersion Include="FluentAssertions" Version="8.8.0"/>
         <PackageVersion Include="Humanizer" Version="3.0.1"/>
         <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.3.0"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.2"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.120"/>
-        <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.10"/>
-        <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.120"/>
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.3"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.3"/>
+        <PackageVersion Include="Microsoft.JSInterop" Version="10.0.3"/>
+        <PackageVersion Include="Microsoft.JSInterop.WebAssembly" Version="10.0.3"/>
         <PackageVersion Include="MudBlazor" Version="8.15.0"/>
-        <PackageVersion Include="PKHeX.Core" Version="26.1.7"/>
-        <PackageVersion Include="BlazorExpress.ChartJS" Version="1.2.0"/>
-        <PackageVersion Include="Serilog" Version="4.3.0"/>
+        <PackageVersion Include="PKHeX.Core" Version="26.1.31"/>
         <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0"/>
         <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0"/>
-        <PackageVersion Include="xunit.v3" Version="3.2.2"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
+        <PackageVersion Include="xunit.v3" Version="3.2.2"/>
     </ItemGroup>
 </Project>
