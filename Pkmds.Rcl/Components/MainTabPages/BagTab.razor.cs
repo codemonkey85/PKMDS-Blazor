@@ -10,6 +10,10 @@ public partial class BagTab
 
     private string[] ItemList { get; set; } = [];
 
+    private Dictionary<int, ComboItem> ItemComboCache { get; set; } = [];
+
+    private Dictionary<InventoryType, HashSet<string>> PouchValidItemsCache { get; set; } = [];
+
     private bool HasFreeSpace { get; set; }
 
     private bool HasFreeSpaceIndex { get; set; }
@@ -51,6 +55,42 @@ public partial class BagTab
         HasFreeSpaceIndex = item0 is IItemFreeSpaceIndex;
         HasFavorite = item0 is IItemFavorite;
         HasNew = item0 is IItemNewFlag;
+
+        // Build caches for improved performance
+        BuildItemComboCache();
+        BuildPouchValidItemsCache();
+    }
+
+    private void BuildItemComboCache()
+    {
+        ItemComboCache = GameInfo.FilteredSources.Items
+            .DistinctBy(item => item.Value)
+            .ToDictionary(item => item.Value, item => item);
+    }
+
+    private void BuildPouchValidItemsCache()
+    {
+        if (Inventory is null)
+        {
+            return;
+        }
+
+        PouchValidItemsCache.Clear();
+        foreach (var pouch in Inventory.Pouches)
+        {
+            var validItems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var pouchItems = pouch.GetAllItems();
+            foreach (var itemIndex in pouchItems)
+            {
+                if (itemIndex < ItemList.Length)
+                {
+                    validItems.Add(ItemList[itemIndex]);
+                }
+            }
+            // Always include "None" item
+            validItems.Add(ItemList[0]);
+            PouchValidItemsCache[pouch.Type] = validItems;
+        }
     }
 
     private void SaveChanges()
@@ -69,7 +109,7 @@ public partial class BagTab
     }
 
     private ComboItem GetItem(CellContext<InventoryItem> context) =>
-        AppService.GetItemComboItem(context.Item.Index);
+        ItemComboCache.GetValueOrDefault(context.Item.Index) ?? new ComboItem(string.Empty, 0);
 
     private static void SetItem(CellContext<InventoryItem> context, ComboItem item) =>
         context.Item.Index = item.Value;
@@ -124,11 +164,23 @@ public partial class BagTab
 
     private Task<IEnumerable<ComboItem>> SearchItemNames(InventoryPouch pouch, string searchString)
     {
-        var itemsToSearch = GetStringsForPouch(pouch.GetAllItems());
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            return Task.FromResult(Enumerable.Empty<ComboItem>());
+        }
 
-        return Task.FromResult(ItemList
-            .Select((name, index) => new ComboItem(name, index))
-            .Where(x => itemsToSearch.Contains(x.Text) &&
-                        x.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase)));
+        // Use cached valid items for this pouch
+        if (!PouchValidItemsCache.TryGetValue(pouch.Type, out var validItems))
+        {
+            return Task.FromResult(Enumerable.Empty<ComboItem>());
+        }
+
+        var results = ItemComboCache.Values
+            .Where(item => validItems.Contains(item.Text) &&
+                          item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(item => item.Text)
+            .AsEnumerable();
+
+        return Task.FromResult(results);
     }
 }
