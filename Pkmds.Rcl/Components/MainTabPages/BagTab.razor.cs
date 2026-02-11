@@ -12,7 +12,11 @@ public partial class BagTab
 
     private Dictionary<int, ComboItem> ItemComboCache { get; set; } = [];
 
+    private List<ComboItem> SortedItemComboList { get; set; } = [];
+
     private Dictionary<InventoryType, HashSet<string>> PouchValidItemsCache { get; set; } = [];
+
+    private static readonly ComboItem FallbackComboItem = new(string.Empty, 0);
 
     private bool HasFreeSpace { get; set; }
 
@@ -63,9 +67,12 @@ public partial class BagTab
 
     private void BuildItemComboCache()
     {
-        ItemComboCache = GameInfo.FilteredSources.Items
+        var items = GameInfo.FilteredSources.Items
             .DistinctBy(item => item.Value)
-            .ToDictionary(item => item.Value, item => item);
+            .ToList();
+
+        ItemComboCache = items.ToDictionary(item => item.Value, item => item);
+        SortedItemComboList = [.. items.OrderBy(item => item.Text)];
     }
 
     private void BuildPouchValidItemsCache()
@@ -109,7 +116,7 @@ public partial class BagTab
     }
 
     private ComboItem GetItem(CellContext<InventoryItem> context) =>
-        ItemComboCache.GetValueOrDefault(context.Item.Index) ?? new ComboItem(string.Empty, 0);
+        ItemComboCache.GetValueOrDefault(context.Item.Index) ?? FallbackComboItem;
 
     private static void SetItem(CellContext<InventoryItem> context, ComboItem item) =>
         context.Item.Index = item.Value;
@@ -175,11 +182,10 @@ public partial class BagTab
             return Task.FromResult(Enumerable.Empty<ComboItem>());
         }
 
-        var results = ItemComboCache.Values
+        // Use pre-sorted list to avoid sorting on every search
+        var results = SortedItemComboList
             .Where(item => validItems.Contains(item.Text) &&
-                          item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(item => item.Text)
-            .AsEnumerable();
+                          item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 
         return Task.FromResult(results);
     }
