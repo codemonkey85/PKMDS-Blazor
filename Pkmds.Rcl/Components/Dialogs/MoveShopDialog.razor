@@ -15,14 +15,6 @@
                          Height="500px"
                          FixedHeader>
                 <Columns>
-                    <TemplateColumn Title="" Sortable="false">
-                        <CellTemplate>
-                            <MudCheckBox T="@bool"
-                                         Value="@context.Item.IsPurchased"
-                                         ValueChanged="@(value => ToggleMoveShopFlag(context.Item.Index, value))"
-                                         Dense />
-                        </CellTemplate>
-                    </TemplateColumn>
                     <PropertyColumn Property="@(x => x.Index)" Title="#" />
                     <TemplateColumn Title="">
                         <CellTemplate>
@@ -30,6 +22,25 @@
                         </CellTemplate>
                     </TemplateColumn>
                     <PropertyColumn Property="@(x => x.Name)" Title="Move" />
+                    <TemplateColumn Title="Purchased" Sortable="false">
+                        <CellTemplate>
+                            <MudCheckBox T="@bool"
+                                         Value="@context.Item.IsPurchased"
+                                         ValueChanged="@(value => TogglePurchasedFlag(context.Item.Index, value))"
+                                         Dense />
+                        </CellTemplate>
+                    </TemplateColumn>
+                    @if (Pokemon is IMoveShop8Mastery)
+                    {
+                        <TemplateColumn Title="Mastered" Sortable="false">
+                            <CellTemplate>
+                                <MudCheckBox T="@bool"
+                                             Value="@context.Item.IsMastered"
+                                             ValueChanged="@(value => ToggleMasteredFlag(context.Item.Index, value))"
+                                             Dense />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    }
                 </Columns>
             </MudDataGrid>
         }

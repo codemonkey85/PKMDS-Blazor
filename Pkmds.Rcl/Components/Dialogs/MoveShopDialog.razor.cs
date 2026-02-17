@@ -33,12 +33,16 @@ public partial class MoveShopDialog
         var permit = moveShop.Permit;
         var indexes = permit.RecordPermitIndexes;
 
+        // Check if this Pokemon also supports mastery flags
+        var mastery = Pokemon as IMoveShop8Mastery;
+
         for (var i = 0; i < indexes.Length; i++)
         {
             var moveId = indexes[i];
             var moveName = moveNames[moveId];
             var moveType = MoveInfo.GetType(moveId, context);
             var isPurchased = moveShop.GetPurchasedRecordFlag(i);
+            var isMastered = mastery?.GetMasteredRecordFlag(i) ?? false;
 
             MoveShopMoves.Add(new MoveShopInfo
             {
@@ -46,12 +50,13 @@ public partial class MoveShopDialog
                 MoveId = moveId,
                 Name = moveName,
                 Type = moveType,
-                IsPurchased = isPurchased
+                IsPurchased = isPurchased,
+                IsMastered = isMastered
             });
         }
     }
 
-    private void ToggleMoveShopFlag(int index, bool value)
+    private void TogglePurchasedFlag(int index, bool value)
     {
         var moveShopMove = MoveShopMoves.FirstOrDefault(m => m.Index == index);
         if (moveShopMove != null)
@@ -60,11 +65,21 @@ public partial class MoveShopDialog
         }
     }
 
+    private void ToggleMasteredFlag(int index, bool value)
+    {
+        var moveShopMove = MoveShopMoves.FirstOrDefault(m => m.Index == index);
+        if (moveShopMove != null)
+        {
+            moveShopMove.IsMastered = value;
+        }
+    }
+
     private void GiveAll()
     {
         foreach (var moveShopMove in MoveShopMoves)
         {
             moveShopMove.IsPurchased = true;
+            moveShopMove.IsMastered = true;
         }
         StateHasChanged();
     }
@@ -74,6 +89,7 @@ public partial class MoveShopDialog
         foreach (var moveShopMove in MoveShopMoves)
         {
             moveShopMove.IsPurchased = false;
+            moveShopMove.IsMastered = false;
         }
         StateHasChanged();
     }
@@ -89,6 +105,15 @@ public partial class MoveShopDialog
         foreach (var moveShopMove in MoveShopMoves)
         {
             moveShop.SetPurchasedRecordFlag(moveShopMove.Index, moveShopMove.IsPurchased);
+        }
+
+        // Apply mastered flags if supported
+        if (Pokemon is IMoveShop8Mastery mastery)
+        {
+            foreach (var moveShopMove in MoveShopMoves)
+            {
+                mastery.SetMasteredRecordFlag(moveShopMove.Index, moveShopMove.IsMastered);
+            }
         }
 
         RefreshService.Refresh();
@@ -108,5 +133,6 @@ public partial class MoveShopDialog
         public string Name { get; set; } = string.Empty;
         public byte Type { get; set; }
         public bool IsPurchased { get; set; }
+        public bool IsMastered { get; set; }
     }
 }

@@ -120,22 +120,4 @@ public partial class MovesTab
 
         await DialogService.ShowAsync<MoveShopDialog>("Move Shop Editor", parameters, options);
     }
-
-    private async void OpenAlphaMasteredDialog()
-    {
-        var parameters = new DialogParameters<AlphaMasteredDialog>
-        {
-            { x => x.Pokemon, Pokemon }
-        };
-
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true,
-            CloseOnEscapeKey = true
-        };
-
-        await DialogService.ShowAsync<AlphaMasteredDialog>("Alpha Mastered Editor", parameters, options);
-    }
 }
