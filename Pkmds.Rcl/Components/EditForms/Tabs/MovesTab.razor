@@ -22,11 +22,14 @@
                 var displayNumber = i + 1;
                 var moveId = Pokemon.Moves[i];
                 var showPlusMove = saveFileEntityContext.GetSingleGameVersion() == GameVersion.ZA;
+                var showMasteredMove = saveFileEntityContext.GetSingleGameVersion() == GameVersion.PLA;
 
                 var moveTextColumns = 6;
                 if (UseTextSearch)
                     moveTextColumns--;
                 if (showPlusMove)
+                    moveTextColumns--;
+                if (showMasteredMove)
                     moveTextColumns--;
 
                 <MudGrid Spacing="1">
@@ -134,6 +137,21 @@
                                          @bind-Value:set="@(newValue => SetPokemonMoveIsPlus(plusFlagIndex, newValue))"/>
                         </MudItem>
                     }
+                    
+                    @if (showMasteredMove && Pokemon is IMoveShop8Mastery)
+                    {
+                        var localMoveId = Pokemon.GetMove(i);
+                        var masteredFlagIndex = GetMasteredRecordIndex(localMoveId);
+                        <MudItem xs="1"
+                                 Class="@ColumnClass">
+                            <MudCheckBox Label="M"
+                                         Dense
+                                         title="Mastered Move"
+                                         Disabled="@(masteredFlagIndex < 0)"
+                                         @bind-Value:get="@GetPokemonMoveIsMastered(masteredFlagIndex)"
+                                         @bind-Value:set="@(newValue => SetPokemonMoveIsMastered(masteredFlagIndex, newValue))"/>
+                        </MudItem>
+                    }
                 </MudGrid>
             }
         </MudStack>
@@ -195,6 +213,68 @@
                                            Clearable
                                            @bind-Value:get="@(GetPokemonRelearnMove(i))"
                                            @bind-Value:set="@(newMove => SetPokemonRelearnMove(i, newMove))">
+                                    @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
+                                    @foreach (var move in AppService.GetMoves())
+                                    {
+                                        <MudSelectItem Value="@move?.Value">
+                                            @MoveRenderFragment(move, saveFileEntityContext)
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                }
+
+                @if (Pokemon is PA8 pa8)
+                {
+                    var alphaMoveId = pa8.AlphaMove;
+                    <MudGrid Spacing="1">
+                        @if (UseTextSearch)
+                        {
+                            <MudItem xs="1"
+                                     Class="@ColumnClass">
+                                @if (alphaMoveId != 0)
+                                {
+                                    @MoveTypeSummary(MoveInfo.GetType(alphaMoveId, saveFileEntityContext))
+                                }
+                                else
+                                {
+                                    <span style="width: 30px"></span>
+                                }
+                            </MudItem>
+                        }
+
+                        <MudItem xs="@(UseTextSearch ? 11 : 12)"
+                                 Class="@ColumnClass">
+                            @if (UseTextSearch)
+                            {
+                                @* ReSharper disable once CSharpWarnings::CS8603 *@
+                                <MudAutocomplete T="@ComboItem"
+                                                 Label="Alpha Move"
+                                                 Variant="@Variant.Outlined"
+                                                 Margin="@Margin.Dense"
+                                                 Clearable
+                                                 @bind-Value:get="@(AppService.GetMoveComboItem(alphaMoveId))"
+                                                 @bind-Value:set="@(newMove => SetAlphaMove(newMove))"
+                                                 SearchFunc="@SearchMoves"
+                                                 ToStringFunc="@(move => move?.Text)">
+
+                                    <ItemTemplate Context="move">
+                                        @MoveRenderFragment(move, saveFileEntityContext)
+                                    </ItemTemplate>
+
+                                </MudAutocomplete>
+                            }
+                            else
+                            {
+                                <MudSelect T="@(int?)"
+                                           Label="Alpha Move"
+                                           Variant="@Variant.Outlined"
+                                           Margin="@Margin.Dense"
+                                           Clearable
+                                           @bind-Value:get="@GetAlphaMove()"
+                                           @bind-Value:set="@SetAlphaMove">
                                     @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
                                     @foreach (var move in AppService.GetMoves())
                                     {

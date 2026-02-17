@@ -58,6 +58,70 @@ public partial class MovesTab
         pa9.SetMovePlusFlag(moveIndex, isPlus);
     }
 
+    private int GetMasteredRecordIndex(ushort moveId)
+    {
+        if (Pokemon is not IMoveShop8 moveShop)
+        {
+            return -1;
+        }
+
+        var permit = moveShop.Permit;
+        var indexes = permit.RecordPermitIndexes;
+        
+        for (var i = 0; i < indexes.Length; i++)
+        {
+            if (indexes[i] == moveId)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private bool GetPokemonMoveIsMastered(int recordIndex)
+    {
+        if (recordIndex < 0 || Pokemon is not IMoveShop8Mastery mastery)
+        {
+            return false;
+        }
+
+        return mastery.GetMasteredRecordFlag(recordIndex);
+    }
+
+    private void SetPokemonMoveIsMastered(int recordIndex, bool isMastered)
+    {
+        if (recordIndex < 0 || Pokemon is not IMoveShop8Mastery mastery)
+        {
+            return;
+        }
+
+        mastery.SetMasteredRecordFlag(recordIndex, isMastered);
+    }
+
+    private int? GetAlphaMove()
+    {
+        if (Pokemon is not PA8 pa8)
+        {
+            return null;
+        }
+
+        return pa8.AlphaMove == 0 ? null : (int?)pa8.AlphaMove;
+    }
+
+    private void SetAlphaMove(ComboItem? moveComboItem) =>
+        SetAlphaMove(moveComboItem?.Value);
+
+    private void SetAlphaMove(int? newMoveId)
+    {
+        if (Pokemon is not PA8 pa8)
+        {
+            return;
+        }
+
+        pa8.AlphaMove = (ushort)(newMoveId ?? 0);
+    }
+
     private void SetPokemonRelearnMove(int relearnIndex, ComboItem? moveComboItem) =>
         SetPokemonRelearnMove(relearnIndex, moveComboItem?.Value);
 
