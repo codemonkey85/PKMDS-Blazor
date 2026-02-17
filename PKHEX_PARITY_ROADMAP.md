@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-02-17
 
 ---
 
@@ -11,7 +11,14 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 ### ✅ Already Implemented in PKMDS
 - **Pokemon Editor** - Full individual Pokemon editing (species, nickname, gender, level, experience, abilities, held items)
 - **Stats Editing** - IVs, EVs, base stats, calculated battle stats, stats chart visualization
-- **Moves Editing** - 4-move slots with search, type indicators, Plus Move support (Gen 9)
+- **Moves Editing** - 4-move slots with search, type indicators, PP/PP Ups editing
+  - **Relearn Moves** (Gen 6+) - 4 relearn move slots with search functionality
+  - **Plus Move Checkboxes** (PA9/Legends Z-A) - Mark moves as Plus-enabled inline
+  - **Mastered Move Checkboxes** (PA8/Legends Arceus) - Mark moves as mastered inline
+  - **Alpha Move Selector** (PA8/Legends Arceus) - Dropdown for Alpha Move selection
+  - **TR Relearn Flags Dialog** (Gen 8+) - Technical Record flag editor with Give All/Remove All
+  - **Move Shop Dialog** (PA8/Legends Arceus) - Purchased and Mastered flags in single dialog
+  - **Plus Flags Dialog** (PA9/Legends Z-A) - Plus Move flag editor
 - **Box Management** - Visual box grid, drag-and-drop, copy/paste Pokemon
 - **Party Management** - Party grid with visual display
 - **Bag/Inventory** - Multi-pouch item editing with counts, favorites, sorting
@@ -286,7 +293,12 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 ## Priority 3: Generation-Specific Features
 
 ### 3.1 Generation 9 (Scarlet/Violet)
+**Status:** ⚠️ Partial (Plus Move flags implemented)  
 **Tasks:**
+- [x] **Plus Move Support** (Legends Z-A)
+  - [x] Plus Move checkboxes (inline with current moves)
+  - [x] Plus Flags dialog editor
+  - [x] Give All / Remove All functionality
 - [ ] Raid Editor (Tera Raids)
   - [ ] Raid seed editor
   - [ ] Raid Pokemon species/stats editor
@@ -313,6 +325,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Casual/Ranked battle restrictions
 
 ### 3.3 Generation 8 (Sword/Shield, Legends Arceus)
+**Status:** ⚠️ Partial (Move Shop, TR Flags implemented)  
 **Tasks:**
 - [ ] Raid Den editor (SAV_Raid8)
   - [ ] Den seed manipulation
@@ -322,7 +335,17 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Rotom Bike/Rotom Catalog
 - [ ] Dynamax/Gigantamax data
 - [ ] DLC progress (Isle of Armor, Crown Tundra)
+- [x] **Technical Records (TR) Relearn Flags** (Gen 8+)
+  - [x] TR flag editor dialog with checkbox grid
+  - [x] Give All / Remove All functionality
+  - [x] Support for PK8, PA8, PB8, PK9, PA9
 - [ ] **Legends Arceus specific:**
+  - [x] **Move Shop Editor**
+    - [x] Purchased flags for unlocked moves
+    - [x] Mastered flags for mastered moves
+    - [x] Combined Purchased/Mastered dialog
+  - [x] **Alpha Move** selector dropdown
+  - [x] **Mastered Move** checkboxes (inline with current moves)
   - [ ] Pokedex Research Tasks (SAV_PokedexResearchEditorLA)
   - [ ] Research level editor
   - [ ] Alpha Pokemon caught tracker
@@ -352,7 +375,12 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
   - [ ] Candy counts by species
 
 ### 3.5 Generation 6 (X/Y, ORAS)
+**Status:** ⚠️ Partial (Relearn Moves implemented)  
 **Tasks:**
+- [x] **Relearn Moves** (Gen 6+)
+  - [x] 4 relearn move slots with search
+  - [x] Type icon display
+  - [x] Extension methods for relearn move access
 - [ ] O-Powers editor
 - [ ] Pokémon-Amie affection
 - [ ] Super Training medals/stats
@@ -798,7 +826,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 
 ### Completion Tracking
 - **Total Features Identified:** ~250+ individual tasks
-- **Currently Implemented:** ~40 tasks (16%)
+- **Currently Implemented:** ~50 tasks (20%)
 - **Target for Phase 1:** 80 tasks (32%)
 - **Target for Full Parity:** 100%
 
@@ -850,5 +878,5 @@ This roadmap is a living document. Community contributions are welcome!
 
 **For questions, suggestions, or to discuss the roadmap, please open an issue on GitHub or contact the maintainer.**
 
-**Last Updated:** 2026-01-25  
-**Next Review:** 2026-02-25
+**Last Updated:** 2026-02-17  
+**Next Review:** 2026-03-17
