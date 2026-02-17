@@ -202,9 +202,10 @@ public static class PkmExtensions
         /// <summary>
         /// Gets a specific relearn move by index.
         /// Relearn moves are available in Gen 6+ and represent moves a Pokémon can relearn.
+        /// For pre-Gen 6 Pokemon, the properties exist but will typically be 0.
         /// </summary>
         /// <param name="index">The relearn move slot index (0-3).</param>
-        /// <returns>The move ID, or 0 if the Pokémon doesn't support relearn moves or the index is invalid.</returns>
+        /// <returns>The move ID, or 0 if the index is invalid.</returns>
         public ushort GetRelearnMove(int index)
         {
             if (index is < 0 or > 3)
