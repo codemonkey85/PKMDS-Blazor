@@ -2,6 +2,8 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class BagTab
 {
+    private static readonly ComboItem FallbackComboItem = new(string.Empty, 0);
+
     [Parameter]
     [EditorRequired]
     public PlayerBag? Inventory { get; set; }
@@ -9,6 +11,12 @@ public partial class BagTab
     private MudTabs? PouchTabs { get; set; }
 
     private string[] ItemList { get; set; } = [];
+
+    private Dictionary<int, ComboItem> ItemComboCache { get; set; } = [];
+
+    private List<ComboItem> SortedItemComboList { get; set; } = [];
+
+    private Dictionary<InventoryType, HashSet<string>> PouchValidItemsCache { get; } = [];
 
     private bool HasFreeSpace { get; set; }
 
@@ -51,6 +59,51 @@ public partial class BagTab
         HasFreeSpaceIndex = item0 is IItemFreeSpaceIndex;
         HasFavorite = item0 is IItemFavorite;
         HasNew = item0 is IItemNewFlag;
+
+        // Build caches for improved performance
+        BuildItemComboCache();
+        BuildPouchValidItemsCache();
+    }
+
+    private void BuildItemComboCache()
+    {
+        // Build from ItemList to match data source used in BuildPouchValidItemsCache
+        // This ensures text consistency between cache and search filters
+        var items = ItemList
+            .Select((name, index) => new ComboItem(name, index))
+            .ToList();
+
+        ItemComboCache = items.ToDictionary(item => item.Value, item => item);
+        SortedItemComboList = [.. items.OrderBy(item => item.Text)];
+    }
+
+    private void BuildPouchValidItemsCache()
+    {
+        if (Inventory is null)
+        {
+            return;
+        }
+
+        PouchValidItemsCache.Clear();
+        foreach (var pouch in Inventory.Pouches)
+        {
+            var validItems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var pouchItems = pouch.GetAllItems();
+            foreach (var itemIndex in pouchItems)
+            {
+                if (itemIndex < ItemList.Length)
+                {
+                    validItems.Add(ItemList[itemIndex]);
+                }
+            }
+
+            // Always include "None" item
+            if (ItemList.Length > 0)
+            {
+                validItems.Add(ItemList[0]);
+            }
+            PouchValidItemsCache[pouch.Type] = validItems;
+        }
     }
 
     private void SaveChanges()
@@ -69,7 +122,9 @@ public partial class BagTab
     }
 
     private ComboItem GetItem(CellContext<InventoryItem> context) =>
-        AppService.GetItemComboItem(context.Item.Index);
+        ItemComboCache.GetValueOrDefault(context.Item.Index)
+        ?? ItemComboCache.GetValueOrDefault(0)
+        ?? FallbackComboItem;
 
     private static void SetItem(CellContext<InventoryItem> context, ComboItem item) =>
         context.Item.Index = item.Value;
@@ -98,23 +153,6 @@ public partial class BagTab
         _ => pouch.Type.ToString()
     };
 
-    private string[] GetStringsForPouch(ReadOnlySpan<ushort> items, bool sort = true)
-    {
-        var res = new string[items.Length + 1];
-        for (var i = 0; i < res.Length - 1; i++)
-        {
-            res[i] = ItemList[items[i]];
-        }
-
-        res[items.Length] = ItemList[0];
-        if (sort)
-        {
-            Array.Sort(res);
-        }
-
-        return res;
-    }
-
     private void SortByName(InventoryPouch pouch) =>
         pouch.SortByName(ItemList, IsSortedByName = !IsSortedByName);
 
@@ -124,11 +162,22 @@ public partial class BagTab
 
     private Task<IEnumerable<ComboItem>> SearchItemNames(InventoryPouch pouch, string searchString)
     {
-        var itemsToSearch = GetStringsForPouch(pouch.GetAllItems());
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            return Task.FromResult(Enumerable.Empty<ComboItem>());
+        }
 
-        return Task.FromResult(ItemList
-            .Select((name, index) => new ComboItem(name, index))
-            .Where(x => itemsToSearch.Contains(x.Text) &&
-                        x.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase)));
+        // Use cached valid items for this pouch
+        if (!PouchValidItemsCache.TryGetValue(pouch.Type, out var validItems))
+        {
+            return Task.FromResult(Enumerable.Empty<ComboItem>());
+        }
+
+        // Use pre-sorted list to avoid sorting on every search
+        var results = SortedItemComboList
+            .Where(item => validItems.Contains(item.Text) &&
+                           item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult(results);
     }
 }
