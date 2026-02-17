@@ -76,7 +76,7 @@ public partial class MovesTab
 
         var options = new DialogOptions
         {
-            MaxWidth = MaxWidth.Medium,
+            MaxWidth = MaxWidth.Small,
             FullWidth = true,
             CloseButton = true,
             CloseOnEscapeKey = true
@@ -94,12 +94,48 @@ public partial class MovesTab
 
         var options = new DialogOptions
         {
-            MaxWidth = MaxWidth.Medium,
+            MaxWidth = MaxWidth.Small,
             FullWidth = true,
             CloseButton = true,
             CloseOnEscapeKey = true
         };
 
         await DialogService.ShowAsync<PlusFlagsDialog>("Plus Flags Editor", parameters, options);
+    }
+
+    private async void OpenMoveShopDialog()
+    {
+        var parameters = new DialogParameters<MoveShopDialog>
+        {
+            { x => x.Pokemon, Pokemon }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true,
+            CloseOnEscapeKey = true
+        };
+
+        await DialogService.ShowAsync<MoveShopDialog>("Move Shop Editor", parameters, options);
+    }
+
+    private async void OpenAlphaMasteredDialog()
+    {
+        var parameters = new DialogParameters<AlphaMasteredDialog>
+        {
+            { x => x.Pokemon, Pokemon }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true,
+            CloseOnEscapeKey = true
+        };
+
+        await DialogService.ShowAsync<AlphaMasteredDialog>("Alpha Mastered Editor", parameters, options);
     }
 }
