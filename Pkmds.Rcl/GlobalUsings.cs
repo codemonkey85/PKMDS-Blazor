@@ -1,5 +1,4 @@
 ﻿global using System.Collections.Generic;
-global using System.Collections.ObjectModel;
 global using System.ComponentModel;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
@@ -17,7 +16,6 @@ global using Pkmds.Core.Extensions;
 global using Pkmds.Core.Utilities;
 global using Pkmds.Rcl.Components;
 global using Pkmds.Rcl.Components.Dialogs;
-global using Pkmds.Rcl.Extensions;
 global using Pkmds.Rcl.Services;
 global using Serilog.Events;
 global using Severity = MudBlazor.Severity;
