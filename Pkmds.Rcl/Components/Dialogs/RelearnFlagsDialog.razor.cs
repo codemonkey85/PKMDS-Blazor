@@ -10,7 +10,6 @@ public partial class RelearnFlagsDialog
     private IMudDialogInstance? MudDialog { get; set; }
 
     private List<TrMoveInfo> TrMoves { get; set; } = [];
-    private Dictionary<int, bool> OriginalFlags { get; set; } = [];
 
     protected override void OnParametersSet()
     {
@@ -30,7 +29,6 @@ public partial class RelearnFlagsDialog
         var context = Pokemon.Context;
 
         TrMoves.Clear();
-        OriginalFlags.Clear();
 
         var indexes = permit.RecordPermitIndexes;
         var baseRecordIndex = context == EntityContext.Gen9a ? 1 : 0; // TM001 in Legends: Z-A but is 0-index bits
@@ -51,8 +49,6 @@ public partial class RelearnFlagsDialog
                 Type = moveType,
                 IsLearned = isLearned
             });
-
-            OriginalFlags[recordIndex] = isLearned;
         }
     }
 
@@ -90,6 +86,7 @@ public partial class RelearnFlagsDialog
             return;
         }
 
+        // Apply all TR flag changes to the Pokemon
         foreach (var trMove in TrMoves)
         {
             techRecord.SetMoveRecordFlag(trMove.Index, trMove.IsLearned);
@@ -101,15 +98,7 @@ public partial class RelearnFlagsDialog
 
     private void Cancel()
     {
-        // Restore original flags if user cancels
-        if (Pokemon is ITechRecord techRecord)
-        {
-            foreach (var (index, isLearned) in OriginalFlags)
-            {
-                techRecord.SetMoveRecordFlag(index, isLearned);
-            }
-        }
-
+        // Close without applying changes - TR flags were not modified
         MudDialog?.Close(DialogResult.Cancel());
     }
 
