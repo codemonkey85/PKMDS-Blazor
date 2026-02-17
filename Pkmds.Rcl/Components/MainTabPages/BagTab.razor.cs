@@ -116,7 +116,9 @@ public partial class BagTab
     }
 
     private ComboItem GetItem(CellContext<InventoryItem> context) =>
-        ItemComboCache.GetValueOrDefault(context.Item.Index) ?? FallbackComboItem;
+        ItemComboCache.GetValueOrDefault(context.Item.Index)
+        ?? ItemComboCache.GetValueOrDefault(0)
+        ?? FallbackComboItem;
 
     private static void SetItem(CellContext<InventoryItem> context, ComboItem item) =>
         context.Item.Index = item.Value;
