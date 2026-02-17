@@ -138,6 +138,87 @@
             }
         </MudStack>
 
+        @if (Pokemon.HasRelearnMoves())
+        {
+            <MudStack Spacing="1">
+                <MudText Typo="@Typo.h6">Relearn Moves</MudText>
+                
+                @for (var counter = 0; counter < 4; counter++)
+                {
+                    var i = counter;
+                    var displayNumber = i + 1;
+                    var relearnMoveId = Pokemon.GetRelearnMove(i);
+
+                    <MudGrid Spacing="1">
+                        @if (UseTextSearch)
+                        {
+                            <MudItem xs="1"
+                                     Class="@ColumnClass">
+                                @if (relearnMoveId != 0)
+                                {
+                                    @MoveTypeSummary(MoveInfo.GetType(relearnMoveId, saveFileEntityContext))
+                                }
+                                else
+                                {
+                                    <span style="width: 30px"></span>
+                                }
+                            </MudItem>
+                        }
+
+                        <MudItem xs="@(UseTextSearch ? 11 : 12)"
+                                 Class="@ColumnClass">
+                            @if (UseTextSearch)
+                            {
+                                @* ReSharper disable once CSharpWarnings::CS8603 *@
+                                <MudAutocomplete T="@ComboItem"
+                                                 Label="@($"Relearn {displayNumber}")"
+                                                 Variant="@Variant.Outlined"
+                                                 Margin="@Margin.Dense"
+                                                 Clearable
+                                                 @bind-Value:get="@(AppService.GetMoveComboItem(relearnMoveId))"
+                                                 @bind-Value:set="@(newMove => SetPokemonRelearnMove(i, newMove))"
+                                                 SearchFunc="@SearchMoves"
+                                                 ToStringFunc="@(move => move?.Text)">
+
+                                    <ItemTemplate Context="move">
+                                        @MoveRenderFragment(move, saveFileEntityContext)
+                                    </ItemTemplate>
+
+                                </MudAutocomplete>
+                            }
+                            else
+                            {
+                                <MudSelect T="@(int?)"
+                                           Label="@($"Relearn {displayNumber}")"
+                                           Variant="@Variant.Outlined"
+                                           Margin="@Margin.Dense"
+                                           Clearable
+                                           @bind-Value:get="@(GetPokemonRelearnMove(i))"
+                                           @bind-Value:set="@(newMove => SetPokemonRelearnMove(i, newMove))">
+                                    @* ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract *@
+                                    @foreach (var move in AppService.GetMoves())
+                                    {
+                                        <MudSelectItem Value="@move?.Value">
+                                            @MoveRenderFragment(move, saveFileEntityContext)
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                }
+
+                @if (Pokemon is ITechRecord)
+                {
+                    <MudButton Variant="@Variant.Outlined"
+                               Color="@Color.Primary"
+                               OnClick="@OpenRelearnFlagsDialog">
+                        Relearn Flags
+                    </MudButton>
+                }
+            </MudStack>
+        }
+
         @if (GameInfo.FilteredSources.Moves.Any(m => m.Value == (int)Move.HiddenPower) && Pokemon is not { Context: EntityContext.Gen8 or EntityContext.Gen9 })
         {
             <HiddenPowerChooser Pokemon="@Pokemon"/>

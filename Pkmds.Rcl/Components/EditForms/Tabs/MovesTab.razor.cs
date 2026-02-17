@@ -57,4 +57,31 @@ public partial class MovesTab
 
         pa9.SetMovePlusFlag(moveIndex, isPlus);
     }
+
+    private void SetPokemonRelearnMove(int relearnIndex, ComboItem? moveComboItem) =>
+        SetPokemonRelearnMove(relearnIndex, moveComboItem?.Value);
+
+    private void SetPokemonRelearnMove(int relearnIndex, int? newMoveId) =>
+        Pokemon?.SetRelearnMove(relearnIndex, (ushort)(newMoveId ?? 0));
+
+    private int? GetPokemonRelearnMove(int relearnIndex) =>
+        Pokemon?.GetRelearnMove(relearnIndex);
+
+    private async void OpenRelearnFlagsDialog()
+    {
+        var parameters = new DialogParameters<RelearnFlagsDialog>
+        {
+            { x => x.Pokemon, Pokemon }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            CloseButton = true,
+            CloseOnEscapeKey = true
+        };
+
+        await DialogService.ShowAsync<RelearnFlagsDialog>("TR Relearn Editor", parameters, options);
+    }
 }

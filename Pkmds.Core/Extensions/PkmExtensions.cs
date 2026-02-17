@@ -200,6 +200,77 @@ public static class PkmExtensions
         }
 
         /// <summary>
+        /// Gets a specific relearn move by index.
+        /// Relearn moves are available in Gen 6+ and represent moves a Pokémon can relearn.
+        /// </summary>
+        /// <param name="index">The relearn move slot index (0-3).</param>
+        /// <returns>The move ID, or 0 if the Pokémon doesn't support relearn moves or the index is invalid.</returns>
+        public ushort GetRelearnMove(int index)
+        {
+            if (index is < 0 or > 3)
+            {
+                return 0;
+            }
+
+            return index switch
+            {
+                0 => pkm.RelearnMove1,
+                1 => pkm.RelearnMove2,
+                2 => pkm.RelearnMove3,
+                3 => pkm.RelearnMove4,
+                _ => 0
+            };
+        }
+
+        /// <summary>
+        /// Sets a specific relearn move by index.
+        /// Relearn moves are available in Gen 6+ and represent moves a Pokémon can relearn.
+        /// </summary>
+        /// <param name="index">The relearn move slot index (0-3).</param>
+        /// <param name="move">The move ID to set.</param>
+        public void SetRelearnMove(int index, ushort move)
+        {
+            if (index is < 0 or > 3)
+            {
+                return;
+            }
+
+            switch (index)
+            {
+                case 0:
+                    pkm.RelearnMove1 = move;
+                    break;
+                case 1:
+                    pkm.RelearnMove2 = move;
+                    break;
+                case 2:
+                    pkm.RelearnMove3 = move;
+                    break;
+                case 3:
+                    pkm.RelearnMove4 = move;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Gets all relearn moves as a read-only collection.
+        /// </summary>
+        /// <returns>A read-only collection of the four relearn move IDs.</returns>
+        public ReadOnlyCollection<ushort> GetRelearnMoves() => new(
+        [
+            pkm.RelearnMove1,
+            pkm.RelearnMove2,
+            pkm.RelearnMove3,
+            pkm.RelearnMove4
+        ]);
+
+        /// <summary>
+        /// Determines if the Pokémon supports relearn moves (Gen 6+).
+        /// </summary>
+        /// <returns>True if the Pokémon has relearn move properties; otherwise, false.</returns>
+        public bool HasRelearnMoves() => pkm.Format >= 6;
+
+        /// <summary>
         /// Safely determines if the Pokémon is shiny, handling both Gen 1/2 (DV-based) and Gen 3+ (PID-based) shininess.
         /// In Gen 1/2, shininess is determined by specific DV (Determinant Value) patterns.
         /// In Gen 3+, shininess is determined by the PID (Personality ID) and trainer IDs.
