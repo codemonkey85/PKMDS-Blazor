@@ -97,7 +97,8 @@ public partial class OtMiscTab : IDisposable
 
     private void SetPokemonHomeTracker(string newPidHex)
     {
-        if (Pokemon is not IHomeTrack homeTrack || !uint.TryParse(newPidHex, NumberStyles.HexNumber, null, out var parsedPid))
+        if (Pokemon is not IHomeTrack homeTrack ||
+            !uint.TryParse(newPidHex, NumberStyles.HexNumber, null, out var parsedPid))
         {
             return;
         }

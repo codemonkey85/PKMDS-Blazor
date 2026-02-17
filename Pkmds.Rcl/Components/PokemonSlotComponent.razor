@@ -10,7 +10,8 @@
           @ondragleave="@HandleDragLeave"
           @ondrop="@HandleDrop"
           Class="@($"square-slot {GetClass()} {GetDragClass()} {SpriteHelper.GetSpriteCssClass(Pokemon)}")">
-    <div class="w-full h-full aspect-square flex items-center justify-center overflow-hidden p-0 box-border border border-transparent">
+    <div
+        class="w-full h-full aspect-square flex items-center justify-center overflow-hidden p-0 box-border border border-transparent">
         @if (Pokemon is not null && Pokemon.Species > 0)
         {
             var title = GetPokemonTitle();

@@ -9,7 +9,7 @@ public partial class MetTab : IDisposable
     private EntityContext originFormat = EntityContext.None;
 
     /// <summary>
-    /// Currently loaded met location group that is populating Met and Egg location comboboxes
+    ///     Currently loaded met location group that is populating Met and Egg location comboboxes
     /// </summary>
     private GameVersion origintrack;
 

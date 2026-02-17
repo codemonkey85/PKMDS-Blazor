@@ -1,0 +1,70 @@
+@inherits BasePkmdsComponent
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="@Typo.h6">Move Shop Editor</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (Pokemon is IMoveShop8)
+        {
+            <MudDataGrid T="@MoveShopInfo"
+                         Items="@MoveShopMoves"
+                         Hover
+                         Dense
+                         ReadOnly
+                         Height="500px"
+                         FixedHeader>
+                <Columns>
+                    <PropertyColumn Property="@(x => x.Index)" Title="#"/>
+                    <TemplateColumn Title="">
+                        <CellTemplate>
+                            @MoveTypeSummary(context.Item.Type)
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(x => x.Name)" Title="Move"/>
+                    <TemplateColumn Title="Purchased" Sortable="false">
+                        <CellTemplate>
+                            <MudCheckBox T="@bool"
+                                         Value="@context.Item.IsPurchased"
+                                         ValueChanged="@(value => TogglePurchasedFlag(context.Item.Index, value))"
+                                         Dense/>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    @if (Pokemon is IMoveShop8Mastery)
+                    {
+                        <TemplateColumn Title="Mastered" Sortable="false">
+                            <CellTemplate>
+                                <MudCheckBox T="@bool"
+                                             Value="@context.Item.IsMastered"
+                                             ValueChanged="@(value => ToggleMasteredFlag(context.Item.Index, value))"
+                                             Dense/>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    }
+                </Columns>
+            </MudDataGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@GiveAll"
+                   Variant="@Variant.Outlined"
+                   Color="@Color.Primary">
+            Give All
+        </MudButton>
+        <MudButton OnClick="@RemoveAll"
+                   Variant="@Variant.Outlined"
+                   Color="@Color.Secondary">
+            Remove All
+        </MudButton>
+        <MudSpacer/>
+        <MudButton OnClick="@Cancel"
+                   Variant="@Variant.Outlined">
+            Cancel
+        </MudButton>
+        <MudButton OnClick="@Save"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Primary">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>

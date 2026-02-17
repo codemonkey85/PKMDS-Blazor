@@ -45,7 +45,8 @@ public partial class PokemonEditForm : IDisposable
                 return;
             }
 
-            var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
+            var selectedPokemonType =
+                AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
             switch (selectedPokemonType)
             {
                 case SelectedPokemonType.Party:
@@ -91,7 +92,10 @@ public partial class PokemonEditForm : IDisposable
             var parameters = new DialogParameters
             {
                 { nameof(ConfirmActionDialog.Title), "Paste Pokémon" },
-                { nameof(ConfirmActionDialog.Message), "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced." },
+                {
+                    nameof(ConfirmActionDialog.Message),
+                    "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced."
+                },
                 { nameof(ConfirmActionDialog.ConfirmText), "Paste" },
                 { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.ContentPaste },
                 { nameof(ConfirmActionDialog.ConfirmColor), Color.Default },
@@ -122,7 +126,8 @@ public partial class PokemonEditForm : IDisposable
             Pokemon = AppState.CopiedPokemon.Clone();
             AppService.SavePokemon(Pokemon);
 
-            var selectedPokemonType = AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
+            var selectedPokemonType =
+                AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
             switch (selectedPokemonType)
             {
                 case SelectedPokemonType.Party:

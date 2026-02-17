@@ -254,7 +254,8 @@ public partial class MainLayout : IDisposable
 
             if (!FileUtil.TryGetPKM(data, out var pkm, Path.GetExtension(browserLoadPokemonFile.Name), saveFile))
             {
-                Logger.LogError("Failed to load Pokémon file: {FileName} - Not a supported format", browserLoadPokemonFile.Name);
+                Logger.LogError("Failed to load Pokémon file: {FileName} - Not a supported format",
+                    browserLoadPokemonFile.Name);
                 await DialogService.ShowMessageBox("Error", "The file is not a supported Pokémon file.");
                 return;
             }
@@ -263,11 +264,13 @@ public partial class MainLayout : IDisposable
 
             if (pkm.GetType() != saveFile.PKMType)
             {
-                Logger.LogDebug("Converting Pokémon from {SourceType} to {TargetType}", pkm.GetType().Name, saveFile.PKMType.Name);
+                Logger.LogDebug("Converting Pokémon from {SourceType} to {TargetType}", pkm.GetType().Name,
+                    saveFile.PKMType.Name);
                 pokemon = EntityConverter.ConvertToType(pkm, saveFile.PKMType, out var c);
                 if (!c.IsSuccess || pokemon is null)
                 {
-                    Logger.LogError("Failed to convert Pokémon: {ConversionResult}", c.GetDisplayString(pkm, saveFile.PKMType));
+                    Logger.LogError("Failed to convert Pokémon: {ConversionResult}",
+                        c.GetDisplayString(pkm, saveFile.PKMType));
                     await DialogService.ShowMessageBox("Error", c.GetDisplayString(pkm, saveFile.PKMType));
                     return;
                 }
@@ -331,7 +334,8 @@ public partial class MainLayout : IDisposable
             if (!FileUtil.TryGetMysteryGift(data, out var mysteryGift,
                     Path.GetExtension(browserLoadMysteryGiftFile.Name)))
             {
-                Logger.LogError("Failed to load Mystery Gift file: {FileName} - Not a supported format", browserLoadMysteryGiftFile.Name);
+                Logger.LogError("Failed to load Mystery Gift file: {FileName} - Not a supported format",
+                    browserLoadMysteryGiftFile.Name);
                 await DialogService.ShowMessageBox("Error", "The file is not a supported Mystery Gift file.");
                 return;
             }
@@ -343,7 +347,8 @@ public partial class MainLayout : IDisposable
                 return;
             }
 
-            await AppService.ImportMysteryGift(data, Path.GetExtension(browserLoadMysteryGiftFile.Name), out var isSuccessful, out var resultsMessage);
+            await AppService.ImportMysteryGift(data, Path.GetExtension(browserLoadMysteryGiftFile.Name),
+                out var isSuccessful, out var resultsMessage);
 
             if (isSuccessful)
             {
