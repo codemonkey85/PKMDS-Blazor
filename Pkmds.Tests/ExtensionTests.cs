@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for extension methods in PkmExtensions
+///     Tests for extension methods in PkmExtensions
 /// </summary>
 public class ExtensionTests
 {
@@ -141,5 +141,91 @@ public class ExtensionTests
         // Assert
         types.Type1.Should().BeGreaterThan(0);
         types.Type2.Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [Fact]
+    public void HasRelearnMoves_Gen6Pokemon_ReturnsTrue()
+    {
+        // Arrange
+        var filePath = Path.Combine(TestFilesPath, "x.sav");
+        var saveData = File.ReadAllBytes(filePath);
+        SaveUtil.TryGetSaveFile(saveData, out var saveFile, "x.sav").Should().BeTrue();
+        saveFile.Should().NotBeNull();
+        var pkm = saveFile!.PartyData[0];
+
+        // Act
+        var hasRelearnMoves = pkm.HasRelearnMoves();
+
+        // Assert
+        hasRelearnMoves.Should().BeTrue();
+    }
+
+    [Fact]
+    public void HasRelearnMoves_Gen5Pokemon_ReturnsFalse()
+    {
+        // Arrange
+        var filePath = Path.Combine(TestFilesPath, "Lucario_B06DDFAD.pk5");
+        var data = File.ReadAllBytes(filePath);
+        FileUtil.TryGetPKM(data, out var pkm, ".pk5").Should().BeTrue();
+
+        // Act
+        var hasRelearnMoves = pkm!.HasRelearnMoves();
+
+        // Assert
+        hasRelearnMoves.Should().BeFalse();
+    }
+
+    [Fact]
+    public void GetRelearnMove_Gen6Pokemon_ReturnsMove()
+    {
+        // Arrange
+        var filePath = Path.Combine(TestFilesPath, "x.sav");
+        var saveData = File.ReadAllBytes(filePath);
+        SaveUtil.TryGetSaveFile(saveData, out var saveFile, "x.sav").Should().BeTrue();
+        saveFile.Should().NotBeNull();
+        var pkm = saveFile!.PartyData[0];
+
+        // Act
+        var relearnMove = pkm.GetRelearnMove(0);
+
+        // Assert
+        relearnMove.Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [Fact]
+    public void SetRelearnMove_Gen6Pokemon_UpdatesMove()
+    {
+        // Arrange
+        var filePath = Path.Combine(TestFilesPath, "x.sav");
+        var saveData = File.ReadAllBytes(filePath);
+        SaveUtil.TryGetSaveFile(saveData, out var saveFile, "x.sav").Should().BeTrue();
+        saveFile.Should().NotBeNull();
+        var pkm = saveFile!.PartyData[0];
+        const ushort testMove = 1; // Pound
+
+        // Act
+        pkm.SetRelearnMove(0, testMove);
+        var relearnMove = pkm.GetRelearnMove(0);
+
+        // Assert
+        relearnMove.Should().Be(testMove);
+    }
+
+    [Fact]
+    public void GetRelearnMoves_Gen6Pokemon_ReturnsFourMoves()
+    {
+        // Arrange
+        var filePath = Path.Combine(TestFilesPath, "x.sav");
+        var saveData = File.ReadAllBytes(filePath);
+        SaveUtil.TryGetSaveFile(saveData, out var saveFile, "x.sav").Should().BeTrue();
+        saveFile.Should().NotBeNull();
+        var pkm = saveFile!.PartyData[0];
+
+        // Act
+        var relearnMoves = pkm.GetRelearnMoves();
+
+        // Assert
+        relearnMoves.Should().NotBeNull();
+        relearnMoves.Count.Should().Be(4);
     }
 }

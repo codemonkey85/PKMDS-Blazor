@@ -161,7 +161,8 @@ public partial class StatsChart : IDisposable
             isChartInitialized = true;
 
             // Set radar scale using MinStatValue and dynamically calculated maxStatValue for better visualization of stats
-            await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, maxStatValue, StatStepSize);
+            await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, maxStatValue,
+                StatStepSize);
 
             await UpdateChartLabelsAsync();
         }
@@ -180,7 +181,8 @@ public partial class StatsChart : IDisposable
 
         // Reapply scale customizations after update
         // chartId, min, max, stepSize
-        await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, maxStatValue, StatStepSize);
+        await JSRuntime.InvokeVoidAsync("chartHelper.setRadarScale", radarChart.Id, MinStatValue, maxStatValue,
+            StatStepSize);
         await UpdateChartLabelsAsync();
     }
 
@@ -226,7 +228,8 @@ public partial class StatsChart : IDisposable
             natureModifiers = [0, 0, 0, 0, 0];
         }
 
-        await JSRuntime.InvokeVoidAsync("chartHelper.updateLabelsWithValues", radarChart.Id, labels, values, natureModifiers);
+        await JSRuntime.InvokeVoidAsync("chartHelper.updateLabelsWithValues", radarChart.Id, labels, values,
+            natureModifiers);
     }
 
     private static int CalculateMaxStatValue(List<double?> stats)

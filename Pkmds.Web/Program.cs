@@ -1,4 +1,5 @@
 // Configure Blazor WebAssembly application and services
+
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var services = builder.Services;
 var logging = builder.Logging;
@@ -14,7 +15,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 logging.ClearProviders();
-logging.AddSerilog(Log.Logger, dispose: true);
+logging.AddSerilog(Log.Logger, true);
 
 // Add Blazor root components
 builder.RootComponents.Add<App>("#app");

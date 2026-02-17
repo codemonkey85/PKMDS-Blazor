@@ -744,7 +744,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
                         }
 
                         // For Gen 1/2: If we just moved within the same box or moved into a box, compact the destination box too
-                        if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2 && !isDestParty && destBoxNumber.HasValue)
+                        if (saveFile.Context is EntityContext.Gen1 or EntityContext.Gen2 && !isDestParty &&
+                            destBoxNumber.HasValue)
                         {
                             // Check if destination box differs from source box, or if we're moving within same box
                             // Either way, compact the destination box to ensure proper list format
@@ -795,8 +796,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Compacts a box by shifting all Pokémon left to fill gaps (for Gen 1 and Gen 2 games).
-    /// In these generations, boxes were lists, not grids, so they should have no gaps.
+    ///     Compacts a box by shifting all Pokémon left to fill gaps (for Gen 1 and Gen 2 games).
+    ///     In these generations, boxes were lists, not grids, so they should have no gaps.
     /// </summary>
     private static void CompactBox(SaveFile saveFile, int boxNumber)
     {

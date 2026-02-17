@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for AppService functionality
+///     Tests for AppService functionality
 /// </summary>
 public class AppServiceTests
 {
@@ -80,7 +80,8 @@ public class AppServiceTests
     public void ClearSelection_ResetsAllSelections()
     {
         // Arrange
-        var appState = new TestAppState { SelectedBoxNumber = 1, SelectedBoxSlotNumber = 5, SelectedPartySlotNumber = 2 };
+        var appState =
+            new TestAppState { SelectedBoxNumber = 1, SelectedBoxSlotNumber = 5, SelectedPartySlotNumber = 2 };
         var refreshService = new TestRefreshService();
         var filePath = Path.Combine(TestFilesPath, "Lucario_B06DDFAD.pk5");
         var data = File.ReadAllBytes(filePath);
@@ -197,7 +198,7 @@ public class AppServiceTests
         public int? SelectedBoxSlotNumber { get; set; }
         public int? SelectedPartySlotNumber { get; set; }
         public bool ShowProgressIndicator { get; set; }
-        public string? AppVersion => "Test";
+        public string AppVersion => "Test";
         public bool SelectedSlotsAreValid => true;
     }
 
