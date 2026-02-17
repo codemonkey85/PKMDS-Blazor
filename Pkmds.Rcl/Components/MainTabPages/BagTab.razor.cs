@@ -67,8 +67,10 @@ public partial class BagTab
 
     private void BuildItemComboCache()
     {
-        var items = GameInfo.FilteredSources.Items
-            .DistinctBy(item => item.Value)
+        // Build from ItemList to match data source used in BuildPouchValidItemsCache
+        // This ensures text consistency between cache and search filters
+        var items = ItemList
+            .Select((name, index) => new ComboItem(name, index))
             .ToList();
 
         ItemComboCache = items.ToDictionary(item => item.Value, item => item);
