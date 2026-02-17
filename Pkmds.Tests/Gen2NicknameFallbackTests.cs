@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests validating the fix for Gen II nickname encoding issues
+///     Tests validating the fix for Gen II nickname encoding issues
 /// </summary>
 public class Gen2NicknameFallbackTests
 {
@@ -13,7 +13,8 @@ public class Gen2NicknameFallbackTests
         // Arrange  
         var filePath = Path.Combine(TestFilesPath, "Pokemon - Silver Version (UE) [C][!].sav");
         var originalData = File.ReadAllBytes(filePath);
-        SaveUtil.TryGetSaveFile(originalData, out var saveFile, "Pokemon - Silver Version (UE) [C][!].sav").Should().BeTrue();
+        SaveUtil.TryGetSaveFile(originalData, out var saveFile, "Pokemon - Silver Version (UE) [C][!].sav").Should()
+            .BeTrue();
         var pokemon = saveFile!.GetPartySlotAtIndex(0);
 
         if (pokemon.Species == 0)
