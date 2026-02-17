@@ -2,6 +2,8 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class BagTab
 {
+    private static readonly ComboItem FallbackComboItem = new(string.Empty, 0);
+
     [Parameter]
     [EditorRequired]
     public PlayerBag? Inventory { get; set; }
@@ -14,9 +16,7 @@ public partial class BagTab
 
     private List<ComboItem> SortedItemComboList { get; set; } = [];
 
-    private Dictionary<InventoryType, HashSet<string>> PouchValidItemsCache { get; set; } = [];
-
-    private static readonly ComboItem FallbackComboItem = new(string.Empty, 0);
+    private Dictionary<InventoryType, HashSet<string>> PouchValidItemsCache { get; } = [];
 
     private bool HasFreeSpace { get; set; }
 
@@ -94,6 +94,7 @@ public partial class BagTab
                     validItems.Add(ItemList[itemIndex]);
                 }
             }
+
             // Always include "None" item
             validItems.Add(ItemList[0]);
             PouchValidItemsCache[pouch.Type] = validItems;
@@ -147,23 +148,6 @@ public partial class BagTab
         _ => pouch.Type.ToString()
     };
 
-    private string[] GetStringsForPouch(ReadOnlySpan<ushort> items, bool sort = true)
-    {
-        var res = new string[items.Length + 1];
-        for (var i = 0; i < res.Length - 1; i++)
-        {
-            res[i] = ItemList[items[i]];
-        }
-
-        res[items.Length] = ItemList[0];
-        if (sort)
-        {
-            Array.Sort(res);
-        }
-
-        return res;
-    }
-
     private void SortByName(InventoryPouch pouch) =>
         pouch.SortByName(ItemList, IsSortedByName = !IsSortedByName);
 
@@ -187,7 +171,7 @@ public partial class BagTab
         // Use pre-sorted list to avoid sorting on every search
         var results = SortedItemComboList
             .Where(item => validItems.Contains(item.Text) &&
-                          item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+                           item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 
         return Task.FromResult(results);
     }
