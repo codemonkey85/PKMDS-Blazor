@@ -5,7 +5,7 @@
     <ItemGroup>
         <PackageVersion Include="BlazorExpress.ChartJS" Version="1.2.0"/>
         <PackageVersion Include="bUnit" Version="2.5.3"/>
-        <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
+        <PackageVersion Include="coverlet.collector" Version="8.0.0"/>
         <PackageVersion Include="FluentAssertions" Version="8.8.0"/>
         <PackageVersion Include="Humanizer" Version="3.0.1"/>
         <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.3.0"/>
