@@ -2,13 +2,13 @@
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="@Typo.h6">TR Relearn Editor</MudText>
+        <MudText Typo="@Typo.h6">Plus Flags Editor</MudText>
     </TitleContent>
     <DialogContent>
-        @if (Pokemon is ITechRecord techRecord)
+        @if (Pokemon is PA9)
         {
-            <MudDataGrid T="@TrMoveInfo"
-                         Items="@TrMoves"
+            <MudDataGrid T="@PlusMoveInfo"
+                         Items="@PlusMoves"
                          Hover
                          Dense
                          ReadOnly
@@ -18,8 +18,8 @@
                     <TemplateColumn Title="" Sortable="false">
                         <CellTemplate>
                             <MudCheckBox T="@bool"
-                                         Value="@context.Item.IsLearned"
-                                         ValueChanged="@(value => ToggleTrFlag(context.Item.Index, value))"
+                                         Value="@context.Item.IsPlus"
+                                         ValueChanged="@(value => TogglePlusFlag(context.Item.Index, value))"
                                          Dense />
                         </CellTemplate>
                     </TemplateColumn>

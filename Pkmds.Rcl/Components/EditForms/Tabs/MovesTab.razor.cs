@@ -84,4 +84,22 @@ public partial class MovesTab
 
         await DialogService.ShowAsync<RelearnFlagsDialog>("TR Relearn Editor", parameters, options);
     }
+
+    private async void OpenPlusFlagsDialog()
+    {
+        var parameters = new DialogParameters<PlusFlagsDialog>
+        {
+            { x => x.Pokemon, Pokemon }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            CloseButton = true,
+            CloseOnEscapeKey = true
+        };
+
+        await DialogService.ShowAsync<PlusFlagsDialog>("Plus Flags Editor", parameters, options);
+    }
 }

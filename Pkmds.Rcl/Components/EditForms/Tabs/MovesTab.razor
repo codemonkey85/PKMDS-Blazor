@@ -216,6 +216,15 @@
                         Relearn Flags
                     </MudButton>
                 }
+                
+                @if (Pokemon is PA9)
+                {
+                    <MudButton Variant="@Variant.Outlined"
+                               Color="@Color.Primary"
+                               OnClick="@OpenPlusFlagsDialog">
+                        Plus Flags
+                    </MudButton>
+                }
             </MudStack>
         }
 
