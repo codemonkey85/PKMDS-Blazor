@@ -5,7 +5,7 @@ Guidance for WARP (warp.dev) when working in this repository.
 ## Quick commands
 
 Prereqs
-- Install the .NET SDK from `global.json` (10.0.101): `dotnet --list-sdks` to verify.
+- Install the .NET SDK from `global.json`: `dotnet --list-sdks` to verify.
 - Install Blazor WASM tooling once: `dotnet workload install wasm-tools`.
 - IDE users can open `Pkmds.slnx`. CLI builds target individual projects (e.g., `Pkmds.Web.csproj`).
 

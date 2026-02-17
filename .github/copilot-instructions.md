@@ -1,4 +1,4 @@
-Please also do your best to respect the existing code format and style. You can reference /.editorconfig as well.
+Please do your best to respect the existing code format and style. You can reference /.editorconfig as well.
 
 Please note, in order to build Pkmds.Web, you will need to first install the wasm-tools workload like so:
 
