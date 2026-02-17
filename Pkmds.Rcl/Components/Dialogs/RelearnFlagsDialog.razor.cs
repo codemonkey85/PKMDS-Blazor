@@ -46,7 +46,6 @@ public partial class RelearnFlagsDialog
             TrMoves.Add(new TrMoveInfo
             {
                 Index = recordIndex,
-                RecordIndex = recordIndex,
                 MoveId = moveId,
                 Name = moveName,
                 Type = moveType,
@@ -57,9 +56,9 @@ public partial class RelearnFlagsDialog
         }
     }
 
-    private void ToggleTrFlag(int recordIndex, bool value)
+    private void ToggleTrFlag(int index, bool value)
     {
-        var trMove = TrMoves.FirstOrDefault(m => m.RecordIndex == recordIndex);
+        var trMove = TrMoves.FirstOrDefault(m => m.Index == index);
         if (trMove != null)
         {
             trMove.IsLearned = value;
@@ -93,7 +92,7 @@ public partial class RelearnFlagsDialog
 
         foreach (var trMove in TrMoves)
         {
-            techRecord.SetMoveRecordFlag(trMove.RecordIndex, trMove.IsLearned);
+            techRecord.SetMoveRecordFlag(trMove.Index, trMove.IsLearned);
         }
 
         RefreshService.Refresh();
@@ -105,9 +104,9 @@ public partial class RelearnFlagsDialog
         // Restore original flags if user cancels
         if (Pokemon is ITechRecord techRecord)
         {
-            foreach (var (recordIndex, isLearned) in OriginalFlags)
+            foreach (var (index, isLearned) in OriginalFlags)
             {
-                techRecord.SetMoveRecordFlag(recordIndex, isLearned);
+                techRecord.SetMoveRecordFlag(index, isLearned);
             }
         }
 
@@ -117,7 +116,6 @@ public partial class RelearnFlagsDialog
     public class TrMoveInfo
     {
         public int Index { get; set; }
-        public int RecordIndex { get; set; }
         public ushort MoveId { get; set; }
         public string Name { get; set; } = string.Empty;
         public byte Type { get; set; }

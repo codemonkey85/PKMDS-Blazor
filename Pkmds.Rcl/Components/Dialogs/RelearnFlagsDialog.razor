@@ -27,7 +27,7 @@
                         <CellTemplate>
                             <MudCheckBox T="@bool"
                                          Value="@context.Item.IsLearned"
-                                         ValueChanged="@(value => ToggleTrFlag(context.Item.RecordIndex, value))"
+                                         ValueChanged="@(value => ToggleTrFlag(context.Item.Index, value))"
                                          Dense />
                         </CellTemplate>
                     </TemplateColumn>
