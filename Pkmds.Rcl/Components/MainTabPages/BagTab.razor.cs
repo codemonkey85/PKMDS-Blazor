@@ -98,7 +98,10 @@ public partial class BagTab
             }
 
             // Always include "None" item
-            validItems.Add(ItemList[0]);
+            if (ItemList.Length > 0)
+            {
+                validItems.Add(ItemList[0]);
+            }
             PouchValidItemsCache[pouch.Type] = validItems;
         }
     }
