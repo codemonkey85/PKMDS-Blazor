@@ -137,14 +137,14 @@
                                          @bind-Value:set="@(newValue => SetPokemonMoveIsPlus(plusFlagIndex, newValue))"/>
                         </MudItem>
                     }
-                    
+
                     @if (showMasteredMove && Pokemon is IMoveShop8Mastery)
                     {
                         var localMoveId = Pokemon.GetMove(i);
                         var masteredFlagIndex = GetMasteredRecordIndex(localMoveId);
                         <MudItem xs="1"
                                  Class="@ColumnClass">
-                            <MudCheckBox Label="M"
+                            <MudCheckBox Label="+"
                                          Dense
                                          title="Mastered Move"
                                          Disabled="@(masteredFlagIndex < 0)"
@@ -160,7 +160,7 @@
         {
             <MudStack Spacing="1">
                 <MudText Typo="@Typo.h6">Relearn Moves</MudText>
-                
+
                 @for (var counter = 0; counter < 4; counter++)
                 {
                     var i = counter;
@@ -183,7 +183,9 @@
                             </MudItem>
                         }
 
-                        <MudItem xs="@(UseTextSearch ? 11 : 12)"
+                        <MudItem xs="@(UseTextSearch
+                                         ? 11
+                                         : 12)"
                                  Class="@ColumnClass">
                             @if (UseTextSearch)
                             {
@@ -245,7 +247,9 @@
                             </MudItem>
                         }
 
-                        <MudItem xs="@(UseTextSearch ? 11 : 12)"
+                        <MudItem xs="@(UseTextSearch
+                                         ? 11
+                                         : 12)"
                                  Class="@ColumnClass">
                             @if (UseTextSearch)
                             {
@@ -296,7 +300,7 @@
                         Relearn Flags
                     </MudButton>
                 }
-                
+
                 @if (Pokemon is IMoveShop8)
                 {
                     <MudButton Variant="@Variant.Outlined"
@@ -305,7 +309,7 @@
                         Move Shop
                     </MudButton>
                 }
-                
+
                 @if (Pokemon is PA9)
                 {
                     <MudButton Variant="@Variant.Outlined"

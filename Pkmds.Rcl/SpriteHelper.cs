@@ -1,8 +1,8 @@
 ﻿namespace Pkmds.Rcl;
 
 /// <summary>
-/// Helper class for generating file paths to Pokémon and item sprite images.
-/// Handles sprite selection based on species, form, gender, context, and other attributes.
+///     Helper class for generating file paths to Pokémon and item sprite images.
+///     Handles sprite selection based on species, form, gender, context, and other attributes.
 /// </summary>
 public static class SpriteHelper
 {
@@ -12,6 +12,7 @@ public static class SpriteHelper
 
     /// <summary>Fallback image path for unknown items.</summary>
     public const string ItemFallbackImageFileName = $"{SpritesRoot}bi/bitem_unk.png";
+
     /// <summary>Fallback image path for unknown Pokémon.</summary>
     public const string PokemonFallbackImageFileName = $"{SpritesRoot}a/a_unknown.png";
 
@@ -21,14 +22,14 @@ public static class SpriteHelper
     private static readonly int[] Gen45MailIds = [137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148];
 
     /// <summary>
-    /// Gets the sprite filename for a Mystery Gift (either Pokémon or item).
+    ///     Gets the sprite filename for a Mystery Gift (either Pokémon or item).
     /// </summary>
     public static string GetMysteryGiftSpriteFileName(MysteryGift gift) => gift.IsItem
         ? GetItemSpriteFilename(gift.ItemID, gift.Context)
         : GetPokemonSpriteFilename(gift.Species, gift.Context, gift.IsEgg, gift.Form, 0, gift.Gender);
 
     /// <summary>
-    /// Gets the sprite filename for a Pokémon, handling all forms, genders, and special cases.
+    ///     Gets the sprite filename for a Pokémon, handling all forms, genders, and special cases.
     /// </summary>
     public static string GetPokemonSpriteFilename(PKM? pokemon) => pokemon is null
         ? PokemonFallbackImageFileName
@@ -36,8 +37,8 @@ public static class SpriteHelper
             pokemon.GetFormArgument(0), pokemon.Gender);
 
     /// <summary>
-    /// Internal method to construct the Pokémon sprite filename based on various attributes.
-    /// Handles special cases like starter Pikachu/Eevee, eggs, gender differences, Alcremie variations, etc.
+    ///     Internal method to construct the Pokémon sprite filename based on various attributes.
+    ///     Handles special cases like starter Pikachu/Eevee, eggs, gender differences, Alcremie variations, etc.
     /// </summary>
     private static string GetPokemonSpriteFilename(ushort species, EntityContext context, bool isEgg, byte form,
         uint? formArg1, byte gender) =>
@@ -80,14 +81,14 @@ public static class SpriteHelper
             .ToString();
 
     /// <summary>
-    /// Gets the sprite filename for a Poké Ball.
+    ///     Gets the sprite filename for a Poké Ball.
     /// </summary>
     /// <param name="ball">The ball ID.</param>
     public static string GetBallSpriteFilename(int ball) =>
         $"{SpritesRoot}b/_ball{ball}.png";
 
     /// <summary>
-    /// Gets the sprite filename for an item, selecting appropriate size/style based on generation.
+    ///     Gets the sprite filename for an item, selecting appropriate size/style based on generation.
     /// </summary>
     public static string GetItemSpriteFilename(int item, EntityContext context) => context switch
     {
@@ -147,7 +148,7 @@ public static class SpriteHelper
     };
 
     /// <summary>
-    /// Gets the sprite filename for a move category icon (Physical/Special/Status).
+    ///     Gets the sprite filename for a move category icon (Physical/Special/Status).
     /// </summary>
     /// <remarks>TODO: Not yet implemented.</remarks>
     // ReSharper disable once UnusedParameter.Global
@@ -155,7 +156,7 @@ public static class SpriteHelper
         string.Empty;
 
     /// <summary>
-    /// Gets the CSS class to apply to a Pokémon slot based on whether it contains a valid Pokémon.
+    ///     Gets the CSS class to apply to a Pokémon slot based on whether it contains a valid Pokémon.
     /// </summary>
     public static string GetSpriteCssClass(PKM? pkm) => (pkm?.Species).IsValidSpecies()
         ? " slot-fill"
@@ -171,8 +172,8 @@ public static class SpriteHelper
     };
 
     /// <summary>
-    /// Converts an item ID to its string representation for sprite filenames.
-    /// Handles lumped items (TMs, TRs) and mail items specially.
+    ///     Converts an item ID to its string representation for sprite filenames.
+    ///     Handles lumped items (TMs, TRs) and mail items specially.
     /// </summary>
     private static string GetItemIdString(int item, EntityContext context) =>
         HeldItemLumpUtil.GetIsLump(item, context) switch

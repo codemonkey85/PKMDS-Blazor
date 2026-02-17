@@ -216,7 +216,8 @@ public partial class PokemonSlotComponent : IDisposable
                 pokemon = EntityConverter.ConvertToType(pkm, saveFile.PKMType, out var c);
                 if (!c.IsSuccess || pokemon is null)
                 {
-                    Snackbar.Add($"Failed to convert Pokémon: {c.GetDisplayString(pkm, saveFile.PKMType)}", Severity.Error);
+                    Snackbar.Add($"Failed to convert Pokémon: {c.GetDisplayString(pkm, saveFile.PKMType)}",
+                        Severity.Error);
                     return;
                 }
             }
@@ -240,7 +241,9 @@ public partial class PokemonSlotComponent : IDisposable
                 RefreshService.RefreshBoxState();
             }
 
-            Snackbar.Add($"Successfully imported {AppService.GetPokemonSpeciesName(pokemon.Species) ?? "Pokémon"} from {fileName}", Severity.Success);
+            Snackbar.Add(
+                $"Successfully imported {AppService.GetPokemonSpeciesName(pokemon.Species) ?? "Pokémon"} from {fileName}",
+                Severity.Success);
         }
         catch (Exception ex)
         {

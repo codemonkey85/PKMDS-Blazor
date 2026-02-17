@@ -9,7 +9,7 @@ public partial class PlusFlagsDialog
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
 
-    private List<PlusMoveInfo> PlusMoves { get; set; } = [];
+    private List<PlusMoveInfo> PlusMoves { get; } = [];
 
     protected override void OnParametersSet()
     {
@@ -65,6 +65,7 @@ public partial class PlusFlagsDialog
         {
             plusMove.IsPlus = true;
         }
+
         StateHasChanged();
     }
 
@@ -74,6 +75,7 @@ public partial class PlusFlagsDialog
         {
             plusMove.IsPlus = false;
         }
+
         StateHasChanged();
     }
 
@@ -94,11 +96,9 @@ public partial class PlusFlagsDialog
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel()
-    {
+    private void Cancel() =>
         // Close without applying changes - plus flags were not modified
         MudDialog?.Close(DialogResult.Cancel());
-    }
 
     public class PlusMoveInfo
     {

@@ -9,7 +9,7 @@ public partial class RelearnFlagsDialog
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
 
-    private List<TrMoveInfo> TrMoves { get; set; } = [];
+    private List<TrMoveInfo> TrMoves { get; } = [];
 
     protected override void OnParametersSet()
     {
@@ -31,7 +31,9 @@ public partial class RelearnFlagsDialog
         TrMoves.Clear();
 
         var indexes = permit.RecordPermitIndexes;
-        var baseRecordIndex = context == EntityContext.Gen9a ? 1 : 0; // TM001 in Legends: Z-A but is 0-index bits
+        var baseRecordIndex = context == EntityContext.Gen9a
+            ? 1
+            : 0; // TM001 in Legends: Z-A but is 0-index bits
 
         for (var i = 0; i < indexes.Length; i++)
         {
@@ -67,6 +69,7 @@ public partial class RelearnFlagsDialog
         {
             trMove.IsLearned = true;
         }
+
         StateHasChanged();
     }
 
@@ -76,6 +79,7 @@ public partial class RelearnFlagsDialog
         {
             trMove.IsLearned = false;
         }
+
         StateHasChanged();
     }
 
@@ -96,11 +100,9 @@ public partial class RelearnFlagsDialog
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel()
-    {
+    private void Cancel() =>
         // Close without applying changes - TR flags were not modified
         MudDialog?.Close(DialogResult.Cancel());
-    }
 
     public class TrMoveInfo
     {

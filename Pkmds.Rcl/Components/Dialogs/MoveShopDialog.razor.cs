@@ -9,7 +9,7 @@ public partial class MoveShopDialog
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
 
-    private List<MoveShopInfo> MoveShopMoves { get; set; } = [];
+    private List<MoveShopInfo> MoveShopMoves { get; } = [];
 
     protected override void OnParametersSet()
     {
@@ -81,6 +81,7 @@ public partial class MoveShopDialog
             moveShopMove.IsPurchased = true;
             moveShopMove.IsMastered = true;
         }
+
         StateHasChanged();
     }
 
@@ -91,6 +92,7 @@ public partial class MoveShopDialog
             moveShopMove.IsPurchased = false;
             moveShopMove.IsMastered = false;
         }
+
         StateHasChanged();
     }
 
@@ -120,11 +122,9 @@ public partial class MoveShopDialog
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel()
-    {
+    private void Cancel() =>
         // Close without applying changes - move shop flags were not modified
         MudDialog?.Close(DialogResult.Cancel());
-    }
 
     public class MoveShopInfo
     {

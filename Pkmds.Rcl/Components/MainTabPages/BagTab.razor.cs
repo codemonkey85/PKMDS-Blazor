@@ -102,6 +102,7 @@ public partial class BagTab
             {
                 validItems.Add(ItemList[0]);
             }
+
             PouchValidItemsCache[pouch.Type] = validItems;
         }
     }

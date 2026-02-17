@@ -20,16 +20,16 @@
                             <MudCheckBox T="@bool"
                                          Value="@context.Item.IsLearned"
                                          ValueChanged="@(value => ToggleTrFlag(context.Item.Index, value))"
-                                         Dense />
+                                         Dense/>
                         </CellTemplate>
                     </TemplateColumn>
-                    <PropertyColumn Property="@(x => x.Index)" Title="#" />
+                    <PropertyColumn Property="@(x => x.Index)" Title="#"/>
                     <TemplateColumn Title="">
                         <CellTemplate>
                             @MoveTypeSummary(context.Item.Type)
                         </CellTemplate>
                     </TemplateColumn>
-                    <PropertyColumn Property="@(x => x.Name)" Title="Move" />
+                    <PropertyColumn Property="@(x => x.Name)" Title="Move"/>
                 </Columns>
             </MudDataGrid>
         }
@@ -45,7 +45,7 @@
                    Color="@Color.Secondary">
             Remove All
         </MudButton>
-        <MudSpacer />
+        <MudSpacer/>
         <MudButton OnClick="@Cancel"
                    Variant="@Variant.Outlined">
             Cancel
