@@ -35,6 +35,8 @@ Some images from: https://github.com/msikma/PokeDings
 
 Special thanks to [Kaphotics](https://github.com/kwsch/), as well as [all the contributors to PKHeX and PKHeX.Core](https://github.com/kwsch/PKHeX/graphs/contributors).
 
+Project Pokémon forums thread: https://projectpokemon.org/home/forums/topic/63302-pkmds-pok%C3%A9mon-save-editor-for-web/
+
 ## Roadmap
 
 PKMDS is working toward 100% feature parity with PKHeX. See the [PKHeX Parity Roadmap](PKHEX_PARITY_ROADMAP.md) for a comprehensive breakdown of planned features and implementation status.
