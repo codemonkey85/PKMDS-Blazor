@@ -37,7 +37,7 @@
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.hlqtmbapz7.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.mvyp6mraxj.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.f8ak447jcg.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.q5rqv3xrhm.js"
   },
@@ -45,8 +45,8 @@
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.hlqtmbapz7.js": "sha256-GxK4Odr/1CW286JNoQZfW2nNOg3gzu2znr3WgA64OFQ=",
-    "./_framework/dotnet.js": "sha256-GxK4Odr/1CW286JNoQZfW2nNOg3gzu2znr3WgA64OFQ=",
+    "./_framework/dotnet.js": "sha256-LnXXc1VAtIjskiGKrnntUnnauCMYeOgj/NF/BS7npzM=",
+    "./_framework/dotnet.mvyp6mraxj.js": "sha256-LnXXc1VAtIjskiGKrnntUnnauCMYeOgj/NF/BS7npzM=",
     "./_framework/dotnet.native.f8ak447jcg.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
     "./_framework/dotnet.native.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
     "./_framework/dotnet.runtime.js": "sha256-ArknccFM1sHNVcih0x1h52AG+abNCoQjl6BlVrv3ePw=",
@@ -141,6 +141,31 @@
         window.addEventListener('updateAvailable', () => {
             DotNet.invokeMethodAsync('Pkmds.Web', 'ShowUpdateMessage');
         });
+    };
+
+    window.checkForUpdate = async () => {
+        if (!('serviceWorker' in navigator)) {
+            return 'no-sw';
+        }
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (!registration) {
+            return 'no-sw';
+        }
+        // Listen for a new worker before calling update()
+        const updatePromise = new Promise(resolve => {
+            const onUpdateFound = () => {
+                registration.removeEventListener('updatefound', onUpdateFound);
+                resolve('update-found');
+            };
+            registration.addEventListener('updatefound', onUpdateFound);
+            // If no update is found within 10 seconds, assume we're up to date
+            setTimeout(() => {
+                registration.removeEventListener('updatefound', onUpdateFound);
+                resolve('no-update');
+            }, 10000);
+        });
+        await registration.update();
+        return await updatePromise;
     };
 </script>
 
