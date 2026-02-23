@@ -14,11 +14,12 @@ body, html {
 }
 
 .item-sprite {
-    @apply object-contain self-center;
+    object-fit: contain;
+    align-self: center;
 }
 
 .square-slot {
-    @apply aspect-square;
+    aspect-ratio: 1 / 1;
 }
 
 .slot-selected {
@@ -44,20 +45,27 @@ body, html {
     }
 }
 
-.plus-nature > div > div {
-    @apply text-red-600 font-bold;
+.plus-nature label,
+.plus-nature .mud-input-slot {
+    color: #dc2626 !important;
+    font-weight: 700;
 }
 
-.minus-nature > div > div {
-    @apply text-blue-600 font-bold;
+.minus-nature label,
+.minus-nature .mud-input-slot {
+    color: #2563eb !important;
+    font-weight: 700;
 }
 
 .form-grid {
-    @apply grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 p-4;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
 }
 
 .form-field {
-    @apply mb-2;
+    margin-bottom: 0.5rem;
 }
 
 .loading-progress {

@@ -37,7 +37,7 @@
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.00igvy7gqz.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.hlqtmbapz7.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.f8ak447jcg.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.q5rqv3xrhm.js"
   },
@@ -45,8 +45,8 @@
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.00igvy7gqz.js": "sha256-IHYTiJk6X1Ap3Drqu/FKyTcgfXgUZtRfUIbuzk8EAoA=",
-    "./_framework/dotnet.js": "sha256-IHYTiJk6X1Ap3Drqu/FKyTcgfXgUZtRfUIbuzk8EAoA=",
+    "./_framework/dotnet.hlqtmbapz7.js": "sha256-GxK4Odr/1CW286JNoQZfW2nNOg3gzu2znr3WgA64OFQ=",
+    "./_framework/dotnet.js": "sha256-GxK4Odr/1CW286JNoQZfW2nNOg3gzu2znr3WgA64OFQ=",
     "./_framework/dotnet.native.f8ak447jcg.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
     "./_framework/dotnet.native.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
     "./_framework/dotnet.runtime.js": "sha256-ArknccFM1sHNVcih0x1h52AG+abNCoQjl6BlVrv3ePw=",
@@ -87,23 +87,10 @@
 </div>
 
 <script src="_content/Pkmds.Rcl/js/fileSave.js"></script>
-<!-- Add custom chart helper -->
-<script src="_content/Pkmds.Rcl/js/chartHelper.js"></script>
 
 <!--prevent autostarting-->
 <script autostart="false"
         src="_framework/blazor.webassembly.66stpp682q.js"></script>
-
-<!-- Add a reference to Chart.js. -->
-<script crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-        src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<!-- Add a reference to chartjs-plugin-datalabels.min.js if your application uses chart components with the data labels feature. -->
-<script crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-        src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
-<!-- Add a reference to blazorexpress.chartjs.js. -->
-<script src="_content/BlazorExpress.ChartJS/blazorexpress.chartjs.js"></script>
 
 <script>
     navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'}).then(registration => {
