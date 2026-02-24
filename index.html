@@ -37,18 +37,18 @@
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.azami6ef4k.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.f8ak447jcg.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.pdfo7golpl.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.q5rqv3xrhm.js"
   },
   "scopes": {},
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.js": "sha256-3cpAqtE5Qi4csOYPfGGctHbcQA6ZsJ6Tu+3VOLY8jog=",
+    "./_framework/dotnet.azami6ef4k.js": "sha256-6lRGxmjk4C+w4v1UGhIw0sFNSvnH+NxOu6QcucGVjVI=",
+    "./_framework/dotnet.js": "sha256-6lRGxmjk4C+w4v1UGhIw0sFNSvnH+NxOu6QcucGVjVI=",
     "./_framework/dotnet.native.f8ak447jcg.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
     "./_framework/dotnet.native.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
-    "./_framework/dotnet.pdfo7golpl.js": "sha256-3cpAqtE5Qi4csOYPfGGctHbcQA6ZsJ6Tu+3VOLY8jog=",
     "./_framework/dotnet.runtime.js": "sha256-ArknccFM1sHNVcih0x1h52AG+abNCoQjl6BlVrv3ePw=",
     "./_framework/dotnet.runtime.q5rqv3xrhm.js": "sha256-ArknccFM1sHNVcih0x1h52AG+abNCoQjl6BlVrv3ePw="
   }
@@ -225,6 +225,10 @@
                     if (err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null'))) {
                         console.info('registration.update() threw InvalidStateError (newestWorker is null) — treating as no update available.');
                         done('no-update', 'Service worker is up to date (no pending update).');
+                    } else if (err.name === 'NetworkError') {
+                        // Network errors during update check are treated as "no update available"
+                        console.info('registration.update() failed with NetworkError — network may be unavailable.');
+                        done('no-update', 'Network error during update check.');
                     } else {
                         console.warn('registration.update() failed:', err);
                         done('error', 'update() threw: ' + err.message);
