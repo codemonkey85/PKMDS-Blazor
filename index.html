@@ -37,7 +37,7 @@
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.5joe7rpkcs.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.htwd9xtbvp.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.f8ak447jcg.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.q5rqv3xrhm.js"
   },
@@ -45,8 +45,8 @@
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.5joe7rpkcs.js": "sha256-sbZeVqFr7Vdun8ZcziqjUy//Tqy32W7X8hPQ4Q3xLyg=",
-    "./_framework/dotnet.js": "sha256-sbZeVqFr7Vdun8ZcziqjUy//Tqy32W7X8hPQ4Q3xLyg=",
+    "./_framework/dotnet.htwd9xtbvp.js": "sha256-m7t7CXoQSbOwscXFd/q9zTObVq7kfPXKHH5NUTFWENo=",
+    "./_framework/dotnet.js": "sha256-m7t7CXoQSbOwscXFd/q9zTObVq7kfPXKHH5NUTFWENo=",
     "./_framework/dotnet.native.f8ak447jcg.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
     "./_framework/dotnet.native.js": "sha256-z7STLHA68ghnptST3ImJzQYJO3Nil59iuALXN2FQSDc=",
     "./_framework/dotnet.runtime.js": "sha256-ArknccFM1sHNVcih0x1h52AG+abNCoQjl6BlVrv3ePw=",
@@ -148,29 +148,66 @@
             return 'no-sw';
         }
         try {
-            // Try getRegistration first, fall back to ready
+            // Try getRegistration first; fall back to ready with a timeout
             let registration = await navigator.serviceWorker.getRegistration();
             if (!registration) {
-                registration = await navigator.serviceWorker.ready;
+                registration = await Promise.race([
+                    navigator.serviceWorker.ready,
+                    new Promise(resolve => setTimeout(() => resolve(null), 3000)),
+                ]);
             }
             if (!registration) {
                 return 'no-sw';
             }
-            // Listen for a new worker before calling update()
-            const updatePromise = new Promise(resolve => {
-                const onUpdateFound = () => {
+            // If a waiting worker already exists before we call update(), an update is pending
+            if (registration.waiting) {
+                return 'update-found';
+            }
+            // Remember the current active worker so we can detect if it actually changed
+            const previousActive = registration.active;
+            // Listen for the updatefound event, then call update()
+            return await new Promise(resolve => {
+                let resolved = false;
+                const done = (result) => {
+                    if (resolved) return;
+                    resolved = true;
                     registration.removeEventListener('updatefound', onUpdateFound);
-                    resolve('update-found');
+                    resolve(result);
+                };
+                const onUpdateFound = () => {
+                    const newWorker = registration.installing;
+                    if (!newWorker) {
+                        done('no-update');
+                        return;
+                    }
+                    // Wait for the new worker to finish installing
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed') {
+                            // A new worker is installed and waiting — genuine update
+                            done('update-found');
+                        } else if (newWorker.state === 'activated') {
+                            // Worker activated (skipWaiting) — check if it's actually different
+                            if (previousActive && registration.active === previousActive) {
+                                // Same worker reference, no real update
+                                done('no-update');
+                            } else {
+                                done('update-found');
+                            }
+                        } else if (newWorker.state === 'redundant') {
+                            // Installation failed or was superseded
+                            done('no-update');
+                        }
+                    });
                 };
                 registration.addEventListener('updatefound', onUpdateFound);
-                // If no update is found within 10 seconds, assume we're up to date
-                setTimeout(() => {
-                    registration.removeEventListener('updatefound', onUpdateFound);
-                    resolve('no-update');
-                }, 10000);
+                // Call update() — if a new SW is found, the event fires
+                registration.update().catch(err => {
+                    console.warn('registration.update() failed:', err);
+                    done('error');
+                });
+                // If no update is found within 8 seconds, assume we're up to date
+                setTimeout(() => done('no-update'), 8000);
             });
-            await registration.update();
-            return await updatePromise;
         } catch (error) {
             console.warn('checkForUpdate error:', error);
             return 'error';
