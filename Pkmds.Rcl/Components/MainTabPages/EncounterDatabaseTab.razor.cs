@@ -102,12 +102,22 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
         if (pkm is null)
         {
             Snackbar.Add(
-                $"Could not generate a legal Pokémon for this encounter. " +
-                "Try a different encounter or check that a slot is selected.",
+                "Could not generate a legal Pokémon for this encounter. Try a different encounter.",
                 Severity.Warning);
         }
         else
         {
+            // If no slot is currently selected, place the Pokémon in the first empty box slot.
+            var slotType = AppService.GetSelectedPokemonSlot(out _, out _, out _);
+            if (slotType == SelectedPokemonType.None && !TrySelectFirstEmptyBoxSlot())
+            {
+                Snackbar.Add(
+                    "No empty box slots available. Free up a slot and try again.",
+                    Severity.Warning);
+                StateHasChanged();
+                return;
+            }
+
             AppService.EditFormPokemon = pkm;
             AppService.SavePokemon(pkm);
             Snackbar.Add($"{selectedResult.SpeciesName} generated and placed in the selected slot.", Severity.Success);
@@ -115,6 +125,29 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
         }
 
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// Finds the first empty box slot in the save file and selects it via <see cref="IAppService"/>.
+    /// Returns <see langword="false"/> when no empty slot is found or no save is loaded.
+    /// </summary>
+    private bool TrySelectFirstEmptyBoxSlot()
+    {
+        if (AppState.SaveFile is not { } sav) return false;
+
+        for (var box = 0; box < sav.BoxCount; box++)
+        {
+            for (var slot = 0; slot < sav.BoxSlotCount; slot++)
+            {
+                if (sav.GetBoxSlotAtIndex(box, slot).Species == 0)
+                {
+                    AppService.SetSelectedBoxPokemon(sav.BlankPKM, box, slot);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     // ── Species autocomplete ──────────────────────────────────────────────
