@@ -164,10 +164,13 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
 
     // ── Move chips ────────────────────────────────────────────────────────
 
+    private MudAutocomplete<ComboItem>? anyMoveAutoRef;
+    private MudAutocomplete<ComboItem>? allMoveAutoRef;
+
     private async Task<IEnumerable<ComboItem>> SearchMovesAsync(string search, CancellationToken ct) =>
         await Task.FromResult(AppService.SearchMoves(search));
 
-    private void AddAnyMove(ComboItem? item)
+    private async Task AddAnyMove(ComboItem? item)
     {
         if (item is not { Value: > 0 } || anyMoveItems.Any(m => m.Value == item.Value))
         {
@@ -175,12 +178,16 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
         }
 
         anyMoveItems = [..anyMoveItems, item];
+        if (anyMoveAutoRef is not null)
+        {
+            await anyMoveAutoRef.ClearAsync();
+        }
     }
 
     private void RemoveAnyMove(ComboItem item) =>
         anyMoveItems = anyMoveItems.Where(m => m.Value != item.Value).ToList();
 
-    private void AddAllMove(ComboItem? item)
+    private async Task AddAllMove(ComboItem? item)
     {
         if (item is not { Value: > 0 } || allMoveItems.Any(m => m.Value == item.Value))
         {
@@ -188,6 +195,10 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
         }
 
         allMoveItems = [..allMoveItems, item];
+        if (allMoveAutoRef is not null)
+        {
+            await allMoveAutoRef.ClearAsync();
+        }
     }
 
     private void RemoveAllMove(ComboItem item) =>

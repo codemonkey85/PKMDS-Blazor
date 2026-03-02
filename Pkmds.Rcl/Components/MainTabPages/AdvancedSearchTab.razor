@@ -221,9 +221,10 @@
                                 @* Any-of moves *@
                                 <MudText Typo="@Typo.subtitle2">Has any of these moves</MudText>
                                 <MudAutocomplete T="@ComboItem"
+                                                 @ref="@anyMoveAutoRef"
                                                  Label="Add move…"
                                                  SearchFunc="@SearchMovesAsync"
-                                                 ToStringFunc="@(m => string.Empty)"
+                                                 ToStringFunc="@(m => m?.Text ?? string.Empty)"
                                                  ValueChanged="@AddAnyMove"
                                                  ResetValueOnEmptyText
                                                  Clearable/>
@@ -242,9 +243,10 @@
                                 @* All-of moves *@
                                 <MudText Typo="@Typo.subtitle2">Has all of these moves</MudText>
                                 <MudAutocomplete T="@ComboItem"
+                                                 @ref="@allMoveAutoRef"
                                                  Label="Add move…"
                                                  SearchFunc="@SearchMovesAsync"
-                                                 ToStringFunc="@(m => string.Empty)"
+                                                 ToStringFunc="@(m => m?.Text ?? string.Empty)"
                                                  ValueChanged="@AddAllMove"
                                                  ResetValueOnEmptyText
                                                  Clearable/>
