@@ -101,28 +101,42 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
 
         if (pkm is null)
         {
+            // Only null when no save file is loaded.
+            Snackbar.Add("No save file loaded.", Severity.Error);
+            StateHasChanged();
+            return;
+        }
+
+        // If no slot is currently selected, place the Pokémon in the first empty box slot.
+        var slotType = AppService.GetSelectedPokemonSlot(out _, out _, out _);
+        if (slotType == SelectedPokemonType.None && !TrySelectFirstEmptyBoxSlot())
+        {
             Snackbar.Add(
-                "Could not generate a legal Pokémon for this encounter. Try a different encounter.",
+                "No empty box slots available. Free up a slot and try again.",
                 Severity.Warning);
+            StateHasChanged();
+            return;
+        }
+
+        AppService.EditFormPokemon = pkm;
+        AppService.SavePokemon(pkm);
+
+        // Warn if legality analysis reports issues — the PKM is still placed so the
+        // user can inspect and fix it in the editor.
+        var la = new LegalityAnalysis(pkm);
+        if (la.Valid)
+        {
+            Snackbar.Add($"{selectedResult.SpeciesName} generated successfully.", Severity.Success);
         }
         else
         {
-            // If no slot is currently selected, place the Pokémon in the first empty box slot.
-            var slotType = AppService.GetSelectedPokemonSlot(out _, out _, out _);
-            if (slotType == SelectedPokemonType.None && !TrySelectFirstEmptyBoxSlot())
-            {
-                Snackbar.Add(
-                    "No empty box slots available. Free up a slot and try again.",
-                    Severity.Warning);
-                StateHasChanged();
-                return;
-            }
-
-            AppService.EditFormPokemon = pkm;
-            AppService.SavePokemon(pkm);
-            Snackbar.Add($"{selectedResult.SpeciesName} generated and placed in the selected slot.", Severity.Success);
-            await OnJumpToPartyBox.InvokeAsync();
+            Snackbar.Add(
+                $"{selectedResult.SpeciesName} generated, but legality check flagged issues. " +
+                "Review the Pokémon in the editor.",
+                Severity.Warning);
         }
+
+        await OnJumpToPartyBox.InvokeAsync();
 
         StateHasChanged();
     }

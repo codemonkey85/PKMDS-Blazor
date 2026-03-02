@@ -1166,8 +1166,14 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         var encounters = EncounterMovesetGenerator.GenerateEncounters(blankPkm, sav, ReadOnlyMemory<ushort>.Empty, versions);
 
+        // Deduplicate by reference: WC8/MysteryGift objects are classes and the generator can
+        // return the same instance multiple times (once per compatible game version, e.g. SW and SH).
+        var seen = new HashSet<IEncounterable>(ReferenceEqualityComparer.Instance);
+
         foreach (var enc in encounters)
         {
+            if (!seen.Add(enc)) continue;
+
             // Level range filter — skip if the encounter's range doesn't overlap the requested range.
             if (filter.LevelMin is { } lmin && enc.LevelMax < lmin) continue;
             if (filter.LevelMax is { } lmax && enc.LevelMin > lmax) continue;
@@ -1189,9 +1195,11 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     public PKM? GeneratePokemonFromEncounter(IEncounterable encounter)
     {
         if (AppState.SaveFile is not { } sav) return null;
-        var pkm = encounter.ConvertToPKM(sav);
-        var la = new LegalityAnalysis(pkm);
-        return la.Valid ? pkm : null;
+        // Always return the generated PKM — do not gate on LegalityAnalysis here.
+        // Some encounter types (e.g. HOME Mystery Gifts) may not pass a strict legality
+        // check even when generated correctly; the caller can run a legality check separately
+        // and surface the result to the user.
+        return encounter.ConvertToPKM(sav);
     }
 
     private EncounterSearchResult BuildEncounterResult(IEncounterable enc)
