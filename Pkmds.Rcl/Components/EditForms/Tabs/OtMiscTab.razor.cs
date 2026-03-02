@@ -53,6 +53,8 @@ public partial class OtMiscTab : IDisposable
     private List<ComboItem>? CachedMemoryItems { get; set; }
     private List<ComboItem>? CachedFeelingItems { get; set; }
     private List<ComboItem>? CachedQualityItems { get; set; }
+    private List<ComboItem>? CachedAffixedRibbonItems { get; set; }
+    private List<ComboItem>? CachedGeoCountries { get; set; }
 
     /// <summary>
     /// Returns the memory generation (6 or 8) used for feeling/argument lookups.
@@ -115,6 +117,11 @@ public partial class OtMiscTab : IDisposable
             CachedFeelingItems = null;
             CachedQualityItems = null;
         }
+
+        CachedAffixedRibbonItems = Pokemon is IRibbonSetAffixed ? BuildAffixedRibbonItems() : null;
+        CachedGeoCountries = Pokemon is IGeoTrack or IRegionOrigin
+            ? AppService.GetGeoCountryComboItems().ToList()
+            : null;
     }
 
     private static MemoryArgType GetMemoryArgType(byte memoryId) =>
@@ -380,5 +387,54 @@ public partial class OtMiscTab : IDisposable
         }
 
         homeTrack.Tracker = parsedTracker;
+    }
+
+    private static void SetRegionOriginCountry(IRegionOrigin regionOrigin, byte value)
+    {
+        regionOrigin.Country = value;
+        regionOrigin.Region = 0; // reset sub-region when country changes
+    }
+
+    /// <summary>
+    /// Builds the affixed ribbon combo items for the given Pokémon's format.
+    /// Includes "None" (-1) and every ribbon/mark slot that can be affixed (i.e.
+    /// any ribbon/mark whose name can be mapped to a <see cref="RibbonIndex"/>),
+    /// regardless of whether the Pokémon currently has each ribbon. This ensures
+    /// the selector is always fully populated and does not go stale when ribbons
+    /// are toggled on the Ribbons tab.
+    /// </summary>
+    private List<ComboItem> BuildAffixedRibbonItems()
+    {
+        var items = new List<ComboItem> { new("None", -1) };
+        if (Pokemon is null)
+        {
+            return items;
+        }
+
+        foreach (var info in RibbonHelper.GetAllRibbonInfo(Pokemon))
+        {
+            // Strip the correct prefix so the remainder maps to a RibbonIndex entry.
+            // Count-based ribbon properties (e.g. RibbonCountMemoryContest) must strip
+            // "RibbonCount" first; boolean ones strip "Ribbon". Anything else is tried as-is.
+            var shortName = info.Name;
+            if (shortName.StartsWith("RibbonCount", StringComparison.Ordinal))
+            {
+                shortName = shortName["RibbonCount".Length..];
+            }
+            else if (shortName.StartsWith("Ribbon", StringComparison.Ordinal))
+            {
+                shortName = shortName["Ribbon".Length..];
+            }
+
+            if (!Enum.TryParse<RibbonIndex>(shortName, ignoreCase: true, out var idx))
+            {
+                continue;
+            }
+
+            var displayName = RibbonHelper.GetRibbonDisplayName(info.Name);
+            items.Add(new ComboItem(displayName, (int)idx));
+        }
+
+        return items;
     }
 }

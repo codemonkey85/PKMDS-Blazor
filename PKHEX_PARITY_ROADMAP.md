@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-02-28
+**Last Updated:** 2026-03-01
 
 ---
 
@@ -27,7 +27,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - **Records** - Game statistics, Hall of Fame timing
 - **Mystery Gift Database** - Browse, search, filter, import mystery gifts
 - **Met Data** - Met location, ball, level, origin game, Battle Version (Gen 8+), Obedience Level (Gen 9+), Ground Tile (Gen 4), Fateful Encounter, Met Date (Gen 4+), Egg Location + Egg Date (Gen 4+), Met Time of Day (Gen 2)
-- **OT/Misc Data** - Original trainer info, TID/SID (16-bit and 6-digit), handling trainer name/gender/language (Gen 8+), memory editing (Gen 6+), affection/friendship, Geo Locations (Gen 6–7), Home Tracker (Gen 8+) *(Country/Sub-Region/Console Region and Affixed Ribbon not yet implemented — see §1.1)*
+- **OT/Misc Data** - Original trainer info, TID/SID (16-bit and 6-digit), handling trainer name/gender/language (Gen 8+), memory editing (Gen 6+), affection/friendship, Geo Locations (Gen 6–7), Home Tracker (Gen 8+), Country/Sub-Region/Console Region (IRegionOrigin, Gen 6–7), Affixed Ribbon/Mark (IRibbonSetAffixed, Gen 8+)
 - **Cosmetic Features** - Markings, height/weight scalars, scale rating, origin mark display (Gen 6+), Favorite toggle (Gen 7b+)
 - **Pokerus** - Infection status display/editing
 - **Hidden Power** - Type selection
@@ -98,13 +98,13 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Validate form legality based on origin/capture method
 
 #### Ability Slot Editor
-**Status:** ⚠️ Partial (ability display exists; unrestricted slot selection not yet supported)
+**Status:** ✅ Implemented
 **Complexity:** Low
 **Tracks:** #176
 **Tasks:**
-- [ ] Allow freely selecting any ability slot (Ability 1 / Ability 2 / Hidden Ability) regardless of species legality
-- [ ] Display all three slots even when a species lacks a Hidden Ability (show as "None")
-- [ ] Let legality checker report illegal ability slots rather than preventing selection
+- [x] Allow freely selecting any ability slot (Ability 1 / Ability 2 / Hidden Ability) regardless of species legality
+- [x] Display all three slots even when a species lacks a Hidden Ability (show as "None")
+- [x] Let legality checker report illegal ability slots rather than preventing selection
 
 #### PID/EC Generator
 **Status:** ✅ Implemented
@@ -140,14 +140,14 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [x] **Obedience Level** (`PKM.ObedienceLevel`, Gen 9+ / PK9/PA9) — level cap below which a traded Pokémon will obey; shown alongside Met Level in PKHeX
 
 #### OT/Misc Tab — Missing Fields
-**Status:** ❌ Not Implemented (generation-specific)
+**Status:** ✅ Implemented (#417)
 **Complexity:** Low
 **Tracks:** #417
 **PKHeX Reference:** `PKMEditor.cs` OT/Misc tab
 **Note:** Handler Language (`IHandlerLanguage`), Home Tracker (`IHomeTrack`), Handling Trainer name/gender, memories, Geo Locations (`IGeoTrack`), and TID/SID format handling are all ✅ already implemented in `OtMiscTab.razor`.
 **Tasks:**
-- [ ] **Country / Sub-Region / Console Region** (`IRegionOrigin`: `Country`, `Region`, `ConsoleRegion`, Gen 6–7 only) — the Pokémon's native 3DS geographic origin; three separate dropdowns; distinct from the five IGeoTrack visited-country slots which are already implemented
-- [ ] **Affixed Ribbon / Mark** (`PKM.AffixedRibbon`, Gen 8+) — selects which ribbon or mark is displayed on the Pokémon's summary screen; stored as a `RibbonIndex` enum value
+- [x] **Country / Sub-Region / Console Region** (`IRegionOrigin`: `Country`, `Region`, `ConsoleRegion`, Gen 6–7 only) — the Pokémon's native 3DS geographic origin; three separate dropdowns; distinct from the five IGeoTrack visited-country slots which are already implemented
+- [x] **Affixed Ribbon / Mark** (`PKM.AffixedRibbon`, Gen 8+) — selects which ribbon or mark is displayed on the Pokémon's summary screen; stored as a `RibbonIndex` enum value
 
 #### Cosmetic Tab — Origin Mark Display and Favorite
 **Status:** ✅ Implemented (#418)
@@ -868,7 +868,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] **Suppress legality overlays** — gate legality icon rendering in `PokemonSlotComponent` on `!AppState.IsHaXEnabled`
 - [ ] **Unrestricted item quantities** — allow quantities up to `ushort.MaxValue` (65,535) in Bag/Inventory editor; Gen 1–2 bags cap at `byte.MaxValue` (255)
 - [ ] **Unrestricted item lists** — show full item list regardless of pouch type when HaX is on
-- [ ] **Unrestricted ability selection (Gen 3 only)** — Gen 3 ability dropdown uses `GetAbilityList(PersonalInfo)` and is restricted to the species' legal abilities; in HaX mode it should show all abilities (matching the `DEV_Ability` behaviour PKHeX provides in HaX mode). **Gen 4+ is already unrestricted** — `MudAutocomplete` in `MainTab.razor` searches `GameInfo.FilteredSources.Abilities` (all abilities), which already matches PKHaX behaviour regardless of mode; no Gen 4+ change needed. *Note: ability slot selection (Ability 1 / Ability 2 / Hidden Ability) is a separate concern tracked in §1.1 / #176 and is not HaX-specific.*
+- [ ] **Unrestricted ability selection (HaX DEV mode)** — The ability dropdown in `MainTab.razor` now uses a slot-based selector (Ability 1 / Ability 2 / Hidden Ability) that always shows species abilities, matching normal PKHeX behaviour. HaX `DEV_Ability` mode (unconstrained selection of any ability ID) is a separate, lower-priority concern that may be addressed if HaX mode is implemented.
 - [ ] Add unit tests for HaX-gated stat editing path
 
 ---

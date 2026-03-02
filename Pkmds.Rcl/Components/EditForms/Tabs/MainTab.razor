@@ -335,42 +335,30 @@
         </MudSelect>
     }
 
-    <MudStack Row
-              AlignItems="@AlignItems.Center"
-              Spacing="1">
-        <MudStack Style="flex: 1; min-width: 0;">
-            @switch (saveGeneration)
-            {
-                case 3:
-                    <MudSelect Label="Ability"
-                               Variant="@Variant.Outlined"
-                               @bind-Value:get="@Pokemon.Ability"
-                               @bind-Value:set="@(ability => Pokemon.SetAbility(ability))"
-                               For="@(() => Pokemon.Ability)">
-                        @foreach (var ability in GameInfo.FilteredSources.GetAbilityList(Pokemon.PersonalInfo).DistinctBy(ability => ability.Value))
-                        {
-                            <MudSelectItem Value="@ability.Value"
-                                           @key="ability.Value">
-                                @ability.Text
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
-                    break;
-                case >= 4:
-                    @* ReSharper disable once CSharpWarnings::CS8603 *@
-                    <MudAutocomplete T="@ComboItem"
-                                     Label="Ability"
-                                     Variant="@Variant.Outlined"
-                                     @bind-Value:get="@(AppService.GetAbilityComboItem(Pokemon.Ability))"
-                                     @bind-Value:set="@(ability => Pokemon.Ability = ability.Value)"
-                                     SearchFunc="@SearchAbilityNames"
-                                     ToStringFunc="@(ability => ability?.Text)"/>
-                    break;
-            }
+    @if (saveGeneration >= 3)
+    {
+        <MudStack Row
+                  AlignItems="@AlignItems.Center"
+                  Spacing="1">
+            <MudStack Style="flex: 1; min-width: 0;">
+                <MudSelect T="int"
+                           Label="Ability"
+                           Variant="@Variant.Outlined"
+                           Value="@GetAbilitySlotIndex()"
+                           ValueChanged="@SetAbilitySlot">
+                    @foreach (var slot in GetAbilitySlotItems())
+                    {
+                        <MudSelectItem Value="@slot.Value"
+                                       @key="@slot.Value">
+                            @slot.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudStack>
+            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Ability)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ability))"/>
         </MudStack>
-        <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Ability)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                           Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ability))"/>
-    </MudStack>
+    }
 
     @if (saveGeneration >= 3)
     {
