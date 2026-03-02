@@ -131,6 +131,22 @@ public partial class PokedexTab
                 return count;
             }
 
+            // SAV9ZA: Zukan9a.CompleteDex() filters by Personal.IsSpeciesInGame,
+            // so only species present in the ZA table count toward the dex total.
+            // MaxSpeciesID varies by SaveRevision (base = Falinks; DLC = Gholdengo).
+            case SAV9ZA za:
+            {
+                var count = 0;
+                for (ushort i = 1; i <= za.MaxSpeciesID; i++)
+                {
+                    if (za.Personal.IsSpeciesInGame(i))
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+
             // All other games (Gen 1–7, BDSP): every national species up to
             // MaxSpeciesID is present in the game, so MaxSpeciesID is exact.
             // BDSP (SAV8BS): MaxSpeciesID = 493 (Arceus); SAV_PokedexBDSP iterates
@@ -193,6 +209,9 @@ public partial class PokedexTab
                 break;
             case SAV9SV sv:
                 FillGen9Rev1Pokedex(sv);
+                break;
+            case SAV9ZA za:
+                FillGen9ZaPokedex(za);
                 break;
         }
     }
@@ -301,6 +320,8 @@ public partial class PokedexTab
 
     private static void FillGen9Rev1Pokedex(SAV9SV sv) => sv.Zukan.CompleteDex();
 
+    private static void FillGen9ZaPokedex(SAV9ZA za) => za.Zukan.CompleteDex();
+
     private async Task SeenAllPokedex()
     {
         if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
@@ -375,6 +396,11 @@ public partial class PokedexTab
                 break;
             case SAV9SV sv:
                 sv.Zukan.SeenAll();
+                break;
+            // SAV9ZA: Zukan9a.SeenAll() uses form-based bit flags (not a state machine),
+            // so it works correctly without any workaround.
+            case SAV9ZA za:
+                za.Zukan.SeenAll();
                 break;
         }
 
@@ -452,6 +478,12 @@ public partial class PokedexTab
             // incorrectly raises each species back to state 2 ("seen").
             case SAV9SV sv:
                 sv.Zukan.SeenNone();
+                break;
+            // SAV9ZA: SeenNone() zeroes the entire block (clears both seen and caught
+            // bit flags).  CaughtNone() has no state-machine bug in ZA, but is
+            // redundant since SeenNone() already clears everything.
+            case SAV9ZA za:
+                za.Zukan.SeenNone();
                 break;
         }
 
