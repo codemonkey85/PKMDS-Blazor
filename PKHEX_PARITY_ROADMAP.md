@@ -868,7 +868,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [x] **Suppress legality overlays** — gate legality icon rendering in `PokemonSlotComponent` on `!AppState.IsHaXEnabled`
 - [x] **Unrestricted item quantities** — allow quantities up to `ushort.MaxValue` (65,535) in Bag/Inventory editor when HaX is on
 - [x] **Unrestricted item lists** — show full item list regardless of pouch type when HaX is on
-- [ ] **Unrestricted ability selection (HaX DEV mode)** — The ability dropdown in `MainTab.razor` now uses a slot-based selector (Ability 1 / Ability 2 / Hidden Ability) that always shows species abilities, matching normal PKHeX behaviour. HaX `DEV_Ability` mode (unconstrained selection of any ability ID) is a separate, lower-priority concern that may be addressed in a future issue.
+- [x] **Unrestricted ability selection (HaX DEV mode)** — When HaX is on and format > 3, the slot-based selector is replaced by a `MudAutocomplete` over all ability IDs (`GameInfo.Strings.Ability`) plus a raw `AbilityNumber` slot picker (1/2/4), writing directly to `PKM.Ability`. Mirrors PKHeX `DEV_Ability` (StatEditor.cs:45). Gen 3 keeps the slot-based selector in both modes.
 - [x] Add unit tests for HaX-gated stat editing path (`HaXModeTests.cs`, 10 tests)
 
 ---
