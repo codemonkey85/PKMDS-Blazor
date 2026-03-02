@@ -75,7 +75,10 @@ public partial class StatsTab : IDisposable
                 break;
         }
 
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
     }
 
     private void OnStatNatureSet(Nature statNature)
@@ -86,7 +89,10 @@ public partial class StatsTab : IDisposable
         }
 
         Pokemon.StatNature = statNature;
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
     }
 
     private static int GetEvMax(int generation) => generation switch
@@ -254,7 +260,10 @@ public partial class StatsTab : IDisposable
                 }
         }
 
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
     }
 
     private void OnSetIv(Stats stat, int newValue)
@@ -298,7 +307,10 @@ public partial class StatsTab : IDisposable
 
         Pokemon.SetIV(statIndex, (byte)newValue);
 
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
     }
 
     private void OnHaXStatHpSet(int newValue) =>
