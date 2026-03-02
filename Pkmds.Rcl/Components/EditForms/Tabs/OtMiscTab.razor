@@ -574,7 +574,7 @@
         @* Geo Locations / Residence (Gen 6/7 IGeoTrack) *@
         @if (Pokemon is IGeoTrack geoTrack)
         {
-            var countries = AppService.GetGeoCountryComboItems().ToList();
+            var countries = CachedGeoCountries!;
 
             <MudItem xs="12">
                 <MudDivider Class="my-2"/>
@@ -653,7 +653,7 @@
         @* Native 3DS Region (Gen 6–7, IRegionOrigin) *@
         @if (Pokemon is IRegionOrigin regionOrigin)
         {
-            var countries = AppService.GetGeoCountryComboItems();
+            var countries = CachedGeoCountries!;
             var subRegions = regionOrigin.Country != 0
                 ? AppService.GetGeoRegionComboItems(regionOrigin.Country).ToList()
                 : null;
