@@ -1,19 +1,37 @@
-﻿@inherits BasePkmdsComponent
+@inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is { HasPokeDex: true })
+@if (AppState.SaveFile is { HasPokeDex: true } saveFile)
 {
-    <MudText>
-        Seen: @GetSeenCount()
-    </MudText>
+    <MudStack>
+        <MudText Typo="@Typo.body2">Seen: @GetSeenCount() / @saveFile.MaxSpeciesID</MudText>
+        <MudProgressLinear Color="@Color.Info" Value="@GetSeenPercent()" />
 
-    <MudText>
-        Caught: @GetCaughtCount()
-    </MudText>
+        <MudText Typo="@Typo.body2">Caught: @GetCaughtCount() / @saveFile.MaxSpeciesID</MudText>
+        <MudProgressLinear Color="@Color.Success" Value="@GetCaughtPercent()" />
 
-    <MudButton OnClick="@FillPokedex"
-               Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               StartIcon="">
-        Fill Pokédex
-    </MudButton>
+        <MudStack Row="true" Wrap="@Wrap.Wrap">
+            <MudButton OnClick="@FillPokedex"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       StartIcon="">
+                Fill Pokédex
+            </MudButton>
+
+            <MudButton OnClick="@SeenAllPokedex"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Secondary"
+                       StartIcon=""
+                       Disabled="@IsLegendArceus">
+                Seen All
+            </MudButton>
+
+            <MudButton OnClick="@ClearPokedex"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Error"
+                       StartIcon=""
+                       Disabled="@IsLegendArceus">
+                Clear Pokédex
+            </MudButton>
+        </MudStack>
+    </MudStack>
 }
