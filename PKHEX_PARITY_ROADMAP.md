@@ -260,9 +260,32 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 ## Priority 2: Important Secondary Features
 
 ### 2.1 Database/Bank System
-**Status:** ⚠️ Partial (Mystery Gift DB exists)  
-**Complexity:** Very High  
+**Status:** ⚠️ Partial (Mystery Gift DB exists; redesign tracked in #444)
+**Complexity:** Very High
 **Tasks:**
+
+#### 2.1a Mystery Gift Database Redesign (#444)
+**Status:** 🔲 Planned
+**Complexity:** Medium
+Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGiftDB` design language.
+- [ ] Replace card grid + pagination with virtualized scrollable row list (`<Virtualize>`)
+- [ ] Add structured filter panel:
+  - [ ] Species dropdown (filtered to species present in event DB)
+  - [ ] Held item dropdown
+  - [ ] Move 1–4 dropdowns (`mg.HasMove()`)
+  - [ ] Generation filter with comparator (Any / >= / == / <=), preset to save generation
+  - [ ] Shiny tri-state toggle (Any / Shiny / Not Shiny)
+  - [ ] Egg tri-state toggle (Any / Egg / Not Egg)
+  - [ ] Filter Unavailable Species toggle (existing logic, exposed as UI option)
+  - [ ] Reset Filters button
+  - [ ] Result count label
+- [ ] Add detail panel (populated on row selection, shows `mg.GetTextLines()`)
+- [ ] Add Export Gift File action (download `.wc*` blob via JS interop; disabled for WC3 until #423)
+- [ ] Add Generate action (`mg.ConvertToPKM` → write to selected/first-empty box slot → navigate to Party/Box tab, same pattern as Encounter Database)
+- [ ] Add Export All Results action (zip download of `DataMysteryGift` entries in current result set)
+- [ ] Responsive layout: sidebar filter panel collapses to `MudDrawer` on mobile
+
+#### 2.1b Pokémon Database/Bank (Personal Collection)
 - [ ] Design Pokemon Database/Bank UI
 - [ ] Implement personal Pokemon database storage (IndexedDB)
 - [ ] Add database import/export functionality
@@ -714,6 +737,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 
 ### 4.1 UI/UX Improvements
 **Tasks:**
+- [ ] **Fix "Load Pokémon File" and "Load Mystery Gift File" slot behaviour (#445)** — use currently selected slot (or first empty box slot as fallback), write via `AppService.EditFormPokemon`/`SavePokemon`, show snackbars instead of blocking dialogs, and navigate to Party/Box tab after placement. Requires adding `RequestJumpToPartyBox` event to `IRefreshService`; extract `TrySelectFirstEmptyBoxSlot` into `IAppService`.
 - [ ] Add keyboard shortcuts for common operations
 - [ ] Implement undo/redo functionality
 - [ ] Add theme customization (dark/light modes already exist, add more)
