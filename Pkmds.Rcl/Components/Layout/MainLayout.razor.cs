@@ -32,6 +32,7 @@ public partial class MainLayout : IDisposable
         if (storedHaX == "true")
         {
             AppState.IsHaXEnabled = true;
+            RefreshService.Refresh();
         }
 
         StateHasChanged();
