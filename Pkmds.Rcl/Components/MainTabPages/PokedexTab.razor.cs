@@ -2,6 +2,13 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class PokedexTab
 {
+    // Returns the raw count of species with the seen/caught flag set, with no
+    // filter for the game's formal dex (no GetDexIndex guard for SV, no
+    // IsSpeciesInGame guard for ZA, etc.).  A save can have species flagged
+    // seen/caught that are outside the formal dex (e.g. HOME-transferred species
+    // in SV where GetDexIndex(species).Index == 0).  The UI displays
+    // GetDisplaySeenCount/GetDisplayCaughtCount, which clamp these values to
+    // GetDexTotalCount so the progress bar and fraction text never exceed 100 %.
     private int GetSeenCount()
     {
         if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
@@ -349,7 +356,10 @@ public partial class PokedexTab
                     s3.SetSeen(i, true);
                 }
                 break;
-            // NuGet 26.1.31: Zukan4.SeenAll requires explicit shinyToo argument.
+            // NuGet 26.1.31: Zukan4/5/6* SeenAll requires an explicit shinyToo argument.
+            // Zukan5 and Zukan6* are standalone classes (not subclasses of Zukan<T>),
+            // so their SeenAll(shinyToo) implementations are correct and NOT affected
+            // by the Zukan<T>.SeenAll forwarding bug described below for Gen 7/7b.
             case SAV4 s4:
                 s4.Dex.SeenAll(false);
                 break;
