@@ -505,54 +505,82 @@
 
         <MudItem xs="3">
             <MudStack>
-                <MudText>
-                    Stats
-                </MudText>
+                <MudStack Row
+                          AlignItems="@AlignItems.Center"
+                          Spacing="1">
+                    <MudText>
+                        Stats
+                    </MudText>
+                    @if (AppState?.IsHaXEnabled is true)
+                    {
+                        <MudChip T="string"
+                                 Color="@Color.Warning"
+                                 Size="@Size.Small"
+                                 title="PKHaX: battle stats are directly editable">
+                            HaX
+                        </MudChip>
+                    }
+                </MudStack>
 
                 <MudNumericField Label="HP"
                                  title="Max HP Stat"
                                  Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="@(ushort.MaxValue)"
                                  Value="@Pokemon.Stat_HPMax"
-                                 ReadOnly
-                                 HideSpinButtons/>
+                                 ValueChanged="@((int v) => OnHaXStatHpSet(v))"
+                                 ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                 HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
 
                 <MudNumericField Label="Atk"
                                  Class="@GetStatClass(Stats.Attack)"
                                  title="@GetNatureTooltip(Stats.Attack)"
                                  Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="@(ushort.MaxValue)"
                                  Value="@Pokemon.Stat_ATK"
+                                 ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => s.Stat_ATK = val))"
                                  Adornment="@GetNatureAdornment(Stats.Attack)"
                                  AdornmentIcon="@GetNatureAdornmentIcon(Stats.Attack)"
                                  AdornmentColor="@GetNatureAdornmentColor(Stats.Attack)"
-                                 ReadOnly
-                                 HideSpinButtons/>
+                                 ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                 HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
 
                 <MudNumericField Label="Def"
                                  Class="@GetStatClass(Stats.Defense)"
                                  title="@GetNatureTooltip(Stats.Defense)"
                                  Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="@(ushort.MaxValue)"
                                  Value="@Pokemon.Stat_DEF"
+                                 ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => s.Stat_DEF = val))"
                                  Adornment="@GetNatureAdornment(Stats.Defense)"
                                  AdornmentIcon="@GetNatureAdornmentIcon(Stats.Defense)"
                                  AdornmentColor="@GetNatureAdornmentColor(Stats.Defense)"
-                                 ReadOnly
-                                 HideSpinButtons/>
+                                 ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                 HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
 
                 @if (saveGeneration == 1 && Pokemon is PK1 pk1)
                 {
                     <MudNumericField Label="Spe"
                                      title="Speed Stat"
                                      Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@(ushort.MaxValue)"
                                      Value="@pk1.Stat_SPE"
-                                     ReadOnly
-                                     HideSpinButtons/>
+                                     ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => s.Stat_SPE = val))"
+                                     ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                     HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
 
                     <MudNumericField Label="Spc"
                                      title="Special Stat"
                                      Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@(ushort.MaxValue)"
                                      Value="@pk1.Stat_SPC"
-                                     ReadOnly
-                                     HideSpinButtons/>
+                                     ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => { if (s is PK1 p) p.Stat_SPC = val; }))"
+                                     ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                     HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
                 }
                 else
                 {
@@ -560,34 +588,43 @@
                                      Class="@GetStatClass(Stats.SpecialAttack)"
                                      title="@GetNatureTooltip(Stats.SpecialAttack)"
                                      Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@(ushort.MaxValue)"
                                      Value="@Pokemon.Stat_SPA"
+                                     ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => s.Stat_SPA = val))"
                                      Adornment="@GetNatureAdornment(Stats.SpecialAttack)"
                                      AdornmentIcon="@GetNatureAdornmentIcon(Stats.SpecialAttack)"
                                      AdornmentColor="@GetNatureAdornmentColor(Stats.SpecialAttack)"
-                                     ReadOnly
-                                     HideSpinButtons/>
+                                     ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                     HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
 
                     <MudNumericField Label="Spd"
                                      Class="@GetStatClass(Stats.SpecialDefense)"
                                      title="@GetNatureTooltip(Stats.SpecialDefense)"
                                      Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@(ushort.MaxValue)"
                                      Value="@Pokemon.Stat_SPD"
+                                     ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => s.Stat_SPD = val))"
                                      Adornment="@GetNatureAdornment(Stats.SpecialDefense)"
                                      AdornmentIcon="@GetNatureAdornmentIcon(Stats.SpecialDefense)"
                                      AdornmentColor="@GetNatureAdornmentColor(Stats.SpecialDefense)"
-                                     ReadOnly
-                                     HideSpinButtons/>
+                                     ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                     HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
 
                     <MudNumericField Label="Spe"
                                      Class="@GetStatClass(Stats.Speed)"
                                      title="@GetNatureTooltip(Stats.Speed)"
                                      Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@(ushort.MaxValue)"
                                      Value="@Pokemon.Stat_SPE"
+                                     ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => s.Stat_SPE = val))"
                                      Adornment="@GetNatureAdornment(Stats.Speed)"
                                      AdornmentIcon="@GetNatureAdornmentIcon(Stats.Speed)"
                                      AdornmentColor="@GetNatureAdornmentColor(Stats.Speed)"
-                                     ReadOnly
-                                     HideSpinButtons/>
+                                     ReadOnly="@(AppState?.IsHaXEnabled is not true)"
+                                     HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
                 }
 
                 @if (saveGeneration >= 3)

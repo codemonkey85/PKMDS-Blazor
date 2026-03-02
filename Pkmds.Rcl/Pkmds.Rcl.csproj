@@ -26,6 +26,12 @@
         <ProjectReference Include="..\Pkmds.Core\Pkmds.Core.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Pkmds.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
     <Import Project="Tailwind.targets"/>
 
 </Project>

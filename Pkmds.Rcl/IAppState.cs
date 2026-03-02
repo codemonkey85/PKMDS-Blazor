@@ -73,4 +73,11 @@ public interface IAppState
     /// This is true when exactly one slot (either box or party) is selected.
     /// </summary>
     bool SelectedSlotsAreValid { get; }
+
+    /// <summary>
+    /// Gets or sets whether PKHaX (Illegal Mode) is enabled.
+    /// When true, legality restrictions are suppressed and certain editing limits are lifted.
+    /// Persisted across sessions via localStorage.
+    /// </summary>
+    bool IsHaXEnabled { get; set; }
 }

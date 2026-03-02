@@ -27,6 +27,14 @@ public partial class MainLayout : IDisposable
 
         isDarkMode = await mudThemeProvider.GetSystemDarkModeAsync();
         await mudThemeProvider.WatchSystemDarkModeAsync(OnSystemPreferenceChanged);
+
+        var storedHaX = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_hax_enabled");
+        if (storedHaX == "true")
+        {
+            AppState.IsHaXEnabled = true;
+            RefreshService.Refresh();
+        }
+
         StateHasChanged();
     }
 
@@ -50,6 +58,29 @@ public partial class MainLayout : IDisposable
         isDarkMode = newValue;
         RefreshService.RefreshTheme(isDarkMode);
         StateHasChanged();
+    }
+
+    private async Task OnHaXChanged(bool newValue)
+    {
+        if (newValue && !AppState.IsHaXEnabled)
+        {
+            var ack = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_hax_warning_ack");
+            if (ack != "true")
+            {
+                await DialogService.ShowMessageBoxAsync(
+                    "PKHaX Mode",
+                    "Illegal mode activated. Editing restrictions are now lifted. " +
+                    "Pokémon created or modified in this mode may be illegal and untradable. " +
+                    "Please behave.",
+                    yesText: "I understand");
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_warning_ack", "true");
+            }
+        }
+
+        AppState.IsHaXEnabled = newValue;
+        Logger.LogInformation("PKHaX mode {Status}", newValue ? "enabled" : "disabled");
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_enabled", newValue ? "true" : "false");
+        RefreshService.Refresh();
     }
 
     private void OnVerboseLoggingChanged(bool newValue)

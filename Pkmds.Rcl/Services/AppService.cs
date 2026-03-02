@@ -17,7 +17,15 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         set
         {
             field = value?.Clone();
-            LoadPokemonStats(field);
+
+            // In HaX mode, battle stats for party Pokémon are already stored in
+            // the save data (party format includes them). Recalculating here would
+            // overwrite any HaX-edited values that were saved.
+            // Box Pokémon always need recalculation because box format omits stats.
+            if (!AppState.IsHaXEnabled || AppState.SelectedPartySlotNumber is null)
+            {
+                LoadPokemonStats(field);
+            }
         }
     }
 

@@ -75,7 +75,10 @@ public partial class StatsTab : IDisposable
                 break;
         }
 
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
     }
 
     private void OnStatNatureSet(Nature statNature)
@@ -86,7 +89,10 @@ public partial class StatsTab : IDisposable
         }
 
         Pokemon.StatNature = statNature;
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
     }
 
     private static int GetEvMax(int generation) => generation switch
@@ -254,7 +260,10 @@ public partial class StatsTab : IDisposable
                 }
         }
 
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
     }
 
     private void OnSetIv(Stats stat, int newValue)
@@ -298,7 +307,37 @@ public partial class StatsTab : IDisposable
 
         Pokemon.SetIV(statIndex, (byte)newValue);
 
-        AppService.LoadPokemonStats(Pokemon);
+        if (AppState?.IsHaXEnabled is not true)
+        {
+            AppService.LoadPokemonStats(Pokemon);
+        }
+    }
+
+    private void OnHaXStatHpSet(int newValue) =>
+        ApplyHaXStatHp(Pokemon, AppState?.IsHaXEnabled is true, newValue);
+
+    private void OnHaXStatSet(int newValue, Action<PKM, int> setter) =>
+        ApplyHaXStat(Pokemon, AppState?.IsHaXEnabled is true, newValue, setter);
+
+    internal static void ApplyHaXStatHp(PKM? pkm, bool haXEnabled, int newValue)
+    {
+        if (pkm is null || !haXEnabled)
+        {
+            return;
+        }
+
+        pkm.Stat_HPMax = newValue;
+        pkm.Stat_HPCurrent = newValue;
+    }
+
+    internal static void ApplyHaXStat(PKM? pkm, bool haXEnabled, int newValue, Action<PKM, int> setter)
+    {
+        if (pkm is null || !haXEnabled)
+        {
+            return;
+        }
+
+        setter(pkm, newValue);
     }
 
     private enum NatureModifier

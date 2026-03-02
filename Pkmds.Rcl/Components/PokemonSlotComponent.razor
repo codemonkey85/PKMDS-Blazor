@@ -36,7 +36,7 @@
                 </div>
             }
 
-            @if (GetLegalityValid() is { } isLegal)
+            @if (!AppState.IsHaXEnabled && GetLegalityValid() is { } isLegal)
             {
                 <div class="legality-indicator-icon"
                      title="@(isLegal

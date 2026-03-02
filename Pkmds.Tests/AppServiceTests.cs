@@ -266,6 +266,7 @@ public class AppServiceTests
         public bool ShowProgressIndicator { get; set; }
         public string AppVersion => "Test";
         public bool SelectedSlotsAreValid => true;
+        public bool IsHaXEnabled { get; set; }
     }
 
     private class TestRefreshService : IRefreshService
