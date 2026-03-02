@@ -28,7 +28,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - **Mystery Gift Database** - Browse, search, filter, import mystery gifts
 - **Met Data** - Met location, ball, level, origin game, Ground Tile (Gen 4), Fateful Encounter, Met Date (Gen 4+), Egg Location + Egg Date (Gen 4+), Met Time of Day (Gen 2) *(Battle Version and Obedience Level not yet implemented — see §1.1)*
 - **OT/Misc Data** - Original trainer info, TID/SID (16-bit and 6-digit), handling trainer name/gender/language (Gen 8+), memory editing (Gen 6+), affection/friendship, Geo Locations (Gen 6–7), Home Tracker (Gen 8+) *(Country/Sub-Region/Console Region and Affixed Ribbon not yet implemented — see §1.1)*
-- **Cosmetic Features** - Markings, height/weight scalars, scale rating *(Origin mark display and Favorite toggle not yet implemented — see §1.1)*
+- **Cosmetic Features** - Markings, height/weight scalars, scale rating, origin mark display (Gen 6+), Favorite toggle (Gen 7b+)
 - **Pokerus** - Infection status display/editing
 - **Hidden Power** - Type selection
 - **Showdown Export** - Export Pokemon to Showdown format
@@ -150,12 +150,12 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] **Affixed Ribbon / Mark** (`PKM.AffixedRibbon`, Gen 8+) — selects which ribbon or mark is displayed on the Pokémon's summary screen; stored as a `RibbonIndex` enum value
 
 #### Cosmetic Tab — Origin Mark Display and Favorite
-**Status:** ❌ Not Implemented
+**Status:** ✅ Implemented (#418)
 **Complexity:** Low
 **Tracks:** #418
 **PKHeX Reference:** `PB_Origin` and `PB_Favorite` in `PKMEditor.cs`; `OriginMarkUtil.GetOriginMark(pk)` in `PKHeX.Core/PKM/Enums/OriginMark.cs`
 **Tasks:**
-- [ ] **Origin Mark display** (`OriginMarkUtil.GetOriginMark(pk)`, Gen 6+) — read-only icon shown in the Cosmetic tab indicating which generation group the Pokémon originated from; derived from the entity's version, not editable directly:
+- [x] **Origin Mark display** (`OriginMarkUtil.GetOriginMark(pk)`, Gen 6+) — read-only icon shown in the Cosmetic tab indicating which generation group the Pokémon originated from; derived from the entity's version, not editable directly:
   - Gen 6 (X/Y, ORAS) → Pentagon mark
   - Gen 7 (SM, USUM) → Clover/flower mark
   - Gen 8 SWSH → Galar mark
@@ -166,7 +166,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
   - Virtual Console (Gen 1–2 VC) → Game Boy mark
   - Pokémon GO transfers → GO mark
   - LGPE (Let's Go) → Let's Go mark
-- [ ] **Favorite toggle** (`IFavorite.IsFavorite`) — clickable toggle; shown whenever the entity implements `IFavorite`: `PB7` (LGPE), `G8PKM` base (PK8 SWSH + PB8 BDSP), `PA8` (LA), `PK9`/`PA9` (SV); marks the Pokémon as a favorite in the PC box; in PKHeX, `ClickFavorite` uses `Entity is IFavorite` so it works for all these formats, not just LGPE
+- [x] **Favorite toggle** (`IFavorite.IsFavorite`) — clickable toggle; shown whenever the entity implements `IFavorite`: `PB7` (LGPE), `G8PKM` base (PK8 SWSH + PB8 BDSP), `PA8` (LA), `PK9`/`PA9` (SV); marks the Pokémon as a favorite in the PC box; in PKHeX, `ClickFavorite` uses `Entity is IFavorite` so it works for all these formats, not just LGPE
 
 #### Generation-Specific Fields Not Yet Implemented
 **Status:** ❌ Not Implemented

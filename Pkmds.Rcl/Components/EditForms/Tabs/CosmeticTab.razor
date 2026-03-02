@@ -13,6 +13,28 @@
     <MarkingsContainer Pokemon="@Pokemon"/>
 }
 
+@if (OriginMarkSpriteFileName is { } originSrc)
+{
+    <MudStack Row
+              AlignItems="@AlignItems.Center"
+              Class="ma-2">
+        <MudText>Origin Mark:</MudText>
+        <MudImage Src="@originSrc"
+                  Alt="Origin Mark"
+                  title="Origin Mark"
+                  Width="24"
+                  ObjectFit="@ObjectFit.Contain"
+                  ObjectPosition="@ObjectPosition.Center"/>
+    </MudStack>
+}
+
+@if (Pokemon is IFavorite)
+{
+    <MudCheckBox Label="Favorite"
+                 @bind-Value="@IsFavorite"
+                 @bind-Value:after="@RefreshService.Refresh"/>
+}
+
 @if (Pokemon is IScaledSize scaledSize)
 {
     <MudNumericField T="@byte"
