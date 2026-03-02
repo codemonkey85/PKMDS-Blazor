@@ -844,6 +844,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         return items;
     }
 
+    public IReadOnlyList<ComboItem> GetConsoleRegionComboItems() =>
+        GameInfo.FilteredSources.ConsoleRegions;
+
     public LegalityAnalysis GetLegalityAnalysis(PKM pkm) => new(pkm);
 
     private void HandleNullOrEmptyPokemon()

@@ -277,6 +277,12 @@ public interface IAppService
     IEnumerable<ComboItem> GetGeoRegionComboItems(byte country);
 
     /// <summary>
+    /// Gets combo items for 3DS console hardware regions (Japan, North America, Europe, etc.).
+    /// Used for the <see cref="IRegionOrigin.ConsoleRegion" /> field (Gen 6–7 only).
+    /// </summary>
+    IReadOnlyList<ComboItem> GetConsoleRegionComboItems();
+
+    /// <summary>
     /// Performs a full legality analysis on the given Pokémon using PKHeX.Core's
     /// <see cref="LegalityAnalysis" /> engine.
     /// </summary>

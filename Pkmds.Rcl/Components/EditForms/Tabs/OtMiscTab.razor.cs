@@ -381,4 +381,59 @@ public partial class OtMiscTab : IDisposable
 
         homeTrack.Tracker = parsedTracker;
     }
+
+    private static void SetRegionOriginCountry(IRegionOrigin regionOrigin, byte value)
+    {
+        regionOrigin.Country = value;
+        regionOrigin.Region = 0; // reset sub-region when country changes
+    }
+
+    /// <summary>
+    /// Builds the affixed ribbon combo items for the given Pokémon.
+    /// Includes "None" (-1) and all ribbons/marks the Pokémon currently has.
+    /// If the currently affixed ribbon is not found in the Pokémon's ribbon list
+    /// (e.g. due to an edit), it is included with a "(!)" marker.
+    /// </summary>
+    private List<ComboItem> BuildAffixedRibbonItems(sbyte currentAffixed)
+    {
+        var items = new List<ComboItem> { new("None", -1) };
+        if (Pokemon is null)
+        {
+            return items;
+        }
+
+        var added = new HashSet<int>();
+        foreach (var info in RibbonHelper.GetAllRibbonInfo(Pokemon))
+        {
+            var has = info.Type == RibbonValueType.Boolean ? info.HasRibbon : info.RibbonCount > 0;
+            if (!has)
+            {
+                continue;
+            }
+
+            var shortName = info.Name.StartsWith("Ribbon", StringComparison.Ordinal)
+                ? info.Name["Ribbon".Length..]
+                : info.Name;
+
+            if (!Enum.TryParse<RibbonIndex>(shortName, ignoreCase: true, out var idx))
+            {
+                continue;
+            }
+
+            var displayName = RibbonHelper.GetRibbonDisplayName(info.Name);
+            items.Add(new ComboItem(displayName, (int)idx));
+            added.Add((int)idx);
+        }
+
+        // Ensure the currently affixed ribbon is in the list even if the Pokémon doesn't have it
+        if (currentAffixed != PKHeX.Core.AffixedRibbon.None && !added.Contains((int)currentAffixed))
+        {
+            var idx = (RibbonIndex)currentAffixed;
+            var propName = $"Ribbon{idx}";
+            var displayName = RibbonHelper.GetRibbonDisplayName(propName);
+            items.Add(new ComboItem($"{displayName} (!)", currentAffixed));
+        }
+
+        return items;
+    }
 }
