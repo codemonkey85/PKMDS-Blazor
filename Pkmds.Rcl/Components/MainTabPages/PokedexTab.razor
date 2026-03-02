@@ -1,19 +1,37 @@
-﻿@inherits BasePkmdsComponent
+@inherits BasePkmdsComponent
 
 @if (AppState.SaveFile is { HasPokeDex: true })
 {
-    <MudText>
-        Seen: @GetSeenCount()
-    </MudText>
+    <MudStack>
+        <MudText Typo="@Typo.body2">Seen: @_displaySeenCount / @_dexTotal</MudText>
+        <MudProgressLinear Color="@Color.Info" Value="@_seenPercent" />
 
-    <MudText>
-        Caught: @GetCaughtCount()
-    </MudText>
+        <MudText Typo="@Typo.body2">Caught: @_displayCaughtCount / @_dexTotal</MudText>
+        <MudProgressLinear Color="@Color.Success" Value="@_caughtPercent" />
 
-    <MudButton OnClick="@FillPokedex"
-               Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               StartIcon="">
-        Fill Pokédex
-    </MudButton>
+        <MudStack Row="true" Wrap="@Wrap.Wrap">
+            <MudButton OnClick="@FillPokedex"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       StartIcon="">
+                Fill Pokédex
+            </MudButton>
+
+            <MudButton OnClick="@SeenAllPokedex"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Secondary"
+                       StartIcon=""
+                       Disabled="@IsLegendArceus">
+                Seen All
+            </MudButton>
+
+            <MudButton OnClick="@ClearPokedex"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Error"
+                       StartIcon=""
+                       Disabled="@IsLegendArceus">
+                Clear Pokédex
+            </MudButton>
+        </MudStack>
+    </MudStack>
 }

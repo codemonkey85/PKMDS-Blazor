@@ -349,7 +349,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 
 ### 2.5 Pokédex Editor
 **Tracks:** #414
-**Status:** ⚠️ Partial (Gen 1–3 seen/caught counts and bulk fill implemented; all per-generation advanced fields absent)
+**Status:** ⚠️ Partial (Gen 1–9 bulk fill/seen-all/clear implemented via #436; progress bars added; per-generation advanced fields still absent)
 **Complexity:** High
 **PKHeX Reference:** `SAV_SimplePokedex.cs`, `SAV_Pokedex4.cs`, `SAV_Pokedex5.cs`, `SAV_PokedexXY.cs`, `SAV_PokedexORAS.cs`, `SAV_PokedexSM.cs`, `SAV_PokedexGG.cs`, `SAV_PokedexSWSH.cs`, `SAV_PokedexBDSP.cs`, `SAV_PokedexLA.cs`, `SAV_PokedexSV.cs`, `SAV_PokedexSVKitakami.cs`, `SAV_Pokedex9a.cs`
 **Core API:** `ZukanBase` / `Zukan4` / `Zukan5` / `Zukan6` / `Zukan7` / `Zukan7b` / `Zukan8` / `Zukan8b` / `PokedexSave8a` / `Zukan9Paldea` / `Zukan9Kitakami` / `Zukan9a` in `PKHeX.Core/Saves/Substructures/PokeDex/`
@@ -368,9 +368,10 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species edit UI (currently only aggregate counts shown)
 
 #### Gen 4 (Zukan4) — Diamond / Pearl / Platinum / HeartGold / SoulSilver
-**Status:** ❌ Not Implemented
-- [ ] Seen flag (basic)
-- [ ] Caught flag
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (CompleteDex) / Seen All / Clear
+- [ ] Per-species seen flag UI
+- [ ] Per-species caught flag UI
 - [ ] Gender-seen tracking: male-first and female-first regions (2 separate bitfields)
 - [ ] Form tracking (species-specific; varies by game):
   - Unown ×28, Deoxys ×4, Shellos/Gastrodon ×2
@@ -380,7 +381,8 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species edit UI
 
 #### Gen 5 (Zukan5BW / Zukan5B2W2) — Black / White / Black 2 / White 2
-**Status:** ❌ Not Implemented
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (via per-species GiveAll) / Seen All / Clear
 - [ ] 4-region gender×shiny seen tracking (male, female, male-shiny, female-shiny)
 - [ ] Display variant selection per species (which gender/shiny combo shows in Pokédex)
 - [ ] Form tracking (Unown ×28, Castform ×4; B2W2 adds more species)
@@ -390,8 +392,9 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species edit UI
 
 #### Gen 6 XY (Zukan6XY) — X / Y
-**Status:** ❌ Not Implemented
-- [ ] Seen / caught flags
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (via per-species GiveAll) / Seen All / Clear
+- [ ] Per-species seen / caught flags UI
 - [ ] 4-region gender×shiny seen tracking
 - [ ] Per-form seen flags (form bits alongside species bits)
 - [ ] Display form, display gender, display shiny selection per species
@@ -402,15 +405,17 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species edit UI
 
 #### Gen 6 ORAS (Zukan6AO) — Omega Ruby / Alpha Sapphire
-**Status:** ❌ Not Implemented
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (via per-species GiveAll) / Seen All / Clear
 - [ ] All XY features above
 - [ ] Encounter count per species (`u16`, running total of wild encounters)
 - [ ] Obtained count per species (`u16`, running total of catches)
 - [ ] Per-species edit UI
 
 #### Gen 7 SM/USUM (Zukan7) — Sun / Moon / Ultra Sun / Ultra Moon
-**Status:** ❌ Not Implemented
-- [ ] Seen / caught flags
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (CompleteDex) / Seen All / Clear
+- [ ] Per-species seen / caught flags UI
 - [ ] 4-region gender×shiny seen tracking
 - [ ] Per-form seen flags
 - [ ] Display form / display gender / display shiny selection per species
@@ -420,12 +425,13 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species edit UI
 
 #### Gen 7b LGPE (Zukan7b) — Let's Go Pikachu / Eevee
-**Status:** ❌ Not Implemented
-- [ ] Seen / caught flags for the limited (153-species) Let's Go Pokédex
-- [ ] Per-species edit UI
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (CompleteDex) / Seen All / Clear
+- [ ] Per-species seen / caught flags UI for the limited (153-species) Let's Go Pokédex
 
 #### Gen 8 SWSH (Zukan8) — Sword / Shield
-**Status:** ❌ Not Implemented
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (CompleteDex) / Seen All / Clear
 - [ ] **3 independent regional dex blocks** (each a separate `Zukan8` instance):
   - Galar (400 species)
   - Isle of Armor DLC (211 species)
@@ -438,7 +444,8 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species edit UI
 
 #### Gen 8 BDSP (Zukan8b) — Brilliant Diamond / Shining Pearl
-**Status:** ❌ Not Implemented
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
+- [x] Bulk fill (CompleteDex) / Seen All / Clear
 - [ ] `ZukanState8b` state per species: `None` → `HeardOf` → `Seen` → `Captured`
 - [ ] Gender × shiny seen flags (4 separate `u32` arrays: male, female, male-shiny, female-shiny)
 - [ ] Form tracking per species (Unown ×28, Castform ×4, Deoxys ×4, Rotom ×6, Giratina ×2, Shaymin ×2, Arceus ×18)
@@ -447,8 +454,11 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species edit UI
 
 #### Gen 8 LA (PokedexSave8a) — Legends: Arceus
-**Status:** ❌ Not Implemented
+**Status:** ⚠️ Partial (bulk research-task fill implemented via #436; no Zukan so SeenAll/Clear not applicable)
 **Note:** Completely different architecture — no simple seen/caught flags; tracked via per-task research counters. See also §3.3.
+- [x] Bulk fill all research tasks at max threshold (via `SetResearchTaskProgressByForce` loop + `UpdateAllReportPoke`)
+- [x] `SetSolitudeAll()` called as part of fill
+- [ ] Per-species research task progress edit UI
 - [ ] Research task progress (22+ task types per species):
   - Catch, Defeat, Evolve, Use Move (×4 move slots), Defeat With Move Type
   - Catch Alpha, Catch Large, Catch Small, Catch Heavy, Catch Light
@@ -463,8 +473,9 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Per-species research edit UI (see `SAV_PokedexResearchEditorLA` for PKHeX reference)
 
 #### Gen 9 SV (Zukan9Paldea / Zukan9Kitakami) — Scarlet / Violet
-**Status:** ❌ Not Implemented
+**Status:** ⚠️ Partial (bulk fill/seen-all/clear implemented via #436)
 **Note:** Simple stubs existed in roadmap as "Advanced Pokédex (Kitakami, etc.)"; consolidated here.
+- [x] Bulk fill (CompleteDex — covers Paldea + Kitakami internally) / Seen All / Clear
 - [ ] 3-tier DLC dex system (separate `Zukan9` instances per save revision):
   - Paldea (base game)
   - Kitakami (DLC 1 — The Teal Mask)
@@ -487,12 +498,15 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 #### Cross-generation bulk operations
 - [x] Fill all seen — Gen 1–3
 - [x] Fill all caught — Gen 1–3
+- [x] Fill Pokédex (CompleteDex) — Gen 4–9 (#436; Gen 5/6 via per-species GiveAll; Gen 8 LA via research task loop)
+- [x] Seen All — Gen 1–9 except LA (#436)
+- [x] Clear Pokédex (SeenNone + CaughtNone) — Gen 1–9 except LA (#436)
+- [x] Progress bars (seen % and caught %) — all gens (#436)
 - [ ] Fill all seen with gender/shiny variants — Gen 4+
 - [ ] Fill all caught with all form variants — Gen 4+
 - [ ] Set all language flags — Gen 4+
-- [ ] Clear all entries (full reset)
 - [ ] Complete a single species entirely (all forms, genders, shinies, languages)
-- [ ] Complete all research tasks at 100% — Gen 8 LA only
+- [ ] Complete all research tasks at 100% — Gen 8 LA only (covered by Fill above, but no per-species UI)
 
 ### 2.6 Event Flags & Story Progress
 **Status:** ❌ Not Implemented  
