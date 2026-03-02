@@ -1199,7 +1199,17 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         // Some encounter types (e.g. HOME Mystery Gifts) may not pass a strict legality
         // check even when generated correctly; the caller can run a legality check separately
         // and surface the result to the user.
-        return encounter.ConvertToPKM(sav);
+        var pkm = encounter.ConvertToPKM(sav);
+
+        // Some cross-game encounters (e.g. a Legends: Arceus static returning PA8 when the
+        // loaded save is BDSP, which requires PB8) produce a PKM in the wrong format.
+        // Attempt a format conversion via EntityConverter; return null if none is possible
+        // so the caller can surface a meaningful error instead of crashing.
+        var expectedType = sav.BlankPKM.GetType();
+        if (pkm.GetType() != expectedType)
+            pkm = EntityConverter.ConvertToType(pkm, expectedType, out _);
+
+        return pkm;
     }
 
     private EncounterSearchResult BuildEncounterResult(IEncounterable enc)
