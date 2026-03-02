@@ -301,6 +301,27 @@ public partial class StatsTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
     }
 
+    private void OnHaXStatHpSet(int newValue)
+    {
+        if (Pokemon is null || AppState?.IsHaXEnabled is not true)
+        {
+            return;
+        }
+
+        Pokemon.Stat_HPMax = newValue;
+        Pokemon.Stat_HPCurrent = newValue;
+    }
+
+    private void OnHaXStatSet(int newValue, Action<PKM> setter)
+    {
+        if (Pokemon is null || AppState?.IsHaXEnabled is not true)
+        {
+            return;
+        }
+
+        setter(Pokemon);
+    }
+
     private enum NatureModifier
     {
         Neutral,

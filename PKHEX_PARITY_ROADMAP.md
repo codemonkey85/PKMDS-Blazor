@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-01
+**Last Updated:** 2026-03-01 (PKHaX mode implemented — §5.6)
 
 ---
 
@@ -846,7 +846,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Implement save file encryption/decryption status
 
 ### 5.6 PKHaX / Illegal Mode
-**Status:** ❌ Not Implemented
+**Status:** ✅ Implemented — PR #423 · closes #422
 **Complexity:** Medium
 **Priority:** Medium
 **Tracks:** #422 *(supersedes #103, which was incorrectly closed as a duplicate of the Batch Editor #329)*
@@ -860,16 +860,16 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 **Overview:** A toggleable "Illegal Mode" for ROM hackers, researchers, and advanced users who need unrestricted editing beyond what standard legality rules permit. In PKHeX this is activated via a command-line flag (`-HaX`), executable rename, or settings toggle. PKMDS surfaces it as a Settings toggle.
 
 **Tasks:**
-- [ ] Add `IsHaXEnabled` bool to `IAppState` (persisted in local storage)
-- [ ] Add toggle to Settings panel with clear warning: _"Enables unrestricted editing. May create illegal/untradable Pokémon."_
-- [ ] Show persistent warning chip/banner in app header while HaX is active
-- [ ] Display a dismissable confirmation dialog on first enable
-- [ ] **Hacked Stats** — unlock the six calculated-stat inputs (HP/Atk/Def/SpA/SpD/Spe) in `StatsTab` when HaX is on; direct writes to `PKM.Stat_HP`, `Stat_ATK`, `Stat_DEF`, `Stat_SPA`, `Stat_SPD`, `Stat_SPE`; revert to read-only calculated display when HaX is off
-- [ ] **Suppress legality overlays** — gate legality icon rendering in `PokemonSlotComponent` on `!AppState.IsHaXEnabled`
-- [ ] **Unrestricted item quantities** — allow quantities up to `ushort.MaxValue` (65,535) in Bag/Inventory editor; Gen 1–2 bags cap at `byte.MaxValue` (255)
-- [ ] **Unrestricted item lists** — show full item list regardless of pouch type when HaX is on
-- [ ] **Unrestricted ability selection (HaX DEV mode)** — The ability dropdown in `MainTab.razor` now uses a slot-based selector (Ability 1 / Ability 2 / Hidden Ability) that always shows species abilities, matching normal PKHeX behaviour. HaX `DEV_Ability` mode (unconstrained selection of any ability ID) is a separate, lower-priority concern that may be addressed if HaX mode is implemented.
-- [ ] Add unit tests for HaX-gated stat editing path
+- [x] Add `IsHaXEnabled` bool to `IAppState` (persisted in local storage via `localStorage.setItem`)
+- [x] Add toggle to Settings panel with clear warning: _"Enables unrestricted editing. May create illegal/untradable Pokémon."_
+- [x] Show persistent warning chip/banner in app header while HaX is active
+- [x] Display a dismissable confirmation dialog on first enable
+- [x] **Hacked Stats** — unlock the six calculated-stat inputs (HP/Atk/Def/SpA/SpD/Spe) in `StatsTab` when HaX is on; direct writes to `PKM.Stat_HP`, `Stat_ATK`, `Stat_DEF`, `Stat_SPA`, `Stat_SPD`, `Stat_SPE`; revert to read-only calculated display when HaX is off
+- [x] **Suppress legality overlays** — gate legality icon rendering in `PokemonSlotComponent` on `!AppState.IsHaXEnabled`
+- [x] **Unrestricted item quantities** — allow quantities up to `ushort.MaxValue` (65,535) in Bag/Inventory editor when HaX is on
+- [x] **Unrestricted item lists** — show full item list regardless of pouch type when HaX is on
+- [ ] **Unrestricted ability selection (HaX DEV mode)** — The ability dropdown in `MainTab.razor` now uses a slot-based selector (Ability 1 / Ability 2 / Hidden Ability) that always shows species abilities, matching normal PKHeX behaviour. HaX `DEV_Ability` mode (unconstrained selection of any ability ID) is a separate, lower-priority concern that may be addressed in a future issue.
+- [x] Add unit tests for HaX-gated stat editing path (`HaXModeTests.cs`, 10 tests)
 
 ---
 
