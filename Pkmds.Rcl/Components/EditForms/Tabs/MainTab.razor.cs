@@ -114,16 +114,14 @@ public partial class MainTab : IDisposable
         static string GetAbilityName(int abilityId, IReadOnlyList<string> names) =>
             abilityId == 0 || (uint)abilityId >= (uint)names.Count ? "None" : names[abilityId];
 
-        var a1 = pi.AbilityCount > 0 ? pi.GetAbilityAtIndex(0) : 0;
-        var a2 = pi.AbilityCount > 1 ? pi.GetAbilityAtIndex(1) : 0;
-        var aH = pi.AbilityCount > 2 ? pi.GetAbilityAtIndex(2) : 0;
-
-        return
-        [
-            new ComboItem($"{GetAbilityName(a1, names)} (1)", 0),
-            new ComboItem($"{GetAbilityName(a2, names)} (2)", 1),
-            new ComboItem($"{GetAbilityName(aH, names)} (H)", 2),
-        ];
+        List<ComboItem> items = [];
+        for (var i = 0; i < pi.AbilityCount; i++)
+        {
+            var abilityId = pi.GetAbilityAtIndex(i);
+            var suffix = i switch { 0 => "1", 1 => "2", _ => "H" };
+            items.Add(new ComboItem($"{GetAbilityName(abilityId, names)} ({suffix})", i));
+        }
+        return items;
     }
 
     private void SetAbilitySlot(int slotIndex)
