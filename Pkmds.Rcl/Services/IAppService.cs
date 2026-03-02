@@ -90,20 +90,6 @@ public interface IAppService
     ComboItem GetItemComboItem(int itemId);
 
     /// <summary>
-    /// Gets the combo item representation for a specific ability.
-    /// </summary>
-    /// <param name="abilityId">The ability ID to look up.</param>
-    /// <returns>A combo item containing the ability name and ID.</returns>
-    ComboItem GetAbilityComboItem(int abilityId);
-
-    /// <summary>
-    /// Searches for abilities matching the search string.
-    /// </summary>
-    /// <param name="searchString">The search term to filter ability names.</param>
-    /// <returns>A collection of matching abilities as combo items.</returns>
-    IEnumerable<ComboItem> SearchAbilityNames(string searchString);
-
-    /// <summary>
     /// Searches for met locations matching the search string for a specific game version and context.
     /// </summary>
     /// <param name="searchString">The search term to filter location names.</param>

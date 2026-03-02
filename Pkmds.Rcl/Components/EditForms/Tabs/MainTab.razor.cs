@@ -94,8 +94,49 @@ public partial class MainTab : IDisposable
     private Task<IEnumerable<ComboItem>> SearchItemNames(string searchString, CancellationToken token) =>
         Task.FromResult(AppService.SearchItemNames(searchString));
 
-    private Task<IEnumerable<ComboItem>> SearchAbilityNames(string searchString, CancellationToken token) =>
-        Task.FromResult(AppService.SearchAbilityNames(searchString));
+    private int GetAbilitySlotIndex() => Pokemon?.AbilityNumber switch
+    {
+        2 => 1,
+        4 => 2,
+        _ => 0,
+    };
+
+    private IReadOnlyList<ComboItem> GetAbilitySlotItems()
+    {
+        if (Pokemon is null)
+        {
+            return [];
+        }
+
+        var pi = Pokemon.PersonalInfo;
+        var names = GameInfo.Strings.Ability;
+
+        static string GetAbilityName(int abilityId, IReadOnlyList<string> names) =>
+            (uint)abilityId < (uint)names.Count ? names[abilityId] : "None";
+
+        var a1 = pi.AbilityCount > 0 ? pi.GetAbilityAtIndex(0) : 0;
+        var a2 = pi.AbilityCount > 1 ? pi.GetAbilityAtIndex(1) : 0;
+        var aH = pi.AbilityCount > 2 ? pi.GetAbilityAtIndex(2) : 0;
+
+        return
+        [
+            new ComboItem($"{GetAbilityName(a1, names)} (1)", 0),
+            new ComboItem($"{GetAbilityName(a2, names)} (2)", 1),
+            new ComboItem($"{GetAbilityName(aH, names)} (H)", 2),
+        ];
+    }
+
+    private void SetAbilitySlot(int slotIndex)
+    {
+        if (Pokemon is null)
+        {
+            return;
+        }
+
+        Pokemon.SetAbilityIndex(slotIndex);
+        AppService.LoadPokemonStats(Pokemon);
+        RefreshService.Refresh();
+    }
 
     private void OnShinySet(bool shiny) => Pokemon?.SetIsShinySafe(shiny);
 

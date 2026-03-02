@@ -98,13 +98,13 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Validate form legality based on origin/capture method
 
 #### Ability Slot Editor
-**Status:** ⚠️ Partial (ability display exists; unrestricted slot selection not yet supported)
+**Status:** ✅ Implemented
 **Complexity:** Low
 **Tracks:** #176
 **Tasks:**
-- [ ] Allow freely selecting any ability slot (Ability 1 / Ability 2 / Hidden Ability) regardless of species legality
-- [ ] Display all three slots even when a species lacks a Hidden Ability (show as "None")
-- [ ] Let legality checker report illegal ability slots rather than preventing selection
+- [x] Allow freely selecting any ability slot (Ability 1 / Ability 2 / Hidden Ability) regardless of species legality
+- [x] Display all three slots even when a species lacks a Hidden Ability (show as "None")
+- [x] Let legality checker report illegal ability slots rather than preventing selection
 
 #### PID/EC Generator
 **Status:** ✅ Implemented
@@ -868,7 +868,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] **Suppress legality overlays** — gate legality icon rendering in `PokemonSlotComponent` on `!AppState.IsHaXEnabled`
 - [ ] **Unrestricted item quantities** — allow quantities up to `ushort.MaxValue` (65,535) in Bag/Inventory editor; Gen 1–2 bags cap at `byte.MaxValue` (255)
 - [ ] **Unrestricted item lists** — show full item list regardless of pouch type when HaX is on
-- [ ] **Unrestricted ability selection (Gen 3 only)** — Gen 3 ability dropdown uses `GetAbilityList(PersonalInfo)` and is restricted to the species' legal abilities; in HaX mode it should show all abilities (matching the `DEV_Ability` behaviour PKHeX provides in HaX mode). **Gen 4+ is already unrestricted** — `MudAutocomplete` in `MainTab.razor` searches `GameInfo.FilteredSources.Abilities` (all abilities), which already matches PKHaX behaviour regardless of mode; no Gen 4+ change needed. *Note: ability slot selection (Ability 1 / Ability 2 / Hidden Ability) is a separate concern tracked in §1.1 / #176 and is not HaX-specific.*
+- [ ] **Unrestricted ability selection (HaX DEV mode)** — The ability dropdown in `MainTab.razor` now uses a slot-based selector (Ability 1 / Ability 2 / Hidden Ability) that always shows species abilities, matching normal PKHeX behaviour. HaX `DEV_Ability` mode (unconstrained selection of any ability ID) is a separate, lower-priority concern that may be addressed if HaX mode is implemented.
 - [ ] Add unit tests for HaX-gated stat editing path
 
 ---
