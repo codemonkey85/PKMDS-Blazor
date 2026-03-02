@@ -80,7 +80,6 @@ public partial class MainLayout : IDisposable
         Logger.LogInformation("PKHaX mode {Status}", newValue ? "enabled" : "disabled");
         await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_enabled", newValue ? "true" : "false");
         RefreshService.Refresh();
-        StateHasChanged();
     }
 
     private void OnVerboseLoggingChanged(bool newValue)
