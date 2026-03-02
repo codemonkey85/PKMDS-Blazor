@@ -1,16 +1,20 @@
-namespace Pkmds.Rcl.Components.MainTabPages;
+﻿namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class PokedexTab
 {
+    private double caughtPercent;
+
     // Cached dex stats — computed once per render cycle and after every bulk
     // operation instead of running multiple independent O(n) species scans on
     // each render.  Seen/caught counts are clamped to the formal dex total so
     // the UI never shows a fraction exceeding 100 %.
-    private int _dexTotal;
-    private int _displaySeenCount;
-    private int _displayCaughtCount;
-    private double _seenPercent;
-    private double _caughtPercent;
+    private int dexTotal;
+    private int displayCaughtCount;
+    private int displaySeenCount;
+    private double seenPercent;
+
+    // Gen 8 LA uses PokedexSave8a (no Zukan); SeenAll and Clear are not applicable.
+    private bool IsLegendArceus => AppState.SaveFile is SAV8LA;
 
     protected override void OnParametersSet()
     {
@@ -26,12 +30,12 @@ public partial class PokedexTab
     {
         if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
         {
-            _dexTotal = _displaySeenCount = _displayCaughtCount = 0;
-            _seenPercent = _caughtPercent = 0;
+            dexTotal = displaySeenCount = displayCaughtCount = 0;
+            seenPercent = caughtPercent = 0;
             return;
         }
 
-        _dexTotal = GetDexTotalCount(saveFile);
+        dexTotal = GetDexTotalCount(saveFile);
         var seen = 0;
         var caught = 0;
 
@@ -51,10 +55,14 @@ public partial class PokedexTab
         // Clamp raw counts to the formal dex total: saves with HOME-transferred
         // Pokémon can flag species as seen/caught outside the game's formal dex,
         // which would make the raw totals exceed 100 %.
-        _displaySeenCount = Math.Min(seen, _dexTotal);
-        _displayCaughtCount = Math.Min(caught, _dexTotal);
-        _seenPercent = _dexTotal == 0 ? 0 : Math.Min(100.0, (double)seen / _dexTotal * 100);
-        _caughtPercent = _dexTotal == 0 ? 0 : Math.Min(100.0, (double)caught / _dexTotal * 100);
+        displaySeenCount = Math.Min(seen, dexTotal);
+        displayCaughtCount = Math.Min(caught, dexTotal);
+        seenPercent = dexTotal == 0
+            ? 0
+            : Math.Min(100.0, (double)seen / dexTotal * 100);
+        caughtPercent = dexTotal == 0
+            ? 0
+            : Math.Min(100.0, (double)caught / dexTotal * 100);
     }
 
     // Returns the number of species that can actually appear in this game's Pokédex.
@@ -73,63 +81,67 @@ public partial class PokedexTab
             // species' regional dex index (Galar / Armor DLC / Crown DLC).
             // "Dexit" means many national species have no dex index and return false.
             case SAV8SWSH swsh:
-            {
-                var count = 0;
-                for (ushort i = 1; i <= swsh.MaxSpeciesID; i++)
                 {
-                    if (swsh.Zukan.GetEntry(i, out _))
+                    var count = 0;
+                    for (ushort i = 1; i <= swsh.MaxSpeciesID; i++)
                     {
-                        count++;
+                        if (swsh.Zukan.GetEntry(i, out _))
+                        {
+                            count++;
+                        }
                     }
+
+                    return count;
                 }
-                return count;
-            }
 
             // SAV_PokedexLA: filters by PokedexSave8a.GetDexIndex(Hisui, species) != 0.
             // No HOME support — only Hisui-native species are tracked.
             case SAV8LA la:
-            {
-                var count = 0;
-                for (ushort i = 1; i <= la.MaxSpeciesID; i++)
                 {
-                    if (PokedexSave8a.GetDexIndex(PokedexType8a.Hisui, i) != 0)
+                    var count = 0;
+                    for (ushort i = 1; i <= la.MaxSpeciesID; i++)
                     {
-                        count++;
+                        if (PokedexSave8a.GetDexIndex(PokedexType8a.Hisui, i) != 0)
+                        {
+                            count++;
+                        }
                     }
+
+                    return count;
                 }
-                return count;
-            }
 
             // SAV_PokedexSV: filters by Zukan9.GetDexIndex(species).Index != 0,
             // which covers all three regional dexes (Paldea / Kitakami / Blueberry).
             case SAV9SV sv:
-            {
-                var count = 0;
-                for (ushort i = 1; i <= sv.MaxSpeciesID; i++)
                 {
-                    if (sv.Zukan.GetDexIndex(i).Index != 0)
+                    var count = 0;
+                    for (ushort i = 1; i <= sv.MaxSpeciesID; i++)
                     {
-                        count++;
+                        if (sv.Zukan.GetDexIndex(i).Index != 0)
+                        {
+                            count++;
+                        }
                     }
+
+                    return count;
                 }
-                return count;
-            }
 
             // SAV9ZA: Zukan9a.CompleteDex() filters by Personal.IsSpeciesInGame,
             // so only species present in the ZA table count toward the dex total.
             // MaxSpeciesID varies by SaveRevision (base = Falinks; DLC = Gholdengo).
             case SAV9ZA za:
-            {
-                var count = 0;
-                for (ushort i = 1; i <= za.MaxSpeciesID; i++)
                 {
-                    if (za.Personal.IsSpeciesInGame(i))
+                    var count = 0;
+                    for (ushort i = 1; i <= za.MaxSpeciesID; i++)
                     {
-                        count++;
+                        if (za.Personal.IsSpeciesInGame(i))
+                        {
+                            count++;
+                        }
                     }
+
+                    return count;
                 }
-                return count;
-            }
 
             // All other games (Gen 1–7, BDSP): every national species up to
             // MaxSpeciesID is present in the game, so MaxSpeciesID is exact.
@@ -139,9 +151,6 @@ public partial class PokedexTab
                 return saveFile.MaxSpeciesID;
         }
     }
-
-    // Gen 8 LA uses PokedexSave8a (no Zukan); SeenAll and Clear are not applicable.
-    private bool IsLegendArceus => AppState.SaveFile is SAV8LA;
 
     private async Task FillPokedex()
     {
@@ -230,7 +239,7 @@ public partial class PokedexTab
     }
 
     // NuGet 26.1.31: Zukan4.CompleteDex requires explicit shinyToo argument.
-    private static void FillGen4Pokedex(SAV4 s4) => s4.Dex.CompleteDex(false);
+    private static void FillGen4Pokedex(SAV4 s4) => s4.Dex.CompleteDex();
 
     // NuGet 26.1.31: Zukan5 has no CompleteDex(); iterate via GiveAll per species.
     private static void FillGen5Pokedex(SAV5 s5)
@@ -260,11 +269,11 @@ public partial class PokedexTab
     }
 
     // NuGet 26.1.31: Zukan7.CompleteDex requires explicit shinyToo argument.
-    private static void FillGen7Pokedex(SAV7 s7) => s7.Zukan.CompleteDex(false);
+    private static void FillGen7Pokedex(SAV7 s7) => s7.Zukan.CompleteDex();
 
     // NuGet 26.1.31: Zukan7b.CompleteDex requires explicit shinyToo argument.
     // ReSharper disable once InconsistentNaming
-    private static void FillGen7bPokedex(SAV7b b7) => b7.Zukan.CompleteDex(false);
+    private static void FillGen7bPokedex(SAV7b b7) => b7.Zukan.CompleteDex();
 
     private static void FillGen8SwShPokedex(SAV8SWSH swsh) => swsh.Zukan.CompleteDex();
 
@@ -326,6 +335,7 @@ public partial class PokedexTab
                         await Task.Yield();
                     }
                 }
+
                 break;
             case SAV2 s2:
                 for (ushort i = 1; i < s2.MaxSpeciesID + 1; i++)
@@ -336,6 +346,7 @@ public partial class PokedexTab
                         await Task.Yield();
                     }
                 }
+
                 break;
             case SAV3 s3:
                 for (ushort i = 1; i < s3.MaxSpeciesID + 1; i++)
@@ -346,13 +357,14 @@ public partial class PokedexTab
                         await Task.Yield();
                     }
                 }
+
                 break;
             // NuGet 26.1.31: Zukan4/5/6* SeenAll requires an explicit shinyToo argument.
             // Zukan5 and Zukan6* are standalone classes (not subclasses of Zukan<T>),
             // so their SeenAll(shinyToo) implementations are correct and NOT affected
             // by the Zukan<T>.SeenAll forwarding bug described below for Gen 7/7b.
             case SAV4 s4:
-                s4.Dex.SeenAll(false);
+                s4.Dex.SeenAll();
                 break;
             case SAV5 s5:
                 s5.Zukan.SeenAll(false);
@@ -371,10 +383,10 @@ public partial class PokedexTab
             // Zukan7 (Gen 7 SM/USUM) and Zukan7b (Gen 7b LGPE).
             // Zukan8 (SWSH) and Zukan8b (BDSP) both override SeenAll correctly.
             case SAV7 s7:
-                s7.Zukan.SetAllSeen(true, false);
+                s7.Zukan.SetAllSeen();
                 break;
             case SAV7b b7:
-                b7.Zukan.SetAllSeen(true, false);
+                b7.Zukan.SetAllSeen();
                 break;
             case SAV8SWSH swsh:
                 swsh.Zukan.SeenAll();
@@ -396,15 +408,22 @@ public partial class PokedexTab
                 for (ushort i = 1; i <= sv.MaxSpeciesID; i++)
                 {
                     if (sv.Zukan.GetDexIndex(i).Index == 0)
+                    {
                         continue;
+                    }
+
                     var entry = sv.Zukan.DexPaldea.Get(i);
                     if (entry.GetState() < 2)
+                    {
                         entry.SetState(2);
+                    }
+
                     if (i % 50 == 0)
                     {
                         await Task.Yield();
                     }
                 }
+
                 break;
             case SAV9SV sv:
                 sv.Zukan.SeenAll();
@@ -439,6 +458,7 @@ public partial class PokedexTab
                         await Task.Yield();
                     }
                 }
+
                 break;
             case SAV2 s2:
                 for (ushort i = 1; i < s2.MaxSpeciesID + 1; i++)
@@ -450,6 +470,7 @@ public partial class PokedexTab
                         await Task.Yield();
                     }
                 }
+
                 break;
             case SAV3 s3:
                 for (ushort i = 1; i < s3.MaxSpeciesID + 1; i++)
@@ -461,6 +482,7 @@ public partial class PokedexTab
                         await Task.Yield();
                     }
                 }
+
                 break;
             case SAV4 s4:
                 s4.Dex.SeenNone();
