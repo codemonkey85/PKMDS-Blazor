@@ -148,8 +148,8 @@ public partial class LegalityReportTab : RefreshAwareComponent
 
     private void ApplyFilter() =>
         filteredEntries = statusFilter is null
-            ? [..allEntries]
-            : [..allEntries.Where(e => e.Status == statusFilter)];
+            ? [.. allEntries]
+            : [.. allEntries.Where(e => e.Status == statusFilter)];
 
     private async Task OnRowClickAsync(TableRowClickEventArgs<LegalityReportEntry> args)
     {

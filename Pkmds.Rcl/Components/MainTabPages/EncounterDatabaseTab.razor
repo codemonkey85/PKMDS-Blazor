@@ -1,0 +1,309 @@
+@inherits RefreshAwareComponent
+
+<MudStack Class="pa-2" Spacing="3">
+
+    @if (AppState.SaveFile is null)
+    {
+        <MudAlert Severity="@Severity.Info">No save file is loaded.</MudAlert>
+    }
+    else
+    {
+        <MudGrid>
+
+            @* ── Filter panel ── *@
+            <MudItem xs="12" md="5">
+                <MudStack Spacing="2">
+
+                    <MudExpansionPanels MultiExpansion Dense>
+
+                        @* ── Basic ── *@
+                        <MudExpansionPanel Text="Search">
+                            <MudStack Spacing="2">
+
+                                @* Species (required to search) *@
+                                <MudAutocomplete T="@ComboItem"
+                                                 Label="Species (required)"
+                                                 Value="@speciesItem"
+                                                 ValueChanged="@(v => speciesItem = v)"
+                                                 SearchFunc="@SearchSpeciesAsync"
+                                                 ToStringFunc="@SpeciesItemToString"
+                                                 Clearable
+                                                 ResetValueOnEmptyText/>
+
+                                @* Game version *@
+                                <MudSelect T="@(int?)"
+                                           Label="Game version"
+                                           @bind-Value="@gameVersionValue"
+                                           Clearable>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)null)">All (current format)</MudSelectItem>
+                                    @foreach (var game in GameInfo.FilteredSources.Games.Where(g => g.Value > 0))
+                                    {
+                                        <MudSelectItem T="@(int?)" Value="@((int?)game.Value)">@game.Text</MudSelectItem>
+                                    }
+                                </MudSelect>
+
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        @* ── Filters ── *@
+                        <MudExpansionPanel Text="Filters">
+                            <MudStack Spacing="2">
+
+                                @* Level range *@
+                                <MudText Typo="@Typo.subtitle2">Level range</MudText>
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="6">
+                                        <MudNumericField T="@(int?)"
+                                                         Label="Min level"
+                                                         @bind-Value="@levelMin"
+                                                         Min="1" Max="100"/>
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudNumericField T="@(int?)"
+                                                         Label="Max level"
+                                                         @bind-Value="@levelMax"
+                                                         Min="1" Max="100"/>
+                                    </MudItem>
+                                </MudGrid>
+
+                                @* Shiny lock *@
+                                <MudSelect T="@(bool?)"
+                                           Label="Shiny lock"
+                                           @bind-Value="@isShinyLocked"
+                                           Clearable>
+                                    <MudSelectItem T="@(bool?)" Value="@((bool?)null)">Any</MudSelectItem>
+                                    <MudSelectItem T="@(bool?)" Value="@true">Shiny-locked only</MudSelectItem>
+                                    <MudSelectItem T="@(bool?)" Value="@false">Can be shiny</MudSelectItem>
+                                </MudSelect>
+
+                                @* Encounter type *@
+                                <MudSelect T="@(int?)"
+                                           Label="Encounter type"
+                                           @bind-Value="@encounterGroupValue"
+                                           Clearable>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)null)">All types</MudSelectItem>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Slot)">Wild</MudSelectItem>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Static)">Static / Gift</MudSelectItem>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Mystery)">Mystery Gift</MudSelectItem>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Trade)">Trade</MudSelectItem>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Egg)">Egg</MudSelectItem>
+                                </MudSelect>
+
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                    </MudExpansionPanels>
+
+                    @* Action buttons *@
+                    <MudStack Row Spacing="2">
+                        <MudButton Variant="@Variant.Filled"
+                                   Color="@Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Search"
+                                   OnClick="@RunSearchAsync"
+                                   Disabled="@(isSearching || speciesItem is null || speciesItem?.Value <= 0)">
+                            @(isSearching ? "Searching…" : "Search")
+                        </MudButton>
+
+                        @if (isSearching)
+                        {
+                            <MudProgressCircular Indeterminate
+                                                 Size="@Size.Small"
+                                                 Color="@Color.Primary"/>
+                        }
+
+                        <MudButton Variant="@Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.Clear"
+                                   OnClick="@ResetFilter"
+                                   Disabled="@isSearching">
+                            Reset
+                        </MudButton>
+                    </MudStack>
+
+                    @* ── Selected encounter detail ── *@
+                    @if (selectedResult is { } sel)
+                    {
+                        <MudPaper Outlined Class="pa-3">
+                            <MudStack Spacing="2">
+
+                                <MudText Typo="@Typo.subtitle1">
+                                    <strong>@sel.SpeciesName</strong>
+                                    &nbsp;–&nbsp;@sel.EncounterTypeName
+                                </MudText>
+
+                                <MudText Typo="@Typo.body2">@sel.Encounter.LongName</MudText>
+
+                                <MudGrid Spacing="1">
+                                    <MudItem xs="6">
+                                        <MudText Typo="@Typo.caption">Game</MudText>
+                                        <MudText Typo="@Typo.body2">@sel.GameName</MudText>
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="@Typo.caption">Level</MudText>
+                                        <MudText Typo="@Typo.body2">@sel.LevelRange</MudText>
+                                    </MudItem>
+                                    @if (sel.Location is not null)
+                                    {
+                                        <MudItem xs="12">
+                                            <MudText Typo="@Typo.caption">Location</MudText>
+                                            <MudText Typo="@Typo.body2">@sel.Location</MudText>
+                                        </MudItem>
+                                    }
+                                    <MudItem xs="6">
+                                        <MudText Typo="@Typo.caption">Shiny</MudText>
+                                        <MudText Typo="@Typo.body2">
+                                            @(sel.IsShinyLocked ? "Locked (never shiny)" : sel.Encounter.Shiny.ToString())
+                                        </MudText>
+                                    </MudItem>
+                                </MudGrid>
+
+                                @if (sel.IsMysteryGift)
+                                {
+                                    <MudAlert Severity="@Severity.Info" Dense>
+                                        This is a Mystery Gift encounter. See the Mystery Gifts tab to import the gift data directly.
+                                    </MudAlert>
+                                }
+
+                                <MudButton Variant="@Variant.Filled"
+                                           Color="@Color.Success"
+                                           StartIcon="@Icons.Material.Filled.CatchingPokemon"
+                                           OnClick="@GeneratePokemonAsync"
+                                           Disabled="@isGenerating">
+                                    @(isGenerating ? "Generating…" : "Generate Pokémon")
+                                </MudButton>
+
+                            </MudStack>
+                        </MudPaper>
+                    }
+
+                </MudStack>
+            </MudItem>
+
+            @* ── Results panel ── *@
+            <MudItem xs="12" md="7">
+                <MudStack Spacing="2">
+
+                    @if (HasResults)
+                    {
+                        <MudChip T="@string"
+                                 Color="@Color.Default"
+                                 Variant="@Variant.Outlined"
+                                 Size="@Size.Small">
+                            @ResultCount encounter@(ResultCount == 1 ? "" : "s") found
+                        </MudChip>
+                    }
+
+                    <div style="overflow-y: auto; max-height: calc(100vh - 280px);">
+                        <MudTable T="@EncounterSearchResult"
+                                  Items="@results"
+                                  Dense
+                                  Hover
+                                  Bordered
+                                  @bind-SelectedItem="@selectedResult"
+                                  SortLabel="Sort By"
+                                  OnRowClick="@OnRowClickAsync"
+                                  RowStyleFunc="@RowStyleFunc"
+                                  RowsPerPage="25">
+
+                            <HeaderContent>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.SpeciesName))">
+                                        Species
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.GameName))">
+                                        Game
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.EncounterTypeName))">
+                                        Type
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.Encounter.LevelMin))">
+                                        Level
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>Shiny Lock</MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.Location ?? string.Empty))">
+                                        Location
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                            </HeaderContent>
+
+                            <RowTemplate>
+
+                                <MudTd DataLabel="Species">@context.SpeciesName</MudTd>
+
+                                <MudTd DataLabel="Game">@context.GameName</MudTd>
+
+                                <MudTd DataLabel="Type">
+                                    <MudChip T="@string"
+                                             Size="@Size.Small"
+                                             Color="@GetTypeChipColor(context.EncounterTypeName)"
+                                             Variant="@Variant.Outlined">
+                                        @context.EncounterTypeName
+                                    </MudChip>
+                                </MudTd>
+
+                                <MudTd DataLabel="Level">@context.LevelRange</MudTd>
+
+                                <MudTd DataLabel="Shiny Lock">
+                                    @if (context.IsShinyLocked)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.Lock"
+                                                 Color="@Color.Error"
+                                                 Size="@Size.Small"
+                                                 Title="Shiny locked"/>
+                                    }
+                                    else
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.LockOpen"
+                                                 Color="@Color.Success"
+                                                 Size="@Size.Small"
+                                                 Title="Can be shiny"/>
+                                    }
+                                </MudTd>
+
+                                <MudTd DataLabel="Location">@(context.Location ?? "—")</MudTd>
+
+                            </RowTemplate>
+
+                            <NoRecordsContent>
+                                @if (isSearching)
+                                {
+                                    <MudText>Searching…</MudText>
+                                }
+                                else if (!hasSearched)
+                                {
+                                    <MudText>Select a species and run a search to see encounters.</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>No encounters match the current filter.</MudText>
+                                }
+                            </NoRecordsContent>
+
+                            <PagerContent>
+                                <MudTablePager/>
+                            </PagerContent>
+
+                        </MudTable>
+                    </div>
+
+                </MudStack>
+            </MudItem>
+
+        </MudGrid>
+    }
+
+</MudStack>

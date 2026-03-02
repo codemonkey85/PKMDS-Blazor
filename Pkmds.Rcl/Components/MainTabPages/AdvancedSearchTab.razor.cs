@@ -126,10 +126,18 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             LanguageId = languageId,
             LevelMin = levelMin.HasValue ? (byte)levelMin.Value : null,
             LevelMax = levelMax.HasValue ? (byte)levelMax.Value : null,
-            HpIvMin = hpIvMin, AtkIvMin = atkIvMin, DefIvMin = defIvMin,
-            SpaIvMin = spaIvMin, SpdIvMin = spdIvMin, SpeIvMin = speIvMin,
-            HpEvMin = hpEvMin, AtkEvMin = atkEvMin, DefEvMin = defEvMin,
-            SpaEvMin = spaEvMin, SpdEvMin = spdEvMin, SpeEvMin = speEvMin,
+            HpIvMin = hpIvMin,
+            AtkIvMin = atkIvMin,
+            DefIvMin = defIvMin,
+            SpaIvMin = spaIvMin,
+            SpdIvMin = spdIvMin,
+            SpeIvMin = speIvMin,
+            HpEvMin = hpEvMin,
+            AtkEvMin = atkEvMin,
+            DefEvMin = defEvMin,
+            SpaEvMin = spaEvMin,
+            SpdEvMin = spdEvMin,
+            SpeEvMin = speEvMin,
             AnyMoves = anyMoveItems.Select(m => (ushort)m.Value).ToList(),
             AllMoves = allMoveItems.Select(m => (ushort)m.Value).ToList(),
             HiddenPowerType = hiddenPowerType,
@@ -177,7 +185,7 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             return;
         }
 
-        anyMoveItems = [..anyMoveItems, item];
+        anyMoveItems = [.. anyMoveItems, item];
         if (anyMoveAutoRef is not null)
         {
             await anyMoveAutoRef.ClearAsync();
@@ -194,7 +202,7 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             return;
         }
 
-        allMoveItems = [..allMoveItems, item];
+        allMoveItems = [.. allMoveItems, item];
         if (allMoveAutoRef is not null)
         {
             await allMoveAutoRef.ClearAsync();

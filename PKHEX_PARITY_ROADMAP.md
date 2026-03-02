@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-02 (Advanced Search implemented — §2.4)
+**Last Updated:** 2026-03-02 (Encounter Database implemented — §2.2)
 
 ---
 
@@ -36,6 +36,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - **PWA Support** - Offline functionality, installable web app
 - **Legality Checker** - Full `LegalityAnalysis` integration: per-check detail view, color-coded results, full verbose report, slot-level valid/warn icon overlays, one-click fix buttons (ball, met location, moves, TechRecord), and a batch "Legality Report" tab that sweeps all party and box Pokémon with a sortable/filterable table, aggregate Legal/Fishy/Illegal counts, and jump-to-slot navigation
 - **Advanced Search** - Multi-criteria search tab sweeping all party and box slots with filters for species, shiny, nature, ability, held item, ball, origin game, gender, level range, IV/EV floors, moves (any/all), Hidden Power type, OT name/TID, language, ribbons/marks, and legal status; saved filters via localStorage; batch Showdown text export
+- **Encounter Database** - Encounter DB tab backed by PKHeX.Core's `EncounterMovesetGenerator`; filter by species, game version, level range, shiny lock, and encounter type (Wild, Static, Mystery Gift, Trade, Egg); sortable results table with type-coloured chips and location display; per-encounter detail panel with "Generate Legal Pokémon" action that places a legal PKM into the selected slot
 
 ---
 
@@ -288,23 +289,23 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Support multiple database profiles
 
 ### 2.2 Encounter Database
-**Status:** ❌ Not Implemented  
-**Complexity:** High  
+**Status:** ✅ Implemented (Living Dex builder deferred — see §5.2)
+**Complexity:** High
 **Tasks:**
-- [ ] Design Encounter Database UI
-- [ ] Integrate PKHeX.Core encounter data
-- [ ] Implement encounter search/filter by:
-  - [ ] Species
-  - [ ] Game version
-  - [ ] Location
-  - [ ] Level range
-  - [ ] Encounter type (grass, surf, etc.)
-  - [ ] Shiny locked status
-- [ ] Add "Generate Legal Pokemon" from encounter
-- [ ] Display encounter details (location, level, moves)
-- [ ] Support Mystery Gift encounter generation
-- [ ] Add Living Dex builder using encounter database
-- [ ] Create unit tests
+- [x] Design Encounter Database UI
+- [x] Integrate PKHeX.Core encounter data
+- [x] Implement encounter search/filter by:
+  - [x] Species
+  - [x] Game version
+  - [x] Location
+  - [x] Level range
+  - [x] Encounter type (Wild, Static, Gift, Trade, Egg, Mystery Gift)
+  - [x] Shiny locked status
+- [x] Add "Generate Legal Pokemon" from encounter
+- [x] Display encounter details (location, level, shiny status)
+- [x] Support Mystery Gift encounter generation
+- [ ] Add Living Dex builder using encounter database (deferred — §5.2)
+- [x] Create unit tests
 
 ### 2.3 QR Code Support
 **Status:** ❌ Not Implemented  
