@@ -1145,4 +1145,115 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             saveFile.SetBoxSlotAtIndex(compacted[i], boxNumber, i);
         }
     }
+
+    // ── Encounter Database ────────────────────────────────────────────────
+
+    public IEnumerable<EncounterSearchResult> SearchEncounters(EncounterSearchFilter filter)
+    {
+        if (AppState.SaveFile is not { } sav) yield break;
+        if (filter.Species is not { } species) yield break;
+
+        var blankPkm = sav.BlankPKM;
+        blankPkm.Species = species;
+        if (filter.Form is { } form)
+        {
+            blankPkm.Form = form;
+        }
+
+        // When Version is null, pass an empty array so GenerateEncounters searches all
+        // versions compatible with the PKM's format internally.
+        var versions = filter.Version is { } v ? new[] { v } : [];
+
+        var encounters = EncounterMovesetGenerator.GenerateEncounters(blankPkm, sav, ReadOnlyMemory<ushort>.Empty, versions);
+
+        foreach (var enc in encounters)
+        {
+            // Level range filter — skip if the encounter's range doesn't overlap the requested range.
+            if (filter.LevelMin is { } lmin && enc.LevelMax < lmin) continue;
+            if (filter.LevelMax is { } lmax && enc.LevelMin > lmax) continue;
+
+            // Shiny lock filter.
+            if (filter.IsShinyLocked is { } shinyLocked)
+            {
+                var isLocked = enc.Shiny == Shiny.Never;
+                if (isLocked != shinyLocked) continue;
+            }
+
+            // Encounter type group filter.
+            if (filter.EncounterGroup is { } group && GetEncounterTypeGroup(enc) != group) continue;
+
+            yield return BuildEncounterResult(enc);
+        }
+    }
+
+    public PKM? GeneratePokemonFromEncounter(IEncounterable encounter)
+    {
+        if (AppState.SaveFile is not { } sav) return null;
+        var pkm = encounter.ConvertToPKM(sav);
+        var la = new LegalityAnalysis(pkm);
+        return la.Valid ? pkm : null;
+    }
+
+    private EncounterSearchResult BuildEncounterResult(IEncounterable enc)
+    {
+        var speciesName = GetPokemonSpeciesName(enc.Species)
+                          ?? enc.Species.ToString(CultureInfo.InvariantCulture);
+
+        var gameName = GameInfo.FilteredSources.Games
+                           .FirstOrDefault(g => g.Value == (int)enc.Version)?.Text
+                       ?? enc.Version.ToString();
+
+        var levelRange = enc.LevelMin == enc.LevelMax
+            ? $"Lv. {enc.LevelMin}"
+            : $"Lv. {enc.LevelMin}–{enc.LevelMax}";
+
+        var location = GetEncounterLocationName(enc);
+
+        return new EncounterSearchResult
+        {
+            Encounter = enc,
+            SpeciesName = speciesName,
+            GameName = gameName,
+            EncounterTypeName = GetEncounterTypeName(enc),
+            LevelRange = levelRange,
+            IsShinyLocked = enc.Shiny == Shiny.Never,
+            Location = location,
+        };
+    }
+
+    /// <summary>
+    /// Returns the human-readable location name for an encounter, or <see langword="null"/>
+    /// when no location is associated (e.g., location ID is 0).
+    /// </summary>
+    private static string? GetEncounterLocationName(IEncounterable enc)
+    {
+        var locationId = enc.Location != 0 ? enc.Location : enc.EggLocation;
+        if (locationId == 0) return null;
+        var isEgg = locationId != enc.Location;
+        return GameInfo.GetLocationName(isEgg, locationId, enc.Generation, enc.Generation, enc.Version);
+    }
+
+    /// <summary>
+    /// Classifies an <see cref="IEncounterable"/> into one of the five
+    /// <see cref="EncounterTypeGroup"/> buckets.
+    /// </summary>
+    private static EncounterTypeGroup GetEncounterTypeGroup(IEncounterable enc)
+    {
+        if (enc.IsEgg) return EncounterTypeGroup.Egg;
+        if (enc is MysteryGift) return EncounterTypeGroup.Mystery;
+        var name = enc.Name;
+        if (name.Contains("Wild", StringComparison.OrdinalIgnoreCase)) return EncounterTypeGroup.Slot;
+        if (name.Contains("Trade", StringComparison.OrdinalIgnoreCase)) return EncounterTypeGroup.Trade;
+        return EncounterTypeGroup.Static;
+    }
+
+    private static string GetEncounterTypeName(IEncounterable enc) => GetEncounterTypeGroup(enc) switch
+    {
+        EncounterTypeGroup.Egg => "Egg",
+        EncounterTypeGroup.Mystery => "Mystery Gift",
+        EncounterTypeGroup.Slot => "Wild",
+        EncounterTypeGroup.Trade => "Trade",
+        EncounterTypeGroup.Static => "Static",
+        _ => "Unknown",
+    };
 }

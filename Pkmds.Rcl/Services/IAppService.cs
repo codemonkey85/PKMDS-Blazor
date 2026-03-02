@@ -284,4 +284,26 @@ public interface IAppService
     /// <param name="filter">The multi-criteria search filter.</param>
     /// <returns>A lazily-evaluated sequence of matching results.</returns>
     IEnumerable<AdvancedSearchResult> SearchPokemon(AdvancedSearchFilter filter);
+
+    /// <summary>
+    /// Queries PKHeX.Core encounter tables for the species specified in <paramref name="filter"/>
+    /// and returns all encounters that satisfy the given criteria.
+    /// </summary>
+    /// <param name="filter">
+    /// Filter criteria. <see cref="EncounterSearchFilter.Species"/> must be non-null for any
+    /// results to be returned.
+    /// </param>
+    /// <returns>A lazily-evaluated sequence of matching encounter results.</returns>
+    IEnumerable<EncounterSearchResult> SearchEncounters(EncounterSearchFilter filter);
+
+    /// <summary>
+    /// Generates a legal <see cref="PKM"/> from the given encounter template using the current
+    /// save file as the trainer info source.
+    /// </summary>
+    /// <param name="encounter">The encounter template to generate from.</param>
+    /// <returns>
+    /// A legal <see cref="PKM"/> if generation and legality validation succeed;
+    /// <see langword="null"/> if the save file is not loaded or the generated Pokémon is not legal.
+    /// </returns>
+    PKM? GeneratePokemonFromEncounter(IEncounterable encounter);
 }
