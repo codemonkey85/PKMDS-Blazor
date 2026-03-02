@@ -104,8 +104,12 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
 
         if (pkm is null)
         {
-            // Only null when no save file is loaded.
-            Snackbar.Add("No save file loaded.", Severity.Error);
+            // Null when no save file is loaded, or when the encounter's PKM format cannot be
+            // converted to the format required by the current save file (e.g. a Legends: Arceus
+            // encounter attempted against a BDSP save).
+            Snackbar.Add(
+                "Could not generate Pokémon. The encounter may be incompatible with the current save file format.",
+                Severity.Error);
             StateHasChanged();
             return;
         }
