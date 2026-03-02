@@ -68,18 +68,6 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         .DistinctBy(item => item.Value)
         .FirstOrDefault(item => item.Value == itemId) ?? null!;
 
-    public ComboItem GetAbilityComboItem(int abilityId) => GameInfo.FilteredSources.Abilities
-        .DistinctBy(ability => ability.Value)
-        .FirstOrDefault(ability => ability.Value == abilityId) ?? null!;
-
-    public IEnumerable<ComboItem> SearchAbilityNames(string searchString) =>
-        AppState.SaveFile is null || searchString is not { Length: > 0 }
-            ? []
-            : GameInfo.FilteredSources.Abilities
-                .DistinctBy(ability => ability.Value)
-                .Where(ability => ability.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(ability => ability.Text);
-
     public string GetStatModifierString(Nature nature)
     {
         var (up, down) = nature.GetNatureModification();
