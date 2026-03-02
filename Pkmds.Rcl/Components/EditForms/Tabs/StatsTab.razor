@@ -578,7 +578,10 @@
                                      Min="0"
                                      Max="@(ushort.MaxValue)"
                                      Value="@pk1.Stat_SPC"
-                                     ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) => { if (s is PK1 p) p.Stat_SPC = val; }))"
+                                     ValueChanged="@((int v) => OnHaXStatSet(v, (s, val) =>
+                                                   {
+                                                       if (s is PK1 p) p.Stat_SPC = val;
+                                                   }))"
                                      ReadOnly="@(AppState?.IsHaXEnabled is not true)"
                                      HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
                 }

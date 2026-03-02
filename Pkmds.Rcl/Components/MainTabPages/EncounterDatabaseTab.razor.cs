@@ -2,26 +2,27 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class EncounterDatabaseTab : RefreshAwareComponent
 {
-    /// <summary>Callback invoked after "Generate Legal Pokémon" places a Pokémon to jump to the Party / Box tab.</summary>
-    [Parameter]
-    public EventCallback OnJumpToPartyBox { get; set; }
+    private int? encounterGroupValue;
+    private int? gameVersionValue;
+    private bool hasSearched;
+    private bool isGenerating;
+    private bool isSearching;
+    private bool? isShinyLocked;
+    private int? levelMax;
+    private int? levelMin;
 
     // ── Search state ──────────────────────────────────────────────────────
 
     private List<EncounterSearchResult> results = [];
-    private bool isSearching;
-    private bool hasSearched;
-    private bool isGenerating;
     private EncounterSearchResult? selectedResult;
 
     // ── UI backing fields ─────────────────────────────────────────────────
 
     private ComboItem? speciesItem;
-    private int? gameVersionValue;
-    private int? levelMin;
-    private int? levelMax;
-    private bool? isShinyLocked;
-    private int? encounterGroupValue;
+
+    /// <summary>Callback invoked after "Generate Legal Pokémon" places a Pokémon to jump to the Party / Box tab.</summary>
+    [Parameter]
+    public EventCallback OnJumpToPartyBox { get; set; }
 
     // ── Computed properties ───────────────────────────────────────────────
 
@@ -68,16 +69,22 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
     private EncounterSearchFilter BuildFilter() =>
         new()
         {
-            Species = speciesItem is { Value: > 0 } ? (ushort)speciesItem.Value : null,
+            Species = speciesItem is { Value: > 0 }
+                ? (ushort)speciesItem.Value
+                : null,
             Version = gameVersionValue.HasValue && gameVersionValue.Value > 0
                 ? (GameVersion)gameVersionValue.Value
                 : null,
-            LevelMin = levelMin.HasValue ? (byte)levelMin.Value : null,
-            LevelMax = levelMax.HasValue ? (byte)levelMax.Value : null,
+            LevelMin = levelMin.HasValue
+                ? (byte)levelMin.Value
+                : null,
+            LevelMax = levelMax.HasValue
+                ? (byte)levelMax.Value
+                : null,
             IsShinyLocked = isShinyLocked,
             EncounterGroup = encounterGroupValue.HasValue
                 ? (EncounterTypeGroup)encounterGroupValue.Value
-                : null,
+                : null
         };
 
     // ── Row click ─────────────────────────────────────────────────────────
@@ -92,7 +99,10 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
 
     private async Task GeneratePokemonAsync()
     {
-        if (selectedResult is null) return;
+        if (selectedResult is null)
+        {
+            return;
+        }
 
         isGenerating = true;
         StateHasChanged();
@@ -156,12 +166,15 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
     }
 
     /// <summary>
-    /// Finds the first empty box slot in the save file and selects it via <see cref="IAppService"/>.
-    /// Returns <see langword="false"/> when no empty slot is found or no save is loaded.
+    /// Finds the first empty box slot in the save file and selects it via <see cref="IAppService" />.
+    /// Returns <see langword="false" /> when no empty slot is found or no save is loaded.
     /// </summary>
     private bool TrySelectFirstEmptyBoxSlot()
     {
-        if (AppState.SaveFile is not { } sav) return false;
+        if (AppState.SaveFile is not { } sav)
+        {
+            return false;
+        }
 
         for (var box = 0; box < sav.BoxCount; box++)
         {
@@ -205,6 +218,6 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
         "Mystery Gift" => Color.Tertiary,
         "Trade" => Color.Warning,
         "Egg" => Color.Info,
-        _ => Color.Default,
+        _ => Color.Default
     };
 }

@@ -3,7 +3,7 @@ using Pkmds.Rcl.Models;
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for <see cref="AppService.SearchEncounters"/> and <see cref="AppService.GeneratePokemonFromEncounter"/>.
+/// Tests for <see cref="AppService.SearchEncounters" /> and <see cref="AppService.GeneratePokemonFromEncounter" />.
 /// </summary>
 public class EncounterDatabaseTests
 {
@@ -62,12 +62,7 @@ public class EncounterDatabaseTests
 
         // Act
         var results = service
-            .SearchEncounters(new EncounterSearchFilter
-            {
-                Species = (ushort)Species.Pikachu,
-                LevelMin = minLevel,
-                LevelMax = maxLevel,
-            })
+            .SearchEncounters(new EncounterSearchFilter { Species = (ushort)Species.Pikachu, LevelMin = minLevel, LevelMax = maxLevel })
             .ToList();
 
         // Assert — every returned encounter must overlap [minLevel, maxLevel]
@@ -88,19 +83,11 @@ public class EncounterDatabaseTests
 
         // Act
         var lockedResults = service
-            .SearchEncounters(new EncounterSearchFilter
-            {
-                Species = (ushort)Species.Zacian,
-                IsShinyLocked = true,
-            })
+            .SearchEncounters(new EncounterSearchFilter { Species = (ushort)Species.Zacian, IsShinyLocked = true })
             .ToList();
 
         var unlockedResults = service
-            .SearchEncounters(new EncounterSearchFilter
-            {
-                Species = (ushort)Species.Zacian,
-                IsShinyLocked = false,
-            })
+            .SearchEncounters(new EncounterSearchFilter { Species = (ushort)Species.Zacian, IsShinyLocked = false })
             .ToList();
 
         // Assert
@@ -120,11 +107,7 @@ public class EncounterDatabaseTests
 
         // Act
         var wildOnly = service
-            .SearchEncounters(new EncounterSearchFilter
-            {
-                Species = (ushort)Species.Pidgey,
-                EncounterGroup = EncounterTypeGroup.Slot,
-            })
+            .SearchEncounters(new EncounterSearchFilter { Species = (ushort)Species.Pidgey, EncounterGroup = EncounterTypeGroup.Slot })
             .ToList();
 
         // Assert
@@ -140,11 +123,7 @@ public class EncounterDatabaseTests
 
         // Act
         var redOnly = service
-            .SearchEncounters(new EncounterSearchFilter
-            {
-                Species = (ushort)Species.Pikachu,
-                Version = GameVersion.RD,
-            })
+            .SearchEncounters(new EncounterSearchFilter { Species = (ushort)Species.Pikachu, Version = GameVersion.RD })
             .ToList();
 
         // Assert — every result must be from Red
@@ -160,11 +139,7 @@ public class EncounterDatabaseTests
         // Arrange — find a wild Pikachu encounter in Red
         var (service, _) = CreateServiceFromFile("POKEMON RED-0.sav");
         var wildEncounter = service
-            .SearchEncounters(new EncounterSearchFilter
-            {
-                Species = (ushort)Species.Pikachu,
-                EncounterGroup = EncounterTypeGroup.Slot,
-            })
+            .SearchEncounters(new EncounterSearchFilter { Species = (ushort)Species.Pikachu, EncounterGroup = EncounterTypeGroup.Slot })
             .FirstOrDefault();
 
         wildEncounter.Should().NotBeNull("there must be at least one wild Pikachu encounter in Gen 1");
@@ -183,11 +158,7 @@ public class EncounterDatabaseTests
         // Arrange — find a static encounter (e.g., starter or gift Pokémon) in a Gen 5 save
         var (service, _) = CreateServiceFromFile("Black - Full Completion.sav");
         var staticEncounter = service
-            .SearchEncounters(new EncounterSearchFilter
-            {
-                Species = (ushort)Species.Victini,
-                EncounterGroup = EncounterTypeGroup.Static,
-            })
+            .SearchEncounters(new EncounterSearchFilter { Species = (ushort)Species.Victini, EncounterGroup = EncounterTypeGroup.Static })
             .FirstOrDefault();
 
         staticEncounter.Should().NotBeNull("Victini has a static encounter in Gen 5 Black");

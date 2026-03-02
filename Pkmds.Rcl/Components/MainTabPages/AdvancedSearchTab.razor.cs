@@ -3,47 +3,64 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 public partial class AdvancedSearchTab : RefreshAwareComponent
 {
     private const string LocalStorageKey = "pkmds.search.filters";
+    private int? abilityId;
 
-    /// <summary>Callback invoked after a result row is clicked to jump to the Party / Box tab.</summary>
-    [Parameter]
-    public EventCallback OnJumpToPartyBox { get; set; }
+    // ── Ability autocomplete ──────────────────────────────────────────────
+
+    private ComboItem? abilityItem;
+    private MudAutocomplete<ComboItem>? allMoveAutoRef;
+    private List<ComboItem> allMoveItems = [];
+
+    // ── Move chips ────────────────────────────────────────────────────────
+
+    private MudAutocomplete<ComboItem>? anyMoveAutoRef;
+
+    // Moves
+    private List<ComboItem> anyMoveItems = [];
+    private int? ball;
+    private int? gender; // null=any, 0=male, 1=female, -1=genderless
+    private int? heldItemId;
+    private int? hiddenPowerType;
+    private int? hpEvMin, atkEvMin, defEvMin, spaEvMin, spdEvMin, speEvMin;
+    private int? hpIvMin, atkIvMin, defIvMin, spaIvMin, spdIvMin, speIvMin;
+    private bool? isEgg;
+    private bool? isLegal;
+
+    private bool isSearching;
+
+    // Basic
+    private bool? isShiny;
+    private int? languageId;
+
+    private int? levelMax;
+
+    // Stats
+    private int? levelMin;
+    private int? nature; // null=any, 0-24
+
+    private int? originGame;
+
+    // Trainer
+    private string otName = string.Empty;
 
     // ── Search state ──────────────────────────────────────────────────────
 
     private List<AdvancedSearchResult> results = [];
-    private bool isSearching;
+
+    // Saved filters
+    private Dictionary<string, AdvancedSearchFilter> savedFilters = [];
+    private string saveFilterName = string.Empty;
     private HashSet<AdvancedSearchResult> selectedRows = [];
+    private string? selectedSavedFilter;
 
     // ── UI backing fields ─────────────────────────────────────────────────
     // Species
     private ComboItem? speciesItem;
-    // Basic
-    private bool? isShiny;
-    private bool? isEgg;
-    private int? gender;        // null=any, 0=male, 1=female, -1=genderless
-    private int? nature;        // null=any, 0-24
-    private bool? isLegal;
-    // Stats
-    private int? levelMin;
-    private int? levelMax;
-    private int? hpIvMin, atkIvMin, defIvMin, spaIvMin, spdIvMin, speIvMin;
-    private int? hpEvMin, atkEvMin, defEvMin, spaEvMin, spdEvMin, speEvMin;
-    // Trainer
-    private string otName = string.Empty;
     private uint? trainerId;
-    private int? languageId;
-    private int? ball;
-    private int? abilityId;
-    private int? heldItemId;
-    private int? originGame;
-    private int? hiddenPowerType;
-    // Moves
-    private List<ComboItem> anyMoveItems = [];
-    private List<ComboItem> allMoveItems = [];
-    // Saved filters
-    private Dictionary<string, AdvancedSearchFilter> savedFilters = [];
-    private string saveFilterName = string.Empty;
-    private string? selectedSavedFilter;
+
+    /// <summary>Callback invoked after a result row is clicked to jump to the Party / Box tab.</summary>
+    [Parameter]
+    public EventCallback OnJumpToPartyBox { get; set; }
 
     // ── Computed props ────────────────────────────────────────────────────
 
@@ -111,21 +128,33 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
     private AdvancedSearchFilter BuildFilter() =>
         new()
         {
-            Species = speciesItem is { Value: > 0 } ? (ushort)speciesItem.Value : null,
+            Species = speciesItem is { Value: > 0 }
+                ? (ushort)speciesItem.Value
+                : null,
             IsShiny = isShiny,
             IsEgg = isEgg,
             Gender = gender,
-            Nature = nature.HasValue ? (byte)nature.Value : null,
+            Nature = nature.HasValue
+                ? (byte)nature.Value
+                : null,
             Ability = abilityId,
             HeldItem = heldItemId,
             Ball = ball,
-            OriginGame = originGame.HasValue && originGame.Value > 0 ? (GameVersion)originGame.Value : null,
+            OriginGame = originGame.HasValue && originGame.Value > 0
+                ? (GameVersion)originGame.Value
+                : null,
             IsLegal = isLegal,
-            OriginalTrainerName = string.IsNullOrWhiteSpace(otName) ? null : otName.Trim(),
+            OriginalTrainerName = string.IsNullOrWhiteSpace(otName)
+                ? null
+                : otName.Trim(),
             TrainerId = trainerId,
             LanguageId = languageId,
-            LevelMin = levelMin.HasValue ? (byte)levelMin.Value : null,
-            LevelMax = levelMax.HasValue ? (byte)levelMax.Value : null,
+            LevelMin = levelMin.HasValue
+                ? (byte)levelMin.Value
+                : null,
+            LevelMax = levelMax.HasValue
+                ? (byte)levelMax.Value
+                : null,
             HpIvMin = hpIvMin,
             AtkIvMin = atkIvMin,
             DefIvMin = defIvMin,
@@ -140,7 +169,7 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             SpeEvMin = speEvMin,
             AnyMoves = anyMoveItems.Select(m => (ushort)m.Value).ToList(),
             AllMoves = allMoveItems.Select(m => (ushort)m.Value).ToList(),
-            HiddenPowerType = hiddenPowerType,
+            HiddenPowerType = hiddenPowerType
         };
 
     // ── Row click ─────────────────────────────────────────────────────────
@@ -169,11 +198,6 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
 
         await OnJumpToPartyBox.InvokeAsync();
     }
-
-    // ── Move chips ────────────────────────────────────────────────────────
-
-    private MudAutocomplete<ComboItem>? anyMoveAutoRef;
-    private MudAutocomplete<ComboItem>? allMoveAutoRef;
 
     private async Task<IEnumerable<ComboItem>> SearchMovesAsync(string search, CancellationToken ct) =>
         await Task.FromResult(AppService.SearchMoves(search));
@@ -226,10 +250,6 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
 
     private static string ItemToString(ComboItem? item) => item?.Text ?? string.Empty;
 
-    // ── Ability autocomplete ──────────────────────────────────────────────
-
-    private ComboItem? abilityItem;
-
     private async Task<IEnumerable<ComboItem>> SearchAbilitiesAsync(string search, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(search) || AppState.SaveFile is null)
@@ -247,7 +267,9 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
     private void OnAbilitySelected(ComboItem? item)
     {
         abilityItem = item;
-        abilityId = item is { Value: > 0 } ? item.Value : null;
+        abilityId = item is { Value: > 0 }
+            ? item.Value
+            : null;
     }
 
     // ── Batch operations ──────────────────────────────────────────────────
@@ -343,14 +365,28 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
         isShiny = f.IsShiny;
         isEgg = f.IsEgg;
         gender = f.Gender;
-        nature = f.Nature.HasValue ? (int)f.Nature.Value : null;
+        nature = f.Nature.HasValue
+            ? f.Nature.Value
+            : null;
         isLegal = f.IsLegal;
-        levelMin = f.LevelMin.HasValue ? (int)f.LevelMin.Value : null;
-        levelMax = f.LevelMax.HasValue ? (int)f.LevelMax.Value : null;
-        hpIvMin = f.HpIvMin; atkIvMin = f.AtkIvMin; defIvMin = f.DefIvMin;
-        spaIvMin = f.SpaIvMin; spdIvMin = f.SpdIvMin; speIvMin = f.SpeIvMin;
-        hpEvMin = f.HpEvMin; atkEvMin = f.AtkEvMin; defEvMin = f.DefEvMin;
-        spaEvMin = f.SpaEvMin; spdEvMin = f.SpdEvMin; speEvMin = f.SpeEvMin;
+        levelMin = f.LevelMin.HasValue
+            ? f.LevelMin.Value
+            : null;
+        levelMax = f.LevelMax.HasValue
+            ? f.LevelMax.Value
+            : null;
+        hpIvMin = f.HpIvMin;
+        atkIvMin = f.AtkIvMin;
+        defIvMin = f.DefIvMin;
+        spaIvMin = f.SpaIvMin;
+        spdIvMin = f.SpdIvMin;
+        speIvMin = f.SpeIvMin;
+        hpEvMin = f.HpEvMin;
+        atkEvMin = f.AtkEvMin;
+        defEvMin = f.DefEvMin;
+        spaEvMin = f.SpaEvMin;
+        spdEvMin = f.SpdEvMin;
+        speEvMin = f.SpeEvMin;
         otName = f.OriginalTrainerName ?? string.Empty;
         trainerId = f.TrainerId;
         languageId = f.LanguageId;
@@ -358,7 +394,9 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
         abilityId = f.Ability;
         abilityItem = null;
         heldItemId = f.HeldItem;
-        originGame = f.OriginGame.HasValue ? (int)f.OriginGame.Value : null;
+        originGame = f.OriginGame.HasValue
+            ? (int)f.OriginGame.Value
+            : null;
         hiddenPowerType = f.HiddenPowerType;
         anyMoveItems = f.AnyMoves
             .Select(id => AppService.GetMoveComboItem(id))
@@ -388,5 +426,4 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
     // ── Helper: table row style ───────────────────────────────────────────
 
     private static string RowStyleFunc(AdvancedSearchResult _, int __) => "cursor: pointer;";
-
 }

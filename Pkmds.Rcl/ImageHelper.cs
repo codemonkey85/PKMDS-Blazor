@@ -50,8 +50,8 @@ public static partial class ImageHelper
                     or { species: (ushort)Species.Eevee, form: EeveeStarterForm }) => $"{species}-{form}p",
                 // Frillish and Jellicent have gender differences
                 {
-                    species: (ushort)Species.Frillish or (ushort)Species.Jellicent, gender: (byte)Gender.Female
-                } => $"{species}f",
+                        species: (ushort)Species.Frillish or (ushort)Species.Jellicent, gender: (byte)Gender.Female
+                    } => $"{species}f",
                 // Alcremie has form and decoration variations
                 { species: (ushort)Species.Alcremie } => $"{species}-{form}-{formArg1}",
                 // Handle Totem forms by mapping to base form

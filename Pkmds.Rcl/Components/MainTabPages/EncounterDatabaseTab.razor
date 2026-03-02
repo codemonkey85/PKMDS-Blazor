@@ -1,6 +1,7 @@
 @inherits RefreshAwareComponent
 
-<MudStack Class="pa-2" Spacing="3">
+<MudStack Class="pa-2"
+          Spacing="3">
 
     @if (AppState.SaveFile is null)
     {
@@ -11,10 +12,12 @@
         <MudGrid>
 
             @* ── Filter panel ── *@
-            <MudItem xs="12" md="5">
+            <MudItem xs="12"
+                     md="5">
                 <MudStack Spacing="2">
 
-                    <MudExpansionPanels MultiExpansion Dense>
+                    <MudExpansionPanels MultiExpansion
+                                        Dense>
 
                         @* ── Basic ── *@
                         <MudExpansionPanel Text="Search">
@@ -35,10 +38,13 @@
                                            Label="Game version"
                                            @bind-Value="@gameVersionValue"
                                            Clearable>
-                                    <MudSelectItem T="@(int?)" Value="@((int?)null)">All (current format)</MudSelectItem>
+                                    <MudSelectItem T="@(int?)"
+                                                   Value="@((int?)null)">All (current format)
+                                    </MudSelectItem>
                                     @foreach (var game in GameInfo.FilteredSources.Games.Where(g => g.Value > 0))
                                     {
-                                        <MudSelectItem T="@(int?)" Value="@((int?)game.Value)">@game.Text</MudSelectItem>
+                                        <MudSelectItem T="@(int?)"
+                                                       Value="@((int?)game.Value)">@game.Text</MudSelectItem>
                                     }
                                 </MudSelect>
 
@@ -56,13 +62,15 @@
                                         <MudNumericField T="@(int?)"
                                                          Label="Min level"
                                                          @bind-Value="@levelMin"
-                                                         Min="1" Max="100"/>
+                                                         Min="1"
+                                                         Max="100"/>
                                     </MudItem>
                                     <MudItem xs="6">
                                         <MudNumericField T="@(int?)"
                                                          Label="Max level"
                                                          @bind-Value="@levelMax"
-                                                         Min="1" Max="100"/>
+                                                         Min="1"
+                                                         Max="100"/>
                                     </MudItem>
                                 </MudGrid>
 
@@ -71,9 +79,15 @@
                                            Label="Shiny lock"
                                            @bind-Value="@isShinyLocked"
                                            Clearable>
-                                    <MudSelectItem T="@(bool?)" Value="@((bool?)null)">Any</MudSelectItem>
-                                    <MudSelectItem T="@(bool?)" Value="@true">Shiny-locked only</MudSelectItem>
-                                    <MudSelectItem T="@(bool?)" Value="@false">Can be shiny</MudSelectItem>
+                                    <MudSelectItem T="@(bool?)"
+                                                   Value="@((bool?)null)">Any
+                                    </MudSelectItem>
+                                    <MudSelectItem T="@(bool?)"
+                                                   Value="@true">Shiny-locked only
+                                    </MudSelectItem>
+                                    <MudSelectItem T="@(bool?)"
+                                                   Value="@false">Can be shiny
+                                    </MudSelectItem>
                                 </MudSelect>
 
                                 @* Encounter type *@
@@ -81,12 +95,24 @@
                                            Label="Encounter type"
                                            @bind-Value="@encounterGroupValue"
                                            Clearable>
-                                    <MudSelectItem T="@(int?)" Value="@((int?)null)">All types</MudSelectItem>
-                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Slot)">Wild</MudSelectItem>
-                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Static)">Static / Gift</MudSelectItem>
-                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Mystery)">Mystery Gift</MudSelectItem>
-                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Trade)">Trade</MudSelectItem>
-                                    <MudSelectItem T="@(int?)" Value="@((int?)EncounterTypeGroup.Egg)">Egg</MudSelectItem>
+                                    <MudSelectItem T="@(int?)"
+                                                   Value="@((int?)null)">All types
+                                    </MudSelectItem>
+                                    <MudSelectItem T="@(int?)"
+                                                   Value="@((int?)EncounterTypeGroup.Slot)">Wild
+                                    </MudSelectItem>
+                                    <MudSelectItem T="@(int?)"
+                                                   Value="@((int?)EncounterTypeGroup.Static)">Static / Gift
+                                    </MudSelectItem>
+                                    <MudSelectItem T="@(int?)"
+                                                   Value="@((int?)EncounterTypeGroup.Mystery)">Mystery Gift
+                                    </MudSelectItem>
+                                    <MudSelectItem T="@(int?)"
+                                                   Value="@((int?)EncounterTypeGroup.Trade)">Trade
+                                    </MudSelectItem>
+                                    <MudSelectItem T="@(int?)"
+                                                   Value="@((int?)EncounterTypeGroup.Egg)">Egg
+                                    </MudSelectItem>
                                 </MudSelect>
 
                             </MudStack>
@@ -95,13 +121,16 @@
                     </MudExpansionPanels>
 
                     @* Action buttons *@
-                    <MudStack Row Spacing="2">
+                    <MudStack Row
+                              Spacing="2">
                         <MudButton Variant="@Variant.Filled"
                                    Color="@Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Search"
                                    OnClick="@RunSearchAsync"
                                    Disabled="@(isSearching || speciesItem is null || speciesItem?.Value <= 0)">
-                            @(isSearching ? "Searching…" : "Search")
+                            @(isSearching
+                                ? "Searching…"
+                                : "Search")
                         </MudButton>
 
                         @if (isSearching)
@@ -122,7 +151,8 @@
                     @* ── Selected encounter detail ── *@
                     @if (selectedResult is { } sel)
                     {
-                        <MudPaper Outlined Class="pa-3">
+                        <MudPaper Outlined
+                                  Class="pa-3">
                             <MudStack Spacing="2">
 
                                 <MudText Typo="@Typo.subtitle1">
@@ -151,15 +181,19 @@
                                     <MudItem xs="6">
                                         <MudText Typo="@Typo.caption">Shiny</MudText>
                                         <MudText Typo="@Typo.body2">
-                                            @(sel.IsShinyLocked ? "Locked (never shiny)" : sel.Encounter.Shiny.ToString())
+                                            @(sel.IsShinyLocked
+                                                ? "Locked (never shiny)"
+                                                : sel.Encounter.Shiny.ToString())
                                         </MudText>
                                     </MudItem>
                                 </MudGrid>
 
                                 @if (sel.IsMysteryGift)
                                 {
-                                    <MudAlert Severity="@Severity.Info" Dense>
-                                        This is a Mystery Gift encounter. See the Mystery Gifts tab to import the gift data directly.
+                                    <MudAlert Severity="@Severity.Info"
+                                              Dense>
+                                        This is a Mystery Gift encounter. See the Mystery Gifts tab to import the gift
+                                        data directly.
                                     </MudAlert>
                                 }
 
@@ -168,7 +202,9 @@
                                            StartIcon="@Icons.Material.Filled.CatchingPokemon"
                                            OnClick="@GeneratePokemonAsync"
                                            Disabled="@isGenerating">
-                                    @(isGenerating ? "Generating…" : "Generate Pokémon")
+                                    @(isGenerating
+                                        ? "Generating…"
+                                        : "Generate Pokémon")
                                 </MudButton>
 
                             </MudStack>
@@ -179,7 +215,8 @@
             </MudItem>
 
             @* ── Results panel ── *@
-            <MudItem xs="12" md="7">
+            <MudItem xs="12"
+                     md="7">
                 <MudStack Spacing="2">
 
                     @if (HasResults)
@@ -188,7 +225,9 @@
                                  Color="@Color.Default"
                                  Variant="@Variant.Outlined"
                                  Size="@Size.Small">
-                            @ResultCount encounter@(ResultCount == 1 ? "" : "s") found
+                            @ResultCount encounter@(ResultCount == 1
+                                                          ? ""
+                                                          : "s") found
                         </MudChip>
                     }
 

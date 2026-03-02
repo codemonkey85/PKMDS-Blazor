@@ -886,6 +886,103 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         }
     }
 
+    // ── Encounter Database ────────────────────────────────────────────────
+
+    public IEnumerable<EncounterSearchResult> SearchEncounters(EncounterSearchFilter filter)
+    {
+        if (AppState.SaveFile is not { } sav)
+        {
+            yield break;
+        }
+
+        if (filter.Species is not { } species)
+        {
+            yield break;
+        }
+
+        var blankPkm = sav.BlankPKM.Clone();
+        blankPkm.Species = species;
+        if (filter.Form is { } form)
+        {
+            blankPkm.Form = form;
+        }
+
+        // When Version is null, pass an empty array so GenerateEncounters searches all
+        // versions compatible with the PKM's format internally.
+        var versions = filter.Version is { } v
+            ? new[] { v }
+            : [];
+
+        var encounters = EncounterMovesetGenerator.GenerateEncounters(blankPkm, sav, ReadOnlyMemory<ushort>.Empty, versions);
+
+        // Deduplicate by reference: WC8/MysteryGift objects are classes and the generator can
+        // return the same instance multiple times (once per compatible game version, e.g. SW and SH).
+        var seen = new HashSet<IEncounterable>(ReferenceEqualityComparer.Instance);
+
+        foreach (var enc in encounters)
+        {
+            if (!seen.Add(enc))
+            {
+                continue;
+            }
+
+            // Level range filter — skip if the encounter's range doesn't overlap the requested range.
+            if (filter.LevelMin is { } lmin && enc.LevelMax < lmin)
+            {
+                continue;
+            }
+
+            if (filter.LevelMax is { } lmax && enc.LevelMin > lmax)
+            {
+                continue;
+            }
+
+            // Shiny lock filter.
+            if (filter.IsShinyLocked is { } shinyLocked)
+            {
+                var isLocked = enc.Shiny == Shiny.Never;
+                if (isLocked != shinyLocked)
+                {
+                    continue;
+                }
+            }
+
+            // Encounter type group filter.
+            if (filter.EncounterGroup is { } group && GetEncounterTypeGroup(enc) != group)
+            {
+                continue;
+            }
+
+            yield return BuildEncounterResult(enc);
+        }
+    }
+
+    public PKM? GeneratePokemonFromEncounter(IEncounterable encounter)
+    {
+        if (AppState.SaveFile is not { } sav)
+        {
+            return null;
+        }
+
+        // Always return the generated PKM — do not gate on LegalityAnalysis here.
+        // Some encounter types (e.g. HOME Mystery Gifts) may not pass a strict legality
+        // check even when generated correctly; the caller can run a legality check separately
+        // and surface the result to the user.
+        var pkm = encounter.ConvertToPKM(sav);
+
+        // Some cross-game encounters (e.g. a Legends: Arceus static returning PA8 when the
+        // loaded save is BDSP, which requires PB8) produce a PKM in the wrong format.
+        // Attempt a format conversion via EntityConverter; return null if none is possible
+        // so the caller can surface a meaningful error instead of crashing.
+        var expectedType = sav.BlankPKM.GetType();
+        if (pkm.GetType() != expectedType)
+        {
+            pkm = EntityConverter.ConvertToType(pkm, expectedType, out _);
+        }
+
+        return pkm;
+    }
+
     private AdvancedSearchResult BuildSearchResult(PKM pkm, bool isParty, int box, int slot)
     {
         var speciesName = GetPokemonSpeciesName(pkm.Species)
@@ -906,8 +1003,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Returns <see langword="true"/> when <paramref name="pkm"/> satisfies every
-    /// non-null/non-empty criterion in <paramref name="f"/>.
+    /// Returns <see langword="true" /> when <paramref name="pkm" /> satisfies every
+    /// non-null/non-empty criterion in <paramref name="f" />.
     /// Cheap equality checks run first; expensive legality analysis runs last.
     /// </summary>
     private bool Matches(PKM pkm, AdvancedSearchFilter f)
@@ -937,7 +1034,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         if (f.Gender.HasValue)
         {
             // Issue spec uses -1 for genderless; PKHeX uses 2.
-            var filterGender = f.Gender.Value == -1 ? 2 : f.Gender.Value;
+            var filterGender = f.Gender.Value == -1
+                ? 2
+                : f.Gender.Value;
             if (pkm.Gender != filterGender)
             {
                 return false;
@@ -990,21 +1089,67 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         // ── IVs ───────────────────────────────────────────────────────────
 
-        if (f.HpIvMin.HasValue && pkm.IV_HP < f.HpIvMin.Value) return false;
-        if (f.AtkIvMin.HasValue && pkm.IV_ATK < f.AtkIvMin.Value) return false;
-        if (f.DefIvMin.HasValue && pkm.IV_DEF < f.DefIvMin.Value) return false;
-        if (f.SpaIvMin.HasValue && pkm.IV_SPA < f.SpaIvMin.Value) return false;
-        if (f.SpdIvMin.HasValue && pkm.IV_SPD < f.SpdIvMin.Value) return false;
-        if (f.SpeIvMin.HasValue && pkm.IV_SPE < f.SpeIvMin.Value) return false;
+        if (f.HpIvMin.HasValue && pkm.IV_HP < f.HpIvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.AtkIvMin.HasValue && pkm.IV_ATK < f.AtkIvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.DefIvMin.HasValue && pkm.IV_DEF < f.DefIvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.SpaIvMin.HasValue && pkm.IV_SPA < f.SpaIvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.SpdIvMin.HasValue && pkm.IV_SPD < f.SpdIvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.SpeIvMin.HasValue && pkm.IV_SPE < f.SpeIvMin.Value)
+        {
+            return false;
+        }
 
         // ── EVs ───────────────────────────────────────────────────────────
 
-        if (f.HpEvMin.HasValue && pkm.EV_HP < f.HpEvMin.Value) return false;
-        if (f.AtkEvMin.HasValue && pkm.EV_ATK < f.AtkEvMin.Value) return false;
-        if (f.DefEvMin.HasValue && pkm.EV_DEF < f.DefEvMin.Value) return false;
-        if (f.SpaEvMin.HasValue && pkm.EV_SPA < f.SpaEvMin.Value) return false;
-        if (f.SpdEvMin.HasValue && pkm.EV_SPD < f.SpdEvMin.Value) return false;
-        if (f.SpeEvMin.HasValue && pkm.EV_SPE < f.SpeEvMin.Value) return false;
+        if (f.HpEvMin.HasValue && pkm.EV_HP < f.HpEvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.AtkEvMin.HasValue && pkm.EV_ATK < f.AtkEvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.DefEvMin.HasValue && pkm.EV_DEF < f.DefEvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.SpaEvMin.HasValue && pkm.EV_SPA < f.SpaEvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.SpdEvMin.HasValue && pkm.EV_SPD < f.SpdEvMin.Value)
+        {
+            return false;
+        }
+
+        if (f.SpeEvMin.HasValue && pkm.EV_SPE < f.SpeEvMin.Value)
+        {
+            return false;
+        }
 
         // ── Trainer ───────────────────────────────────────────────────────
 
@@ -1146,72 +1291,6 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         }
     }
 
-    // ── Encounter Database ────────────────────────────────────────────────
-
-    public IEnumerable<EncounterSearchResult> SearchEncounters(EncounterSearchFilter filter)
-    {
-        if (AppState.SaveFile is not { } sav) yield break;
-        if (filter.Species is not { } species) yield break;
-
-        var blankPkm = sav.BlankPKM.Clone();
-        blankPkm.Species = species;
-        if (filter.Form is { } form)
-        {
-            blankPkm.Form = form;
-        }
-
-        // When Version is null, pass an empty array so GenerateEncounters searches all
-        // versions compatible with the PKM's format internally.
-        var versions = filter.Version is { } v ? new[] { v } : [];
-
-        var encounters = EncounterMovesetGenerator.GenerateEncounters(blankPkm, sav, ReadOnlyMemory<ushort>.Empty, versions);
-
-        // Deduplicate by reference: WC8/MysteryGift objects are classes and the generator can
-        // return the same instance multiple times (once per compatible game version, e.g. SW and SH).
-        var seen = new HashSet<IEncounterable>(ReferenceEqualityComparer.Instance);
-
-        foreach (var enc in encounters)
-        {
-            if (!seen.Add(enc)) continue;
-
-            // Level range filter — skip if the encounter's range doesn't overlap the requested range.
-            if (filter.LevelMin is { } lmin && enc.LevelMax < lmin) continue;
-            if (filter.LevelMax is { } lmax && enc.LevelMin > lmax) continue;
-
-            // Shiny lock filter.
-            if (filter.IsShinyLocked is { } shinyLocked)
-            {
-                var isLocked = enc.Shiny == Shiny.Never;
-                if (isLocked != shinyLocked) continue;
-            }
-
-            // Encounter type group filter.
-            if (filter.EncounterGroup is { } group && GetEncounterTypeGroup(enc) != group) continue;
-
-            yield return BuildEncounterResult(enc);
-        }
-    }
-
-    public PKM? GeneratePokemonFromEncounter(IEncounterable encounter)
-    {
-        if (AppState.SaveFile is not { } sav) return null;
-        // Always return the generated PKM — do not gate on LegalityAnalysis here.
-        // Some encounter types (e.g. HOME Mystery Gifts) may not pass a strict legality
-        // check even when generated correctly; the caller can run a legality check separately
-        // and surface the result to the user.
-        var pkm = encounter.ConvertToPKM(sav);
-
-        // Some cross-game encounters (e.g. a Legends: Arceus static returning PA8 when the
-        // loaded save is BDSP, which requires PB8) produce a PKM in the wrong format.
-        // Attempt a format conversion via EntityConverter; return null if none is possible
-        // so the caller can surface a meaningful error instead of crashing.
-        var expectedType = sav.BlankPKM.GetType();
-        if (pkm.GetType() != expectedType)
-            pkm = EntityConverter.ConvertToType(pkm, expectedType, out _);
-
-        return pkm;
-    }
-
     private EncounterSearchResult BuildEncounterResult(IEncounterable enc)
     {
         var speciesName = GetPokemonSpeciesName(enc.Species)
@@ -1236,33 +1315,55 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             LevelRange = levelRange,
             IsShinyLocked = enc.Shiny == Shiny.Never,
             IsMysteryGift = enc is MysteryGift,
-            Location = location,
+            Location = location
         };
     }
 
     /// <summary>
-    /// Returns the human-readable location name for an encounter, or <see langword="null"/>
+    /// Returns the human-readable location name for an encounter, or <see langword="null" />
     /// when no location is associated (e.g., location ID is 0).
     /// </summary>
     private static string? GetEncounterLocationName(IEncounterable enc)
     {
-        var locationId = enc.Location != 0 ? enc.Location : enc.EggLocation;
-        if (locationId == 0) return null;
+        var locationId = enc.Location != 0
+            ? enc.Location
+            : enc.EggLocation;
+        if (locationId == 0)
+        {
+            return null;
+        }
+
         var isEgg = locationId != enc.Location;
         return GameInfo.GetLocationName(isEgg, locationId, enc.Generation, enc.Generation, enc.Version);
     }
 
     /// <summary>
-    /// Classifies an <see cref="IEncounterable"/> into one of the five
-    /// <see cref="EncounterTypeGroup"/> buckets.
+    /// Classifies an <see cref="IEncounterable" /> into one of the five
+    /// <see cref="EncounterTypeGroup" /> buckets.
     /// </summary>
     private static EncounterTypeGroup GetEncounterTypeGroup(IEncounterable enc)
     {
-        if (enc.IsEgg) return EncounterTypeGroup.Egg;
-        if (enc is MysteryGift) return EncounterTypeGroup.Mystery;
+        if (enc.IsEgg)
+        {
+            return EncounterTypeGroup.Egg;
+        }
+
+        if (enc is MysteryGift)
+        {
+            return EncounterTypeGroup.Mystery;
+        }
+
         var name = enc.Name;
-        if (name.Contains("Wild", StringComparison.OrdinalIgnoreCase)) return EncounterTypeGroup.Slot;
-        if (name.Contains("Trade", StringComparison.OrdinalIgnoreCase)) return EncounterTypeGroup.Trade;
+        if (name.Contains("Wild", StringComparison.OrdinalIgnoreCase))
+        {
+            return EncounterTypeGroup.Slot;
+        }
+
+        if (name.Contains("Trade", StringComparison.OrdinalIgnoreCase))
+        {
+            return EncounterTypeGroup.Trade;
+        }
+
         return EncounterTypeGroup.Static;
     }
 
@@ -1273,6 +1374,6 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         EncounterTypeGroup.Slot => "Wild",
         EncounterTypeGroup.Trade => "Trade",
         EncounterTypeGroup.Static => "Static",
-        _ => "Unknown",
+        _ => "Unknown"
     };
 }

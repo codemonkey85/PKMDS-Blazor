@@ -46,6 +46,6 @@ public static partial class ImageHelper
         OriginMark.GameBoy => $"{SpritesRoot}m/gen_vc.png",
         OriginMark.GO => $"{SpritesRoot}m/gen_go.png",
         OriginMark.LetsGo => $"{SpritesRoot}m/gen_gg.png",
-        _ => null,
+        _ => null
     };
 }

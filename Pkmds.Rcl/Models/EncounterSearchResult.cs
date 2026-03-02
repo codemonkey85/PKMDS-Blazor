@@ -20,12 +20,12 @@ public sealed record EncounterSearchResult
     /// <summary>Level range string (e.g., "Lv. 5–10" or "Lv. 15").</summary>
     public required string LevelRange { get; init; }
 
-    /// <summary><see langword="true"/> if the encounter is shiny-locked (Shiny.Never).</summary>
+    /// <summary><see langword="true" /> if the encounter is shiny-locked (Shiny.Never).</summary>
     public bool IsShinyLocked { get; init; }
 
-    /// <summary><see langword="true"/> if the encounter is a Mystery Gift (e.g., WC, PGF, WB7).</summary>
+    /// <summary><see langword="true" /> if the encounter is a Mystery Gift (e.g., WC, PGF, WB7).</summary>
     public bool IsMysteryGift { get; init; }
 
-    /// <summary>Human-readable location name, or <see langword="null"/> when no location applies.</summary>
+    /// <summary>Human-readable location name, or <see langword="null" /> when no location applies.</summary>
     public string? Location { get; init; }
 }

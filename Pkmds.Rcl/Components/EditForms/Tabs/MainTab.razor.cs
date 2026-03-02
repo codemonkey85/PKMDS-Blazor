@@ -98,7 +98,7 @@ public partial class MainTab : IDisposable
     {
         2 => 1,
         4 => 2,
-        _ => 0,
+        _ => 0
     };
 
     private IReadOnlyList<ComboItem> GetAbilitySlotItems()
@@ -112,7 +112,9 @@ public partial class MainTab : IDisposable
         var names = GameInfo.Strings.Ability;
 
         static string GetAbilityName(int abilityId, IReadOnlyList<string> names) =>
-            abilityId == 0 || (uint)abilityId >= (uint)names.Count ? "None" : names[abilityId];
+            abilityId == 0 || (uint)abilityId >= (uint)names.Count
+                ? "None"
+                : names[abilityId];
 
         List<ComboItem> items = [];
         for (var i = 0; i < pi.AbilityCount; i++)
@@ -121,6 +123,7 @@ public partial class MainTab : IDisposable
             var suffix = i switch { 0 => "1", 1 => "2", _ => "H" };
             items.Add(new ComboItem($"{GetAbilityName(abilityId, names)} ({suffix})", i));
         }
+
         return items;
     }
 
@@ -187,9 +190,9 @@ public partial class MainTab : IDisposable
 
     private static IReadOnlyList<ComboItem> GetAbilityNumberItems() =>
     [
-        new ComboItem("Slot 1", 1),
-        new ComboItem("Slot 2", 2),
-        new ComboItem("Slot H", 4),
+        new("Slot 1", 1),
+        new("Slot 2", 2),
+        new("Slot H", 4)
     ];
 
     private void SetDevAbilityNumber(int abilityNumber)

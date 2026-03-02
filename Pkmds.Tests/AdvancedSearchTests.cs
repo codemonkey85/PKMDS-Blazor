@@ -3,7 +3,7 @@ using Pkmds.Rcl.Models;
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for <see cref="AppService.SearchPokemon"/> covering the main filter criteria.
+/// Tests for <see cref="AppService.SearchPokemon" /> covering the main filter criteria.
 /// </summary>
 public class AdvancedSearchTests
 {
@@ -108,7 +108,7 @@ public class AdvancedSearchTests
             TID16 = 0,
             SID16 = 0,
             PID = 0,
-            CurrentLevel = 1,
+            CurrentLevel = 1
         };
         shinyPk5.RefreshChecksum();
         saveFile.SetBoxSlotAtIndex(shinyPk5, 0, 0);
@@ -131,12 +131,7 @@ public class AdvancedSearchTests
 
         // Place a Pokémon that knows Tackle (move 33) in a known box slot.
         const ushort tackle = 33; // Move.Tackle
-        var pk5 = new PK5
-        {
-            Species = (ushort)Species.Rattata,
-            Move1 = tackle,
-            CurrentLevel = 5,
-        };
+        var pk5 = new PK5 { Species = (ushort)Species.Rattata, Move1 = tackle, CurrentLevel = 5 };
         pk5.RefreshChecksum();
         saveFile.SetBoxSlotAtIndex(pk5, 1, 0);
 
@@ -152,7 +147,7 @@ public class AdvancedSearchTests
 
         // Assert
         anyTackle.Should().Contain(r => r.Pokemon.Move1 == tackle || r.Pokemon.Move2 == tackle
-                                        || r.Pokemon.Move3 == tackle || r.Pokemon.Move4 == tackle);
+                                                                  || r.Pokemon.Move3 == tackle || r.Pokemon.Move4 == tackle);
         filterNomove.Should().BeEmpty("no Pokémon can know move ID 9999");
     }
 

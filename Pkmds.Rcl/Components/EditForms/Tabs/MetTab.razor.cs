@@ -28,7 +28,9 @@ public partial class MetTab : IDisposable
 
     private GameVersion BattleVersionValue
     {
-        get => Pokemon is IBattleVersion bv ? bv.BattleVersion : GameVersion.Any;
+        get => Pokemon is IBattleVersion bv
+            ? bv.BattleVersion
+            : GameVersion.Any;
         set
         {
             if (Pokemon is IBattleVersion bv)
@@ -40,7 +42,9 @@ public partial class MetTab : IDisposable
 
     private byte ObedienceLevelValue
     {
-        get => Pokemon is IObedienceLevel ol ? ol.ObedienceLevel : (byte)0;
+        get => Pokemon is IObedienceLevel ol
+            ? ol.ObedienceLevel
+            : (byte)0;
         set
         {
             if (Pokemon is IObedienceLevel ol)

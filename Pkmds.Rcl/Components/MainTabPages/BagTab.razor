@@ -122,7 +122,11 @@
                                     <EditTemplate>
                                         <MudNumericField T="@int"
                                                          Variant="@Variant.Outlined"
-                                                         Max="@(AppState.IsHaXEnabled ? (saveFile.Generation <= 2 ? byte.MaxValue : ushort.MaxValue) : pouch.MaxCount)"
+                                                         Max="@(AppState.IsHaXEnabled
+                                                                  ? saveFile.Generation <= 2
+                                                                      ? byte.MaxValue
+                                                                      : ushort.MaxValue
+                                                                  : pouch.MaxCount)"
                                                          @bind-Value="@context.Item.Count"/>
                                     </EditTemplate>
                                 </PropertyColumn>

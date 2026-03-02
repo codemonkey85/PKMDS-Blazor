@@ -1,5 +1,3 @@
-using Pkmds.Rcl.Models;
-
 namespace Pkmds.Rcl.Components.Layout;
 
 public partial class MainLayout : IDisposable
@@ -78,8 +76,12 @@ public partial class MainLayout : IDisposable
         }
 
         AppState.IsHaXEnabled = newValue;
-        Logger.LogInformation("PKHaX mode {Status}", newValue ? "enabled" : "disabled");
-        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_enabled", newValue ? "true" : "false");
+        Logger.LogInformation("PKHaX mode {Status}", newValue
+            ? "enabled"
+            : "disabled");
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_enabled", newValue
+            ? "true"
+            : "false");
         RefreshService.Refresh();
     }
 
