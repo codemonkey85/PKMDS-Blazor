@@ -339,7 +339,10 @@
     {
         @if (AppState is { IsHaXEnabled: true } && Pokemon.Format > 3)
         {
-            @* DEV_Ability: HaX mode — any ability ID + raw ability number slot *@
+            @* DEV_Ability: HaX mode — any ability ID.
+               AbilityNumber is independently stored (Gen 6+), so the slot picker
+               is only shown for Gen 6+. For Gen 4/5, AbilityNumber.set is a no-op
+               in PKHeX.Core (derived from PID), so we omit the picker there. *@
             <MudStack Row
                       AlignItems="@AlignItems.Center"
                       Spacing="1">
@@ -354,20 +357,24 @@
                                      ResetValueOnEmptyText
                                      CoerceValue/>
                 </MudStack>
-                <MudSelect T="int"
-                           Label="Slot"
-                           Variant="@Variant.Outlined"
-                           Style="max-width: 110px;"
-                           Value="@Pokemon.AbilityNumber"
-                           ValueChanged="@SetDevAbilityNumber">
-                    @foreach (var slot in GetAbilityNumberItems())
-                    {
-                        <MudSelectItem Value="@slot.Value"
-                                       @key="@slot.Value">
-                            @slot.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
+                @if (Pokemon.Format >= 6)
+                {
+                    @* Gen 6+: AbilityNumber is independently stored and freely writable *@
+                    <MudSelect T="int"
+                               Label="Slot"
+                               Variant="@Variant.Outlined"
+                               Style="max-width: 110px;"
+                               Value="@Pokemon.AbilityNumber"
+                               ValueChanged="@SetDevAbilityNumber">
+                        @foreach (var slot in GetAbilityNumberItems())
+                        {
+                            <MudSelectItem Value="@slot.Value"
+                                           @key="@slot.Value">
+                                @slot.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                }
                 <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Ability)?.Judgement ?? PKHeX.Core.Severity.Valid)"
                                    Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ability))"/>
             </MudStack>
