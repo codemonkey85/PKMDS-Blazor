@@ -136,6 +136,69 @@ public partial class MainTab : IDisposable
         RefreshService.Refresh();
     }
 
+    // ── HaX DEV_Ability helpers (any ability ID, Gen 4+) ─────────────────────
+
+    private ComboItem GetDevAbilityComboItem()
+    {
+        if (Pokemon is null)
+        {
+            return new ComboItem("None", 0);
+        }
+
+        var names = GameInfo.Strings.Ability;
+        var id = Pokemon.Ability;
+        var name = id == 0 || (uint)id >= (uint)names.Count ? "None" : names[id];
+        return new ComboItem(name, id);
+    }
+
+    private Task<IEnumerable<ComboItem>> SearchAllAbilities(string searchString, CancellationToken _)
+    {
+        var names = GameInfo.Strings.Ability;
+        IEnumerable<ComboItem> results;
+        if (string.IsNullOrWhiteSpace(searchString))
+        {
+            results = Enumerable.Empty<ComboItem>();
+        }
+        else
+        {
+            results = names
+                .Select((name, i) => new ComboItem(name, i))
+                .Where(item => !string.IsNullOrEmpty(item.Text) &&
+                               item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return Task.FromResult(results);
+    }
+
+    private void SetDevAbility(ComboItem? item)
+    {
+        if (Pokemon is null || item is null || AppState?.IsHaXEnabled is not true)
+        {
+            return;
+        }
+
+        Pokemon.Ability = (ushort)item.Value;
+        RefreshService.Refresh();
+    }
+
+    private static IReadOnlyList<ComboItem> GetAbilityNumberItems() =>
+    [
+        new ComboItem("Slot 1", 1),
+        new ComboItem("Slot 2", 2),
+        new ComboItem("Slot H", 4),
+    ];
+
+    private void SetDevAbilityNumber(int abilityNumber)
+    {
+        if (Pokemon is null || AppState?.IsHaXEnabled is not true)
+        {
+            return;
+        }
+
+        Pokemon.AbilityNumber = abilityNumber;
+        RefreshService.Refresh();
+    }
+
     private void OnShinySet(bool shiny) => Pokemon?.SetIsShinySafe(shiny);
 
     private void OnGenderToggle(Gender newGender)
