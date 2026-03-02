@@ -275,4 +275,13 @@ public interface IAppService
     /// <param name="pkm">The Pokémon to analyse.</param>
     /// <returns>A <see cref="LegalityAnalysis" /> result.</returns>
     LegalityAnalysis GetLegalityAnalysis(PKM pkm);
+
+    /// <summary>
+    /// Sweeps all party and box slots and returns every Pokémon that satisfies
+    /// every non-null criterion in <paramref name="filter"/>.
+    /// Legality checks (if requested) are evaluated last due to their cost.
+    /// </summary>
+    /// <param name="filter">The multi-criteria search filter.</param>
+    /// <returns>A lazily-evaluated sequence of matching results.</returns>
+    IEnumerable<AdvancedSearchResult> SearchPokemon(AdvancedSearchFilter filter);
 }

@@ -845,6 +845,248 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
     public LegalityAnalysis GetLegalityAnalysis(PKM pkm) => new(pkm);
 
+    public IEnumerable<AdvancedSearchResult> SearchPokemon(AdvancedSearchFilter filter)
+    {
+        if (AppState.SaveFile is not { } sav)
+        {
+            yield break;
+        }
+
+        // Party slots
+        for (var i = 0; i < sav.PartyCount; i++)
+        {
+            var pkm = sav.GetPartySlotAtIndex(i);
+            if (pkm is not { Species: > 0 })
+            {
+                continue;
+            }
+
+            if (Matches(pkm, filter))
+            {
+                yield return BuildSearchResult(pkm, isParty: true, box: 0, slot: i);
+            }
+        }
+
+        // Box slots
+        for (var box = 0; box < sav.BoxCount; box++)
+        {
+            for (var slot = 0; slot < sav.BoxSlotCount; slot++)
+            {
+                var pkm = sav.GetBoxSlotAtIndex(box, slot);
+                if (pkm is not { Species: > 0 })
+                {
+                    continue;
+                }
+
+                if (Matches(pkm, filter))
+                {
+                    yield return BuildSearchResult(pkm, isParty: false, box, slot);
+                }
+            }
+        }
+    }
+
+    private AdvancedSearchResult BuildSearchResult(PKM pkm, bool isParty, int box, int slot)
+    {
+        var speciesName = GetPokemonSpeciesName(pkm.Species)
+                          ?? pkm.Species.ToString(CultureInfo.InvariantCulture);
+        var location = isParty
+            ? $"Party {slot + 1}"
+            : $"Box {box + 1}, Slot {slot + 1}";
+
+        return new AdvancedSearchResult
+        {
+            Pokemon = pkm,
+            SpeciesName = speciesName,
+            Location = location,
+            IsParty = isParty,
+            BoxNumber = box,
+            SlotNumber = slot
+        };
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when <paramref name="pkm"/> satisfies every
+    /// non-null/non-empty criterion in <paramref name="f"/>.
+    /// Cheap equality checks run first; expensive legality analysis runs last.
+    /// </summary>
+    private bool Matches(PKM pkm, AdvancedSearchFilter f)
+    {
+        // ── Basic ─────────────────────────────────────────────────────────
+
+        if (f.Species.HasValue && pkm.Species != f.Species.Value)
+        {
+            return false;
+        }
+
+        if (f.Form.HasValue && pkm.Form != f.Form.Value)
+        {
+            return false;
+        }
+
+        if (f.IsShiny.HasValue && pkm.IsShiny != f.IsShiny.Value)
+        {
+            return false;
+        }
+
+        if (f.IsEgg.HasValue && pkm.IsEgg != f.IsEgg.Value)
+        {
+            return false;
+        }
+
+        if (f.Gender.HasValue)
+        {
+            // Issue spec uses -1 for genderless; PKHeX uses 2.
+            var filterGender = f.Gender.Value == -1 ? 2 : f.Gender.Value;
+            if (pkm.Gender != filterGender)
+            {
+                return false;
+            }
+        }
+
+        if (f.Nature.HasValue && (byte)pkm.Nature != f.Nature.Value)
+        {
+            return false;
+        }
+
+        if (f.Ability.HasValue && pkm.Ability != f.Ability.Value)
+        {
+            return false;
+        }
+
+        if (f.HeldItem.HasValue && pkm.HeldItem != f.HeldItem.Value)
+        {
+            return false;
+        }
+
+        if (f.Ball.HasValue && pkm.Ball != f.Ball.Value)
+        {
+            return false;
+        }
+
+        if (f.OriginGame.HasValue && pkm.Version != f.OriginGame.Value)
+        {
+            return false;
+        }
+
+        // ── Language ──────────────────────────────────────────────────────
+
+        if (f.LanguageId.HasValue && pkm.Language != f.LanguageId.Value)
+        {
+            return false;
+        }
+
+        // ── Level ─────────────────────────────────────────────────────────
+
+        if (f.LevelMin.HasValue && pkm.CurrentLevel < f.LevelMin.Value)
+        {
+            return false;
+        }
+
+        if (f.LevelMax.HasValue && pkm.CurrentLevel > f.LevelMax.Value)
+        {
+            return false;
+        }
+
+        // ── IVs ───────────────────────────────────────────────────────────
+
+        if (f.HpIvMin.HasValue && pkm.IV_HP < f.HpIvMin.Value) return false;
+        if (f.AtkIvMin.HasValue && pkm.IV_ATK < f.AtkIvMin.Value) return false;
+        if (f.DefIvMin.HasValue && pkm.IV_DEF < f.DefIvMin.Value) return false;
+        if (f.SpaIvMin.HasValue && pkm.IV_SPA < f.SpaIvMin.Value) return false;
+        if (f.SpdIvMin.HasValue && pkm.IV_SPD < f.SpdIvMin.Value) return false;
+        if (f.SpeIvMin.HasValue && pkm.IV_SPE < f.SpeIvMin.Value) return false;
+
+        // ── EVs ───────────────────────────────────────────────────────────
+
+        if (f.HpEvMin.HasValue && pkm.EV_HP < f.HpEvMin.Value) return false;
+        if (f.AtkEvMin.HasValue && pkm.EV_ATK < f.AtkEvMin.Value) return false;
+        if (f.DefEvMin.HasValue && pkm.EV_DEF < f.DefEvMin.Value) return false;
+        if (f.SpaEvMin.HasValue && pkm.EV_SPA < f.SpaEvMin.Value) return false;
+        if (f.SpdEvMin.HasValue && pkm.EV_SPD < f.SpdEvMin.Value) return false;
+        if (f.SpeEvMin.HasValue && pkm.EV_SPE < f.SpeEvMin.Value) return false;
+
+        // ── Trainer ───────────────────────────────────────────────────────
+
+        if (f.OriginalTrainerName is { Length: > 0 } otName
+            && !pkm.OriginalTrainerName.Contains(otName, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (f.TrainerId.HasValue && pkm.TID16 != (ushort)f.TrainerId.Value)
+        {
+            return false;
+        }
+
+        // ── Moves ─────────────────────────────────────────────────────────
+
+        if (f.AnyMoves.Count > 0)
+        {
+            var m1 = pkm.Move1;
+            var m2 = pkm.Move2;
+            var m3 = pkm.Move3;
+            var m4 = pkm.Move4;
+            var anyMatch = f.AnyMoves.Any(m => m == m1 || m == m2 || m == m3 || m == m4);
+            if (!anyMatch)
+            {
+                return false;
+            }
+        }
+
+        if (f.AllMoves.Count > 0)
+        {
+            var m1 = pkm.Move1;
+            var m2 = pkm.Move2;
+            var m3 = pkm.Move3;
+            var m4 = pkm.Move4;
+            var allMatch = f.AllMoves.All(m => m == m1 || m == m2 || m == m3 || m == m4);
+            if (!allMatch)
+            {
+                return false;
+            }
+        }
+
+        // ── Hidden Power type ─────────────────────────────────────────────
+
+        if (f.HiddenPowerType.HasValue)
+        {
+            Span<int> ivs = [pkm.IV_HP, pkm.IV_ATK, pkm.IV_DEF, pkm.IV_SPA, pkm.IV_SPD, pkm.IV_SPE];
+            if (HiddenPower.GetType(ivs, pkm.Context) != f.HiddenPowerType.Value)
+            {
+                return false;
+            }
+        }
+
+        // ── Ribbons / Marks (reflection — runs before legality) ───────────
+
+        if (f.RequiredRibbons.Count > 0)
+        {
+            var pkmType = pkm.GetType();
+            foreach (var ribbonName in f.RequiredRibbons)
+            {
+                var prop = pkmType.GetProperty(ribbonName);
+                if (prop?.GetValue(pkm) is not true)
+                {
+                    return false;
+                }
+            }
+        }
+
+        // ── Legality (expensive — evaluated last) ─────────────────────────
+
+        if (f.IsLegal.HasValue)
+        {
+            var isLegal = new LegalityAnalysis(pkm).Valid;
+            if (isLegal != f.IsLegal.Value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void HandleNullOrEmptyPokemon()
     {
         if (AppState.SaveFile is not { } saveFile)
