@@ -10,6 +10,7 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
 
     private List<EncounterSearchResult> results = [];
     private bool isSearching;
+    private bool hasSearched;
     private bool isGenerating;
     private EncounterSearchResult? selectedResult;
 
@@ -47,6 +48,7 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
         results = AppService.SearchEncounters(filter).ToList();
 
         isSearching = false;
+        hasSearched = true;
         StateHasChanged();
     }
 
@@ -60,6 +62,7 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
         encounterGroupValue = null;
         results = [];
         selectedResult = null;
+        hasSearched = false;
     }
 
     private EncounterSearchFilter BuildFilter() =>
@@ -108,8 +111,11 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
         }
 
         // If no slot is currently selected, place the Pokémon in the first empty box slot.
+        // For SAV7b (Let's Go), GetSelectedPokemonSlot returns None when only SelectedBoxSlotNumber
+        // is set (box number is null for unified storage). Treat that as a valid selection.
         var slotType = AppService.GetSelectedPokemonSlot(out _, out _, out _);
-        if (slotType == SelectedPokemonType.None && !TrySelectFirstEmptyBoxSlot())
+        var isLetsGoWithSlot = AppState.SaveFile is SAV7b && AppState.SelectedBoxSlotNumber.HasValue;
+        if (slotType == SelectedPokemonType.None && !isLetsGoWithSlot && !TrySelectFirstEmptyBoxSlot())
         {
             Snackbar.Add(
                 "No empty box slots available. Free up a slot and try again.",
@@ -155,7 +161,16 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
             {
                 if (sav.GetBoxSlotAtIndex(box, slot).Species == 0)
                 {
-                    AppService.SetSelectedBoxPokemon(sav.BlankPKM, box, slot);
+                    if (sav is SAV7b)
+                    {
+                        // Let's Go uses a flat index across unified storage.
+                        AppService.SetSelectedLetsGoPokemon(sav.BlankPKM, box * sav.BoxSlotCount + slot);
+                    }
+                    else
+                    {
+                        AppService.SetSelectedBoxPokemon(sav.BlankPKM, box, slot);
+                    }
+
                     return true;
                 }
             }

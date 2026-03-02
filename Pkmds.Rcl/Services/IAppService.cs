@@ -297,13 +297,14 @@ public interface IAppService
     IEnumerable<EncounterSearchResult> SearchEncounters(EncounterSearchFilter filter);
 
     /// <summary>
-    /// Generates a legal <see cref="PKM"/> from the given encounter template using the current
+    /// Generates a <see cref="PKM"/> from the given encounter template using the current
     /// save file as the trainer info source.
+    /// Callers are responsible for performing any legality analysis on the generated Pokémon.
     /// </summary>
     /// <param name="encounter">The encounter template to generate from.</param>
     /// <returns>
-    /// A legal <see cref="PKM"/> if generation and legality validation succeed;
-    /// <see langword="null"/> if the save file is not loaded or the generated Pokémon is not legal.
+    /// The generated <see cref="PKM"/> if the save file is loaded;
+    /// <see langword="null"/> if the save file is not loaded.
     /// </returns>
     PKM? GeneratePokemonFromEncounter(IEncounterable encounter);
 }

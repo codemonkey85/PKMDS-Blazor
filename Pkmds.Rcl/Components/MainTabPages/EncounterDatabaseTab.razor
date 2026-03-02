@@ -168,7 +168,7 @@
                                            StartIcon="@Icons.Material.Filled.CatchingPokemon"
                                            OnClick="@GeneratePokemonAsync"
                                            Disabled="@isGenerating">
-                                    @(isGenerating ? "Generating…" : "Generate Legal Pokémon")
+                                    @(isGenerating ? "Generating…" : "Generate Pokémon")
                                 </MudButton>
 
                             </MudStack>
@@ -283,7 +283,7 @@
                                 {
                                     <MudText>Searching…</MudText>
                                 }
-                                else if (!HasResults)
+                                else if (!hasSearched)
                                 {
                                     <MudText>Select a species and run a search to see encounters.</MudText>
                                 }
