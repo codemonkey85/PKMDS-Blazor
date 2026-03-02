@@ -65,10 +65,15 @@ public partial class PokedexTab
     }
 
     // SAV7b (LGPE) tracks only 153 species (Kanto 1–151 + Meltan + Melmetal).
-    // SAV7b.MaxSpeciesID is 809 (Melmetal's species number), not the Pokédex size.
+    // SAV7b.MaxSpeciesID is 809 (Melmetal's national species number), not the Pokédex size.
+    // SAV8LA tracks only Hisui-native species; HOME transfers are not supported for PLA.
+    // SAV8LA.MaxSpeciesID is 905 (Enamorus's national species number), not the Hisui dex size.
+    // All other games support HOME transfers, so every national species up to MaxSpeciesID
+    // can theoretically be seen/caught — MaxSpeciesID is the correct denominator for those.
     private static int GetDexTotalCount(SaveFile saveFile) => saveFile switch
     {
         SAV7b => 153,
+        SAV8LA => PokedexSave8a.GetDexTotalCount(PokedexType8a.Hisui),
         _ => saveFile.MaxSpeciesID,
     };
 
