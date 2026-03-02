@@ -1,0 +1,483 @@
+@inherits RefreshAwareComponent
+
+<MudStack Class="pa-2" Spacing="3">
+
+    @if (AppState.SaveFile is null)
+    {
+        <MudAlert Severity="@Severity.Info">No save file is loaded.</MudAlert>
+    }
+    else
+    {
+        <MudGrid>
+
+            @* ── Filter panel ── *@
+            <MudItem xs="12" md="5">
+                <MudStack Spacing="2">
+
+                    @* Saved filters *@
+                    <MudExpansionPanels Dense>
+                        <MudExpansionPanel Text="Saved Filters">
+                            <MudStack Row Spacing="2" AlignItems="@AlignItems.Center" Wrap="@Wrap.Wrap">
+                                <MudSelect T="@string"
+                                           Label="Load filter"
+                                           Value="@selectedSavedFilter"
+                                           ValueChanged="@LoadSavedFilter"
+                                           Style="min-width: 160px;">
+                                    <MudSelectItem T="@string" Value="@(default(string))">— none —</MudSelectItem>
+                                    @foreach (var name in savedFilters.Keys)
+                                    {
+                                        <MudSelectItem T="@string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudTextField @bind-Value="@saveFilterName"
+                                              Label="Save as"
+                                              Style="min-width: 120px;"/>
+                                <MudButton Size="@Size.Small"
+                                           Variant="@Variant.Filled"
+                                           Color="@Color.Primary"
+                                           OnClick="@SaveCurrentFilterAsync">
+                                    Save
+                                </MudButton>
+                                <MudButton Size="@Size.Small"
+                                           Variant="@Variant.Outlined"
+                                           Color="@Color.Error"
+                                           OnClick="@DeleteSavedFilterAsync"
+                                           Disabled="@(selectedSavedFilter is null)">
+                                    Delete
+                                </MudButton>
+                            </MudStack>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+
+                    @* Filter sections *@
+                    <MudExpansionPanels MultiExpansion Dense>
+
+                        @* ── Basic ── *@
+                        <MudExpansionPanel Text="Basic">
+                            <MudStack Spacing="2">
+
+                                <MudAutocomplete T="@ComboItem"
+                                                 Label="Species"
+                                                 Value="@speciesItem"
+                                                 ValueChanged="@(v => speciesItem = v)"
+                                                 SearchFunc="@SearchSpeciesAsync"
+                                                 ToStringFunc="@SpeciesItemToString"
+                                                 Clearable
+                                                 ResetValueOnEmptyText/>
+
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="6">
+                                        <MudSelect T="@(bool?)"
+                                                   Label="Shiny"
+                                                   @bind-Value="@isShiny"
+                                                   Clearable>
+                                            <MudSelectItem T="@(bool?)" Value="@((bool?)null)">Any</MudSelectItem>
+                                            <MudSelectItem T="@(bool?)" Value="@true">Shiny only</MudSelectItem>
+                                            <MudSelectItem T="@(bool?)" Value="@false">Non-shiny only</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudSelect T="@(bool?)"
+                                                   Label="Egg"
+                                                   @bind-Value="@isEgg"
+                                                   Clearable>
+                                            <MudSelectItem T="@(bool?)" Value="@((bool?)null)">Any</MudSelectItem>
+                                            <MudSelectItem T="@(bool?)" Value="@true">Eggs only</MudSelectItem>
+                                            <MudSelectItem T="@(bool?)" Value="@false">Non-eggs only</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="6">
+                                        <MudSelect T="@(int?)"
+                                                   Label="Gender"
+                                                   @bind-Value="@gender"
+                                                   Clearable>
+                                            <MudSelectItem T="@(int?)" Value="@((int?)null)">Any</MudSelectItem>
+                                            <MudSelectItem T="@(int?)" Value="@((int?)0)">Male</MudSelectItem>
+                                            <MudSelectItem T="@(int?)" Value="@((int?)1)">Female</MudSelectItem>
+                                            <MudSelectItem T="@(int?)" Value="@(-1)">Genderless</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudSelect T="@(int?)"
+                                                   Label="Nature"
+                                                   @bind-Value="@nature"
+                                                   Clearable>
+                                            <MudSelectItem T="@(int?)" Value="@((int?)null)">Any</MudSelectItem>
+                                            @foreach (var n in GameInfo.FilteredSources.Natures)
+                                            {
+                                                <MudSelectItem T="@(int?)" Value="@n.Value">@n.Text</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudSelect T="@(bool?)"
+                                           Label="Legal status"
+                                           @bind-Value="@isLegal"
+                                           Clearable>
+                                    <MudSelectItem T="@(bool?)" Value="@((bool?)null)">Any</MudSelectItem>
+                                    <MudSelectItem T="@(bool?)" Value="@true">Legal only</MudSelectItem>
+                                    <MudSelectItem T="@(bool?)" Value="@false">Illegal only</MudSelectItem>
+                                </MudSelect>
+
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        @* ── Stats ── *@
+                        <MudExpansionPanel Text="Stats">
+                            <MudStack Spacing="2">
+
+                                <MudText Typo="@Typo.subtitle2">Level range</MudText>
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="6">
+                                        <MudNumericField T="@(int?)"
+                                                         Label="Min level"
+                                                         @bind-Value="@levelMin"
+                                                         Min="1" Max="100"/>
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudNumericField T="@(int?)"
+                                                         Label="Max level"
+                                                         @bind-Value="@levelMax"
+                                                         Min="1" Max="100"/>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudText Typo="@Typo.subtitle2">IV floors (0–31)</MudText>
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="HP" @bind-Value="@hpIvMin" Min="0" Max="31"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="Atk" @bind-Value="@atkIvMin" Min="0" Max="31"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="Def" @bind-Value="@defIvMin" Min="0" Max="31"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="SpA" @bind-Value="@spaIvMin" Min="0" Max="31"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="SpD" @bind-Value="@spdIvMin" Min="0" Max="31"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="Spe" @bind-Value="@speIvMin" Min="0" Max="31"/></MudItem>
+                                </MudGrid>
+
+                                <MudText Typo="@Typo.subtitle2">EV floors (0–252)</MudText>
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="HP" @bind-Value="@hpEvMin" Min="0" Max="252"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="Atk" @bind-Value="@atkEvMin" Min="0" Max="252"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="Def" @bind-Value="@defEvMin" Min="0" Max="252"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="SpA" @bind-Value="@spaEvMin" Min="0" Max="252"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="SpD" @bind-Value="@spdEvMin" Min="0" Max="252"/></MudItem>
+                                    <MudItem xs="4"><MudNumericField T="@(int?)" Label="Spe" @bind-Value="@speEvMin" Min="0" Max="252"/></MudItem>
+                                </MudGrid>
+
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        @* ── Trainer ── *@
+                        <MudExpansionPanel Text="Trainer">
+                            <MudStack Spacing="2">
+
+                                <MudTextField @bind-Value="@otName"
+                                              Label="OT name (contains)"
+                                              Clearable/>
+
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="6">
+                                        <MudNumericField T="@(uint?)"
+                                                         Label="TID"
+                                                         @bind-Value="@trainerId"
+                                                         Min="0"/>
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudSelect T="@(int?)"
+                                                   Label="Language"
+                                                   @bind-Value="@languageId"
+                                                   Clearable>
+                                            <MudSelectItem T="@(int?)" Value="@((int?)null)">Any</MudSelectItem>
+                                            @foreach (var lang in GameInfo.LanguageDataSource(
+                                                          AppState.SaveFile?.Generation ?? 3,
+                                                          AppState.SaveFile?.Context ?? EntityContext.Gen3))
+                                            {
+                                                <MudSelectItem T="@(int?)" Value="@lang.Value">@lang.Text</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudSelect T="@(int?)"
+                                           Label="Origin game"
+                                           @bind-Value="@originGame"
+                                           Clearable>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)null)">Any</MudSelectItem>
+                                    @foreach (var game in GameInfo.FilteredSources.Games.Where(g => g.Value > 0))
+                                    {
+                                        <MudSelectItem T="@(int?)" Value="@((int?)game.Value)">@game.Text</MudSelectItem>
+                                    }
+                                </MudSelect>
+
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        @* ── Moves ── *@
+                        <MudExpansionPanel Text="Moves">
+                            <MudStack Spacing="2">
+
+                                @* Any-of moves *@
+                                <MudText Typo="@Typo.subtitle2">Has any of these moves</MudText>
+                                <MudAutocomplete T="@ComboItem"
+                                                 @ref="@anyMoveAutoRef"
+                                                 Label="Add move…"
+                                                 SearchFunc="@SearchMovesAsync"
+                                                 ToStringFunc="@(m => m?.Text ?? string.Empty)"
+                                                 ValueChanged="@AddAnyMove"
+                                                 ResetValueOnEmptyText
+                                                 Clearable/>
+                                <MudStack Row Wrap="@Wrap.Wrap" Spacing="1">
+                                    @foreach (var move in anyMoveItems)
+                                    {
+                                        <MudChip T="@string"
+                                                 Color="@Color.Primary"
+                                                 Size="@Size.Small"
+                                                 OnClose="@(() => RemoveAnyMove(move))">
+                                            @move.Text
+                                        </MudChip>
+                                    }
+                                </MudStack>
+
+                                @* All-of moves *@
+                                <MudText Typo="@Typo.subtitle2">Has all of these moves</MudText>
+                                <MudAutocomplete T="@ComboItem"
+                                                 @ref="@allMoveAutoRef"
+                                                 Label="Add move…"
+                                                 SearchFunc="@SearchMovesAsync"
+                                                 ToStringFunc="@(m => m?.Text ?? string.Empty)"
+                                                 ValueChanged="@AddAllMove"
+                                                 ResetValueOnEmptyText
+                                                 Clearable/>
+                                <MudStack Row Wrap="@Wrap.Wrap" Spacing="1">
+                                    @foreach (var move in allMoveItems)
+                                    {
+                                        <MudChip T="@string"
+                                                 Color="@Color.Secondary"
+                                                 Size="@Size.Small"
+                                                 OnClose="@(() => RemoveAllMove(move))">
+                                            @move.Text
+                                        </MudChip>
+                                    }
+                                </MudStack>
+
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                        @* ── Misc ── *@
+                        <MudExpansionPanel Text="Misc">
+                            <MudStack Spacing="2">
+
+                                <MudSelect T="@(int?)"
+                                           Label="Ball"
+                                           @bind-Value="@ball"
+                                           Clearable>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)null)">Any</MudSelectItem>
+                                    @foreach (var b in GameInfo.FilteredSources.Balls)
+                                    {
+                                        <MudSelectItem T="@(int?)" Value="@b.Value">@b.Text</MudSelectItem>
+                                    }
+                                </MudSelect>
+
+                                <MudAutocomplete T="@ComboItem"
+                                                 Label="Ability"
+                                                 Value="@abilityItem"
+                                                 ValueChanged="@OnAbilitySelected"
+                                                 SearchFunc="@SearchAbilitiesAsync"
+                                                 ToStringFunc="@ItemToString"
+                                                 Clearable
+                                                 ResetValueOnEmptyText/>
+
+                                <MudAutocomplete T="@ComboItem"
+                                                 Label="Held item"
+                                                 SearchFunc="@SearchItemsAsync"
+                                                 ToStringFunc="@ItemToString"
+                                                 ValueChanged="@(v => heldItemId = v is { Value: > 0 } ? v.Value : null)"
+                                                 Clearable
+                                                 ResetValueOnEmptyText/>
+
+                                <MudSelect T="@(int?)"
+                                           Label="Hidden Power type"
+                                           @bind-Value="@hiddenPowerType"
+                                           Clearable>
+                                    <MudSelectItem T="@(int?)" Value="@((int?)null)">Any</MudSelectItem>
+                                    @for (var i = 0; i < HiddenPower.TypeCount; i++)
+                                    {
+                                        var typeIndex = i;
+                                        <MudSelectItem T="@(int?)" Value="@typeIndex">
+                                            @GameInfo.Strings.Types[typeIndex + 1]
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+
+                            </MudStack>
+                        </MudExpansionPanel>
+
+                    </MudExpansionPanels>
+
+                    @* Action buttons *@
+                    <MudStack Row Spacing="2">
+                        <MudButton Variant="@Variant.Filled"
+                                   Color="@Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Search"
+                                   OnClick="@RunSearchAsync"
+                                   Disabled="@isSearching">
+                            @(isSearching ? "Searching…" : "Search")
+                        </MudButton>
+
+                        @if (isSearching)
+                        {
+                            <MudProgressCircular Indeterminate
+                                                 Size="@Size.Small"
+                                                 Color="@Color.Primary"/>
+                        }
+
+                        <MudButton Variant="@Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.Clear"
+                                   OnClick="@ResetFilter"
+                                   Disabled="@isSearching">
+                            Reset
+                        </MudButton>
+                    </MudStack>
+
+                </MudStack>
+            </MudItem>
+
+            @* ── Results panel ── *@
+            <MudItem xs="12" md="7">
+                <MudStack Spacing="2">
+
+                    @if (HasResults)
+                    {
+                        <MudChip T="@string"
+                                 Color="@Color.Default"
+                                 Variant="@Variant.Outlined"
+                                 Size="@Size.Small">
+                            @ResultCount result@(ResultCount == 1 ? "" : "s") found
+                        </MudChip>
+                    }
+
+                    @* Batch operations *@
+                    @if (HasSelection)
+                    {
+                        <MudStack Row Spacing="2" AlignItems="@AlignItems.Center" Wrap="@Wrap.Wrap">
+                            <MudText Typo="@Typo.body2">@selectedRows.Count selected</MudText>
+                            <MudButton Size="@Size.Small"
+                                       Variant="@Variant.Outlined"
+                                       StartIcon="@Icons.Material.Filled.ContentCopy"
+                                       OnClick="@CopyShowdownAsync">
+                                Copy Showdown text
+                            </MudButton>
+                        </MudStack>
+                    }
+
+                    <div style="overflow-y: auto; max-height: calc(100vh - 280px);">
+                        <MudTable T="@AdvancedSearchResult"
+                                  Items="@results"
+                                  Dense
+                                  Hover
+                                  Bordered
+                                  MultiSelection
+                                  @bind-SelectedItems="@selectedRows"
+                                  SortLabel="Sort By"
+                                  OnRowClick="@OnRowClickAsync"
+                                  RowStyleFunc="@RowStyleFunc"
+                                  RowsPerPage="25">
+
+                            <HeaderContent>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => r.SpeciesName))">
+                                        Species
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => r.Location))">
+                                        Location
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => (int)r.Pokemon.CurrentLevel))">
+                                        Lv
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>Shiny</MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => (int)r.Pokemon.Nature))">
+                                        Nature
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                                <MudTh>
+                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => r.Pokemon.Ability))">
+                                        Ability
+                                    </MudTableSortLabel>
+                                </MudTh>
+
+                            </HeaderContent>
+
+                            <RowTemplate>
+
+                                <MudTd DataLabel="Species">@context.SpeciesName</MudTd>
+
+                                <MudTd DataLabel="Location">@context.Location</MudTd>
+
+                                <MudTd DataLabel="Lv">@context.Pokemon.CurrentLevel</MudTd>
+
+                                <MudTd DataLabel="Shiny">
+                                    @if (context.Pokemon.IsShiny)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.Star"
+                                                 Color="@Color.Warning"
+                                                 Size="@Size.Small"/>
+                                    }
+                                </MudTd>
+
+                                <MudTd DataLabel="Nature">
+                                    @(GameInfo.FilteredSources.Natures
+                                        .FirstOrDefault(n => n.Value == (int)context.Pokemon.Nature)?.Text
+                                        ?? context.Pokemon.Nature.ToString())
+                                </MudTd>
+
+                                <MudTd DataLabel="Ability">
+                                    @(GameInfo.FilteredSources.Abilities
+                                        .FirstOrDefault(a => a.Value == context.Pokemon.Ability)?.Text
+                                        ?? context.Pokemon.Ability.ToString())
+                                </MudTd>
+
+                            </RowTemplate>
+
+                            <NoRecordsContent>
+                                @if (isSearching)
+                                {
+                                    <MudText>Searching…</MudText>
+                                }
+                                else if (!HasResults)
+                                {
+                                    <MudText>Run a search to see results here.</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>No Pokémon match the current filter.</MudText>
+                                }
+                            </NoRecordsContent>
+
+                            <PagerContent>
+                                <MudTablePager/>
+                            </PagerContent>
+
+                        </MudTable>
+                    </div>
+
+                </MudStack>
+            </MudItem>
+
+        </MudGrid>
+    }
+
+</MudStack>

@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-01 (PKHaX mode implemented — §5.6)
+**Last Updated:** 2026-03-02 (Advanced Search implemented — §2.4)
 
 ---
 
@@ -35,6 +35,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - **Multi-Save Support** - Load/save multiple save files
 - **PWA Support** - Offline functionality, installable web app
 - **Legality Checker** - Full `LegalityAnalysis` integration: per-check detail view, color-coded results, full verbose report, slot-level valid/warn icon overlays, one-click fix buttons (ball, met location, moves, TechRecord), and a batch "Legality Report" tab that sweeps all party and box Pokémon with a sortable/filterable table, aggregate Legal/Fishy/Illegal counts, and jump-to-slot navigation
+- **Advanced Search** - Multi-criteria search tab sweeping all party and box slots with filters for species, shiny, nature, ability, held item, ball, origin game, gender, level range, IV/EV floors, moves (any/all), Hidden Power type, OT name/TID, language, ribbons/marks, and legal status; saved filters via localStorage; batch Showdown text export
 
 ---
 
@@ -318,32 +319,32 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - [ ] Add unit tests for QR encode/decode
 
 ### 2.4 Advanced Search
-**Status:** ⚠️ Partial (basic search exists in some areas)  
-**Complexity:** Medium  
+**Tracks:** #332
+**Status:** ✅ Implemented
+**Complexity:** Medium
 **Tasks:**
-- [ ] Create Advanced Search UI component
-- [ ] Implement search across all boxes:
-  - [ ] Species/forms
-  - [ ] Shiny status
-  - [ ] IVs (exact/range)
-  - [ ] EVs
-  - [ ] Nature
-  - [ ] Ability
-  - [ ] Moves (any/all)
-  - [ ] Hidden Power type
-  - [ ] Gender
-  - [ ] Ball type
-  - [ ] Level range
-  - [ ] OT name/TID
-  - [ ] Ribbons
-  - [ ] Marks (Gen 8+)
-  - [ ] Origin game
-  - [ ] Egg/not egg
-  - [ ] Legal/illegal status
-- [ ] Add search result highlighting
-- [ ] Implement saved search filters
-- [ ] Support batch operations on search results
-- [ ] Add search export functionality
+- [x] Create Advanced Search UI component (`AdvancedSearchTab.razor` / `.razor.cs`)
+- [x] Implement search across all party and box slots:
+  - [x] Species/forms
+  - [x] Shiny status
+  - [x] IVs (floor per stat)
+  - [x] EVs (floor per stat)
+  - [x] Nature
+  - [x] Ability
+  - [x] Moves (any/all chip sets)
+  - [x] Hidden Power type
+  - [x] Gender
+  - [x] Ball type
+  - [x] Level range (min/max)
+  - [x] OT name (case-insensitive substring) / TID
+  - [x] Ribbons / Marks (reflection-based property name matching)
+  - [x] Origin game
+  - [x] Egg/not egg
+  - [x] Legal/illegal status (evaluated last for performance)
+- [ ] Add search result highlighting (future enhancement)
+- [x] Implement saved search filters (localStorage via JS interop)
+- [x] Support batch operations on search results (Showdown text copy)
+- [x] Add search export functionality (Showdown clipboard export)
 
 ### 2.5 Pokédex Editor
 **Tracks:** #414
