@@ -64,21 +64,71 @@ public partial class PokedexTab
         return total == 0 ? 0 : (double)GetCaughtCount() / total * 100;
     }
 
-    // Count species that actually exist in this game's data (form 0 only).
-    // Using IPersonalTable.IsPresentInGame handles every case correctly:
-    // LGPE (153), SWSH (subset of 898 due to Dexit), PLA (242 Hisui species),
-    // and all older games where every national species up to MaxSpeciesID is present.
+    // Returns the number of species that can actually appear in this game's Pokédex.
+    // Each case mirrors the species enumeration logic used by the corresponding
+    // PKHeX WinForms Pokédex editor (SAV_Pokedex*.cs) to populate its species list.
     private static int GetDexTotalCount(SaveFile saveFile)
     {
-        var count = 0;
-        for (ushort i = 1; i <= saveFile.MaxSpeciesID; i++)
+        switch (saveFile)
         {
-            if (saveFile.Personal.IsPresentInGame(i, 0))
+            // SAV_PokedexGG: hardcoded list of 1–151 + Meltan (808) + Melmetal (809).
+            // No HOME support — cross-gen species cannot exist in LGPE.
+            case SAV7b:
+                return 153;
+
+            // SAV_PokedexSWSH: filters by Zukan8.GetEntry(), which checks the
+            // species' regional dex index (Galar / Armor DLC / Crown DLC).
+            // "Dexit" means many national species have no dex index and return false.
+            case SAV8SWSH swsh:
             {
-                count++;
+                var count = 0;
+                for (ushort i = 1; i <= swsh.MaxSpeciesID; i++)
+                {
+                    if (swsh.Zukan.GetEntry(i, out _))
+                    {
+                        count++;
+                    }
+                }
+                return count;
             }
+
+            // SAV_PokedexLA: filters by PokedexSave8a.GetDexIndex(Hisui, species) != 0.
+            // No HOME support — only Hisui-native species are tracked.
+            case SAV8LA la:
+            {
+                var count = 0;
+                for (ushort i = 1; i <= la.MaxSpeciesID; i++)
+                {
+                    if (PokedexSave8a.GetDexIndex(PokedexType8a.Hisui, i) != 0)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+
+            // SAV_PokedexSV: filters by Zukan9.GetDexIndex(species).Index != 0,
+            // which covers all three regional dexes (Paldea / Kitakami / Blueberry).
+            case SAV9SV sv:
+            {
+                var count = 0;
+                for (ushort i = 1; i <= sv.MaxSpeciesID; i++)
+                {
+                    if (sv.Zukan.GetDexIndex(i).Index != 0)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+
+            // All other games (Gen 1–7, BDSP): every national species up to
+            // MaxSpeciesID is present in the game, so MaxSpeciesID is exact.
+            // BDSP (SAV8BS): MaxSpeciesID = 493 (Arceus); SAV_PokedexBDSP iterates
+            // 1..MaxSpeciesID with no filtering, confirming all 493 are valid.
+            default:
+                return saveFile.MaxSpeciesID;
         }
-        return count;
     }
 
     // Gen 8 LA uses PokedexSave8a (no Zukan); SeenAll and Clear are not applicable.
