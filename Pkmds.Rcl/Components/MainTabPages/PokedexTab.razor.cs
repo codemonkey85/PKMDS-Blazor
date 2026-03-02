@@ -349,7 +349,7 @@ public partial class PokedexTab
                     s3.SetSeen(i, true);
                 }
                 break;
-            // NuGet 26.1.31: Gen 4–7b SeenAll requires explicit shinyToo argument.
+            // NuGet 26.1.31: Zukan4.SeenAll requires explicit shinyToo argument.
             case SAV4 s4:
                 s4.Dex.SeenAll(false);
                 break;
@@ -362,11 +362,18 @@ public partial class PokedexTab
             case SAV6AO ao:
                 ao.Zukan.SeenAll(false);
                 break;
+            // PKHeX bug: Zukan<T>.SeenAll(bool shinyToo = false) forwards shinyToo as
+            // the *value* parameter of SetAllSeen(bool value = true, bool shinyToo),
+            // so SeenAll(false) → SetAllSeen(false) which CLEARS instead of setting.
+            // Workaround: call SetAllSeen(true, false) directly.
+            // Affects all classes that inherit the base Zukan<T>.SeenAll — in practice
+            // Zukan7 (Gen 7 SM/USUM) and Zukan7b (Gen 7b LGPE).
+            // Zukan8 (SWSH) and Zukan8b (BDSP) both override SeenAll correctly.
             case SAV7 s7:
-                s7.Zukan.SeenAll(false);
+                s7.Zukan.SetAllSeen(true, false);
                 break;
             case SAV7b b7:
-                b7.Zukan.SeenAll(false);
+                b7.Zukan.SetAllSeen(true, false);
                 break;
             case SAV8SWSH swsh:
                 swsh.Zukan.SeenAll();
