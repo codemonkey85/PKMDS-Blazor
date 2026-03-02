@@ -5,7 +5,7 @@ description:
 
 When implementing an issue:
 
-1. **Carefully review the issue description**: Make sure you understand the requirements and acceptance criteria before starting.
+1. **Carefully review the issue description and comments**: Make sure you understand the requirements and acceptance criteria before starting. Look through the comments as well for corrections, clarifications, or additional context that may be helpful for your implementation.
 2. **Break down the issue into smaller tasks**: Identify the specific steps needed to complete the implementation.
 3. **Write clean and maintainable code**: Follow coding standards and best practices to ensure your code is easy to read and maintain.
 4. **Test your implementation**: Write unit tests and perform manual testing to verify that your implementation works as expected and meets the requirements.
