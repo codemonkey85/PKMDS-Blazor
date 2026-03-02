@@ -63,12 +63,17 @@ public partial class MainLayout : IDisposable
     {
         if (newValue && !AppState.IsHaXEnabled)
         {
-            await DialogService.ShowMessageBoxAsync(
-                "PKHaX Mode",
-                "Illegal mode activated. Editing restrictions are now lifted. " +
-                "Pokémon created or modified in this mode may be illegal and untradable. " +
-                "Please behave.",
-                yesText: "I understand");
+            var ack = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_hax_warning_ack");
+            if (ack != "true")
+            {
+                await DialogService.ShowMessageBoxAsync(
+                    "PKHaX Mode",
+                    "Illegal mode activated. Editing restrictions are now lifted. " +
+                    "Pokémon created or modified in this mode may be illegal and untradable. " +
+                    "Please behave.",
+                    yesText: "I understand");
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_warning_ack", "true");
+            }
         }
 
         AppState.IsHaXEnabled = newValue;

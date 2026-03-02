@@ -301,25 +301,31 @@ public partial class StatsTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
     }
 
-    private void OnHaXStatHpSet(int newValue)
+    private void OnHaXStatHpSet(int newValue) =>
+        ApplyHaXStatHp(Pokemon, AppState?.IsHaXEnabled is true, newValue);
+
+    private void OnHaXStatSet(int newValue, Action<PKM, int> setter) =>
+        ApplyHaXStat(Pokemon, AppState?.IsHaXEnabled is true, newValue, setter);
+
+    internal static void ApplyHaXStatHp(PKM? pkm, bool haXEnabled, int newValue)
     {
-        if (Pokemon is null || AppState?.IsHaXEnabled is not true)
+        if (pkm is null || !haXEnabled)
         {
             return;
         }
 
-        Pokemon.Stat_HPMax = newValue;
-        Pokemon.Stat_HPCurrent = newValue;
+        pkm.Stat_HPMax = newValue;
+        pkm.Stat_HPCurrent = newValue;
     }
 
-    private void OnHaXStatSet(int newValue, Action<PKM> setter)
+    internal static void ApplyHaXStat(PKM? pkm, bool haXEnabled, int newValue, Action<PKM, int> setter)
     {
-        if (Pokemon is null || AppState?.IsHaXEnabled is not true)
+        if (pkm is null || !haXEnabled)
         {
             return;
         }
 
-        setter(Pokemon);
+        setter(pkm, newValue);
     }
 
     private enum NatureModifier

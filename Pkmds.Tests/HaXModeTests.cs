@@ -26,140 +26,6 @@ public class HaXModeTests
         appState.IsHaXEnabled.Should().BeFalse();
     }
 
-    // ── Hacked stats guard ────────────────────────────────────────────────────
-
-    [Fact]
-    public void HaXStatHp_WhenHaXDisabled_DoesNotChangeStat()
-    {
-        var pkm = LoadLucario();
-        var originalHp = pkm.Stat_HPMax;
-        var appState = new TestAppState { IsHaXEnabled = false };
-
-        // Simulate the guard: writes should be skipped when HaX is off.
-        if (appState.IsHaXEnabled)
-        {
-            pkm.Stat_HPMax = 9999;
-            pkm.Stat_HPCurrent = 9999;
-        }
-
-        pkm.Stat_HPMax.Should().Be(originalHp, "stat should not change when HaX is disabled");
-    }
-
-    [Fact]
-    public void HaXStatHp_WhenHaXEnabled_WritesBothHpFields()
-    {
-        var pkm = LoadLucario();
-        var appState = new TestAppState { IsHaXEnabled = true };
-
-        if (appState.IsHaXEnabled)
-        {
-            pkm.Stat_HPMax = 9999;
-            pkm.Stat_HPCurrent = 9999;
-        }
-
-        pkm.Stat_HPMax.Should().Be(9999);
-        pkm.Stat_HPCurrent.Should().Be(9999);
-    }
-
-    [Fact]
-    public void HaXStatAtk_WhenHaXEnabled_WritesAttack()
-    {
-        var pkm = LoadLucario();
-        var appState = new TestAppState { IsHaXEnabled = true };
-
-        if (appState.IsHaXEnabled)
-        {
-            pkm.Stat_ATK = 65535;
-        }
-
-        pkm.Stat_ATK.Should().Be(65535);
-    }
-
-    [Fact]
-    public void HaXStatAtk_WhenHaXDisabled_DoesNotChangeAttack()
-    {
-        var pkm = LoadLucario();
-        var originalAtk = pkm.Stat_ATK;
-        var appState = new TestAppState { IsHaXEnabled = false };
-
-        if (appState.IsHaXEnabled)
-        {
-            pkm.Stat_ATK = 65535;
-        }
-
-        pkm.Stat_ATK.Should().Be(originalAtk);
-    }
-
-    [Fact]
-    public void HaXStatDef_WhenHaXEnabled_WritesDefense()
-    {
-        var pkm = LoadLucario();
-        var appState = new TestAppState { IsHaXEnabled = true };
-
-        if (appState.IsHaXEnabled) pkm.Stat_DEF = 1234;
-
-        pkm.Stat_DEF.Should().Be(1234);
-    }
-
-    [Fact]
-    public void HaXStatSpa_WhenHaXEnabled_WritesSpecialAttack()
-    {
-        var pkm = LoadLucario();
-        var appState = new TestAppState { IsHaXEnabled = true };
-
-        if (appState.IsHaXEnabled) pkm.Stat_SPA = 5678;
-
-        pkm.Stat_SPA.Should().Be(5678);
-    }
-
-    [Fact]
-    public void HaXStatSpd_WhenHaXEnabled_WritesSpecialDefense()
-    {
-        var pkm = LoadLucario();
-        var appState = new TestAppState { IsHaXEnabled = true };
-
-        if (appState.IsHaXEnabled) pkm.Stat_SPD = 4321;
-
-        pkm.Stat_SPD.Should().Be(4321);
-    }
-
-    [Fact]
-    public void HaXStatSpe_WhenHaXEnabled_WritesSpeed()
-    {
-        var pkm = LoadLucario();
-        var appState = new TestAppState { IsHaXEnabled = true };
-
-        if (appState.IsHaXEnabled) pkm.Stat_SPE = 9876;
-
-        pkm.Stat_SPE.Should().Be(9876);
-    }
-
-    [Fact]
-    public void HaXStat_MaxValueIsUshortMaxValue()
-    {
-        // Verify that PKM stat properties accept ushort.MaxValue (65535),
-        // confirming the full range the UI should allow in HaX mode.
-        var pkm = LoadLucario();
-        var appState = new TestAppState { IsHaXEnabled = true };
-
-        if (appState.IsHaXEnabled)
-        {
-            pkm.Stat_HPMax = ushort.MaxValue;
-            pkm.Stat_ATK = ushort.MaxValue;
-            pkm.Stat_DEF = ushort.MaxValue;
-            pkm.Stat_SPA = ushort.MaxValue;
-            pkm.Stat_SPD = ushort.MaxValue;
-            pkm.Stat_SPE = ushort.MaxValue;
-        }
-
-        pkm.Stat_HPMax.Should().Be(ushort.MaxValue);
-        pkm.Stat_ATK.Should().Be(ushort.MaxValue);
-        pkm.Stat_DEF.Should().Be(ushort.MaxValue);
-        pkm.Stat_SPA.Should().Be(ushort.MaxValue);
-        pkm.Stat_SPD.Should().Be(ushort.MaxValue);
-        pkm.Stat_SPE.Should().Be(ushort.MaxValue);
-    }
-
     // ── IAppState toggle ──────────────────────────────────────────────────────
 
     [Fact]
@@ -173,6 +39,113 @@ public class HaXModeTests
 
         appState.IsHaXEnabled = false;
         appState.IsHaXEnabled.Should().BeFalse();
+    }
+
+    // ── HP stat handler ───────────────────────────────────────────────────────
+
+    [Fact]
+    public void ApplyHaXStatHp_WhenHaXDisabled_DoesNotChangeStat()
+    {
+        var pkm = LoadLucario();
+        var originalHp = pkm.Stat_HPMax;
+
+        StatsTab.ApplyHaXStatHp(pkm, haXEnabled: false, newValue: 9999);
+
+        pkm.Stat_HPMax.Should().Be(originalHp, "stat should not change when HaX is disabled");
+    }
+
+    [Fact]
+    public void ApplyHaXStatHp_WhenHaXEnabled_WritesBothHpFields()
+    {
+        var pkm = LoadLucario();
+
+        StatsTab.ApplyHaXStatHp(pkm, haXEnabled: true, newValue: 9999);
+
+        pkm.Stat_HPMax.Should().Be(9999);
+        pkm.Stat_HPCurrent.Should().Be(9999);
+    }
+
+    // ── Other stat handler ────────────────────────────────────────────────────
+
+    [Fact]
+    public void ApplyHaXStat_WhenHaXEnabled_WritesAttack()
+    {
+        var pkm = LoadLucario();
+
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 65535, (s, val) => s.Stat_ATK = val);
+
+        pkm.Stat_ATK.Should().Be(65535);
+    }
+
+    [Fact]
+    public void ApplyHaXStat_WhenHaXDisabled_DoesNotChangeAttack()
+    {
+        var pkm = LoadLucario();
+        var originalAtk = pkm.Stat_ATK;
+
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: false, newValue: 65535, (s, val) => s.Stat_ATK = val);
+
+        pkm.Stat_ATK.Should().Be(originalAtk);
+    }
+
+    [Fact]
+    public void ApplyHaXStat_WhenHaXEnabled_WritesDefense()
+    {
+        var pkm = LoadLucario();
+
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 1234, (s, val) => s.Stat_DEF = val);
+
+        pkm.Stat_DEF.Should().Be(1234);
+    }
+
+    [Fact]
+    public void ApplyHaXStat_WhenHaXEnabled_WritesSpecialAttack()
+    {
+        var pkm = LoadLucario();
+
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 5678, (s, val) => s.Stat_SPA = val);
+
+        pkm.Stat_SPA.Should().Be(5678);
+    }
+
+    [Fact]
+    public void ApplyHaXStat_WhenHaXEnabled_WritesSpecialDefense()
+    {
+        var pkm = LoadLucario();
+
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 4321, (s, val) => s.Stat_SPD = val);
+
+        pkm.Stat_SPD.Should().Be(4321);
+    }
+
+    [Fact]
+    public void ApplyHaXStat_WhenHaXEnabled_WritesSpeed()
+    {
+        var pkm = LoadLucario();
+
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 9876, (s, val) => s.Stat_SPE = val);
+
+        pkm.Stat_SPE.Should().Be(9876);
+    }
+
+    [Fact]
+    public void ApplyHaXStat_MaxValueIsUshortMaxValue()
+    {
+        var pkm = LoadLucario();
+
+        StatsTab.ApplyHaXStatHp(pkm, haXEnabled: true, newValue: ushort.MaxValue);
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_ATK = val);
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_DEF = val);
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_SPA = val);
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_SPD = val);
+        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_SPE = val);
+
+        pkm.Stat_HPMax.Should().Be(ushort.MaxValue);
+        pkm.Stat_ATK.Should().Be(ushort.MaxValue);
+        pkm.Stat_DEF.Should().Be(ushort.MaxValue);
+        pkm.Stat_SPA.Should().Be(ushort.MaxValue);
+        pkm.Stat_SPD.Should().Be(ushort.MaxValue);
+        pkm.Stat_SPE.Should().Be(ushort.MaxValue);
     }
 
     // ── nested test helpers ───────────────────────────────────────────────────
