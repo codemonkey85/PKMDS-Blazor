@@ -60,7 +60,7 @@ Runtime wiring (Web)
 
 ## PKHeX.Core
 
-This app depends heavily on [PKHeX.Core](https://github.com/kwsch/PKHeX). When implementing features, use the PKHeX WinForms app as a reference for how to leverage PKHeX.Core — both for UI/UX patterns and for understanding the correct API usage.
+This app depends heavily on [PKHeX.Core](https://github.com/kwsch/PKHeX). When implementing features, use the PKHeX WinForms app as a reference for how to leverage PKHeX.Core — both for UI/UX patterns and for understanding the correct API usage. The first place you should look when referencing PKHeX is ../PKHeX/, which contains the PKHeX WinForms app source code. The `PKHeX.Core` project within that solution is the library we consume here, and the WinForms app is a separate project that references it. The PKHeX WinForms app is a great reference for how to use PKHeX.Core effectively, as it demonstrates real-world usage of the library's APIs in a production application. If you can't find the source there, the PKHeX Wiki and source code are also valuable resources for understanding how to work with PKHeX.Core.
 
 If you encounter bugs or limitations in PKHeX.Core while working on an issue or PR, note them in a code comment at the relevant site and report them on the GitHub issue or PR you are working on.
 

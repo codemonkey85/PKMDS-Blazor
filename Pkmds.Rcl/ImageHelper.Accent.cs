@@ -32,4 +32,20 @@ public static partial class ImageHelper
     /// <summary>Gets the sprite filename for a ribbon affix state indicator.</summary>
     public static string GetRibbonAffixSpriteFileName(string affixState = "none") =>
         $"{SpritesRoot}ac/ribbon_affix_{affixState}.png";
+
+    /// <summary>Gets the sprite filename for an origin mark icon, or null if there is no origin mark.</summary>
+    public static string? GetOriginMarkSpriteFileName(OriginMark originMark) => originMark switch
+    {
+        OriginMark.Gen6Pentagon => $"{SpritesRoot}m/gen_6.png",
+        OriginMark.Gen7Clover => $"{SpritesRoot}m/gen_7.png",
+        OriginMark.Gen8Galar => $"{SpritesRoot}m/gen_8.png",
+        OriginMark.Gen8Trio => $"{SpritesRoot}m/gen_bs.png",
+        OriginMark.Gen8Arc => $"{SpritesRoot}m/gen_la.png",
+        OriginMark.Gen9Paldea => $"{SpritesRoot}m/gen_sv.png",
+        OriginMark.Gen9ZA => $"{SpritesRoot}m/gen_za.png",
+        OriginMark.GameBoy => $"{SpritesRoot}m/gen_vc.png",
+        OriginMark.GO => $"{SpritesRoot}m/gen_go.png",
+        OriginMark.LetsGo => $"{SpritesRoot}m/gen_gg.png",
+        _ => null,
+    };
 }
