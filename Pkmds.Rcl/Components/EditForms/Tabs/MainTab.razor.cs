@@ -147,7 +147,11 @@ public partial class MainTab : IDisposable
 
         var names = GameInfo.Strings.Ability;
         var id = Pokemon.Ability;
-        var name = id == 0 || (uint)id >= (uint)names.Count ? "None" : names[id];
+        var name = id == 0
+            ? "None"
+            : (uint)id >= (uint)names.Count
+                ? $"(Ability #{id})"
+                : names[id];
         return new ComboItem(name, id);
     }
 
