@@ -14,7 +14,7 @@ public sealed record EncounterSearchResult
     /// <summary>Game name (e.g., "Red", "Scarlet").</summary>
     public required string GameName { get; init; }
 
-    /// <summary>Human-readable encounter type (e.g., "Wild", "Static", "Gift", "Trade", "Egg", "Mystery Gift").</summary>
+    /// <summary>Human-readable encounter type (e.g., "Wild", "Static", "Trade", "Egg", "Mystery Gift").</summary>
     public required string EncounterTypeName { get; init; }
 
     /// <summary>Level range string (e.g., "Lv. 5–10" or "Lv. 15").</summary>
@@ -22,6 +22,9 @@ public sealed record EncounterSearchResult
 
     /// <summary><see langword="true"/> if the encounter is shiny-locked (Shiny.Never).</summary>
     public bool IsShinyLocked { get; init; }
+
+    /// <summary><see langword="true"/> if the encounter is a Mystery Gift (e.g., WC, PGF, WB7).</summary>
+    public bool IsMysteryGift { get; init; }
 
     /// <summary>Human-readable location name, or <see langword="null"/> when no location applies.</summary>
     public string? Location { get; init; }

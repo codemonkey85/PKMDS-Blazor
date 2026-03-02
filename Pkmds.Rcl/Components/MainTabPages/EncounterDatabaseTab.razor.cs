@@ -125,11 +125,15 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
         }
 
         AppService.EditFormPokemon = pkm;
-        AppService.SavePokemon(pkm);
+
+        // EditFormPokemon clones and recalculates stats; save that instance so party stats
+        // and any other normalization done in the setter are persisted to the save file.
+        var editedPkm = AppService.EditFormPokemon ?? pkm;
+        AppService.SavePokemon(editedPkm);
 
         // Warn if legality analysis reports issues — the PKM is still placed so the
         // user can inspect and fix it in the editor.
-        var la = new LegalityAnalysis(pkm);
+        var la = new LegalityAnalysis(editedPkm);
         if (la.Valid)
         {
             Snackbar.Add($"{selectedResult.SpeciesName} generated successfully.", Severity.Success);

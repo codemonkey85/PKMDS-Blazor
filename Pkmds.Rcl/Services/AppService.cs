@@ -1153,7 +1153,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
         if (AppState.SaveFile is not { } sav) yield break;
         if (filter.Species is not { } species) yield break;
 
-        var blankPkm = sav.BlankPKM;
+        var blankPkm = sav.BlankPKM.Clone();
         blankPkm.Species = species;
         if (filter.Form is { } form)
         {
@@ -1225,6 +1225,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             EncounterTypeName = GetEncounterTypeName(enc),
             LevelRange = levelRange,
             IsShinyLocked = enc.Shiny == Shiny.Never,
+            IsMysteryGift = enc is MysteryGift,
             Location = location,
         };
     }

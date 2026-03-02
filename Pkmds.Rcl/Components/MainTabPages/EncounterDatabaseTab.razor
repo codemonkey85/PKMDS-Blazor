@@ -100,7 +100,7 @@
                                    Color="@Color.Primary"
                                    StartIcon="@Icons.Material.Filled.Search"
                                    OnClick="@RunSearchAsync"
-                                   Disabled="@(isSearching || speciesItem is null)">
+                                   Disabled="@(isSearching || speciesItem is null || speciesItem?.Value <= 0)">
                             @(isSearching ? "Searching…" : "Search")
                         </MudButton>
 
@@ -156,7 +156,7 @@
                                     </MudItem>
                                 </MudGrid>
 
-                                @if (sel.EncounterTypeName == "Mystery Gift")
+                                @if (sel.IsMysteryGift)
                                 {
                                     <MudAlert Severity="@Severity.Info" Dense>
                                         This is a Mystery Gift encounter. See the Mystery Gifts tab to import the gift data directly.

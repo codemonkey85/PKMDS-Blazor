@@ -108,7 +108,7 @@ public class EncounterDatabaseTests
         unlockedResults.Should().AllSatisfy(r => r.IsShinyLocked.Should().BeFalse());
 
         // The two sets must be disjoint (no encounter can be both locked and unlocked)
-        var lockedEncs = lockedResults.Select(r => r.Encounter).ToHashSet();
+        var lockedEncs = lockedResults.Select(r => r.Encounter).ToHashSet(ReferenceEqualityComparer.Instance);
         unlockedResults.Should().AllSatisfy(r => lockedEncs.Should().NotContain(r.Encounter));
     }
 
