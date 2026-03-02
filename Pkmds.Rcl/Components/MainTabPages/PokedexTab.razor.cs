@@ -42,6 +42,15 @@ public partial class PokedexTab
         return count;
     }
 
+    // Clamp the raw seen/caught count to the dex total so the text and bar
+    // never exceed 100 % even if the save contains species flagged as seen/caught
+    // outside the game's formal Pokédex (e.g. anomalous HOME-transfer flags).
+    private int GetDisplaySeenCount(SaveFile saveFile) =>
+        Math.Min(GetSeenCount(), GetDexTotalCount(saveFile));
+
+    private int GetDisplayCaughtCount(SaveFile saveFile) =>
+        Math.Min(GetCaughtCount(), GetDexTotalCount(saveFile));
+
     private double GetSeenPercent()
     {
         if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
@@ -50,7 +59,7 @@ public partial class PokedexTab
         }
 
         var total = GetDexTotalCount(saveFile);
-        return total == 0 ? 0 : (double)GetSeenCount() / total * 100;
+        return total == 0 ? 0 : Math.Min(100.0, (double)GetSeenCount() / total * 100);
     }
 
     private double GetCaughtPercent()
@@ -61,7 +70,7 @@ public partial class PokedexTab
         }
 
         var total = GetDexTotalCount(saveFile);
-        return total == 0 ? 0 : (double)GetCaughtCount() / total * 100;
+        return total == 0 ? 0 : Math.Min(100.0, (double)GetCaughtCount() / total * 100);
     }
 
     // Returns the number of species that can actually appear in this game's Pokédex.

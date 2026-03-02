@@ -3,10 +3,10 @@
 @if (AppState.SaveFile is { HasPokeDex: true } saveFile)
 {
     <MudStack>
-        <MudText Typo="@Typo.body2">Seen: @GetSeenCount() / @GetDexTotalCount(saveFile)</MudText>
+        <MudText Typo="@Typo.body2">Seen: @GetDisplaySeenCount(saveFile) / @GetDexTotalCount(saveFile)</MudText>
         <MudProgressLinear Color="@Color.Info" Value="@GetSeenPercent()" />
 
-        <MudText Typo="@Typo.body2">Caught: @GetCaughtCount() / @GetDexTotalCount(saveFile)</MudText>
+        <MudText Typo="@Typo.body2">Caught: @GetDisplayCaughtCount(saveFile) / @GetDexTotalCount(saveFile)</MudText>
         <MudProgressLinear Color="@Color.Success" Value="@GetCaughtPercent()" />
 
         <MudStack Row="true" Wrap="@Wrap.Wrap">
