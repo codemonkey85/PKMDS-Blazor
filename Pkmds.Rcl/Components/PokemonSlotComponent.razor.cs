@@ -54,7 +54,7 @@ public partial class PokemonSlotComponent : IDisposable
 
     private void ComputeLegalityValid()
     {
-        if (Pokemon is not { Species: > 0 })
+        if (Pokemon is not { Species: > 0 } || AppState.IsHaXEnabled)
         {
             legalityValid = null;
             return;

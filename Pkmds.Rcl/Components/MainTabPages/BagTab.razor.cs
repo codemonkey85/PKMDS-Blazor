@@ -168,6 +168,14 @@ public partial class BagTab
             return Task.FromResult(Enumerable.Empty<ComboItem>());
         }
 
+        // In HaX mode, show all items regardless of pouch type
+        if (AppState.IsHaXEnabled)
+        {
+            var allResults = SortedItemComboList
+                .Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+            return Task.FromResult(allResults);
+        }
+
         // Use cached valid items for this pouch
         if (!PouchValidItemsCache.TryGetValue(pouch.Type, out var validItems))
         {

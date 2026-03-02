@@ -29,6 +29,16 @@
             @Constants.AppShortTitle
         </MudText>
         <MudSpacer/>
+        @if (AppState.IsHaXEnabled)
+        {
+            <MudChip T="string"
+                     Color="@Color.Warning"
+                     Icon="@Icons.Material.Filled.Warning"
+                     Class="mr-2"
+                     title="PKHaX mode is active — unrestricted editing enabled">
+                PKHaX
+            </MudChip>
+        }
         <MudStack Row>
             <MudSwitch Value="@isDarkMode"
                        ValueChanged="@((bool value) => OnThemeSwitchChanged(value))"
@@ -111,6 +121,11 @@
         <MudSpacer/>
         <MudStack Spacing="1"
                   Class="mx-1 my-3 mb-20">
+            <MudSwitch Value="@AppState.IsHaXEnabled"
+                       ValueChanged="@((bool value) => OnHaXChanged(value))"
+                       Color="@Color.Warning"
+                       Label="PKHaX Mode"
+                       title="Enables unrestricted editing. May create illegal/untradable Pokémon. Use at your own risk."/>
             <MudSwitch Value="@LoggingService.IsVerboseLoggingEnabled"
                        ValueChanged="@((bool value) => OnVerboseLoggingChanged(value))"
                        Color="@Color.Primary"
