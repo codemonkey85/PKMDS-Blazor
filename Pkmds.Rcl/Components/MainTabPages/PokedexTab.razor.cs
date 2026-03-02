@@ -2,82 +2,59 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class PokedexTab
 {
-    // Returns the raw count of species with the seen/caught flag set, with no
-    // filter for the game's formal dex (no GetDexIndex guard for SV, no
-    // IsSpeciesInGame guard for ZA, etc.).  A save can have species flagged
-    // seen/caught that are outside the formal dex (e.g. HOME-transferred species
-    // in SV where GetDexIndex(species).Index == 0).  The UI displays
-    // GetDisplaySeenCount/GetDisplayCaughtCount, which clamp these values to
-    // GetDexTotalCount so the progress bar and fraction text never exceed 100 %.
-    private int GetSeenCount()
+    // Cached dex stats — computed once per render cycle and after every bulk
+    // operation instead of running multiple independent O(n) species scans on
+    // each render.  Seen/caught counts are clamped to the formal dex total so
+    // the UI never shows a fraction exceeding 100 %.
+    private int _dexTotal;
+    private int _displaySeenCount;
+    private int _displayCaughtCount;
+    private double _seenPercent;
+    private double _caughtPercent;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        RefreshDexStats();
+    }
+
+    // Single O(n) pass: computes all five cached stats from the current save
+    // file in one scan so the UI binds to pre-computed values.
+    // Called from OnParametersSet (covers save-file load / parent re-renders)
+    // and explicitly at the end of each bulk operation (Fill / SeenAll / Clear).
+    private void RefreshDexStats()
     {
         if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
         {
-            return 0;
+            _dexTotal = _displaySeenCount = _displayCaughtCount = 0;
+            _seenPercent = _caughtPercent = 0;
+            return;
         }
 
-        var count = 0;
+        _dexTotal = GetDexTotalCount(saveFile);
+        var seen = 0;
+        var caught = 0;
 
-        for (ushort i = 1; i < saveFile.MaxSpeciesID + 1; i++)
+        for (ushort i = 1; i <= saveFile.MaxSpeciesID; i++)
         {
             if (saveFile.GetSeen(i))
             {
-                count++;
+                seen++;
             }
-        }
 
-        return count;
-    }
-
-    private int GetCaughtCount()
-    {
-        if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
-        {
-            return 0;
-        }
-
-        var count = 0;
-
-        for (ushort i = 1; i < saveFile.MaxSpeciesID + 1; i++)
-        {
             if (saveFile.GetCaught(i))
             {
-                count++;
+                caught++;
             }
         }
 
-        return count;
-    }
-
-    // Clamp the raw seen/caught count to the dex total so the text and bar
-    // never exceed 100 % even if the save contains species flagged as seen/caught
-    // outside the game's formal Pokédex (e.g. anomalous HOME-transfer flags).
-    private int GetDisplaySeenCount(SaveFile saveFile) =>
-        Math.Min(GetSeenCount(), GetDexTotalCount(saveFile));
-
-    private int GetDisplayCaughtCount(SaveFile saveFile) =>
-        Math.Min(GetCaughtCount(), GetDexTotalCount(saveFile));
-
-    private double GetSeenPercent()
-    {
-        if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
-        {
-            return 0;
-        }
-
-        var total = GetDexTotalCount(saveFile);
-        return total == 0 ? 0 : Math.Min(100.0, (double)GetSeenCount() / total * 100);
-    }
-
-    private double GetCaughtPercent()
-    {
-        if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
-        {
-            return 0;
-        }
-
-        var total = GetDexTotalCount(saveFile);
-        return total == 0 ? 0 : Math.Min(100.0, (double)GetCaughtCount() / total * 100);
+        // Clamp raw counts to the formal dex total: saves with HOME-transferred
+        // Pokémon can flag species as seen/caught outside the game's formal dex,
+        // which would make the raw totals exceed 100 %.
+        _displaySeenCount = Math.Min(seen, _dexTotal);
+        _displayCaughtCount = Math.Min(caught, _dexTotal);
+        _seenPercent = _dexTotal == 0 ? 0 : Math.Min(100.0, (double)seen / _dexTotal * 100);
+        _caughtPercent = _dexTotal == 0 ? 0 : Math.Min(100.0, (double)caught / _dexTotal * 100);
     }
 
     // Returns the number of species that can actually appear in this game's Pokédex.
@@ -221,6 +198,8 @@ public partial class PokedexTab
                 FillGen9ZaPokedex(za);
                 break;
         }
+
+        RefreshDexStats();
     }
 
     private static void FillGen1Pokedex(SAV1 s1)
@@ -342,18 +321,30 @@ public partial class PokedexTab
                 for (ushort i = 1; i < s1.MaxSpeciesID + 1; i++)
                 {
                     s1.SetSeen(i, true);
+                    if (i % 50 == 0)
+                    {
+                        await Task.Yield();
+                    }
                 }
                 break;
             case SAV2 s2:
                 for (ushort i = 1; i < s2.MaxSpeciesID + 1; i++)
                 {
                     s2.SetSeen(i, true);
+                    if (i % 50 == 0)
+                    {
+                        await Task.Yield();
+                    }
                 }
                 break;
             case SAV3 s3:
                 for (ushort i = 1; i < s3.MaxSpeciesID + 1; i++)
                 {
                     s3.SetSeen(i, true);
+                    if (i % 50 == 0)
+                    {
+                        await Task.Yield();
+                    }
                 }
                 break;
             // NuGet 26.1.31: Zukan4/5/6* SeenAll requires an explicit shinyToo argument.
@@ -409,6 +400,10 @@ public partial class PokedexTab
                     var entry = sv.Zukan.DexPaldea.Get(i);
                     if (entry.GetState() < 2)
                         entry.SetState(2);
+                    if (i % 50 == 0)
+                    {
+                        await Task.Yield();
+                    }
                 }
                 break;
             case SAV9SV sv:
@@ -421,6 +416,7 @@ public partial class PokedexTab
                 break;
         }
 
+        RefreshDexStats();
         await Task.Yield();
     }
 
@@ -438,6 +434,10 @@ public partial class PokedexTab
                 {
                     s1.SetSeen(i, false);
                     s1.SetCaught(i, false);
+                    if (i % 50 == 0)
+                    {
+                        await Task.Yield();
+                    }
                 }
                 break;
             case SAV2 s2:
@@ -445,6 +445,10 @@ public partial class PokedexTab
                 {
                     s2.SetSeen(i, false);
                     s2.SetCaught(i, false);
+                    if (i % 50 == 0)
+                    {
+                        await Task.Yield();
+                    }
                 }
                 break;
             case SAV3 s3:
@@ -452,6 +456,10 @@ public partial class PokedexTab
                 {
                     s3.SetSeen(i, false);
                     s3.SetCaught(i, false);
+                    if (i % 50 == 0)
+                    {
+                        await Task.Yield();
+                    }
                 }
                 break;
             case SAV4 s4:
@@ -504,6 +512,7 @@ public partial class PokedexTab
                 break;
         }
 
+        RefreshDexStats();
         await Task.Yield();
     }
 }

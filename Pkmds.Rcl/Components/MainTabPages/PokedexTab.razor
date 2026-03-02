@@ -1,13 +1,13 @@
 @inherits BasePkmdsComponent
 
-@if (AppState.SaveFile is { HasPokeDex: true } saveFile)
+@if (AppState.SaveFile is { HasPokeDex: true })
 {
     <MudStack>
-        <MudText Typo="@Typo.body2">Seen: @GetDisplaySeenCount(saveFile) / @GetDexTotalCount(saveFile)</MudText>
-        <MudProgressLinear Color="@Color.Info" Value="@GetSeenPercent()" />
+        <MudText Typo="@Typo.body2">Seen: @_displaySeenCount / @_dexTotal</MudText>
+        <MudProgressLinear Color="@Color.Info" Value="@_seenPercent" />
 
-        <MudText Typo="@Typo.body2">Caught: @GetDisplayCaughtCount(saveFile) / @GetDexTotalCount(saveFile)</MudText>
-        <MudProgressLinear Color="@Color.Success" Value="@GetCaughtPercent()" />
+        <MudText Typo="@Typo.body2">Caught: @_displayCaughtCount / @_dexTotal</MudText>
+        <MudProgressLinear Color="@Color.Success" Value="@_caughtPercent" />
 
         <MudStack Row="true" Wrap="@Wrap.Wrap">
             <MudButton OnClick="@FillPokedex"
