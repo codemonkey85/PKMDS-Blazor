@@ -278,7 +278,7 @@ public interface IAppService
 
     /// <summary>
     /// Sweeps all party and box slots and returns every Pokémon that satisfies
-    /// every non-null criterion in <paramref name="filter"/>.
+    /// every non-null criterion in <paramref name="filter" />.
     /// Legality checks (if requested) are evaluated last due to their cost.
     /// </summary>
     /// <param name="filter">The multi-criteria search filter.</param>
@@ -286,25 +286,25 @@ public interface IAppService
     IEnumerable<AdvancedSearchResult> SearchPokemon(AdvancedSearchFilter filter);
 
     /// <summary>
-    /// Queries PKHeX.Core encounter tables for the species specified in <paramref name="filter"/>
+    /// Queries PKHeX.Core encounter tables for the species specified in <paramref name="filter" />
     /// and returns all encounters that satisfy the given criteria.
     /// </summary>
     /// <param name="filter">
-    /// Filter criteria. <see cref="EncounterSearchFilter.Species"/> must be non-null for any
+    /// Filter criteria. <see cref="EncounterSearchFilter.Species" /> must be non-null for any
     /// results to be returned.
     /// </param>
     /// <returns>A lazily-evaluated sequence of matching encounter results.</returns>
     IEnumerable<EncounterSearchResult> SearchEncounters(EncounterSearchFilter filter);
 
     /// <summary>
-    /// Generates a <see cref="PKM"/> from the given encounter template using the current
+    /// Generates a <see cref="PKM" /> from the given encounter template using the current
     /// save file as the trainer info source.
     /// Callers are responsible for performing any legality analysis on the generated Pokémon.
     /// </summary>
     /// <param name="encounter">The encounter template to generate from.</param>
     /// <returns>
-    /// The generated <see cref="PKM"/> if the save file is loaded;
-    /// <see langword="null"/> if the save file is not loaded.
+    /// The generated <see cref="PKM" /> if the save file is loaded;
+    /// <see langword="null" /> if the save file is not loaded.
     /// </returns>
     PKM? GeneratePokemonFromEncounter(IEncounterable encounter);
 }

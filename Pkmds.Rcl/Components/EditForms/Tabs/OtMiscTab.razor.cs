@@ -118,7 +118,9 @@ public partial class OtMiscTab : IDisposable
             CachedQualityItems = null;
         }
 
-        CachedAffixedRibbonItems = Pokemon is IRibbonSetAffixed ? BuildAffixedRibbonItems() : null;
+        CachedAffixedRibbonItems = Pokemon is IRibbonSetAffixed
+            ? BuildAffixedRibbonItems()
+            : null;
         CachedGeoCountries = Pokemon is IGeoTrack or IRegionOrigin
             ? AppService.GetGeoCountryComboItems().ToList()
             : null;
@@ -398,7 +400,7 @@ public partial class OtMiscTab : IDisposable
     /// <summary>
     /// Builds the affixed ribbon combo items for the given Pokémon's format.
     /// Includes "None" (-1) and every ribbon/mark slot that can be affixed (i.e.
-    /// any ribbon/mark whose name can be mapped to a <see cref="RibbonIndex"/>),
+    /// any ribbon/mark whose name can be mapped to a <see cref="RibbonIndex" />),
     /// regardless of whether the Pokémon currently has each ribbon. This ensures
     /// the selector is always fully populated and does not go stale when ribbons
     /// are toggled on the Ribbons tab.

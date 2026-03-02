@@ -6,6 +6,22 @@ public partial class CosmeticTab : IDisposable
     [EditorRequired]
     public PKM? Pokemon { get; set; }
 
+    private string? OriginMarkSpriteFileName => Pokemon is { Format: >= 6 }
+        ? ImageHelper.GetOriginMarkSpriteFileName(OriginMarkUtil.GetOriginMark(Pokemon))
+        : null;
+
+    private bool IsFavorite
+    {
+        get => Pokemon is IFavorite fav && fav.IsFavorite;
+        set
+        {
+            if (Pokemon is IFavorite fav)
+            {
+                fav.IsFavorite = value;
+            }
+        }
+    }
+
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
@@ -17,18 +33,4 @@ public partial class CosmeticTab : IDisposable
         PK9 => PokeSizeDetailedUtil.GetSizeRating(scaledSize3.Scale).ToString(),
         _ => PokeSizeUtil.GetSizeRating(scaledSize3.Scale).ToString()
     };
-
-    private string? OriginMarkSpriteFileName => Pokemon is { Format: >= 6 }
-        ? ImageHelper.GetOriginMarkSpriteFileName(OriginMarkUtil.GetOriginMark(Pokemon))
-        : null;
-
-    private bool IsFavorite
-    {
-        get => Pokemon is IFavorite fav && fav.IsFavorite;
-        set
-        {
-            if (Pokemon is IFavorite fav)
-                fav.IsFavorite = value;
-        }
-    }
 }

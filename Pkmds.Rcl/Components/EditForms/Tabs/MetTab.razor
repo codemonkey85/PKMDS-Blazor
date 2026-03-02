@@ -47,7 +47,9 @@
                            T="GameVersion"
                            Value="@BattleVersionValue"
                            ValueChanged="@(v => BattleVersionValue = v)"
-                           ToStringFunc="@(version => version == GameVersion.Any ? "None" : GameInfo.GetVersionName(version))">
+                           ToStringFunc="@(version => version == GameVersion.Any
+                                             ? "None"
+                                             : GameInfo.GetVersionName(version))">
                     <MudSelectItem Value="@GameVersion.Any">None</MudSelectItem>
                     @foreach (var gameVersion in GameInfo.FilteredSources.Games)
                     {
