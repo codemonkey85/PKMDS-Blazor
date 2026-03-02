@@ -53,6 +53,7 @@ public partial class OtMiscTab : IDisposable
     private List<ComboItem>? CachedMemoryItems { get; set; }
     private List<ComboItem>? CachedFeelingItems { get; set; }
     private List<ComboItem>? CachedQualityItems { get; set; }
+    private List<ComboItem>? CachedAffixedRibbonItems { get; set; }
 
     /// <summary>
     /// Returns the memory generation (6 or 8) used for feeling/argument lookups.
@@ -115,6 +116,8 @@ public partial class OtMiscTab : IDisposable
             CachedFeelingItems = null;
             CachedQualityItems = null;
         }
+
+        CachedAffixedRibbonItems = Pokemon is IRibbonSetAffixed ? BuildAffixedRibbonItems() : null;
     }
 
     private static MemoryArgType GetMemoryArgType(byte memoryId) =>
@@ -389,12 +392,13 @@ public partial class OtMiscTab : IDisposable
     }
 
     /// <summary>
-    /// Builds the affixed ribbon combo items for the given Pokémon.
-    /// Includes "None" (-1) and all ribbons/marks the Pokémon currently has.
-    /// If the currently affixed ribbon is not found in the Pokémon's ribbon list
-    /// (e.g. due to an edit), it is included with a "(!)" marker.
+    /// Builds the affixed ribbon combo items for the given Pokémon's format.
+    /// Includes "None" (-1) and every boolean ribbon/mark slot supported by this
+    /// Pokémon type, regardless of whether the Pokémon currently has each ribbon.
+    /// This ensures the selector is always fully populated and does not go stale
+    /// when ribbons are toggled on the Ribbons tab.
     /// </summary>
-    private List<ComboItem> BuildAffixedRibbonItems(sbyte currentAffixed)
+    private List<ComboItem> BuildAffixedRibbonItems()
     {
         var items = new List<ComboItem> { new("None", -1) };
         if (Pokemon is null)
@@ -402,11 +406,10 @@ public partial class OtMiscTab : IDisposable
             return items;
         }
 
-        var added = new HashSet<int>();
         foreach (var info in RibbonHelper.GetAllRibbonInfo(Pokemon))
         {
-            var has = info.Type == RibbonValueType.Boolean ? info.HasRibbon : info.RibbonCount > 0;
-            if (!has)
+            // Only boolean slots can be affixed; skip count-based ribbon fields.
+            if (info.Type != RibbonValueType.Boolean)
             {
                 continue;
             }
@@ -422,16 +425,6 @@ public partial class OtMiscTab : IDisposable
 
             var displayName = RibbonHelper.GetRibbonDisplayName(info.Name);
             items.Add(new ComboItem(displayName, (int)idx));
-            added.Add((int)idx);
-        }
-
-        // Ensure the currently affixed ribbon is in the list even if the Pokémon doesn't have it
-        if (currentAffixed != PKHeX.Core.AffixedRibbon.None && !added.Contains((int)currentAffixed))
-        {
-            var idx = (RibbonIndex)currentAffixed;
-            var propName = $"Ribbon{idx}";
-            var displayName = RibbonHelper.GetRibbonDisplayName(propName);
-            items.Add(new ComboItem($"{displayName} (!)", currentAffixed));
         }
 
         return items;
