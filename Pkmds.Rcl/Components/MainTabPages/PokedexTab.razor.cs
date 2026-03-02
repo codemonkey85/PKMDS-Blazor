@@ -44,23 +44,33 @@ public partial class PokedexTab
 
     private double GetSeenPercent()
     {
-        if (AppState.SaveFile is not { HasPokeDex: true } saveFile || saveFile.MaxSpeciesID == 0)
+        if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
         {
             return 0;
         }
 
-        return (double)GetSeenCount() / saveFile.MaxSpeciesID * 100;
+        var total = GetDexTotalCount(saveFile);
+        return total == 0 ? 0 : (double)GetSeenCount() / total * 100;
     }
 
     private double GetCaughtPercent()
     {
-        if (AppState.SaveFile is not { HasPokeDex: true } saveFile || saveFile.MaxSpeciesID == 0)
+        if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
         {
             return 0;
         }
 
-        return (double)GetCaughtCount() / saveFile.MaxSpeciesID * 100;
+        var total = GetDexTotalCount(saveFile);
+        return total == 0 ? 0 : (double)GetCaughtCount() / total * 100;
     }
+
+    // SAV7b (LGPE) tracks only 153 species (Kanto 1–151 + Meltan + Melmetal).
+    // SAV7b.MaxSpeciesID is 809 (Melmetal's species number), not the Pokédex size.
+    private static int GetDexTotalCount(SaveFile saveFile) => saveFile switch
+    {
+        SAV7b => 153,
+        _ => saveFile.MaxSpeciesID,
+    };
 
     // Gen 8 LA uses PokedexSave8a (no Zukan); SeenAll and Clear are not applicable.
     private bool IsLegendArceus => AppState.SaveFile is SAV8LA;
