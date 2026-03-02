@@ -301,7 +301,7 @@ public partial class PokedexTab
 
     private static void FillGen9Rev1Pokedex(SAV9SV sv) => sv.Zukan.CompleteDex();
 
-    private void SeenAllPokedex()
+    private async Task SeenAllPokedex()
     {
         if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
         {
@@ -354,13 +354,34 @@ public partial class PokedexTab
                 bs.Zukan.SeenAll();
                 break;
             // SAV8LA: no Zukan.SeenAll(); button is disabled for LA
+
+            // SAV9SV (Paldea/T0 mode): PokeDexEntry9Paldea.SetSeen(true) has a
+            // PKHeX bug — it uses Math.Min(state, 2) instead of Math.Max, so it
+            // never *raises* state from 0 ("unknown") to 2 ("seen").
+            // Workaround: iterate dex-indexed species and call SetState(2) directly
+            // for any entry below the "seen" threshold.  Species already at state 3
+            // (caught) are left untouched.
+            // For Kitakami/DLC mode (GetRevision != 0) Zukan9Kitakami.SeenAll works
+            // correctly via FlagsFormSeen, so the standard path is used there.
+            case SAV9SV sv when sv.Zukan.GetRevision() == 0:
+                for (ushort i = 1; i <= sv.MaxSpeciesID; i++)
+                {
+                    if (sv.Zukan.GetDexIndex(i).Index == 0)
+                        continue;
+                    var entry = sv.Zukan.DexPaldea.Get(i);
+                    if (entry.GetState() < 2)
+                        entry.SetState(2);
+                }
+                break;
             case SAV9SV sv:
                 sv.Zukan.SeenAll();
                 break;
         }
+
+        await Task.Yield();
     }
 
-    private void ClearPokedex()
+    private async Task ClearPokedex()
     {
         if (AppState.SaveFile is not { HasPokeDex: true } saveFile)
         {
@@ -423,10 +444,17 @@ public partial class PokedexTab
                 bs.Zukan.CaughtNone();
                 break;
             // SAV8LA: no Zukan; button is disabled for LA
+
+            // SAV9SV: SeenNone() zeroes the entire DexPaldea + DexKitakami blocks,
+            // which atomically clears both the seen state (u32 at offset 0) and the
+            // caught state/flags.  Do NOT call CaughtNone() afterwards — it calls
+            // ClearCaught() → SetCaught(false) → SetState(2) on every entry, which
+            // incorrectly raises each species back to state 2 ("seen").
             case SAV9SV sv:
                 sv.Zukan.SeenNone();
-                sv.Zukan.CaughtNone();
                 break;
         }
+
+        await Task.Yield();
     }
 }
