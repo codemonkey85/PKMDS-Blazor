@@ -36,6 +36,29 @@
                            Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.GameOrigin))"/>
     </MudStack>
 
+    @if (Pokemon is IBattleVersion)
+    {
+        <MudStack Row
+                  AlignItems="@AlignItems.Center"
+                  Spacing="1">
+            <MudStack Style="flex: 1; min-width: 0;">
+                <MudSelect Label="Battle Version"
+                           Variant="@Variant.Outlined"
+                           T="GameVersion"
+                           Value="@BattleVersionValue"
+                           ValueChanged="@(v => BattleVersionValue = v)"
+                           ToStringFunc="@(version => version == GameVersion.Any ? "None" : GameInfo.GetVersionName(version))">
+                    <MudSelectItem Value="@GameVersion.Any">None</MudSelectItem>
+                    @foreach (var gameVersion in GameInfo.FilteredSources.Games)
+                    {
+                        <MudSelectItem Value="@((GameVersion)gameVersion.Value)"
+                                       @key="@((GameVersion)gameVersion.Value)"/>
+                    }
+                </MudSelect>
+            </MudStack>
+        </MudStack>
+    }
+
     <MudStack Row
               AlignItems="@AlignItems.Center"
               Spacing="1">
@@ -102,6 +125,17 @@
             <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Level)?.Judgement ?? PKHeX.Core.Severity.Valid)"
                                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Level))"/>
         </MudStack>
+    }
+
+    @if (Pokemon is IObedienceLevel)
+    {
+        <MudNumericField Label="Obedience Level"
+                         T="byte"
+                         Variant="@Variant.Outlined"
+                         Value="@ObedienceLevelValue"
+                         ValueChanged="@(v => ObedienceLevelValue = v)"
+                         Min="@((byte)0)"
+                         Max="@((byte)100)"/>
     }
 
     @if (ShowGroundTile)

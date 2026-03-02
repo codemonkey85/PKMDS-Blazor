@@ -26,6 +26,30 @@ public partial class MetTab : IDisposable
 
     private bool PokemonMetAsEgg => Pokemon is not null && (Pokemon.IsEgg || Pokemon.WasEgg || Pokemon.WasTradedEgg);
 
+    private GameVersion BattleVersionValue
+    {
+        get => Pokemon is IBattleVersion bv ? bv.BattleVersion : GameVersion.Any;
+        set
+        {
+            if (Pokemon is IBattleVersion bv)
+            {
+                bv.BattleVersion = value;
+            }
+        }
+    }
+
+    private byte ObedienceLevelValue
+    {
+        get => Pokemon is IObedienceLevel ol ? ol.ObedienceLevel : (byte)0;
+        set
+        {
+            if (Pokemon is IObedienceLevel ol)
+            {
+                ol.ObedienceLevel = value;
+            }
+        }
+    }
+
     private bool ShowGroundTile => Pokemon is IGroundTile && Pokemon.Gen4 && Pokemon.Format < 7;
 
     public void Dispose() =>
