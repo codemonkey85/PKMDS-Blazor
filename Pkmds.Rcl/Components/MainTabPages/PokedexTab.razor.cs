@@ -64,18 +64,22 @@ public partial class PokedexTab
         return total == 0 ? 0 : (double)GetCaughtCount() / total * 100;
     }
 
-    // SAV7b (LGPE) tracks only 153 species (Kanto 1–151 + Meltan + Melmetal).
-    // SAV7b.MaxSpeciesID is 809 (Melmetal's national species number), not the Pokédex size.
-    // SAV8LA tracks only Hisui-native species; HOME transfers are not supported for PLA.
-    // SAV8LA.MaxSpeciesID is 905 (Enamorus's national species number), not the Hisui dex size.
-    // All other games support HOME transfers, so every national species up to MaxSpeciesID
-    // can theoretically be seen/caught — MaxSpeciesID is the correct denominator for those.
-    private static int GetDexTotalCount(SaveFile saveFile) => saveFile switch
+    // Count species that actually exist in this game's data (form 0 only).
+    // Using IPersonalTable.IsPresentInGame handles every case correctly:
+    // LGPE (153), SWSH (subset of 898 due to Dexit), PLA (242 Hisui species),
+    // and all older games where every national species up to MaxSpeciesID is present.
+    private static int GetDexTotalCount(SaveFile saveFile)
     {
-        SAV7b => 153,
-        SAV8LA => PokedexSave8a.GetDexTotalCount(PokedexType8a.Hisui),
-        _ => saveFile.MaxSpeciesID,
-    };
+        var count = 0;
+        for (ushort i = 1; i <= saveFile.MaxSpeciesID; i++)
+        {
+            if (saveFile.Personal.IsPresentInGame(i, 0))
+            {
+                count++;
+            }
+        }
+        return count;
+    }
 
     // Gen 8 LA uses PokedexSave8a (no Zukan); SeenAll and Clear are not applicable.
     private bool IsLegendArceus => AppState.SaveFile is SAV8LA;
