@@ -653,7 +653,7 @@
         @* Native 3DS Region (Gen 6–7, IRegionOrigin) *@
         @if (Pokemon is IRegionOrigin regionOrigin)
         {
-            var countries = AppService.GetGeoCountryComboItems().ToList();
+            var countries = AppService.GetGeoCountryComboItems();
             var subRegions = regionOrigin.Country != 0
                 ? AppService.GetGeoRegionComboItems(regionOrigin.Country).ToList()
                 : null;

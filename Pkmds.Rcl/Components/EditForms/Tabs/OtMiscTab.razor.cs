@@ -408,15 +408,18 @@ public partial class OtMiscTab : IDisposable
 
         foreach (var info in RibbonHelper.GetAllRibbonInfo(Pokemon))
         {
-            // Only boolean slots can be affixed; skip count-based ribbon fields.
-            if (info.Type != RibbonValueType.Boolean)
+            // Strip the correct prefix so the remainder maps to a RibbonIndex entry.
+            // Count-based ribbon properties (e.g. RibbonCountMemoryContest) must strip
+            // "RibbonCount" first; boolean ones strip "Ribbon". Anything else is tried as-is.
+            var shortName = info.Name;
+            if (shortName.StartsWith("RibbonCount", StringComparison.Ordinal))
             {
-                continue;
+                shortName = shortName["RibbonCount".Length..];
             }
-
-            var shortName = info.Name.StartsWith("Ribbon", StringComparison.Ordinal)
-                ? info.Name["Ribbon".Length..]
-                : info.Name;
+            else if (shortName.StartsWith("Ribbon", StringComparison.Ordinal))
+            {
+                shortName = shortName["Ribbon".Length..];
+            }
 
             if (!Enum.TryParse<RibbonIndex>(shortName, ignoreCase: true, out var idx))
             {

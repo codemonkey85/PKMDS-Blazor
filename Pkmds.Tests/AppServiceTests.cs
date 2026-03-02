@@ -233,6 +233,26 @@ public class AppServiceTests
         appService.EditFormPokemon.OriginalTrainerName.Should().Be(saveFile.OT);
     }
 
+    [Fact]
+    public void GetConsoleRegionComboItems_ReturnsExpectedRegions()
+    {
+        // Arrange
+        var appState = new TestAppState();
+        var refreshService = new TestRefreshService();
+        var appService = new AppService(appState, refreshService);
+
+        // Act
+        var result = appService.GetConsoleRegionComboItems();
+
+        // Assert
+        result.Should().NotBeEmpty();
+        result.Should().AllSatisfy(item => item.Text.Should().NotBeNullOrEmpty());
+        // Verify the expected 3DS hardware regions are present
+        result.Should().Contain(i => i.Value == (int)Region3DSIndex.Japan);
+        result.Should().Contain(i => i.Value == (int)Region3DSIndex.NorthAmerica);
+        result.Should().Contain(i => i.Value == (int)Region3DSIndex.Europe);
+    }
+
     private class TestAppState : IAppState
     {
         public string CurrentLanguage { get; set; } = "en";
