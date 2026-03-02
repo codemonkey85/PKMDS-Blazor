@@ -112,7 +112,7 @@ public partial class MainTab : IDisposable
         var names = GameInfo.Strings.Ability;
 
         static string GetAbilityName(int abilityId, IReadOnlyList<string> names) =>
-            (uint)abilityId < (uint)names.Count ? names[abilityId] : "None";
+            abilityId == 0 || (uint)abilityId >= (uint)names.Count ? "None" : names[abilityId];
 
         var a1 = pi.AbilityCount > 0 ? pi.GetAbilityAtIndex(0) : 0;
         var a2 = pi.AbilityCount > 1 ? pi.GetAbilityAtIndex(1) : 0;
