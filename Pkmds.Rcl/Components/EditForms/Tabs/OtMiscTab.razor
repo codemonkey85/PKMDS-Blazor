@@ -650,5 +650,106 @@
             </MudItem>
         }
 
+        @* Native 3DS Region (Gen 6–7, IRegionOrigin) *@
+        @if (Pokemon is IRegionOrigin regionOrigin)
+        {
+            var countries = AppService.GetGeoCountryComboItems();
+            var subRegions = regionOrigin.Country != 0
+                ? AppService.GetGeoRegionComboItems(regionOrigin.Country).ToList()
+                : null;
+            var consoleRegions = AppService.GetConsoleRegionComboItems();
+
+            <MudItem xs="12">
+                <MudDivider Class="my-2"/>
+                <MudText Typo="@Typo.subtitle2"
+                         Class="mt-1 mb-1">Native 3DS Region
+                </MudText>
+            </MudItem>
+
+            <MudItem xs="6"
+                     Class="@ColumnClass">
+                <MudSelect T="byte"
+                           Label="Country"
+                           Variant="@Variant.Outlined"
+                           FullWidth
+                           MaxHeight="300"
+                           Value="@regionOrigin.Country"
+                           ValueChanged="@(v => SetRegionOriginCountry(regionOrigin, v))">
+                    @foreach (var item in countries)
+                    {
+                        <MudSelectItem T="byte"
+                                       Value="@((byte)item.Value)">@item.Text</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            @if (subRegions is not null)
+            {
+                <MudItem xs="6"
+                         Class="@ColumnClass">
+                    <MudSelect T="byte"
+                               Label="Sub-Region"
+                               Variant="@Variant.Outlined"
+                               FullWidth
+                               MaxHeight="300"
+                               Value="@regionOrigin.Region"
+                               ValueChanged="@(v => regionOrigin.Region = v)">
+                        @foreach (var item in subRegions)
+                        {
+                            <MudSelectItem T="byte"
+                                           Value="@((byte)item.Value)">@item.Text</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            }
+            else
+            {
+                <MudItem xs="6"/>
+            }
+
+            <MudItem xs="6"
+                     Class="@ColumnClass">
+                <MudSelect T="byte"
+                           Label="Console Region"
+                           Variant="@Variant.Outlined"
+                           FullWidth
+                           Value="@regionOrigin.ConsoleRegion"
+                           ValueChanged="@(v => regionOrigin.ConsoleRegion = v)">
+                    @foreach (var item in consoleRegions)
+                    {
+                        <MudSelectItem T="byte"
+                                       Value="@((byte)item.Value)">@item.Text</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="6"/>
+        }
+
+        @* Affixed Ribbon / Mark (Gen 8+, IRibbonSetAffixed) *@
+        @if (Pokemon is IRibbonSetAffixed affixedHolder && CachedAffixedRibbonItems is not null)
+        {
+            <MudItem xs="12">
+                <MudDivider Class="my-2"/>
+            </MudItem>
+
+            <MudItem xs="6"
+                     Class="@ColumnClass">
+                <MudSelect T="sbyte"
+                           Label="Affixed Ribbon / Mark"
+                           Variant="@Variant.Outlined"
+                           FullWidth
+                           MaxHeight="300"
+                           Value="@affixedHolder.AffixedRibbon"
+                           ValueChanged="@(v => affixedHolder.AffixedRibbon = v)">
+                    @foreach (var item in CachedAffixedRibbonItems)
+                    {
+                        <MudSelectItem T="sbyte"
+                                       Value="@((sbyte)item.Value)">@item.Text</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        }
+
     </MudGrid>
 }
