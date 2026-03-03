@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-02 (Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5)
+**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5)
 
 ---
 
@@ -1011,12 +1011,30 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 - [ ] Add trainer memo/notes
 
 ### 6.2 Box Viewer Enhancements
+**Status:** ❌ Not Implemented
+**Complexity:** Medium
+**Tracks:** #14
+**PKHeX Reference:** `SAVEditor.cs:503–528,1579–1594`, `SAV_BoxViewer.Designer.cs`, `SAV_BoxList.cs`
 **Tasks:**
-- [ ] Add multi-save box viewer (SAV_BoxViewer)
-- [ ] Implement box group viewer (SAV_GroupViewer)
-- [ ] Create box list view (SAV_BoxList)
-- [ ] Add box preview on hover
-- [ ] Implement box quick-peek
+- [ ] **`SwapBoxes(int boxA, int boxB)`** — add to `IAppService` / `AppService`; swaps all Pokémon between two boxes, triggers `RefreshAppState`
+- [ ] **`BoxViewerDialog`** (`Pkmds.Rcl/Components/Dialogs/BoxViewerDialog.razor[.cs]`) — single-box pop-out dialog (`SAV_BoxViewer` equivalent):
+  - `[Parameter] int InitialBox` — box to show on open
+  - Local `CurrentBox` for independent dialog navigation (prev/next + dropdown)
+  - Renders existing `BoxGrid` component; slot clicks select Pokémon for editing in main form
+  - "View All Boxes" button transitions to `BoxListDialog`
+  - Responsive: `MaxWidth.Large` on `sm+`; full-screen on `xs`
+  - Subscribes to `OnBoxStateChanged` to keep slots current
+- [ ] **`BoxListDialog`** (`Pkmds.Rcl/Components/Dialogs/BoxListDialog.razor[.cs]`) — all-boxes grid dialog (`SAV_BoxList` equivalent):
+  - Renders all `SaveFile.BoxCount` boxes in `MudGrid`: `xs=12 sm=6 md=4 lg=3`
+  - Each cell: box name header + `BoxGrid` + optional adjacent-box swap button (⇄)
+  - Swap button calls `AppService.SwapBoxes(i, i+1)`
+  - Full-screen on mobile; `MaxWidth.ExtraExtraLarge` + `FullWidth` + scrollable on desktop
+  - Subscribes to both `OnAppStateChanged` and `OnBoxStateChanged`
+- [ ] **Add trigger buttons to `PokemonStorageComponent`** — "Pop Out Box" (`OpenInNew` icon) and "All Boxes" (`GridView` icon) buttons in the box nav bar; both open their respective dialogs via `IDialogService`
+- [ ] **Unit tests** — `SwapBoxes` correctness; bUnit render tests for both dialogs
+- [ ] Implement box group viewer (SAV_GroupViewer) — follow-up
+- [ ] Add box preview on hover — follow-up
+- [ ] Implement box quick-peek — follow-up
 
 ### 6.3 Mail System
 **Status:** ❌ Not Implemented  
