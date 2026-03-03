@@ -863,7 +863,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
             if (Matches(pkm, filter))
             {
-                yield return BuildSearchResult(pkm, isParty: true, box: 0, slot: i);
+                yield return BuildSearchResult(pkm, true, 0, i);
             }
         }
 
@@ -880,7 +880,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
                 if (Matches(pkm, filter))
                 {
-                    yield return BuildSearchResult(pkm, isParty: false, box, slot);
+                    yield return BuildSearchResult(pkm, false, box, slot);
                 }
             }
         }
@@ -913,7 +913,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
             ? new[] { v }
             : [];
 
-        var encounters = EncounterMovesetGenerator.GenerateEncounters(blankPkm, sav, ReadOnlyMemory<ushort>.Empty, versions);
+        var encounters =
+            EncounterMovesetGenerator.GenerateEncounters(blankPkm, sav, ReadOnlyMemory<ushort>.Empty, versions);
 
         // Deduplicate by reference: WC8/MysteryGift objects are classes and the generator can
         // return the same instance multiple times (once per compatible game version, e.g. SW and SH).
@@ -1003,9 +1004,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Returns <see langword="true" /> when <paramref name="pkm" /> satisfies every
-    /// non-null/non-empty criterion in <paramref name="f" />.
-    /// Cheap equality checks run first; expensive legality analysis runs last.
+    ///     Returns <see langword="true" /> when <paramref name="pkm" /> satisfies every
+    ///     non-null/non-empty criterion in <paramref name="f" />.
+    ///     Cheap equality checks run first; expensive legality analysis runs last.
     /// </summary>
     private bool Matches(PKM pkm, AdvancedSearchFilter f)
     {
@@ -1259,8 +1260,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Compacts a box by shifting all Pokémon left to fill gaps (for Gen 1 and Gen 2 games).
-    /// In these generations, boxes were lists, not grids, so they should have no gaps.
+    ///     Compacts a box by shifting all Pokémon left to fill gaps (for Gen 1 and Gen 2 games).
+    ///     In these generations, boxes were lists, not grids, so they should have no gaps.
     /// </summary>
     private static void CompactBox(SaveFile saveFile, int boxNumber)
     {
@@ -1320,8 +1321,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Returns the human-readable location name for an encounter, or <see langword="null" />
-    /// when no location is associated (e.g., location ID is 0).
+    ///     Returns the human-readable location name for an encounter, or <see langword="null" />
+    ///     when no location is associated (e.g., location ID is 0).
     /// </summary>
     private static string? GetEncounterLocationName(IEncounterable enc)
     {
@@ -1338,8 +1339,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Classifies an <see cref="IEncounterable" /> into one of the five
-    /// <see cref="EncounterTypeGroup" /> buckets.
+    ///     Classifies an <see cref="IEncounterable" /> into one of the five
+    ///     <see cref="EncounterTypeGroup" /> buckets.
     /// </summary>
     private static EncounterTypeGroup GetEncounterTypeGroup(IEncounterable enc)
     {

@@ -116,7 +116,10 @@ public partial class PokemonEditForm : IDisposable
             var parameters = new DialogParameters
             {
                 { nameof(ConfirmActionDialog.Title), "Paste Pokémon" },
-                { nameof(ConfirmActionDialog.Message), "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced." },
+                {
+                    nameof(ConfirmActionDialog.Message),
+                    "Are you sure you want to paste the copied Pokémon? The Pokémon in the selected slot will be replaced."
+                },
                 { nameof(ConfirmActionDialog.ConfirmText), "Paste" },
                 { nameof(ConfirmActionDialog.ConfirmIcon), Icons.Material.Filled.ContentPaste },
                 { nameof(ConfirmActionDialog.ConfirmColor), Color.Default },

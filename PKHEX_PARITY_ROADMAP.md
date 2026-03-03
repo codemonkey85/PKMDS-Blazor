@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5)
+**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5; One-Touch Evolve planned — §1.1, tracks #448; Theme-aware loading screen + three-way toggle implemented — §4.1, tracks #449)
 
 ---
 
@@ -193,6 +193,27 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 **PKHeX Reference:** `CB_ExtraBytes` + `TB_ExtraByte` in OT/Misc tab
 **Tasks:**
 - [ ] Add raw byte editor: offset selector (hex) + value field (0–255) for any byte in the Pokémon's data that is not exposed by a named field; useful for accessing undocumented generation-specific bytes
+
+#### One-Touch Evolve
+**Status:** ❌ Not Implemented
+**Complexity:** Medium
+**Priority:** Medium
+**Tracks:** #448
+**PKHeX Reference:** `EvolutionTree.GetEvolutionTree(context)` / `tree.Forward.GetForward(species, form)` — no direct WinForms UI equivalent; this is a PKMDS quality-of-life addition
+**Tasks:**
+- [ ] Add `IAppService.GetDirectEvolutions(PKM)` returning `IReadOnlyList<EvolutionMethod>` — queries `EvolutionTree.GetEvolutionTree(pkm.Context).Forward.GetForward(pkm.Species, pkm.Form)` and filters out zero-species entries
+- [ ] Add **Evolve** button to `MainTab.razor`, visible only when `GetDirectEvolutions` returns at least one result and `!Pokemon.IsEgg`
+- [ ] Single-evolution path (e.g., Caterpie → Metapod): evolve immediately on button click
+- [ ] Branching-evolution path (e.g., Eevee, Slowpoke, Tyrogue, Wurmple): open `EvolvePickerDialog` showing each branch with sprite, localized species name, and method label (e.g., "Level 36", "Use Fire Stone")
+- [ ] `ApplyEvolution(EvolutionMethod)` logic:
+  - Set `pkm.Species` and `pkm.Form` via `method.GetDestinationForm(pkm.Form)`
+  - Bump `pkm.CurrentLevel` to `method.Level` if currently below minimum
+  - Adjust `pkm.Gender` via `GetSaneGender()`
+  - Sync nickname: call `pkm.ClearNickname()` when `!pkm.IsNicknamed`
+  - Wurmple special case: in Gen 6+ set `pkm.EncryptionConstant` via `WurmpleUtil.GetWurmpleEncryptionConstant(evoVal)`; in Gen 3–5 the EC setter is a no-op (`EncryptionConstant { get => PID; set { } }`), so set `pkm.PID` directly to a value satisfying `WurmpleUtil.GetWurmpleEvoVal(pid) == evoVal`
+  - Call `AppService.LoadPokemonStats(pkm)` and `RefreshService.Refresh()`
+- [ ] Create `EvolvePickerDialog.razor[.cs]` — MudBlazor dialog listing evolution choices, closes with the selected `EvolutionMethod`
+- [ ] Unit tests: no-evo guard, single-evo direct apply, Eevee multi-branch, Wurmple EC correction, level-bump, nickname sync (nicknamed + un-nicknamed)
 
 ### 1.2 Legality Checker
 **Status:** ⚠️ Partial (core analysis, UI, fix buttons, and batch report implemented; comprehensive unit tests remain)
@@ -740,6 +761,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] **Fix "Load Pokémon File" and "Load Mystery Gift File" slot behaviour (#445)** — use currently selected slot (or first empty box slot as fallback), write via `AppService.EditFormPokemon`/`SavePokemon`, show snackbars instead of blocking dialogs, and navigate to Party/Box tab after placement. Requires adding `RequestJumpToPartyBox` event to `IRefreshService`; extract `TrySelectFirstEmptyBoxSlot` into `IAppService`.
 - [ ] Add keyboard shortcuts for common operations
 - [ ] Implement undo/redo functionality
+- [x] **Theme-aware startup / loading screen + three-way theme toggle (#449)** — inline script in `index.html` stamps `data-theme` on `<html>` before WASM boots (no white flash); `app.css` adds `@media (prefers-color-scheme: dark)` + `[data-theme]` CSS rules for the loading screen; `MainLayout.razor` AppBar toggle redesigned from `MudSwitch` to a `MudButtonGroup` with Light / System / Dark icon buttons; `MainLayout.razor.cs` gains `ThemeMode` enum, persists choice to `pkmds_theme` in `localStorage`, and only follows live OS changes in System mode.
 - [ ] Add theme customization (dark/light modes already exist, add more)
 - [ ] Create customizable hotkeys
 - [ ] Add tooltip help system

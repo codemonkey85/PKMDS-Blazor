@@ -80,8 +80,9 @@
                                   MaxLength="@saveFile.MaxStringLengthTrainer"
                                   For="@(() => Pokemon.OriginalTrainerName)"/>
                 </div>
-                <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Trainer)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                   Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Trainer))"/>
+                <LegalityIndicator
+                    Severity="@(GetCheckResult(CheckIdentifier.Trainer)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                    Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Trainer))"/>
             </div>
         </MudItem>
 
@@ -122,8 +123,9 @@
                                          @bind-Value:set="@(newEc => SetPokemonEc(newEc))"
                                          For="@(() => Pokemon.EncryptionConstant)"/>
                     </div>
-                    <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.EC)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                       Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.EC))"/>
+                    <LegalityIndicator
+                        Severity="@(GetCheckResult(CheckIdentifier.EC)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                        Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.EC))"/>
                 </div>
             </MudItem>
 
@@ -191,8 +193,9 @@
                                       @bind-Value="@Pokemon.HandlingTrainerName"
                                       MaxLength="@saveFile.MaxStringLengthTrainer"/>
                     </div>
-                    <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Handler)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                       Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Handler))"/>
+                    <LegalityIndicator
+                        Severity="@(GetCheckResult(CheckIdentifier.Handler)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                        Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Handler))"/>
                 </div>
             </MudItem>
 
@@ -364,8 +367,9 @@
                     <MudText Typo="@Typo.subtitle2"
                              Class="mt-1 mb-1">OT Memory
                     </MudText>
-                    <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Memory)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                       Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Memory))"/>
+                    <LegalityIndicator
+                        Severity="@(GetCheckResult(CheckIdentifier.Memory)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                        Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Memory))"/>
                 </MudStack>
             </MudItem>
 

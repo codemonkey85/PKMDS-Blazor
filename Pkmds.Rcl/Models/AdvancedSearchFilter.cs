@@ -1,8 +1,8 @@
 namespace Pkmds.Rcl.Models;
 
 /// <summary>
-/// Holds all optional filter criteria for the Advanced Search feature.
-/// Every field is nullable or an empty collection — a missing value means "any".
+///     Holds all optional filter criteria for the Advanced Search feature.
+///     Every field is nullable or an empty collection — a missing value means "any".
 /// </summary>
 public sealed record AdvancedSearchFilter
 {
@@ -15,19 +15,19 @@ public sealed record AdvancedSearchFilter
     public byte? Form { get; init; }
 
     /// <summary>
-    /// <see langword="true" /> = shiny only, <see langword="false" /> = non-shiny only,
-    /// <see langword="null" /> = any.
+    ///     <see langword="true" /> = shiny only, <see langword="false" /> = non-shiny only,
+    ///     <see langword="null" /> = any.
     /// </summary>
     public bool? IsShiny { get; init; }
 
     /// <summary>
-    /// <see langword="true" /> = eggs only, <see langword="false" /> = non-eggs only,
-    /// <see langword="null" /> = any.
+    ///     <see langword="true" /> = eggs only, <see langword="false" /> = non-eggs only,
+    ///     <see langword="null" /> = any.
     /// </summary>
     public bool? IsEgg { get; init; }
 
     /// <summary>
-    /// Gender filter: 0 = male, 1 = female, -1 = genderless, <see langword="null" /> = any.
+    ///     Gender filter: 0 = male, 1 = female, -1 = genderless, <see langword="null" /> = any.
     /// </summary>
     public int? Gender { get; init; }
 
@@ -47,16 +47,16 @@ public sealed record AdvancedSearchFilter
     public GameVersion? OriginGame { get; init; }
 
     /// <summary>
-    /// <see langword="true" /> = legal only (no Invalid checks), <see langword="false" /> = illegal only,
-    /// <see langword="null" /> = any. Evaluated last due to cost.
+    ///     <see langword="true" /> = legal only (no Invalid checks), <see langword="false" /> = illegal only,
+    ///     <see langword="null" /> = any. Evaluated last due to cost.
     /// </summary>
     public bool? IsLegal { get; init; }
 
     // ── Trainer ───────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Substring filter for the OT name (case-insensitive),
-    /// or <see langword="null" /> to skip.
+    ///     Substring filter for the OT name (case-insensitive),
+    ///     or <see langword="null" /> to skip.
     /// </summary>
     public string? OriginalTrainerName { get; init; }
 
@@ -95,14 +95,14 @@ public sealed record AdvancedSearchFilter
     // ── Moves ─────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Pokémon must know <em>at least one</em> of these move IDs (OR logic).
-    /// Empty list = skip check.
+    ///     Pokémon must know <em>at least one</em> of these move IDs (OR logic).
+    ///     Empty list = skip check.
     /// </summary>
     public IReadOnlyList<ushort> AnyMoves { get; init; } = [];
 
     /// <summary>
-    /// Pokémon must know <em>all</em> of these move IDs (AND logic).
-    /// Empty list = skip check.
+    ///     Pokémon must know <em>all</em> of these move IDs (AND logic).
+    ///     Empty list = skip check.
     /// </summary>
     public IReadOnlyList<ushort> AllMoves { get; init; } = [];
 
@@ -114,9 +114,9 @@ public sealed record AdvancedSearchFilter
     // ── Ribbons / Marks ───────────────────────────────────────────────────
 
     /// <summary>
-    /// All named ribbon/mark properties must be <see langword="true" />.
-    /// Uses the PKHeX property name (e.g., <c>"RibbonChampionG3Hoenn"</c>).
-    /// Empty list = skip check.
+    ///     All named ribbon/mark properties must be <see langword="true" />.
+    ///     Uses the PKHeX property name (e.g., <c>"RibbonChampionG3Hoenn"</c>).
+    ///     Empty list = skip check.
     /// </summary>
     public IReadOnlyList<string> RequiredRibbons { get; init; } = [];
 }

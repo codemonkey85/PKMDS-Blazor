@@ -2,8 +2,7 @@
 @inject ILogger<MainLayout> Logger
 
 <MudThemeProvider @ref="@mudThemeProvider"
-                  IsDarkMode="@isDarkMode"
-                  IsDarkModeChanged="@OnIsDarkModeChanged"/>
+                  IsDarkMode="@isDarkMode"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
@@ -40,12 +39,29 @@
             </MudChip>
         }
         <MudStack Row>
-            <MudSwitch Value="@isDarkMode"
-                       ValueChanged="@((bool value) => OnThemeSwitchChanged(value))"
-                       Color="@Color.Primary"
-                       Label="@(isDarkMode
-                                  ? "Dark"
-                                  : "Light")"/>
+            <MudButtonGroup Variant="@Variant.Outlined" Size="@Size.Small">
+                <MudIconButton Icon="@Icons.Material.Filled.LightMode"
+                               Color="@Color.Inherit"
+                               Style="@(themeMode == ThemeMode.Light
+                                          ? "background-color: rgba(255,255,255,0.2);"
+                                          : "opacity: 0.6;")"
+                               title="Light mode"
+                               OnClick="@(() => OnThemeModeChanged(ThemeMode.Light))"/>
+                <MudIconButton Icon="@Icons.Material.Filled.SettingsBrightness"
+                               Color="@Color.Inherit"
+                               Style="@(themeMode == ThemeMode.System
+                                          ? "background-color: rgba(255,255,255,0.2);"
+                                          : "opacity: 0.6;")"
+                               title="System default"
+                               OnClick="@(() => OnThemeModeChanged(ThemeMode.System))"/>
+                <MudIconButton Icon="@Icons.Material.Filled.DarkMode"
+                               Color="@Color.Inherit"
+                               Style="@(themeMode == ThemeMode.Dark
+                                          ? "background-color: rgba(255,255,255,0.2);"
+                                          : "opacity: 0.6;")"
+                               title="Dark mode"
+                               OnClick="@(() => OnThemeModeChanged(ThemeMode.Dark))"/>
+            </MudButtonGroup>
             <MudButton Class="d-none d-md-flex"
                        EndIcon="@Icons.Custom.Brands.GitHub"
                        Href="@GitHubRepoLink"

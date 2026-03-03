@@ -9,7 +9,7 @@ public partial class MetTab : IDisposable
     private EntityContext originFormat = EntityContext.None;
 
     /// <summary>
-    /// Currently loaded met location group that is populating Met and Egg location comboboxes
+    ///     Currently loaded met location group that is populating Met and Egg location comboboxes
     /// </summary>
     private GameVersion origintrack;
 
@@ -97,7 +97,7 @@ public partial class MetTab : IDisposable
         }
 
         var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in r, verbose: false);
+        return ctx.Humanize(in r, false);
     }
 
     protected override void OnInitialized() =>

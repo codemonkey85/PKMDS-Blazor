@@ -246,25 +246,29 @@
                             <HeaderContent>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.SpeciesName))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<EncounterSearchResult, object>(r => r.SpeciesName))">
                                         Species
                                     </MudTableSortLabel>
                                 </MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.GameName))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<EncounterSearchResult, object>(r => r.GameName))">
                                         Game
                                     </MudTableSortLabel>
                                 </MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.EncounterTypeName))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<EncounterSearchResult, object>(r => r.EncounterTypeName))">
                                         Type
                                     </MudTableSortLabel>
                                 </MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.Encounter.LevelMin))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<EncounterSearchResult, object>(r => r.Encounter.LevelMin))">
                                         Level
                                     </MudTableSortLabel>
                                 </MudTh>
@@ -272,7 +276,8 @@
                                 <MudTh>Shiny Lock</MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<EncounterSearchResult, object>(r => r.Location ?? string.Empty))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<EncounterSearchResult, object>(r => r.Location ?? string.Empty))">
                                         Location
                                     </MudTableSortLabel>
                                 </MudTh>

@@ -1,7 +1,7 @@
 ﻿namespace Pkmds.Rcl;
 
 /// <summary>
-/// Partial class for ribbon icon sprite filename generation.
+///     Partial class for ribbon icon sprite filename generation.
 /// </summary>
 public static partial class ImageHelper
 {

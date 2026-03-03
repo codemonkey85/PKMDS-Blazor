@@ -89,8 +89,9 @@
                           MaxLength="@saveFile.MaxStringLengthNickname"
                           For="@(() => Pokemon.Nickname)"/>
         </MudStack>
-        <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Nickname)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                           Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Nickname))"/>
+        <LegalityIndicator
+            Severity="@(GetCheckResult(CheckIdentifier.Nickname)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+            Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Nickname))"/>
     </MudStack>
 
     @if (saveGeneration >= 2)
@@ -101,8 +102,9 @@
             <GenderDisplayComponent Gender="@((Gender)Pokemon.Gender)"
                                     OnChange="@OnGenderToggle"
                                     ReadOnly="@(!Pokemon.PersonalInfo.IsDualGender)"/>
-            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Gender)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Gender))"/>
+            <LegalityIndicator
+                Severity="@(GetCheckResult(CheckIdentifier.Gender)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Gender))"/>
         </MudStack>
     }
 
@@ -160,8 +162,9 @@
                     }
                 </MudSelect>
             </MudStack>
-            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Nature)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Nature))"/>
+            <LegalityIndicator
+                Severity="@(GetCheckResult(CheckIdentifier.Nature)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Nature))"/>
         </MudStack>
     }
 
@@ -215,8 +218,9 @@
                         }
                     </MudSelect>
                 </MudStack>
-                <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Form)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                   Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Form))"/>
+                <LegalityIndicator
+                    Severity="@(GetCheckResult(CheckIdentifier.Form)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                    Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Form))"/>
             </MudStack>
 
             @if (Pokemon is IFormArgument && FormArgumentUtil.GetFormArgumentMax(Pokemon.Species, Pokemon.Form, Pokemon.Context) > 0 && FormConverter.GetFormArgumentIsNamedIndex(Pokemon.Species))
@@ -296,8 +300,9 @@
                           Width="22"
                           Height="22"/>
             }
-            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.HeldItem)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.HeldItem))"/>
+            <LegalityIndicator
+                Severity="@(GetCheckResult(CheckIdentifier.HeldItem)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.HeldItem))"/>
         </MudStack>
     }
 
@@ -375,8 +380,9 @@
                         }
                     </MudSelect>
                 }
-                <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Ability)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                   Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ability))"/>
+                <LegalityIndicator
+                    Severity="@(GetCheckResult(CheckIdentifier.Ability)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                    Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ability))"/>
             </MudStack>
         }
         else
@@ -399,8 +405,9 @@
                         }
                     </MudSelect>
                 </MudStack>
-                <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Ability)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                   Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ability))"/>
+                <LegalityIndicator
+                    Severity="@(GetCheckResult(CheckIdentifier.Ability)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                    Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ability))"/>
             </MudStack>
         }
     }
@@ -426,8 +433,9 @@
                     }
                 </MudSelect>
             </MudStack>
-            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Language)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Language))"/>
+            <LegalityIndicator
+                Severity="@(GetCheckResult(CheckIdentifier.Language)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Language))"/>
         </MudStack>
     }
 
@@ -455,8 +463,9 @@
                              @bind-Value="@Pokemon.IsEgg"
                              @bind-Value:after="@RefreshService.Refresh"
                              For="@(() => Pokemon.IsEgg)"/>
-                <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Egg)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                                   Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Egg))"/>
+                <LegalityIndicator
+                    Severity="@(GetCheckResult(CheckIdentifier.Egg)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                    Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Egg))"/>
             </MudStack>
 
             <PokerusComponent Pokemon="Pokemon"/>
@@ -477,8 +486,9 @@
                          @bind-Value:get="@Pokemon.GetIsShinySafe()"
                          @bind-Value:set="@(isShiny => OnShinySet(isShiny))"
                          For="@(() => Pokemon.IsShiny)"/>
-            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Shiny)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Shiny))"/>
+            <LegalityIndicator
+                Severity="@(GetCheckResult(CheckIdentifier.Shiny)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Shiny))"/>
         </MudStack>
 
     </MudStack>
