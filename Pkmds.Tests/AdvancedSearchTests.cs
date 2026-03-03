@@ -3,7 +3,7 @@ using Pkmds.Rcl.Models;
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for <see cref="AppService.SearchPokemon" /> covering the main filter criteria.
+///     Tests for <see cref="AppService.SearchPokemon" /> covering the main filter criteria.
 /// </summary>
 public class AdvancedSearchTests
 {
@@ -22,7 +22,7 @@ public class AdvancedSearchTests
     }
 
     /// <summary>
-    /// Counts all party + box Pokémon with Species > 0 directly from the save file.
+    ///     Counts all party + box Pokémon with Species > 0 directly from the save file.
     /// </summary>
     private static int CountOccupiedSlots(SaveFile sav)
     {
@@ -147,7 +147,8 @@ public class AdvancedSearchTests
 
         // Assert
         anyTackle.Should().Contain(r => r.Pokemon.Move1 == tackle || r.Pokemon.Move2 == tackle
-                                                                  || r.Pokemon.Move3 == tackle || r.Pokemon.Move4 == tackle);
+                                                                  || r.Pokemon.Move3 == tackle ||
+                                                                  r.Pokemon.Move4 == tackle);
         filterNomove.Should().BeEmpty("no Pokémon can know move ID 9999");
     }
 

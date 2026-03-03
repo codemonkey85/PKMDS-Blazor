@@ -6,7 +6,8 @@ public partial class OtMiscTab : IDisposable
     private static readonly MemoryArgType[] MemoryArgTypes =
     [
         // 0-9
-        MemoryArgType.None, MemoryArgType.SpecificLocation, MemoryArgType.SpecificLocation, MemoryArgType.GeneralLocation,
+        MemoryArgType.None, MemoryArgType.SpecificLocation, MemoryArgType.SpecificLocation,
+        MemoryArgType.GeneralLocation,
         MemoryArgType.GeneralLocation, MemoryArgType.Item, MemoryArgType.None, MemoryArgType.Species,
         MemoryArgType.None, MemoryArgType.Item,
         // 10-19
@@ -57,8 +58,8 @@ public partial class OtMiscTab : IDisposable
     private List<ComboItem>? CachedGeoCountries { get; set; }
 
     /// <summary>
-    /// Returns the memory generation (6 or 8) used for feeling/argument lookups.
-    /// Gen 6/7 Pokémon use generation 6 memory sets; Gen 8+ use generation 8 memory sets.
+    ///     Returns the memory generation (6 or 8) used for feeling/argument lookups.
+    ///     Gen 6/7 Pokémon use generation 6 memory sets; Gen 8+ use generation 8 memory sets.
     /// </summary>
     private int MemoryGen => Pokemon?.Context switch
     {
@@ -95,7 +96,7 @@ public partial class OtMiscTab : IDisposable
         }
 
         var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in r, verbose: false);
+        return ctx.Humanize(in r, false);
     }
 
     protected override void OnInitialized() =>
@@ -141,7 +142,7 @@ public partial class OtMiscTab : IDisposable
     };
 
     /// <summary>
-    /// Builds the fully-formatted memory preview string, substituting all placeholders.
+    ///     Builds the fully-formatted memory preview string, substituting all placeholders.
     /// </summary>
     private string FormatMemoryText(
         byte memoryId,
@@ -178,7 +179,8 @@ public partial class OtMiscTab : IDisposable
         string variableText;
         if (argType != MemoryArgType.None)
         {
-            var argMatch = AppService.GetMemoryArgumentComboItems(argType, MemoryGen).FirstOrDefault(i => i.Value == variable);
+            var argMatch = AppService.GetMemoryArgumentComboItems(argType, MemoryGen)
+                .FirstOrDefault(i => i.Value == variable);
             variableText = argMatch?.Text ?? variable.ToString() ?? string.Empty;
         }
         else
@@ -398,12 +400,12 @@ public partial class OtMiscTab : IDisposable
     }
 
     /// <summary>
-    /// Builds the affixed ribbon combo items for the given Pokémon's format.
-    /// Includes "None" (-1) and every ribbon/mark slot that can be affixed (i.e.
-    /// any ribbon/mark whose name can be mapped to a <see cref="RibbonIndex" />),
-    /// regardless of whether the Pokémon currently has each ribbon. This ensures
-    /// the selector is always fully populated and does not go stale when ribbons
-    /// are toggled on the Ribbons tab.
+    ///     Builds the affixed ribbon combo items for the given Pokémon's format.
+    ///     Includes "None" (-1) and every ribbon/mark slot that can be affixed (i.e.
+    ///     any ribbon/mark whose name can be mapped to a <see cref="RibbonIndex" />),
+    ///     regardless of whether the Pokémon currently has each ribbon. This ensures
+    ///     the selector is always fully populated and does not go stale when ribbons
+    ///     are toggled on the Ribbons tab.
     /// </summary>
     private List<ComboItem> BuildAffixedRibbonItems()
     {
@@ -428,7 +430,7 @@ public partial class OtMiscTab : IDisposable
                 shortName = shortName["Ribbon".Length..];
             }
 
-            if (!Enum.TryParse<RibbonIndex>(shortName, ignoreCase: true, out var idx))
+            if (!Enum.TryParse<RibbonIndex>(shortName, true, out var idx))
             {
                 continue;
             }

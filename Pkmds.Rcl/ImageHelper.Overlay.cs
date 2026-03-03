@@ -1,8 +1,9 @@
 ﻿namespace Pkmds.Rcl;
 
 /// <summary>
-/// Partial class for overlay icon sprite filename generation (alpha, dynamax, held item, party slot, rare, starter, team
-/// indicators).
+///     Partial class for overlay icon sprite filename generation (alpha, dynamax, held item, party slot, rare, starter,
+///     team
+///     indicators).
 /// </summary>
 public static partial class ImageHelper
 {

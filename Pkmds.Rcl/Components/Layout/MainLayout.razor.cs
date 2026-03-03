@@ -11,10 +11,19 @@ public partial class MainLayout : IDisposable
     private bool isCheckingForUpdate;
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
+    private bool systemIsDarkMode;
+    private ThemeMode themeMode = ThemeMode.System;
 
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
 
     protected override void OnInitialized() => RefreshService.OnAppStateChanged += StateHasChanged;
+
+    private bool ComputeIsDarkMode() => themeMode switch
+    {
+        ThemeMode.Dark => true,
+        ThemeMode.Light => false,
+        _ => systemIsDarkMode
+    };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -23,8 +32,19 @@ public partial class MainLayout : IDisposable
             return;
         }
 
-        isDarkMode = await mudThemeProvider.GetSystemDarkModeAsync();
+        systemIsDarkMode = await mudThemeProvider.GetSystemDarkModeAsync();
         await mudThemeProvider.WatchSystemDarkModeAsync(OnSystemPreferenceChanged);
+
+        // Restore persisted theme preference
+        var storedTheme = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_theme");
+        themeMode = storedTheme switch
+        {
+            "dark" => ThemeMode.Dark,
+            "light" => ThemeMode.Light,
+            _ => ThemeMode.System
+        };
+        isDarkMode = ComputeIsDarkMode();
+        RefreshService.RefreshTheme(isDarkMode);
 
         var storedHaX = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_hax_enabled");
         if (storedHaX == "true")
@@ -38,23 +58,51 @@ public partial class MainLayout : IDisposable
 
     private Task OnSystemPreferenceChanged(bool newValue)
     {
-        isDarkMode = newValue;
-        RefreshService.RefreshTheme(isDarkMode);
-        StateHasChanged();
+        systemIsDarkMode = newValue;
+        if (themeMode == ThemeMode.System)
+        {
+            isDarkMode = newValue;
+            RefreshService.RefreshTheme(isDarkMode);
+            StateHasChanged();
+        }
+
         return Task.CompletedTask;
     }
 
     private void OnIsDarkModeChanged(bool newValue)
     {
-        isDarkMode = newValue;
-        RefreshService.RefreshTheme(isDarkMode);
-        StateHasChanged();
+        systemIsDarkMode = newValue;
+        if (themeMode == ThemeMode.System)
+        {
+            isDarkMode = newValue;
+            RefreshService.RefreshTheme(isDarkMode);
+            StateHasChanged();
+        }
     }
 
-    private void OnThemeSwitchChanged(bool newValue)
+    private async Task OnThemeModeChanged(ThemeMode newMode)
     {
-        isDarkMode = newValue;
+        themeMode = newMode;
+        isDarkMode = ComputeIsDarkMode();
         RefreshService.RefreshTheme(isDarkMode);
+
+        if (themeMode == ThemeMode.System)
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "pkmds_theme");
+            // Remove attribute so @media (prefers-color-scheme) takes over in CSS
+            await JSRuntime.InvokeVoidAsync(
+                "eval", "document.documentElement.removeAttribute('data-theme')");
+        }
+        else
+        {
+            var themeStr = themeMode == ThemeMode.Dark
+                ? "dark"
+                : "light";
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_theme", themeStr);
+            await JSRuntime.InvokeVoidAsync(
+                "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
+        }
+
         StateHasChanged();
     }
 
@@ -70,7 +118,7 @@ public partial class MainLayout : IDisposable
                     "Illegal mode activated. Editing restrictions are now lifted. " +
                     "Pokémon created or modified in this mode may be illegal and untradable. " +
                     "Please behave.",
-                    yesText: "I understand");
+                    "I understand");
                 await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_warning_ack", "true");
             }
         }
@@ -540,6 +588,8 @@ public partial class MainLayout : IDisposable
         // No need for target/rel; we're just triggering a download.
         await element.InvokeVoidAsync("click");
     }
+
+    private enum ThemeMode { Light, System, Dark }
 }
 
 //private MudTheme myTheme = new()

@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for PKHaX (Illegal Mode) stat-editing behaviour.
+///     Tests for PKHaX (Illegal Mode) stat-editing behaviour.
 /// </summary>
 public class HaXModeTests
 {
@@ -49,7 +49,7 @@ public class HaXModeTests
         var pkm = LoadLucario();
         var originalHp = pkm.Stat_HPMax;
 
-        StatsTab.ApplyHaXStatHp(pkm, haXEnabled: false, newValue: 9999);
+        StatsTab.ApplyHaXStatHp(pkm, false, 9999);
 
         pkm.Stat_HPMax.Should().Be(originalHp, "stat should not change when HaX is disabled");
     }
@@ -59,7 +59,7 @@ public class HaXModeTests
     {
         var pkm = LoadLucario();
 
-        StatsTab.ApplyHaXStatHp(pkm, haXEnabled: true, newValue: 9999);
+        StatsTab.ApplyHaXStatHp(pkm, true, 9999);
 
         pkm.Stat_HPMax.Should().Be(9999);
         pkm.Stat_HPCurrent.Should().Be(9999);
@@ -72,7 +72,7 @@ public class HaXModeTests
     {
         var pkm = LoadLucario();
 
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 65535, (s, val) => s.Stat_ATK = val);
+        StatsTab.ApplyHaXStat(pkm, true, 65535, (s, val) => s.Stat_ATK = val);
 
         pkm.Stat_ATK.Should().Be(65535);
     }
@@ -83,7 +83,7 @@ public class HaXModeTests
         var pkm = LoadLucario();
         var originalAtk = pkm.Stat_ATK;
 
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: false, newValue: 65535, (s, val) => s.Stat_ATK = val);
+        StatsTab.ApplyHaXStat(pkm, false, 65535, (s, val) => s.Stat_ATK = val);
 
         pkm.Stat_ATK.Should().Be(originalAtk);
     }
@@ -93,7 +93,7 @@ public class HaXModeTests
     {
         var pkm = LoadLucario();
 
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 1234, (s, val) => s.Stat_DEF = val);
+        StatsTab.ApplyHaXStat(pkm, true, 1234, (s, val) => s.Stat_DEF = val);
 
         pkm.Stat_DEF.Should().Be(1234);
     }
@@ -103,7 +103,7 @@ public class HaXModeTests
     {
         var pkm = LoadLucario();
 
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 5678, (s, val) => s.Stat_SPA = val);
+        StatsTab.ApplyHaXStat(pkm, true, 5678, (s, val) => s.Stat_SPA = val);
 
         pkm.Stat_SPA.Should().Be(5678);
     }
@@ -113,7 +113,7 @@ public class HaXModeTests
     {
         var pkm = LoadLucario();
 
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 4321, (s, val) => s.Stat_SPD = val);
+        StatsTab.ApplyHaXStat(pkm, true, 4321, (s, val) => s.Stat_SPD = val);
 
         pkm.Stat_SPD.Should().Be(4321);
     }
@@ -123,7 +123,7 @@ public class HaXModeTests
     {
         var pkm = LoadLucario();
 
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: 9876, (s, val) => s.Stat_SPE = val);
+        StatsTab.ApplyHaXStat(pkm, true, 9876, (s, val) => s.Stat_SPE = val);
 
         pkm.Stat_SPE.Should().Be(9876);
     }
@@ -133,12 +133,12 @@ public class HaXModeTests
     {
         var pkm = LoadLucario();
 
-        StatsTab.ApplyHaXStatHp(pkm, haXEnabled: true, newValue: ushort.MaxValue);
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_ATK = val);
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_DEF = val);
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_SPA = val);
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_SPD = val);
-        StatsTab.ApplyHaXStat(pkm, haXEnabled: true, newValue: ushort.MaxValue, (s, val) => s.Stat_SPE = val);
+        StatsTab.ApplyHaXStatHp(pkm, true, ushort.MaxValue);
+        StatsTab.ApplyHaXStat(pkm, true, ushort.MaxValue, (s, val) => s.Stat_ATK = val);
+        StatsTab.ApplyHaXStat(pkm, true, ushort.MaxValue, (s, val) => s.Stat_DEF = val);
+        StatsTab.ApplyHaXStat(pkm, true, ushort.MaxValue, (s, val) => s.Stat_SPA = val);
+        StatsTab.ApplyHaXStat(pkm, true, ushort.MaxValue, (s, val) => s.Stat_SPD = val);
+        StatsTab.ApplyHaXStat(pkm, true, ushort.MaxValue, (s, val) => s.Stat_SPE = val);
 
         pkm.Stat_HPMax.Should().Be(ushort.MaxValue);
         pkm.Stat_ATK.Should().Be(ushort.MaxValue);

@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for memory editing support (Gen 6+).
+///     Tests for memory editing support (Gen 6+).
 /// </summary>
 public class MemoryEditorTests
 {
@@ -13,7 +13,8 @@ public class MemoryEditorTests
     [InlineData(typeof(PA8))]
     [InlineData(typeof(PK9))]
     [InlineData(typeof(PA9))]
-    public void PKM_Gen6Plus_ImplementsIMemoryOT(Type pkmType) => typeof(IMemoryOT).IsAssignableFrom(pkmType).Should().BeTrue();
+    public void PKM_Gen6Plus_ImplementsIMemoryOT(Type pkmType) =>
+        typeof(IMemoryOT).IsAssignableFrom(pkmType).Should().BeTrue();
 
     [Theory]
     [InlineData(typeof(PK6))]
@@ -23,7 +24,8 @@ public class MemoryEditorTests
     [InlineData(typeof(PA8))]
     [InlineData(typeof(PK9))]
     [InlineData(typeof(PA9))]
-    public void PKM_Gen6Plus_ImplementsIMemoryHT(Type pkmType) => typeof(IMemoryHT).IsAssignableFrom(pkmType).Should().BeTrue();
+    public void PKM_Gen6Plus_ImplementsIMemoryHT(Type pkmType) =>
+        typeof(IMemoryHT).IsAssignableFrom(pkmType).Should().BeTrue();
 
     [Theory]
     [InlineData(typeof(PK1))]
@@ -31,12 +33,14 @@ public class MemoryEditorTests
     [InlineData(typeof(PK3))]
     [InlineData(typeof(PK4))]
     [InlineData(typeof(PK5))]
-    public void PKM_PreGen6_DoesNotImplementIMemoryOT(Type pkmType) => typeof(IMemoryOT).IsAssignableFrom(pkmType).Should().BeFalse();
+    public void PKM_PreGen6_DoesNotImplementIMemoryOT(Type pkmType) =>
+        typeof(IMemoryOT).IsAssignableFrom(pkmType).Should().BeFalse();
 
     [Theory]
     [InlineData(typeof(PK6))]
     [InlineData(typeof(PK7))]
-    public void PKM_Gen6And7_ImplementsIAffection(Type pkmType) => typeof(IAffection).IsAssignableFrom(pkmType).Should().BeTrue();
+    public void PKM_Gen6And7_ImplementsIAffection(Type pkmType) =>
+        typeof(IAffection).IsAssignableFrom(pkmType).Should().BeTrue();
 
     [Theory]
     [InlineData(typeof(PK8))]
@@ -44,7 +48,8 @@ public class MemoryEditorTests
     [InlineData(typeof(PA8))]
     [InlineData(typeof(PK9))]
     [InlineData(typeof(PA9))]
-    public void PKM_Gen8Plus_DoesNotImplementIAffection(Type pkmType) => typeof(IAffection).IsAssignableFrom(pkmType).Should().BeFalse();
+    public void PKM_Gen8Plus_DoesNotImplementIAffection(Type pkmType) =>
+        typeof(IAffection).IsAssignableFrom(pkmType).Should().BeFalse();
 
     [Fact]
     public void OTMemory_PK6_CanBeSetAndRead()

@@ -82,8 +82,8 @@ public partial class PokemonSlotComponent : IDisposable
     };
 
     /// <returns>
-    /// <see langword="true" /> = legal, <see langword="false" /> = illegal/fishy,
-    /// <see langword="null" /> = no Pokémon in slot (skip indicator).
+    ///     <see langword="true" /> = legal, <see langword="false" /> = illegal/fishy,
+    ///     <see langword="null" /> = no Pokémon in slot (skip indicator).
     /// </returns>
     private bool? GetLegalityValid() => legalityValid;
 

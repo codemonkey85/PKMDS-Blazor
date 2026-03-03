@@ -11,7 +11,7 @@ public partial class LegalityReportTab : RefreshAwareComponent
     private LegalityStatus? statusFilter;
 
     /// <summary>
-    /// Callback invoked after a row is clicked to jump to the Party / Box tab.
+    ///     Callback invoked after a row is clicked to jump to the Party / Box tab.
     /// </summary>
     [Parameter]
     public EventCallback OnJumpToPartyBox { get; set; }
@@ -49,7 +49,7 @@ public partial class LegalityReportTab : RefreshAwareComponent
             }
 
             var la = AppService.GetLegalityAnalysis(pkm);
-            entries.Add(BuildEntry(pkm, la, isParty: true, box: 0, slot: i));
+            entries.Add(BuildEntry(pkm, la, true, 0, i));
         }
 
         // --- Box slots (yield after every box to keep the UI responsive) ---
@@ -64,7 +64,7 @@ public partial class LegalityReportTab : RefreshAwareComponent
                 }
 
                 var la = AppService.GetLegalityAnalysis(pkm);
-                entries.Add(BuildEntry(pkm, la, isParty: false, box: box, slot: slot));
+                entries.Add(BuildEntry(pkm, la, false, box, slot));
             }
 
             // Yield after every box so the progress spinner stays animated.
@@ -80,7 +80,8 @@ public partial class LegalityReportTab : RefreshAwareComponent
 
     private LegalityReportEntry BuildEntry(PKM pkm, LegalityAnalysis la, bool isParty, int box, int slot)
     {
-        var speciesName = AppService.GetPokemonSpeciesName(pkm.Species) ?? pkm.Species.ToString(CultureInfo.InvariantCulture);
+        var speciesName = AppService.GetPokemonSpeciesName(pkm.Species) ??
+                          pkm.Species.ToString(CultureInfo.InvariantCulture);
         var location = isParty
             ? $"Party {slot + 1}"
             : $"Box {box + 1}, Slot {slot + 1}";
@@ -123,7 +124,7 @@ public partial class LegalityReportTab : RefreshAwareComponent
         {
             if (!result.Valid)
             {
-                return ctx.Humanize(in result, verbose: false);
+                return ctx.Humanize(in result, false);
             }
         }
 

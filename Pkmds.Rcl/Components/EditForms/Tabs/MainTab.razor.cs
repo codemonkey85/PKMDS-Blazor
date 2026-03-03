@@ -40,7 +40,7 @@ public partial class MainTab : IDisposable
         }
 
         var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in r, verbose: false);
+        return ctx.Humanize(in r, false);
     }
 
     protected override void OnInitialized() =>
@@ -257,7 +257,10 @@ public partial class MainTab : IDisposable
     {
         var parameters = new DialogParameters<PidEcDialog> { { x => x.Pokemon, Pokemon } };
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true };
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true
+        };
 
         await DialogService.ShowAsync<PidEcDialog>("PID / EC Generator", parameters, options);
     }

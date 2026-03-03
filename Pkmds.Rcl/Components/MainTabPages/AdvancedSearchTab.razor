@@ -527,19 +527,22 @@
                             <HeaderContent>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => r.SpeciesName))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<AdvancedSearchResult, object>(r => r.SpeciesName))">
                                         Species
                                     </MudTableSortLabel>
                                 </MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => r.Location))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<AdvancedSearchResult, object>(r => r.Location))">
                                         Location
                                     </MudTableSortLabel>
                                 </MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => (int)r.Pokemon.CurrentLevel))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<AdvancedSearchResult, object>(r => (int)r.Pokemon.CurrentLevel))">
                                         Lv
                                     </MudTableSortLabel>
                                 </MudTh>
@@ -547,13 +550,15 @@
                                 <MudTh>Shiny</MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => (int)r.Pokemon.Nature))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<AdvancedSearchResult, object>(r => (int)r.Pokemon.Nature))">
                                         Nature
                                     </MudTableSortLabel>
                                 </MudTh>
 
                                 <MudTh>
-                                    <MudTableSortLabel SortBy="@(new Func<AdvancedSearchResult, object>(r => r.Pokemon.Ability))">
+                                    <MudTableSortLabel
+                                        SortBy="@(new Func<AdvancedSearchResult, object>(r => r.Pokemon.Ability))">
                                         Ability
                                     </MudTableSortLabel>
                                 </MudTh>

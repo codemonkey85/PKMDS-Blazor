@@ -19,7 +19,10 @@ public partial class LegalityTab : IDisposable
                             && MoveResult.AllValid(la.Info.Relearn);
 
     private bool HasRibbonIssues => Analysis is { } la &&
-                                    la.Results.Any(r => r is { Valid: false, Identifier: CheckIdentifier.Ribbon or CheckIdentifier.RibbonMark });
+                                    la.Results.Any(r => r is
+                                    {
+                                        Valid: false, Identifier: CheckIdentifier.Ribbon or CheckIdentifier.RibbonMark
+                                    });
 
     private bool HasMoveIssues => Analysis is { } la &&
                                   (!MoveResult.AllValid(la.Info.Moves) ||
@@ -27,16 +30,22 @@ public partial class LegalityTab : IDisposable
 
     private bool HasRelearnMoveIssues => Analysis is { } la &&
                                          (!MoveResult.AllValid(la.Info.Relearn) ||
-                                          la.Results.Any(r => r is { Valid: false, Identifier: CheckIdentifier.RelearnMove }));
+                                          la.Results.Any(r => r is
+                                              { Valid: false, Identifier: CheckIdentifier.RelearnMove }));
 
     private bool HasBallIssues => Analysis is { } la &&
                                   la.Results.Any(r => r is { Valid: false, Identifier: CheckIdentifier.Ball });
 
     private bool HasEncounterIssues => Analysis is { } la &&
-                                       la.Results.Any(r => r is { Valid: false, Identifier: CheckIdentifier.Encounter });
+                                       la.Results.Any(r => r is
+                                           { Valid: false, Identifier: CheckIdentifier.Encounter });
 
     private bool HasMetLocationIssues => Analysis is { } la &&
-                                         la.Results.Any(r => r is { Valid: false, Identifier: CheckIdentifier.Level or CheckIdentifier.Encounter });
+                                         la.Results.Any(r => r is
+                                         {
+                                             Valid: false,
+                                             Identifier: CheckIdentifier.Level or CheckIdentifier.Encounter
+                                         });
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
@@ -76,7 +85,7 @@ public partial class LegalityTab : IDisposable
             return;
         }
 
-        Pokemon.SetMoveset(random: false);
+        Pokemon.SetMoveset(false);
 
         // Update Technical Records (Gen 8+ SwSh / SV / ZA) to reflect the new moves,
         // mirroring PKMEditor's SetSuggestedMoves behaviour.
@@ -272,6 +281,6 @@ public partial class LegalityTab : IDisposable
         }
 
         var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in result, verbose: false);
+        return ctx.Humanize(in result, false);
     }
 }

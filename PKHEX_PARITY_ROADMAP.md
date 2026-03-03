@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5; One-Touch Evolve planned — §1.1, tracks #448; Theme-aware loading screen planned — §4.1, tracks #449)
+**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5; One-Touch Evolve planned — §1.1, tracks #448; Theme-aware loading screen + three-way toggle implemented — §4.1, tracks #449)
 
 ---
 
@@ -761,7 +761,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] **Fix "Load Pokémon File" and "Load Mystery Gift File" slot behaviour (#445)** — use currently selected slot (or first empty box slot as fallback), write via `AppService.EditFormPokemon`/`SavePokemon`, show snackbars instead of blocking dialogs, and navigate to Party/Box tab after placement. Requires adding `RequestJumpToPartyBox` event to `IRefreshService`; extract `TrySelectFirstEmptyBoxSlot` into `IAppService`.
 - [ ] Add keyboard shortcuts for common operations
 - [ ] Implement undo/redo functionality
-- [ ] **Theme-aware startup / loading screen (#449)** — detect `prefers-color-scheme` and persisted user preference (`pkmds_theme` in `localStorage`) before WASM boots; stamp `data-theme` on `<html>` via an inline script in `index.html`; add `@media (prefers-color-scheme: dark)` + `[data-theme]` CSS rules to `app.css`; persist the user's manual toggle to `localStorage` in `MainLayout.razor.cs` so the preference survives page reloads; honor stored preference over live system changes. Affects: `index.html`, `app.css`, `MainLayout.razor.cs`.
+- [x] **Theme-aware startup / loading screen + three-way theme toggle (#449)** — inline script in `index.html` stamps `data-theme` on `<html>` before WASM boots (no white flash); `app.css` adds `@media (prefers-color-scheme: dark)` + `[data-theme]` CSS rules for the loading screen; `MainLayout.razor` AppBar toggle redesigned from `MudSwitch` to a `MudButtonGroup` with Light / System / Dark icon buttons; `MainLayout.razor.cs` gains `ThemeMode` enum, persists choice to `pkmds_theme` in `localStorage`, and only follows live OS changes in System mode.
 - [ ] Add theme customization (dark/light modes already exist, add more)
 - [ ] Create customizable hotkeys
 - [ ] Add tooltip help system

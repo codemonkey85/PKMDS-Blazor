@@ -32,8 +32,9 @@
                 }
             </MudSelect>
         </MudStack>
-        <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.GameOrigin)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                           Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.GameOrigin))"/>
+        <LegalityIndicator
+            Severity="@(GetCheckResult(CheckIdentifier.GameOrigin)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+            Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.GameOrigin))"/>
     </MudStack>
 
     @if (Pokemon is IBattleVersion)
@@ -74,8 +75,9 @@
                              SearchFunc="@SearchMetLocations"
                              ToStringFunc="@(metLocation => metLocation?.Text)"/>
         </MudStack>
-        <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Encounter)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                           Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Encounter))"/>
+        <LegalityIndicator
+            Severity="@(GetCheckResult(CheckIdentifier.Encounter)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+            Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Encounter))"/>
     </MudStack>
 
     @if (saveGeneration >= 3)
@@ -108,8 +110,9 @@
                     }
                 </MudSelect>
             </MudStack>
-            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Ball)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ball))"/>
+            <LegalityIndicator
+                Severity="@(GetCheckResult(CheckIdentifier.Ball)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Ball))"/>
         </MudStack>
     }
 
@@ -124,8 +127,9 @@
                                  @bind-Value="@Pokemon.MetLevel"
                                  For="@(() => Pokemon.MetLevel)"/>
             </MudStack>
-            <LegalityIndicator Severity="@(GetCheckResult(CheckIdentifier.Level)?.Judgement ?? PKHeX.Core.Severity.Valid)"
-                               Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Level))"/>
+            <LegalityIndicator
+                Severity="@(GetCheckResult(CheckIdentifier.Level)?.Judgement ?? PKHeX.Core.Severity.Valid)"
+                Message="@HumanizeCheckResult(GetCheckResult(CheckIdentifier.Level))"/>
         </MudStack>
     }
 
