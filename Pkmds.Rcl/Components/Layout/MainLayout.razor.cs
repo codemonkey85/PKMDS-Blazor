@@ -56,26 +56,30 @@ public partial class MainLayout : IDisposable
         StateHasChanged();
     }
 
-    private Task OnSystemPreferenceChanged(bool newValue)
+    private async Task OnSystemPreferenceChanged(bool newValue)
     {
         systemIsDarkMode = newValue;
         if (themeMode == ThemeMode.System)
         {
             isDarkMode = newValue;
             RefreshService.RefreshTheme(isDarkMode);
+            var themeStr = newValue ? "dark" : "light";
+            await JSRuntime.InvokeVoidAsync(
+                "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
             StateHasChanged();
         }
-
-        return Task.CompletedTask;
     }
 
-    private void OnIsDarkModeChanged(bool newValue)
+    private async Task OnIsDarkModeChanged(bool newValue)
     {
         systemIsDarkMode = newValue;
         if (themeMode == ThemeMode.System)
         {
             isDarkMode = newValue;
             RefreshService.RefreshTheme(isDarkMode);
+            var themeStr = newValue ? "dark" : "light";
+            await JSRuntime.InvokeVoidAsync(
+                "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
             StateHasChanged();
         }
     }
@@ -86,21 +90,17 @@ public partial class MainLayout : IDisposable
         isDarkMode = ComputeIsDarkMode();
         RefreshService.RefreshTheme(isDarkMode);
 
+        var themeStr = isDarkMode ? "dark" : "light";
+        await JSRuntime.InvokeVoidAsync(
+            "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
+
         if (themeMode == ThemeMode.System)
         {
             await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "pkmds_theme");
-            // Remove attribute so @media (prefers-color-scheme) takes over in CSS
-            await JSRuntime.InvokeVoidAsync(
-                "eval", "document.documentElement.removeAttribute('data-theme')");
         }
         else
         {
-            var themeStr = themeMode == ThemeMode.Dark
-                ? "dark"
-                : "light";
             await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_theme", themeStr);
-            await JSRuntime.InvokeVoidAsync(
-                "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
         }
 
         StateHasChanged();
