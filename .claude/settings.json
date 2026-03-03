@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "defaultMode": "dontAsk",
   "permissions": {
     "allow": [
       "Bash(dotnet *)",
@@ -15,5 +14,9 @@
       "mcp__*"
     ],
     "deny": []
+  },
+  "defaultMode": "dontAsk",
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
   }
 }
