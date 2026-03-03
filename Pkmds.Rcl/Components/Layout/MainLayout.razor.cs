@@ -64,22 +64,7 @@ public partial class MainLayout : IDisposable
             isDarkMode = newValue;
             RefreshService.RefreshTheme(isDarkMode);
             var themeStr = newValue ? "dark" : "light";
-            await JSRuntime.InvokeVoidAsync(
-                "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
-            StateHasChanged();
-        }
-    }
-
-    private async Task OnIsDarkModeChanged(bool newValue)
-    {
-        systemIsDarkMode = newValue;
-        if (themeMode == ThemeMode.System)
-        {
-            isDarkMode = newValue;
-            RefreshService.RefreshTheme(isDarkMode);
-            var themeStr = newValue ? "dark" : "light";
-            await JSRuntime.InvokeVoidAsync(
-                "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
+            await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
             StateHasChanged();
         }
     }
@@ -91,8 +76,7 @@ public partial class MainLayout : IDisposable
         RefreshService.RefreshTheme(isDarkMode);
 
         var themeStr = isDarkMode ? "dark" : "light";
-        await JSRuntime.InvokeVoidAsync(
-            "eval", $"document.documentElement.setAttribute('data-theme', '{themeStr}')");
+        await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
 
         if (themeMode == ThemeMode.System)
         {

@@ -147,8 +147,8 @@ public class AdvancedSearchTests
 
         // Assert
         anyTackle.Should().Contain(r => r.Pokemon.Move1 == tackle || r.Pokemon.Move2 == tackle
-                                                                  || r.Pokemon.Move3 == tackle ||
-                                                                  r.Pokemon.Move4 == tackle);
+                                                                  || r.Pokemon.Move3 == tackle
+                                                                  || r.Pokemon.Move4 == tackle);
         filterNomove.Should().BeEmpty("no Pokémon can know move ID 9999");
     }
 

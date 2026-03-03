@@ -5,3 +5,7 @@
     var theme = stored || (prefersDark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
 })();
+
+window.setAppTheme = function (theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+};
