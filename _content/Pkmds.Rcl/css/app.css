@@ -171,6 +171,26 @@ body, html {
     content: var(--blazor-load-percentage-text, "Loading");
 }
 
+/* System preference — no-JS path, always applied */
+@media (prefers-color-scheme: dark) {
+    body { background-color: #27272f; }
+    .loading-progress circle { stroke: #424242; }
+    .loading-progress circle:last-child { stroke: #90caf9; }
+    .loading-progress-text { color: #ffffff; }
+}
+
+/* Explicit dark override (set by inline script / Blazor JS interop) */
+[data-theme="dark"] body { background-color: #27272f; }
+[data-theme="dark"] .loading-progress circle { stroke: #424242; }
+[data-theme="dark"] .loading-progress circle:last-child { stroke: #90caf9; }
+[data-theme="dark"] .loading-progress-text { color: #ffffff; }
+
+/* Explicit light override (beats system dark preference when user chose light) */
+[data-theme="light"] body { background-color: #ffffff; }
+[data-theme="light"] .loading-progress circle { stroke: #e0e0e0; }
+[data-theme="light"] .loading-progress circle:last-child { stroke: #1b6ec2; }
+[data-theme="light"] .loading-progress-text { color: inherit; }
+
 /* Drag and drop styles */
 .slot-dragging {
     opacity: 0.5;
