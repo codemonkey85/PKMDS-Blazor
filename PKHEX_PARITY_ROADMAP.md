@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5)
+**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5; One-Touch Evolve planned — §1.1, tracks #448)
 
 ---
 
@@ -193,6 +193,27 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 **PKHeX Reference:** `CB_ExtraBytes` + `TB_ExtraByte` in OT/Misc tab
 **Tasks:**
 - [ ] Add raw byte editor: offset selector (hex) + value field (0–255) for any byte in the Pokémon's data that is not exposed by a named field; useful for accessing undocumented generation-specific bytes
+
+#### One-Touch Evolve
+**Status:** ❌ Not Implemented
+**Complexity:** Medium
+**Priority:** Medium
+**Tracks:** #448
+**PKHeX Reference:** `EvolutionTree.GetEvolutionTree(context)` / `tree.Forward.GetForward(species, form)` — no direct WinForms UI equivalent; this is a PKMDS quality-of-life addition
+**Tasks:**
+- [ ] Add `IAppService.GetDirectEvolutions(PKM)` returning `IReadOnlyList<EvolutionMethod>` — queries `EvolutionTree.GetEvolutionTree(pkm.Context).Forward.GetForward(pkm.Species, pkm.Form)` and filters out zero-species entries
+- [ ] Add **Evolve** button to `MainTab.razor`, visible only when `GetDirectEvolutions` returns at least one result and `!Pokemon.IsEgg`
+- [ ] Single-evolution path (e.g., Caterpie → Metapod): evolve immediately on button click
+- [ ] Branching-evolution path (e.g., Eevee, Slowpoke, Tyrogue, Wurmple): open `EvolvePickerDialog` showing each branch with sprite, localized species name, and method label (e.g., "Level 36", "Use Fire Stone")
+- [ ] `ApplyEvolution(EvolutionMethod)` logic:
+  - Set `pkm.Species` and `pkm.Form` via `method.GetDestinationForm(pkm.Form)`
+  - Bump `pkm.CurrentLevel` to `method.Level` if currently below minimum
+  - Adjust `pkm.Gender` via `GetSaneGender()`
+  - Sync nickname: call `pkm.ClearNickname()` when `!pkm.IsNicknamed`
+  - Wurmple special case: in Gen 6+ set `pkm.EncryptionConstant` via `WurmpleUtil.GetWurmpleEncryptionConstant(evoVal)`; in Gen 3–5 the EC setter is a no-op (`EncryptionConstant { get => PID; set { } }`), so set `pkm.PID` directly to a value satisfying `WurmpleUtil.GetWurmpleEvoVal(pid) == evoVal`
+  - Call `AppService.LoadPokemonStats(pkm)` and `RefreshService.Refresh()`
+- [ ] Create `EvolvePickerDialog.razor[.cs]` — MudBlazor dialog listing evolution choices, closes with the selected `EvolutionMethod`
+- [ ] Unit tests: no-evo guard, single-evo direct apply, Eevee multi-branch, Wurmple EC correction, level-bump, nickname sync (nicknamed + un-nicknamed)
 
 ### 1.2 Legality Checker
 **Status:** ⚠️ Partial (core analysis, UI, fix buttons, and batch report implemented; comprehensive unit tests remain)
