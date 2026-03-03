@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5; One-Touch Evolve planned — §1.1, tracks #448; Theme-aware loading screen + three-way toggle implemented — §4.1, tracks #449)
+**Last Updated:** 2026-03-03 (Box pop-out dialogs plan corrected to §6.2, now tracks #352; cross-save Pokémon transfer planned — §5.8, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5; One-Touch Evolve planned — §1.1, tracks #448; Theme-aware loading screen + three-way toggle implemented — §4.1, tracks #449)
 
 ---
 
@@ -790,6 +790,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Create backup management system
 
 ### 4.3 Box Management Enhancements
+**Tracks:** #352
 **Tasks:**
 - [ ] Add box cloning
 - [ ] Implement box sorting (by species, level, shiny, etc.)
@@ -1017,6 +1018,27 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 - Screens, doubles/triples modifiers
 - Tera type STAB (SV)
 
+### 5.8 Cross-Save Pokémon Transfer
+**Status:** ❌ Not Implemented
+**Complexity:** High
+**Priority:** Medium
+**Tracks:** #14
+**Note:** Browser sandboxing prevents the PKHeX model (two separate windows). PKMDS will instead support loading two save files within a single session.
+
+**Overview:** Allow a second save file to be loaded into memory alongside the primary save. A transfer UI lets the user move or copy Pokémon between the two saves. The secondary save's file can be written back to disk independently.
+
+**PKHeX Reference:** The PKHeX WinForms app supports opening a second save via `File > Open` in the `SAV_BoxViewer` context, allowing drag-and-drop between the two windows. PKMDS adapts this into a split-pane or dialog-based transfer UI within a single browser session.
+
+**Tasks:**
+- [ ] Extend `IAppState` with `SaveFile? SecondaryFile` and corresponding DI plumbing
+- [ ] Add "Open Second Save" button/menu item; loads a file into `SecondaryFile` without replacing `PrimaryFile`
+- [ ] Build `CrossSaveTransferDialog` (or a dedicated split-pane view) showing both saves' boxes side by side
+- [ ] Implement click-to-copy and/or drag-and-drop of Pokémon from secondary → primary (and bidirectionally)
+- [ ] Block transfers that PKHeX.Core would reject due to format incompatibility; surface a user-friendly error
+- [ ] Add "Save Secondary File" action to write the modified secondary save back to disk
+- [ ] Clear `SecondaryFile` on explicit close or when primary file is replaced
+- [ ] Write unit tests for the transfer logic (slot swap correctness, format-incompatibility guard)
+
 ---
 
 ## Priority 6: Minor Features & Polishing
@@ -1035,7 +1057,7 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 ### 6.2 Box Viewer Enhancements
 **Status:** ❌ Not Implemented
 **Complexity:** Medium
-**Tracks:** #14
+**Tracks:** #352
 **PKHeX Reference:** `SAVEditor.cs:503–528,1579–1594`, `SAV_BoxViewer.Designer.cs`, `SAV_BoxList.cs`
 **Tasks:**
 - [ ] **`SwapBoxes(int boxA, int boxB)`** — add to `IAppService` / `AppService`; swaps all Pokémon between two boxes, triggers `RefreshAppState`
@@ -1054,7 +1076,7 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
   - Subscribes to both `OnAppStateChanged` and `OnBoxStateChanged`
 - [ ] **Add trigger buttons to `PokemonStorageComponent`** — "Pop Out Box" (`OpenInNew` icon) and "All Boxes" (`GridView` icon) buttons in the box nav bar; both open their respective dialogs via `IDialogService`
 - [ ] **Unit tests** — `SwapBoxes` correctness; bUnit render tests for both dialogs
-- [ ] Implement box group viewer (SAV_GroupViewer) — follow-up
+- [ ] Implement box group viewer (SAV_GroupViewer) — follow-up (was #362, closed as duplicate; break out a new issue when ready)
 - [ ] Add box preview on hover — follow-up
 - [ ] Implement box quick-peek — follow-up
 
