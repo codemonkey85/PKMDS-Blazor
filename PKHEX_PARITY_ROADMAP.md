@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-03-02 (Encounter Database implemented — §2.2)
+**Last Updated:** 2026-03-03 (Box pop-out dialogs planned — §6.2, tracks #14; Bag performance plan added — §7.2; Damage Calculator planned — §5.7; Feature Documentation planned — §4.5)
 
 ---
 
@@ -796,17 +796,48 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Create collection value estimator (competitive viability)
 
 ### 4.5 Help & Documentation
-**Tasks:**
-- [ ] Add in-app tutorials
-- [ ] Create feature tooltips
-- [ ] Implement contextual help
-- [ ] Add FAQ section
-- [ ] Create video tutorial links
-- [ ] Add quick start guide
-- [ ] Implement onboarding for new users
-- [ ] Create generation-specific guides
-- [ ] Add legality checker explanations
-- [ ] Create glossary of terms
+**Tracks:** #110
+**Status:** ❌ Not Implemented
+**Complexity:** High
+**Priority:** Medium
+
+Three parallel tracks — wiki content authoring, in-app help links (code), and contextual onboarding/tooltips (code).
+
+#### Track A — GitHub Wiki Documentation Site
+- [ ] Scaffold all wiki pages with outline structure (Overview → Steps → Tips → See Also)
+- [ ] **Getting Started** — browser support, PWA install, loading a save file
+- [ ] **Box & Party Management** — visual grid, drag-and-drop, copy/paste, clone, delete, export slot
+- [ ] **Pokémon Editor — Main Tab** — species, nickname, gender, level, ability, held item, shiny, PID/EC generator
+- [ ] **Pokémon Editor — Stats Tab** — IVs, EVs, AVs/GVs, CP, Stat Nature, Dynamax Level, Tera Type, Is Alpha/Noble
+- [ ] **Pokémon Editor — Moves Tab** — move slots, PP/PP Ups, Relearn Moves, TR flags, Move Shop, Mastered/Plus moves
+- [ ] **Pokémon Editor — Met Tab** — met location, ball, origin game, Battle Version, Obedience Level, dates
+- [ ] **Pokémon Editor — OT/Misc Tab** — OT/HT info, memories, Geo Locations, Country/Region, Affixed Ribbon
+- [ ] **Pokémon Editor — Ribbons Tab** — ribbon categories, per-ribbon legality indicators
+- [ ] **Pokémon Editor — Cosmetic Tab** — markings, height/weight, scale, origin mark, favorite, contest stats, Pokérus
+- [ ] **Pokémon Editor — Legality Tab** — reading results, color coding, fix buttons, verbose report
+- [ ] **Bag / Inventory** — pouch tabs, item counts, HaX mode items, sort/favorites
+- [ ] **Trainer Info** — name, TID/SID, money, game version, badges
+- [ ] **Pokédex** — view/edit seen/caught, bulk fill, progress bars
+- [ ] **Records** — game statistics, Hall of Fame timing
+- [ ] **Legality Checker** — per-check explanations, batch legality report, fix buttons
+- [ ] **Advanced Search** — all filter fields, saved filters, batch Showdown export
+- [ ] **Encounter Database** — filters, shiny lock, "Generate Legal Pokémon", encounter types
+- [ ] **Mystery Gift Database** — search/filter, import, generate into slot
+- [ ] **Showdown Export** — single and batch export
+- [ ] **Settings** — theme toggle, PKHaX mode (with warning), verbose logging, Check for Updates
+- [ ] **Glossary** — EC, PID, TID, SID, HT, OT, legality, shiny types, etc.
+- [ ] **FAQ** — Why is my Pokémon illegal? What is HaX mode? What save files are supported?
+- [ ] Add screenshots for every major feature (annotated where helpful)
+
+#### Track B — In-App Help Links (Code)
+- [ ] Create `HelpButton.razor` component in `Pkmds.Rcl/Components/` — `MudTooltip` wrapping `MudIconButton` (HelpOutline icon), `WikiUrl` parameter, opens `_blank`
+- [ ] Add global Documentation button to `MainLayout.razor` AppBar (desktop: text+icon; mobile: icon-only) linking to wiki Home
+- [ ] Add `<HelpButton WikiUrl="...">` to each major tab: Party/Box, Bag, Trainer Info, Pokédex, Records, Advanced Search, Encounter DB, Mystery Gift DB, Legality Report, Pokémon Edit Form
+
+#### Track C — Contextual Onboarding & Field Tooltips (Code)
+- [ ] Add `HasDismissedOnboarding` bool to `IAppState` (persisted in localStorage as `pkmds_onboarding_v1`)
+- [ ] Add first-run onboarding card to `Home.razor` — shown when `!AppState.HasDismissedOnboarding`; card has Dismiss + Open Guide buttons
+- [ ] Add/expand `MudTooltip` on non-obvious fields: EC, PID, Battle Version, Obedience Level, Home Tracker, Affixed Ribbon, Ground Tile, Fateful Encounter, TID/SID
 
 ---
 
@@ -911,6 +942,59 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [x] **Unrestricted ability selection (HaX DEV mode)** — When HaX is on and format > 3, the slot-based selector is replaced by a `MudAutocomplete` over all ability IDs (`GameInfo.Strings.Ability`) plus a raw `AbilityNumber` slot picker (1/2/4), writing directly to `PKM.Ability`. Mirrors PKHeX `DEV_Ability` (StatEditor.cs:45). Gen 3 keeps the slot-based selector in both modes.
 - [x] Add unit tests for HaX-gated stat editing path (`HaXModeTests.cs`, 10 tests)
 
+### 5.7 Damage Calculator
+**Status:** ❌ Not Implemented
+**Complexity:** High
+**Priority:** Low
+**Tracks:** #443
+**Note:** PKMDS-exclusive feature — PKHeX has no native damage calculator.
+
+**Overview:** An interactive damage calculator opened as a dialog from the Pokémon editor. Pre-loads the selected Pokémon as the attacker; user configures a theoretical defender (species, level, nature, EVs/IVs), selects a move and field conditions (weather, terrain, stat stages), and sees a damage range, % of HP, and KO count. Modified attacker stats can optionally be written back to the Pokémon.
+
+**PKHeX Reference:** None — this is PKMDS-exclusive. Reference external damage calculators (e.g., Smogon's calc) for formula accuracy.
+
+**Tasks:**
+- [ ] Create `DamagePokemon` data model in `Pkmds.Core/Calculators/`
+- [ ] Create `DamageInput` record (attacker, defender, move, weather, terrain, context)
+- [ ] Create `DamageResult` record (min/max damage, % HP, 16-roll table, KO count, summary)
+- [ ] Implement `DamageCalculator` static class — Gen 3+ physical/special formula with modifier chain:
+  - [ ] Base damage formula `((2L/5+2) × Power × Atk/Def / 50) + 2`
+  - [ ] Stat stage multipliers (±6 steps, ignoring negative attacker/positive defender on crits)
+  - [ ] STAB multiplier (×1.5)
+  - [ ] Type effectiveness via `TypeChart` helper
+  - [ ] Weather modifiers (sun/rain ×1.5/×0.5 for boosted/weakened types)
+  - [ ] Terrain modifiers (electric/grassy/psychic ×1.3, misty ×0.5 on dragon)
+  - [ ] Critical hit multiplier (×1.5 Gen 6+, ×2.0 Gen 4–5)
+  - [ ] Burn halving (physical moves, attacker is burned)
+  - [ ] Basic held item multipliers (Choice Band/Specs ×1.5, Life Orb ×1.3)
+- [ ] Implement `TypeChart` helper — Gen 6+ 18-type effectiveness table
+- [ ] Build 16-roll table (85%–100% of max damage) and derive KO count / summary string
+- [ ] Design `DamageCalculatorDialog.razor` (MudDialog, large on desktop / full-screen on mobile):
+  - [ ] Attacker panel: pre-populated from selected PKM, all stat fields editable
+  - [ ] Defender panel: species picker with level, nature, EV/IV inputs, stat auto-compute
+  - [ ] Move selector: attacker's 4 current moves + "Custom move…" search option
+  - [ ] Field conditions: weather dropdown, terrain dropdown, stat stage spinners, burn toggle
+  - [ ] Critical Hit checkbox
+  - [ ] Results section: min–max range, % HP, roll table chips, KO summary
+  - [ ] Role selector at open time — toggle/radio lets user choose whether the selected PKM opens as attacker or defender
+  - [ ] "Swap Attacker / Defender" button — flips both panels; save target tracks the selected PKM regardless of role
+  - [ ] "Save changes to Pokémon" button — label reflects current role ("Save attacker changes…" / "Save defender changes…"); only visible when the selected PKM's fields differ from the original
+- [ ] Integrate calculator button into `PokemonEditForm.razor` toolbar
+- [ ] Implement "Save changes to Pokémon" — write modified EVs/IVs/level back via `AppService.SavePokemon()`, targeting the selected PKM regardless of attacker/defender slot
+- [ ] Write unit tests in `Pkmds.Tests/DamageCalculatorTests.cs` with known damage fixture values
+
+**MVP Scope (Gen 3+ only):**
+- Physical/special split; Gen 6+ 18-type chart; basic weather, terrain, items, and stat stages
+- No Gen 1–2 mechanics, no complex ability interactions, no Z/Max/multi-hit/fixed-damage moves
+
+**Deferred to follow-on issues:**
+- Gen 1–2 mechanics (special stat, Gen 1 type chart)
+- Complex abilities (Thick Fat, Levitate, Guts, Wonder Guard, Intimidate, etc.)
+- Z-moves / Dynamax Max Moves
+- Multi-hit and fixed-damage moves
+- Screens, doubles/triples modifiers
+- Tera type STAB (SV)
+
 ---
 
 ## Priority 6: Minor Features & Polishing
@@ -927,12 +1011,30 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Add trainer memo/notes
 
 ### 6.2 Box Viewer Enhancements
+**Status:** ❌ Not Implemented
+**Complexity:** Medium
+**Tracks:** #14
+**PKHeX Reference:** `SAVEditor.cs:503–528,1579–1594`, `SAV_BoxViewer.Designer.cs`, `SAV_BoxList.cs`
 **Tasks:**
-- [ ] Add multi-save box viewer (SAV_BoxViewer)
-- [ ] Implement box group viewer (SAV_GroupViewer)
-- [ ] Create box list view (SAV_BoxList)
-- [ ] Add box preview on hover
-- [ ] Implement box quick-peek
+- [ ] **`SwapBoxes(int boxA, int boxB)`** — add to `IAppService` / `AppService`; swaps all Pokémon between two boxes, triggers `RefreshAppState`
+- [ ] **`BoxViewerDialog`** (`Pkmds.Rcl/Components/Dialogs/BoxViewerDialog.razor[.cs]`) — single-box pop-out dialog (`SAV_BoxViewer` equivalent):
+  - `[Parameter] int InitialBox` — box to show on open
+  - Local `CurrentBox` for independent dialog navigation (prev/next + dropdown)
+  - Renders existing `BoxGrid` component; slot clicks select Pokémon for editing in main form
+  - "View All Boxes" button transitions to `BoxListDialog`
+  - Responsive: `MaxWidth.Large` on `sm+`; full-screen on `xs`
+  - Subscribes to `OnBoxStateChanged` to keep slots current
+- [ ] **`BoxListDialog`** (`Pkmds.Rcl/Components/Dialogs/BoxListDialog.razor[.cs]`) — all-boxes grid dialog (`SAV_BoxList` equivalent):
+  - Renders all `SaveFile.BoxCount` boxes in `MudGrid`: `xs=12 sm=6 md=4 lg=3`
+  - Each cell: box name header + `BoxGrid` + optional adjacent-box swap button (⇄)
+  - Swap button calls `AppService.SwapBoxes(i, i+1)`
+  - Full-screen on mobile; `MaxWidth.ExtraExtraLarge` + `FullWidth` + scrollable on desktop
+  - Subscribes to both `OnAppStateChanged` and `OnBoxStateChanged`
+- [ ] **Add trigger buttons to `PokemonStorageComponent`** — "Pop Out Box" (`OpenInNew` icon) and "All Boxes" (`GridView` icon) buttons in the box nav bar; both open their respective dialogs via `IDialogService`
+- [ ] **Unit tests** — `SwapBoxes` correctness; bUnit render tests for both dialogs
+- [ ] Implement box group viewer (SAV_GroupViewer) — follow-up
+- [ ] Add box preview on hover — follow-up
+- [ ] Implement box quick-peek — follow-up
 
 ### 6.3 Mail System
 **Status:** ❌ Not Implemented  
@@ -1008,6 +1110,34 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Optimize bundle size
 - [ ] Implement code splitting
 - [ ] Add performance monitoring
+
+#### 7.2a Bag/Inventory Performance (#299)
+**Status:** 🔲 Planned
+**Complexity:** Medium
+**Priority:** High
+**Tracks:** #299
+
+The Bag tab is slow to load on large saves (SV, SwSh) because all pouches render eagerly, virtualization is off by default, and empty item rows are included.
+
+**Root causes:**
+- All `MudTabPanel`/`MudDataGrid` instances are initialized at once even though only one tab is visible
+- `Virtualize` defaults to `false` due to known scrolling issues with fixed-height containers
+- Most pouches contain many empty slots (`Index == 0`, `Count == 0`) that are still rendered
+- No `CellTemplate` on the Item column — display mode falls back to raw integer rendering
+
+**Tasks:**
+- [ ] **Lazy-render inactive pouches** — track `ActivePouchIndex` + `RenderedPouches: HashSet<int>` in `BagTab.razor.cs`; only render a pouch's `MudDataGrid` once its tab has been activated; show `MudProgressLinear` placeholder until then
+- [ ] **Filter empty slots by default** — bind `MudDataGrid.Items` to `pouch.Items.Where(i => i.Index != 0)` when `ShowEmptySlots == false`; add a per-tab "Show empty slots" toggle (default off)
+- [ ] **Fix virtualization and enable by default** — resolve the scroll issue caused by `Height="calc(100vh - 300px)"` inside nested scroll containers (fix grid wrapper CSS in `app.css`); set `Virtualize="true"` by default; remove the "may cause scrolling issues" toggle once stable
+- [ ] **Add `CellTemplate` to Item column** — render `@ItemList[context.Item.Index]` as `MudText` in display mode so the grid has a lightweight non-edit render path
+- [ ] *(stretch)* **Evaluate replacing `MudDataGrid` with `<Virtualize>` + lightweight row component** — only if profiling after the above steps shows `MudDataGrid` itself as the remaining bottleneck
+
+**Files:**
+- `Pkmds.Rcl/Components/MainTabPages/BagTab.razor`
+- `Pkmds.Rcl/Components/MainTabPages/BagTab.razor.cs`
+- `Pkmds.Rcl/wwwroot/css/app.css`
+
+**Acceptance criteria:** Tab loads noticeably faster on large saves; pouch switching is instant after first activation; all existing sort/save/delete/HaX behaviour unchanged; build and tests pass.
 
 ### 7.3 Accessibility
 **Tasks:**
