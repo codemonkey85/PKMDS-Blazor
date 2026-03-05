@@ -157,6 +157,10 @@ public static partial class ImageHelper
             _ => throw new ArgumentOutOfRangeException(nameof(moveCategory), moveCategory, null)
         };
 
+    /// <summary>Gets the sprite filename for a gender icon (Male=0, Female=1, Genderless=2).</summary>
+    public static string GetGenderSpriteFileName(Gender gender) =>
+        $"{SpritesRoot}ac/gender_{(int)gender}.png";
+
     /// <summary>
     /// Gets the CSS class to apply to a Pokémon slot based on whether it contains a valid Pokémon.
     /// </summary>
