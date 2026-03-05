@@ -11,7 +11,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 ### ✅ Already Implemented in PKMDS
 - **Pokemon Editor** - Full individual Pokemon editing (species, nickname, gender, level, experience, abilities, held items)
 - **Stats Editing** - IVs, EVs, AVs (LGPE), GVs (LA), base stats, calculated battle stats, stats chart, CP (LGPE), Stat Nature (Gen 8+), Dynamax Level, Can Gigantamax, Tera Type Original/Override (SV), Is Alpha (LA/ZA), Is Noble (LA)
-- **Moves Editing** - 4-move slots with search, type indicators, PP/PP Ups editing
+- **Moves Editing** - 4-move slots with search, type + category icons (Physical/Special/Status, generation-accurate including Gen 1–3 type-based split and Water Shuriken Gen 6 special-case), PP/PP Ups editing, inline stat summary panel (Ability, Nature with modifier, Atk/Sp. Atk with nature arrows; generation-aware visibility)
   - **Relearn Moves** (Gen 6+) - 4 relearn move slots with search functionality
   - **Plus Move Checkboxes** (PA9/Legends Z-A) - Mark moves as Plus-enabled inline
   - **Mastered Move Checkboxes** (PA8/Legends Arceus) - Mark moves as mastered inline
@@ -669,6 +669,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [x] **Relearn Moves** (Gen 6+)
   - [x] 4 relearn move slots with search
   - [x] Type icon display
+  - [x] Category icon display (Physical/Special/Status)
   - [x] Extension methods for relearn move access
 - [ ] O-Powers editor
 - [ ] Pokémon-Amie affection

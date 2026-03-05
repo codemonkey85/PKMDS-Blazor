@@ -28,7 +28,7 @@
                                     Title="#"/>
                     <TemplateColumn Title="">
                         <CellTemplate>
-                            @MoveTypeSummary(context.Item.Type)
+                            @MoveTypeAndCategorySummary(context.Item.Type, GetMoveCategory(context.Item.MoveId, AppState.SaveFile!.Context))
                         </CellTemplate>
                     </TemplateColumn>
                     <PropertyColumn Property="@(x => x.Name)"

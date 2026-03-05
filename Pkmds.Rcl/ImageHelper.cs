@@ -1,4 +1,6 @@
-﻿namespace Pkmds.Rcl;
+﻿using static Pkmds.Core.Utilities.GameInfoUtilities;
+
+namespace Pkmds.Rcl;
 
 /// <summary>
 /// Helper class for generating file paths to Pokémon and item sprite images.
@@ -146,10 +148,14 @@ public static partial class ImageHelper
     /// <summary>
     /// Gets the sprite filename for a move category icon (Physical/Special/Status).
     /// </summary>
-    /// <remarks>TODO: Not yet implemented.</remarks>
-    // ReSharper disable once UnusedParameter.Global
-    public static string GetMoveCategorySpriteFileName(int categoryId) =>
-        string.Empty;
+    public static string GetMoveCategorySpriteFileName(MoveCategory moveCategory) =>
+        moveCategory switch
+        {
+            MoveCategory.Status => $"{SpritesRoot}move/Status.png",
+            MoveCategory.Physical => $"{SpritesRoot}move/Physical.png",
+            MoveCategory.Special => $"{SpritesRoot}move/Special.png",
+            _ => throw new ArgumentOutOfRangeException(nameof(moveCategory), moveCategory, null)
+        };
 
     /// <summary>
     /// Gets the CSS class to apply to a Pokémon slot based on whether it contains a valid Pokémon.

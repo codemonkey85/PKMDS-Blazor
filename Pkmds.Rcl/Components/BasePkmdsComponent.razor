@@ -34,12 +34,20 @@
                    ObjectPosition="@ObjectPosition.Center"
                    Width="30"/>;
 
-    public static RenderFragment MoveCategorySummary(int categoryId) =>
-        @<MudImage Src="@ImageHelper.GetMoveCategorySpriteFileName(categoryId)"
-                   Alt="@GameInfoUtilities.GetCategoryName(categoryId)"
-                   title="@GameInfoUtilities.GetCategoryName(categoryId)"
+    protected static RenderFragment MoveCategorySummary(MoveCategory moveCategory) =>
+        @<MudImage Src="@ImageHelper.GetMoveCategorySpriteFileName(moveCategory)"
+                   Alt="@GetCategoryName(moveCategory)"
+                   title="@GetCategoryName(moveCategory)"
                    ObjectFit="@ObjectFit.Contain"
                    ObjectPosition="@ObjectPosition.Center"
                    Width="30"/>;
+
+    protected static RenderFragment MoveTypeAndCategorySummary(byte type, MoveCategory category) =>
+        @<MudStack Row
+                   AlignItems="@AlignItems.Center"
+                   Spacing="0">
+            @MoveTypeSummary(type)
+            @MoveCategorySummary(category)
+        </MudStack>;
 
 }
