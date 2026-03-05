@@ -131,6 +131,11 @@ body, html {
     font-weight: 700;
 }
 
+.stat-maxed label,
+.stat-maxed .mud-input-slot {
+    font-weight: 700 !important;
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
