@@ -112,16 +112,12 @@ public partial class StatsTab : IDisposable
         var nature = Pokemon.Format >= 8
             ? Pokemon.StatNature
             : Pokemon.Nature;
-
-        var (up, dn) = nature.GetNatureModification();
-
-        return up == dn
-            ? string.Empty
-            : up == (int)stat
-                ? "plus-nature"
-                : dn == (int)stat
-                    ? "minus-nature"
-                    : string.Empty;
+        return GetNatureModifier(nature, stat) switch
+        {
+            NatureModifier.Boosted => "plus-nature",
+            NatureModifier.Hindered => "minus-nature",
+            _ => string.Empty
+        };
     }
 
     private NatureModifier GetNatureModifier(Stats stat)
@@ -134,49 +130,20 @@ public partial class StatsTab : IDisposable
         var nature = Pokemon.Format >= 8
             ? Pokemon.StatNature
             : Pokemon.Nature;
-
-        var (up, dn) = nature.GetNatureModification();
-
-        if (up == dn)
-        {
-            return NatureModifier.Neutral;
-        }
-
-        if (up == (int)stat)
-        {
-            return NatureModifier.Boosted;
-        }
-
-        return dn == (int)stat
-            ? NatureModifier.Hindered
-            : NatureModifier.Neutral;
+        return GetNatureModifier(nature, stat);
     }
 
-    private string GetNatureAdornmentIcon(Stats stat) => GetNatureModifier(stat) switch
-    {
-        NatureModifier.Boosted => Icons.Material.Filled.ArrowUpward,
-        NatureModifier.Hindered => Icons.Material.Filled.ArrowDownward,
-        _ => string.Empty
-    };
+    private string GetNatureAdornmentIcon(Stats stat) =>
+        GetNatureAdornmentIcon(GetNatureModifier(stat));
 
-    private Color GetNatureAdornmentColor(Stats stat) => GetNatureModifier(stat) switch
-    {
-        NatureModifier.Boosted => Color.Error,
-        NatureModifier.Hindered => Color.Info,
-        _ => Color.Default
-    };
+    private Color GetNatureAdornmentColor(Stats stat) =>
+        GetNatureAdornmentColor(GetNatureModifier(stat));
 
     private Adornment GetNatureAdornment(Stats stat) =>
-        GetNatureModifier(stat) is NatureModifier.Neutral
-            ? Adornment.None
-            : Adornment.End;
+        GetNatureAdornment(GetNatureModifier(stat));
 
-    private string GetNatureTooltip(Stats stat) => GetNatureModifier(stat) switch
-    {
-        NatureModifier.Boosted => "Boosted by nature (+10%)",
-        NatureModifier.Hindered => "Hindered by nature (-10%)",
-        _ => string.Empty
-    };
+    private string GetNatureTooltip(Stats stat) =>
+        GetNatureTooltip(GetNatureModifier(stat));
 
     private static string GetTeraTypeDisplayName(byte teraTypeId) => teraTypeId == TeraTypeUtil.Stellar
         ? GameInfo.Strings.Types[TeraTypeUtil.StellarTypeDisplayStringIndex]
@@ -338,23 +305,5 @@ public partial class StatsTab : IDisposable
         }
 
         setter(pkm, newValue);
-    }
-
-    private enum NatureModifier
-    {
-        Neutral,
-        Boosted,
-        Hindered
-    }
-
-    private enum Stats
-    {
-        Hp = -1,
-        Attack = 0,
-        Defense,
-        Speed,
-        SpecialAttack,
-        SpecialDefense,
-        Special = 99
     }
 }
