@@ -148,18 +148,6 @@ public static partial class ImageHelper
     /// <summary>
     /// Gets the sprite filename for a move category icon (Physical/Special/Status).
     /// </summary>
-    public static string GetMoveCategorySpriteFileName(int categoryId) =>
-        categoryId switch
-        {
-            (int)MoveCategory.Status => $"{SpritesRoot}move/Status.png",
-            (int)MoveCategory.Physical => $"{SpritesRoot}move/Physical.png",
-            (int)MoveCategory.Special => $"{SpritesRoot}move/Special.png",
-            _ => throw new ArgumentOutOfRangeException(nameof(categoryId), categoryId, null)
-        };
-
-    /// <summary>
-    /// Gets the sprite filename for a move category icon (Physical/Special/Status).
-    /// </summary>
     public static string GetMoveCategorySpriteFileName(MoveCategory moveCategory) =>
         moveCategory switch
         {

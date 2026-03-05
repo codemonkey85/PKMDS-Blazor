@@ -45,11 +45,13 @@
                                  Class="@ColumnClass">
                             @if (moveId != 0)
                             {
-                                @MoveTypeSummary(MoveInfo.GetType(moveId, saveFileEntityContext))
+                                @MoveTypeAndCategorySummary(
+                                    MoveInfo.GetType(moveId, saveFileEntityContext),
+                                    GetMoveCategory(moveId, saveFileEntityContext))
                             }
                             else
                             {
-                                <span style="width: 30px"></span>
+                                <span style="width: 60px"></span>
                             }
                         </MudItem>
                     }
@@ -199,11 +201,13 @@
                                      Class="@ColumnClass">
                                 @if (relearnMoveId != 0)
                                 {
-                                    @MoveTypeSummary(MoveInfo.GetType(relearnMoveId, saveFileEntityContext))
+                                    @MoveTypeAndCategorySummary(
+                                        MoveInfo.GetType(relearnMoveId, saveFileEntityContext),
+                                        GetMoveCategory(relearnMoveId, saveFileEntityContext))
                                 }
                                 else
                                 {
-                                    <span style="width: 30px"></span>
+                                    <span style="width: 60px"></span>
                                 }
                             </MudItem>
                         }
@@ -277,11 +281,13 @@
                                      Class="@ColumnClass">
                                 @if (alphaMoveId != 0)
                                 {
-                                    @MoveTypeSummary(MoveInfo.GetType(alphaMoveId, saveFileEntityContext))
+                                    @MoveTypeAndCategorySummary(
+                                        MoveInfo.GetType(alphaMoveId, saveFileEntityContext),
+                                        GetMoveCategory(alphaMoveId, saveFileEntityContext))
                                 }
                                 else
                                 {
-                                    <span style="width: 30px"></span>
+                                    <span style="width: 60px"></span>
                                 }
                             </MudItem>
                         }
@@ -377,10 +383,13 @@
             return @<span>(None)</span>;
         }
 
-        return @<MudStack Row>
+        return @<MudStack Row
+                          AlignItems="@AlignItems.Center">
                    @if (move.Value != 0)
                    {
-                       @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
+                       @MoveTypeAndCategorySummary(
+                           MoveInfo.GetType((ushort)move.Value, saveFileEntityContext),
+                           GetMoveCategory((ushort)move.Value, saveFileEntityContext))
                    }
                    <MudText>
                        @move.Text
