@@ -125,6 +125,7 @@
                 </MudStack>
 
                 <MudNumericField Label="HP"
+                                 Class="@GetIvFieldClass(Pokemon.IV_HP, Stats.Hp)"
                                  title="HP IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
@@ -138,7 +139,7 @@
                                  HideSpinButtons="@(saveGeneration == 1 && Pokemon is PK1)"/>
 
                 <MudNumericField Label="Atk"
-                                 Class="@GetStatClass(Stats.Attack)"
+                                 Class="@GetIvFieldClass(Pokemon.IV_ATK, Stats.Attack)"
                                  title="Attack IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
@@ -150,7 +151,7 @@
                                  For="@(() => Pokemon.IV_ATK)"/>
 
                 <MudNumericField Label="Def"
-                                 Class="@GetStatClass(Stats.Defense)"
+                                 Class="@GetIvFieldClass(Pokemon.IV_DEF, Stats.Defense)"
                                  title="Defense IV"
                                  Variant="@Variant.Outlined"
                                  Min="@int.MinValue"
@@ -165,6 +166,7 @@
                 @if (saveGeneration == 1 && Pokemon is PK1 pk1)
                 {
                     <MudNumericField Label="Spe"
+                                     Class="@GetIvFieldClass(pk1.IV_SPE, Stats.Speed)"
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -174,6 +176,7 @@
                                      For="@(() => pk1.IV_SPE)"/>
 
                     <MudNumericField Label="Spc"
+                                     Class="@GetIvFieldClass(pk1.IV_SPC, Stats.Special)"
                                      title="Special IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -185,7 +188,7 @@
                 else
                 {
                     <MudNumericField Label="Spa"
-                                     Class="@GetStatClass(Stats.SpecialAttack)"
+                                     Class="@GetIvFieldClass(Pokemon.IV_SPA, Stats.SpecialAttack)"
                                      title="Special Attack IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -197,7 +200,7 @@
                                      For="@(() => Pokemon.IV_SPA)"/>
 
                     <MudNumericField Label="Spd"
-                                     Class="@GetStatClass(Stats.SpecialDefense)"
+                                     Class="@GetIvFieldClass(Pokemon.IV_SPD, Stats.SpecialDefense)"
                                      title="Special Defense IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -209,7 +212,7 @@
                                      For="@(() => Pokemon.IV_SPD)"/>
 
                     <MudNumericField Label="Spe"
-                                     Class="@GetStatClass(Stats.Speed)"
+                                     Class="@GetIvFieldClass(Pokemon.IV_SPE, Stats.Speed)"
                                      title="Speed IV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -415,6 +418,7 @@
                     </MudStack>
 
                     <MudNumericField Label="HP"
+                                     Class="@GetEvFieldClass(Pokemon.EV_HP, Stats.Hp, saveGeneration)"
                                      title="HP EV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -424,7 +428,7 @@
                                      For="@(() => Pokemon.EV_HP)"/>
 
                     <MudNumericField Label="Atk"
-                                     Class="@GetStatClass(Stats.Attack)"
+                                     Class="@GetEvFieldClass(Pokemon.EV_ATK, Stats.Attack, saveGeneration)"
                                      title="Attack EV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -434,7 +438,7 @@
                                      For="@(() => Pokemon.EV_ATK)"/>
 
                     <MudNumericField Label="Def"
-                                     Class="@GetStatClass(Stats.Defense)"
+                                     Class="@GetEvFieldClass(Pokemon.EV_DEF, Stats.Defense, saveGeneration)"
                                      title="Defense EV"
                                      Variant="@Variant.Outlined"
                                      Min="@int.MinValue"
@@ -446,6 +450,7 @@
                     @if (saveGeneration == 1 && Pokemon is PK1 pk1)
                     {
                         <MudNumericField Label="Spe"
+                                         Class="@GetEvFieldClass(pk1.EV_SPE, Stats.Speed, saveGeneration)"
                                          title="Speed EV"
                                          Variant="@Variant.Outlined"
                                          Min="@int.MinValue"
@@ -455,6 +460,7 @@
                                          For="@(() => pk1.EV_SPE)"/>
 
                         <MudNumericField Label="Spc"
+                                         Class="@GetEvFieldClass(pk1.EV_SPC, Stats.Special, saveGeneration)"
                                          title="Special EV"
                                          Variant="@Variant.Outlined"
                                          Min="@int.MinValue"
@@ -466,7 +472,7 @@
                     else
                     {
                         <MudNumericField Label="Spa"
-                                         Class="@GetStatClass(Stats.SpecialAttack)"
+                                         Class="@GetEvFieldClass(Pokemon.EV_SPA, Stats.SpecialAttack, saveGeneration)"
                                          title="Special Attack EV"
                                          Variant="@Variant.Outlined"
                                          Min="@int.MinValue"
@@ -476,7 +482,7 @@
                                          For="@(() => Pokemon.EV_SPA)"/>
 
                         <MudNumericField Label="Spd"
-                                         Class="@GetStatClass(Stats.SpecialDefense)"
+                                         Class="@GetEvFieldClass(Pokemon.EV_SPD, Stats.SpecialDefense, saveGeneration)"
                                          title="Special Defense EV"
                                          Variant="@Variant.Outlined"
                                          Min="@int.MinValue"
@@ -486,7 +492,7 @@
                                          For="@(() => Pokemon.EV_SPD)"/>
 
                         <MudNumericField Label="Spe"
-                                         Class="@GetStatClass(Stats.Speed)"
+                                         Class="@GetEvFieldClass(Pokemon.EV_SPE, Stats.Speed, saveGeneration)"
                                          title="Speed EV"
                                          Variant="@Variant.Outlined"
                                          Min="@int.MinValue"
