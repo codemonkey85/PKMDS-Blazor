@@ -45,11 +45,13 @@
                                  Class="@ColumnClass">
                             @if (moveId != 0)
                             {
-                                @MoveTypeSummary(MoveInfo.GetType(moveId, saveFileEntityContext))
+                                @MoveTypeAndCategorySummary(
+                                    MoveInfo.GetType(moveId, saveFileEntityContext),
+                                    GetMoveCategory(moveId, saveFileEntityContext))
                             }
                             else
                             {
-                                <span style="width: 30px"></span>
+                                <span style="width: 60px"></span>
                             }
                         </MudItem>
                     }
@@ -176,6 +178,95 @@
             }
         </MudStack>
 
+        @{
+            var hasNature = saveFileEntityContext is not (EntityContext.Gen1 or EntityContext.Gen2);
+            // Abilities absent in Gen 1–2 and in side games that omit the ability system
+            var hasAbility = saveFileEntityContext is not (
+                EntityContext.Gen1 or EntityContext.Gen2 or
+                EntityContext.Gen7b or EntityContext.Gen8a or EntityContext.Gen9a);
+            var isGen1 = saveFileEntityContext is EntityContext.Gen1;
+            var statNature = Pokemon.Format >= 8
+                ? Pokemon.StatNature
+                : Pokemon.Nature;
+            var atkModifier = hasNature
+                ? GetNatureModifier(statNature, Stats.Attack)
+                : NatureModifier.Neutral;
+            var spaModifier = hasNature
+                ? GetNatureModifier(statNature, Stats.SpecialAttack)
+                : NatureModifier.Neutral;
+        }
+
+        <MudPaper Outlined
+                  Class="pa-2">
+            <MudStack Row
+                      Wrap="@Wrap.Wrap"
+                      AlignItems="@AlignItems.Center"
+                      Spacing="4">
+                @if (hasAbility)
+                {
+                    <MudStack Row
+                              AlignItems="@AlignItems.Center"
+                              Spacing="1">
+                        <MudText Typo="@Typo.caption"
+                                 Color="@Color.Secondary">Ability
+                        </MudText>
+                        <MudText Typo="@Typo.body2">
+                            <b>@GameInfo.Strings.Ability[Pokemon.Ability]</b>
+                        </MudText>
+                    </MudStack>
+                }
+                @if (hasNature)
+                {
+                    <MudStack Row
+                              AlignItems="@AlignItems.Center"
+                              Spacing="1">
+                        <MudText Typo="@Typo.caption"
+                                 Color="@Color.Secondary">Nature
+                        </MudText>
+                        <MudText Typo="@Typo.body2">
+                            <b>@GameInfo.Strings.natures[(int)statNature]</b>
+                        </MudText>
+                        <MudText Typo="@Typo.caption">@AppService.GetStatModifierString(statNature)</MudText>
+                    </MudStack>
+                }
+                <MudStack Row
+                          AlignItems="@AlignItems.Center"
+                          Spacing="1">
+                    <MudText Typo="@Typo.caption"
+                             Color="@Color.Secondary">Atk
+                    </MudText>
+                    <MudText Typo="@Typo.body2"
+                             Color="@GetNatureAdornmentColor(atkModifier)">
+                        <b>@Pokemon.Stat_ATK</b>
+                    </MudText>
+                    @if (atkModifier is not NatureModifier.Neutral)
+                    {
+                        <MudIcon Icon="@GetNatureAdornmentIcon(atkModifier)"
+                                 Size="@Size.Small"
+                                 Color="@GetNatureAdornmentColor(atkModifier)"/>
+                    }
+                </MudStack>
+                <MudStack Row
+                          AlignItems="@AlignItems.Center"
+                          Spacing="1">
+                    <MudText Typo="@Typo.caption"
+                             Color="@Color.Secondary">@(isGen1
+                            ? "Special"
+                            : "Sp. Atk")</MudText>
+                    <MudText Typo="@Typo.body2"
+                             Color="@GetNatureAdornmentColor(spaModifier)">
+                        <b>@Pokemon.Stat_SPA</b>
+                    </MudText>
+                    @if (spaModifier is not NatureModifier.Neutral)
+                    {
+                        <MudIcon Icon="@GetNatureAdornmentIcon(spaModifier)"
+                                 Size="@Size.Small"
+                                 Color="@GetNatureAdornmentColor(spaModifier)"/>
+                    }
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+
         @if (Pokemon.HasRelearnMoves())
         {
             <MudStack Spacing="1">
@@ -199,11 +290,13 @@
                                      Class="@ColumnClass">
                                 @if (relearnMoveId != 0)
                                 {
-                                    @MoveTypeSummary(MoveInfo.GetType(relearnMoveId, saveFileEntityContext))
+                                    @MoveTypeAndCategorySummary(
+                                        MoveInfo.GetType(relearnMoveId, saveFileEntityContext),
+                                        GetMoveCategory(relearnMoveId, saveFileEntityContext))
                                 }
                                 else
                                 {
-                                    <span style="width: 30px"></span>
+                                    <span style="width: 60px"></span>
                                 }
                             </MudItem>
                         }
@@ -277,11 +370,13 @@
                                      Class="@ColumnClass">
                                 @if (alphaMoveId != 0)
                                 {
-                                    @MoveTypeSummary(MoveInfo.GetType(alphaMoveId, saveFileEntityContext))
+                                    @MoveTypeAndCategorySummary(
+                                        MoveInfo.GetType(alphaMoveId, saveFileEntityContext),
+                                        GetMoveCategory(alphaMoveId, saveFileEntityContext))
                                 }
                                 else
                                 {
-                                    <span style="width: 30px"></span>
+                                    <span style="width: 60px"></span>
                                 }
                             </MudItem>
                         }
@@ -377,10 +472,13 @@
             return @<span>(None)</span>;
         }
 
-        return @<MudStack Row>
+        return @<MudStack Row
+                          AlignItems="@AlignItems.Center">
                    @if (move.Value != 0)
                    {
-                       @MoveTypeSummary(MoveInfo.GetType((ushort)move.Value, saveFileEntityContext))
+                       @MoveTypeAndCategorySummary(
+                           MoveInfo.GetType((ushort)move.Value, saveFileEntityContext),
+                           GetMoveCategory((ushort)move.Value, saveFileEntityContext))
                    }
                    <MudText>
                        @move.Text
