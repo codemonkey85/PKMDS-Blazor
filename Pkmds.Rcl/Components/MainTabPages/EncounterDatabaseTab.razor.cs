@@ -166,8 +166,8 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
     }
 
     /// <summary>
-    ///     Finds the first empty box slot in the save file and selects it via <see cref="IAppService" />.
-    ///     Returns <see langword="false" /> when no empty slot is found or no save is loaded.
+    /// Finds the first empty box slot in the save file and selects it via <see cref="IAppService" />.
+    /// Returns <see langword="false" /> when no empty slot is found or no save is loaded.
     /// </summary>
     private bool TrySelectFirstEmptyBoxSlot()
     {

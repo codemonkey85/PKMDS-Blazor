@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for loading various save file formats
+/// Tests for loading various save file formats
 /// </summary>
 public class SaveFileLoadingTests
 {

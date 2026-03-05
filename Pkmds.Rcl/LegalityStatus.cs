@@ -1,7 +1,7 @@
 namespace Pkmds.Rcl;
 
 /// <summary>
-///     Represents the legality status of a Pokémon as determined by the batch legality sweep.
+/// Represents the legality status of a Pokémon as determined by the batch legality sweep.
 /// </summary>
 public enum LegalityStatus
 {

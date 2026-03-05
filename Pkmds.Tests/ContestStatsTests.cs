@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for contest stat validation and Pokémon contest stat support.
+/// Tests for contest stat validation and Pokémon contest stat support.
 /// </summary>
 public class ContestStatsTests
 {

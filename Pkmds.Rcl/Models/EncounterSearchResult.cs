@@ -1,7 +1,7 @@
 namespace Pkmds.Rcl.Models;
 
 /// <summary>
-///     Represents a single encounter result row in the Encounter Database.
+/// Represents a single encounter result row in the Encounter Database.
 /// </summary>
 public sealed record EncounterSearchResult
 {

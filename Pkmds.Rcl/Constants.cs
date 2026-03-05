@@ -1,7 +1,7 @@
 ﻿namespace Pkmds.Rcl;
 
 /// <summary>
-///     Application-wide constants used throughout the PKMDS application.
+/// Application-wide constants used throughout the PKMDS application.
 /// </summary>
 public static class Constants
 {

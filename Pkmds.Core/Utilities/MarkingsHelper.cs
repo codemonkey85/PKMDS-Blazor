@@ -1,14 +1,14 @@
 ﻿namespace Pkmds.Core.Utilities;
 
 /// <summary>
-///     Helper class for working with Pokémon markings.
-///     Provides enum definitions and unicode symbols for the six marking shapes.
+/// Helper class for working with Pokémon markings.
+/// Provides enum definitions and unicode symbols for the six marking shapes.
 /// </summary>
 public static class MarkingsHelper
 {
     /// <summary>
-    ///     Enum representing the six types of Pokémon markings.
-    ///     Used for organizing and categorizing Pokémon in the PC.
+    /// Enum representing the six types of Pokémon markings.
+    /// Used for organizing and categorizing Pokémon in the PC.
     /// </summary>
     public enum Markings
     {

@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for saving save files and verifying data integrity
+/// Tests for saving save files and verifying data integrity
 /// </summary>
 public class SaveFileSavingTests
 {

@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for AppService functionality
+/// Tests for AppService functionality
 /// </summary>
 public class AppServiceTests
 {

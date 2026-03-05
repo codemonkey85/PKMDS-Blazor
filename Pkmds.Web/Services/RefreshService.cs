@@ -1,18 +1,18 @@
 ﻿namespace Pkmds.Web.Services;
 
 /// <summary>
-///     Blazor WebAssembly implementation of the refresh service.
-///     Manages UI refresh events and provides JavaScript interop for service worker update notifications.
+/// Blazor WebAssembly implementation of the refresh service.
+/// Manages UI refresh events and provides JavaScript interop for service worker update notifications.
 /// </summary>
 public class RefreshService : IRefreshService
 {
     /// <summary>
-    ///     Initializes a new instance and sets the singleton instance for JavaScript interop.
+    /// Initializes a new instance and sets the singleton instance for JavaScript interop.
     /// </summary>
     public RefreshService() => Instance = this; // Set the singleton instance for JS interop
 
     /// <summary>
-    ///     Static singleton instance used by JavaScript to invoke update notifications.
+    /// Static singleton instance used by JavaScript to invoke update notifications.
     /// </summary>
     private static RefreshService? Instance { get; set; }
 
@@ -66,7 +66,7 @@ public class RefreshService : IRefreshService
     public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
 
     /// <summary>
-    ///     JavaScript-invokable method called by the service worker when an app update is detected.
+    /// JavaScript-invokable method called by the service worker when an app update is detected.
     /// </summary>
     [JSInvokable(nameof(ShowUpdateMessage))]
     public static void ShowUpdateMessage() => Instance?.OnUpdateAvailable?.Invoke();

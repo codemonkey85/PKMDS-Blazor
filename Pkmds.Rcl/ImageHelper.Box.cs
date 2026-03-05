@@ -1,13 +1,13 @@
 ﻿namespace Pkmds.Rcl;
 
 /// <summary>
-///     Partial class for box wallpaper sprite filename generation.
+/// Partial class for box wallpaper sprite filename generation.
 /// </summary>
 public static partial class ImageHelper
 {
     /// <summary>
-    ///     Gets the sprite filename for a box wallpaper based on wallpaper ID and game version.
-    ///     The wallpaper ID is typically retrieved from the save file's box data.
+    /// Gets the sprite filename for a box wallpaper based on wallpaper ID and game version.
+    /// The wallpaper ID is typically retrieved from the save file's box data.
     /// </summary>
     /// <param name="wallpaperId">The wallpaper ID (typically 0-23 or similar depending on game).</param>
     /// <param name="gameVersion">The game version enum.</param>
@@ -18,13 +18,13 @@ public static partial class ImageHelper
     }
 
     /// <summary>
-    ///     Gets the sprite filename for a box wallpaper based on wallpaper ID and game version abbreviation.
-    ///     The wallpaper ID is typically retrieved from the save file's box data.
+    /// Gets the sprite filename for a box wallpaper based on wallpaper ID and game version abbreviation.
+    /// The wallpaper ID is typically retrieved from the save file's box data.
     /// </summary>
     /// <param name="wallpaperId">The wallpaper ID (typically 0-23 or similar depending on game).</param>
     /// <param name="gameAbbreviation">
-    ///     The game abbreviation (e.g., "ao" for Omega Ruby/Alpha Sapphire, "swsh" for
-    ///     Sword/Shield, etc.).
+    /// The game abbreviation (e.g., "ao" for Omega Ruby/Alpha Sapphire, "swsh" for
+    /// Sword/Shield, etc.).
     /// </param>
     private static string GetBoxWallpaperSpriteFileName(int wallpaperId, string? gameAbbreviation)
     {
@@ -38,7 +38,7 @@ public static partial class ImageHelper
     }
 
     /// <summary>
-    ///     Converts a GameVersion enum to its box wallpaper folder abbreviation.
+    /// Converts a GameVersion enum to its box wallpaper folder abbreviation.
     /// </summary>
     private static string GetGameVersionAbbreviation(GameVersion version) => version switch
     {

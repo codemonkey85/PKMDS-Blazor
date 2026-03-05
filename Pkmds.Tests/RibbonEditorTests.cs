@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for the ribbon editor logic in RibbonHelper.
+/// Tests for the ribbon editor logic in RibbonHelper.
 /// </summary>
 public class RibbonEditorTests
 {

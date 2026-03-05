@@ -1,12 +1,12 @@
 ﻿namespace Pkmds.Rcl.Extensions;
 
 /// <summary>
-///     Extension methods for System.Version.
+/// Extension methods for System.Version.
 /// </summary>
 public static class VersionExtensions
 {
     /// <summary>
-    ///     Converts a Version to a formatted string in the format "YYYY.MM.DD.HHMM".
+    /// Converts a Version to a formatted string in the format "YYYY.MM.DD.HHMM".
     /// </summary>
     /// <param name="version">The version to format.</param>
     /// <returns>A formatted version string (e.g., "2026.01.27.0949").</returns>

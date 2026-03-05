@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for memory editing support (Gen 6+).
+/// Tests for memory editing support (Gen 6+).
 /// </summary>
 public class MemoryEditorTests
 {

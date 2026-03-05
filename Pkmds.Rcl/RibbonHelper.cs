@@ -1,14 +1,14 @@
 namespace Pkmds.Rcl;
 
 /// <summary>
-///     Helper class for ribbon-related operations in the ribbon editor.
+/// Helper class for ribbon-related operations in the ribbon editor.
 /// </summary>
 public static class RibbonHelper
 {
     /// <summary>Gets a human-friendly display name for a ribbon property name.</summary>
     /// <remarks>
-    ///     Uses <see cref="RibbonStrings" /> from <see cref="GameInfo.Strings" /> when available, falling back to the
-    ///     property name itself.
+    /// Uses <see cref="RibbonStrings" /> from <see cref="GameInfo.Strings" /> when available, falling back to the
+    /// property name itself.
     /// </remarks>
     /// <param name="propertyName">The property name, e.g. "RibbonChampionKalos".</param>
     public static string GetRibbonDisplayName(string propertyName) =>
@@ -24,8 +24,8 @@ public static class RibbonHelper
                 : info.Name);
 
     /// <summary>
-    ///     Returns <see langword="true" /> when the ribbon name corresponds to a personality mark
-    ///     (Gen 8 encounter marks or Gen 9 alpha/mightiest/titan marks).
+    /// Returns <see langword="true" /> when the ribbon name corresponds to a personality mark
+    /// (Gen 8 encounter marks or Gen 9 alpha/mightiest/titan marks).
     /// </summary>
     public static bool IsMarkEntry(string name)
     {
@@ -43,8 +43,8 @@ public static class RibbonHelper
     }
 
     /// <summary>
-    ///     Gets all ribbon info entries for the given Pokémon, or an empty list if <paramref name="pokemon" /> is
-    ///     <see langword="null" />.
+    /// Gets all ribbon info entries for the given Pokémon, or an empty list if <paramref name="pokemon" /> is
+    /// <see langword="null" />.
     /// </summary>
     public static List<RibbonInfo> GetAllRibbonInfo(PKM? pokemon) =>
         pokemon is not null
