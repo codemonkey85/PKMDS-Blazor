@@ -36,8 +36,16 @@
 
     public static RenderFragment MoveCategorySummary(int categoryId) =>
         @<MudImage Src="@ImageHelper.GetMoveCategorySpriteFileName(categoryId)"
-                   Alt="@GameInfoUtilities.GetCategoryName(categoryId)"
-                   title="@GameInfoUtilities.GetCategoryName(categoryId)"
+                   Alt="@GetCategoryName(categoryId)"
+                   title="@GetCategoryName(categoryId)"
+                   ObjectFit="@ObjectFit.Contain"
+                   ObjectPosition="@ObjectPosition.Center"
+                   Width="30"/>;
+
+    public static RenderFragment MoveCategorySummary(MoveCategory moveCategory) =>
+        @<MudImage Src="@ImageHelper.GetMoveCategorySpriteFileName(moveCategory)"
+                   Alt="@GetCategoryName(moveCategory)"
+                   title="@GetCategoryName(moveCategory)"
                    ObjectFit="@ObjectFit.Contain"
                    ObjectPosition="@ObjectPosition.Center"
                    Width="30"/>;
