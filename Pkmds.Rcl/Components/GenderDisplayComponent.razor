@@ -1,17 +1,56 @@
-﻿@GenderButton(Gender, IncludeGenderless)
+﻿@if (ReadOnly)
+{
+    <MudField Label="Gender"
+              Variant="@Variant.Outlined">
+        <MudStack Row
+                  Spacing="1"
+                  Class="d-flex align-center">
+            <img src="@ImageHelper.GetGenderSpriteFileName(Gender)"
+                 alt="@Gender.ToString()"
+                 style="width:20px;height:20px;"/>
+            <span class="leading-none">@Gender.ToString() - Gender cannot be changed.</span>
+        </MudStack>
+    </MudField>
+}
+else
+{
+    <MudSelect T="@Gender"
+               Label="Gender"
+               Variant="@Variant.Outlined"
+               Value="@Gender"
+               ValueChanged="@OnChange"
+               Dense>
+        <MudSelectItem Value="@Gender.Male">
+            <MudStack Row>
+                <img src="@ImageHelper.GetGenderSpriteFileName(Gender.Male)"
+                     alt="Male"
+                     style="width:20px;height:20px;"/>
+                <MudText>Male</MudText>
+            </MudStack>
+        </MudSelectItem>
+        <MudSelectItem Value="@Gender.Female">
+            <MudStack Row>
+                <img src="@ImageHelper.GetGenderSpriteFileName(Gender.Female)"
+                     alt="Female"
+                     style="width:20px;height:20px;"/>
+                <MudText>Female</MudText>
+            </MudStack>
+        </MudSelectItem>
+        @if (IncludeGenderless)
+        {
+            <MudSelectItem Value="@Gender.Genderless">
+                <MudStack Row>
+                    <img src="@ImageHelper.GetGenderSpriteFileName(Gender.Genderless)"
+                         alt="Genderless"
+                         style="width:20px;height:20px;"/>
+                    <MudText>Genderless</MudText>
+                </MudStack>
+            </MudSelectItem>
+        }
+    </MudSelect>
+}
 
 @code {
-    private const string MaleGenderIcon = Icons.Material.Filled.Male;
-
-    private const string FemaleGenderIcon = Icons.Material.Filled.Female;
-
-    private const string GenderlessGenderIcon = Icons.Material.Filled.Block;
-
-    private static readonly string MaleGenderColor = Colors.Blue.Default;
-
-    private static readonly string FemaleGenderColor = Colors.Red.Default;
-
-    private static readonly string GenderlessGenderColor = string.Empty;
 
     [Parameter]
     public Gender Gender { get; set; }
@@ -24,59 +63,5 @@
 
     [Parameter]
     public bool IncludeGenderless { get; set; }
-
-    private static string GetGenderColor(Gender gender) => gender switch
-    {
-        Gender.Male => MaleGenderColor,
-        Gender.Female => FemaleGenderColor,
-        Gender.Genderless => GenderlessGenderColor,
-        _ => string.Empty
-    };
-
-    private RenderFragment GenderButton(Gender gender, bool includeGenderless) =>
-        @<MudSelect T="@Gender"
-                    Label="Gender"
-                    Variant="@Variant.Outlined"
-                    Value="@gender"
-                    ValueChanged="@OnChange"
-                    Dense
-                    ReadOnly="@ReadOnly">
-            <MudSelectItem Value="@Gender.Male">
-                <MudStack Row>
-                    <MudIcon Icon="@MaleGenderIcon"/>
-                    @GenderDisplayText(Gender.Male)
-                </MudStack>
-            </MudSelectItem>
-            <MudSelectItem Value="@Gender.Female">
-                <MudStack Row>
-                    <MudIcon Icon="@FemaleGenderIcon"/>
-                    @GenderDisplayText(Gender.Female)
-                </MudStack>
-            </MudSelectItem>
-            @if (includeGenderless || ReadOnly)
-            {
-                <MudSelectItem Value="@Gender.Genderless">
-                    <MudStack Row>
-                        <MudIcon Icon="@GenderlessGenderIcon"/>
-                        @GenderDisplayText(Gender.Genderless)
-                    </MudStack>
-                </MudSelectItem>
-            }
-        </MudSelect>;
-
-    private RenderFragment GenderDisplayText(Gender gender) =>
-        @<MudStack Row
-                   Spacing="1"
-                   Class="d-flex align-center">
-            <MudText Style="@($"color: {GetGenderColor(gender)};")">
-                @gender.ToString()
-            </MudText>
-            @if (ReadOnly)
-            {
-                <MudText>
-                    - Gender cannot be changed.
-                </MudText>
-            }
-        </MudStack>;
 
 }
