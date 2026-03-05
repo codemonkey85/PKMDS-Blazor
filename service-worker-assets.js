@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "Qn2LB8AK",
+  "version": "e2CeKnFW",
   "assets": [
     {
       "hash": "sha256-ocTTuvwGdfwNBTdUQMJ40/QJlTMHjVFuE+zeR5fqjLA=",
@@ -12866,24 +12866,24 @@ self.assetsManifest = {
       "url": "_framework/Microsoft.JSInterop.ufeazolgj4.wasm"
     },
     {
-      "hash": "sha256-WcTLQhWYRVaGH4OFvVGIsLvGvbfzYHiT367nWYQh8/E=",
-      "url": "_framework/MudBlazor.bj7qflbcx8.wasm"
+      "hash": "sha256-q82UOhje4ZGUpDdf3QGnyP8ajCTgNmPL/Y8qflaySYU=",
+      "url": "_framework/MudBlazor.5097xyczfy.wasm"
     },
     {
       "hash": "sha256-eMbcai+QBkn5kDSCi+rkBt2qGjOXwqbplRuf793O1uM=",
       "url": "_framework/PKHeX.Core.k97bg4ejxh.wasm"
     },
     {
-      "hash": "sha256-JgIhsinpd8QCXS1ig2BEe//jr7bzECMLv9k4+Z3CXkY=",
-      "url": "_framework/Pkmds.Core.q3imxvm0yv.wasm"
+      "hash": "sha256-uB480+aABnxPUfqF7YCeJ6Cl9m/SIa0Bz2XOMHipR9Y=",
+      "url": "_framework/Pkmds.Core.8wvliy3l95.wasm"
     },
     {
-      "hash": "sha256-i6RZakyM59xzP4NKGPj6aB72oim8gDd3X9qgCesNsi8=",
-      "url": "_framework/Pkmds.Rcl.zezh3dyqri.wasm"
+      "hash": "sha256-lc+m2d/1uy09dEdywJ4enw6MZ2qqV/T49obfIPI44h4=",
+      "url": "_framework/Pkmds.Rcl.xxpxewwaj4.wasm"
     },
     {
-      "hash": "sha256-bNpIhjlBU+wj310Zf+40PjFgUhsxpaabRK77nITHyls=",
-      "url": "_framework/Pkmds.Web.03wwgga2m9.wasm"
+      "hash": "sha256-k9sIuAC2dHSGrvi3HwnLIoTy74iuAt/Px47lme9YnWM=",
+      "url": "_framework/Pkmds.Web.561ml0wp3d.wasm"
     },
     {
       "hash": "sha256-NHk6xRS3dIv7nLWuBUZvce3EXz7kvxiBsrjE7KvSMcI=",
@@ -13098,12 +13098,12 @@ self.assetsManifest = {
       "url": "_framework/dotnet.native.f8ak447jcg.js"
     },
     {
-      "hash": "sha256-Hj87RaN4SAEl1jmeatj/d59kK59fru24qQhW327IG+k=",
-      "url": "_framework/dotnet.qd7fk6s5fp.js"
-    },
-    {
       "hash": "sha256-ArknccFM1sHNVcih0x1h52AG+abNCoQjl6BlVrv3ePw=",
       "url": "_framework/dotnet.runtime.q5rqv3xrhm.js"
+    },
+    {
+      "hash": "sha256-PZFkk7XrG1IPTbdxYLLKC/l8ykrydeX5xVW48icS+5E=",
+      "url": "_framework/dotnet.xrt2qt2mg3.js"
     },
     {
       "hash": "sha256-cEicM64mxgyFVp4zLHR2Gt40O3Cd84RnWdwiqlzOjB4=",
@@ -13286,7 +13286,7 @@ self.assetsManifest = {
       "url": "_framework/zh-Hant/Humanizer.resources.zxnqzhk8pn.wasm"
     },
     {
-      "hash": "sha256-lrDvIslnbU2bLtUa+vopfMiD/75EByX04dP/5mWLlIE=",
+      "hash": "sha256-4W2w5glXQPGhkhF9b52vLLyI5KZsuaI6TjJSMIb6rFo=",
       "url": "index.html"
     },
     {
