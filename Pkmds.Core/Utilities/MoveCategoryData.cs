@@ -16,6 +16,7 @@ internal static class MoveCategoryData
     /// <returns>The move's damage category, or <see cref="GameInfoUtilities.MoveCategory.Status"/> for unknown IDs.</returns>
     internal static GameInfoUtilities.MoveCategory GetMoveCategory(ushort moveId)
     {
+        // caching in a local within GetMoveCategory to ensure it’s created once
         var table = CategoryTable;
         return moveId >= table.Length
             ? GameInfoUtilities.MoveCategory.Status
