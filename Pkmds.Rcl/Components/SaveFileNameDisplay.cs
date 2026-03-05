@@ -3,13 +3,13 @@
 namespace Pkmds.Rcl.Components;
 
 /// <summary>
-///     Utility class for generating display names for save files and game versions.
+/// Utility class for generating display names for save files and game versions.
 /// </summary>
 public static class SaveFileNameDisplay
 {
     /// <summary>
-    ///     Generates a formatted display string for the current save file.
-    ///     Includes trainer name, gender, TID, game version, and playtime.
+    /// Generates a formatted display string for the current save file.
+    /// Includes trainer name, gender, TID, game version, and playtime.
     /// </summary>
     /// <param name="appState">The application state containing the save file.</param>
     /// <param name="appService">The application service for formatting IDs.</param>
@@ -55,7 +55,7 @@ public static class SaveFileNameDisplay
     }
 
     /// <summary>
-    ///     Converts a GameVersion enum value to a user-friendly game name.
+    /// Converts a GameVersion enum value to a user-friendly game name.
     /// </summary>
     /// <param name="gameVersion">The game version to convert.</param>
     /// <returns>A human-readable game name.</returns>

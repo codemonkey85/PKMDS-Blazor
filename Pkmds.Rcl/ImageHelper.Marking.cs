@@ -1,7 +1,7 @@
 ﻿namespace Pkmds.Rcl;
 
 /// <summary>
-///     Partial class for marking sprite filename generation (box marks, generation origin, shiny, region indicators).
+/// Partial class for marking sprite filename generation (box marks, generation origin, shiny, region indicators).
 /// </summary>
 public static partial class ImageHelper
 {

@@ -1,8 +1,8 @@
 namespace Pkmds.Rcl.Components;
 
 /// <summary>
-///     Base component that automatically subscribes to refresh events.
-///     Reduces boilerplate code for components that need to refresh on state changes.
+/// Base component that automatically subscribes to refresh events.
+/// Reduces boilerplate code for components that need to refresh on state changes.
 /// </summary>
 public abstract class RefreshAwareComponent : ComponentBase, IDisposable
 {
@@ -17,8 +17,8 @@ public abstract class RefreshAwareComponent : ComponentBase, IDisposable
     private IRefreshService RefreshServiceInternal => RefreshServiceField!;
 
     /// <summary>
-    ///     Override this property to control which refresh events trigger StateHasChanged.
-    ///     By default, only OnAppStateChanged is subscribed.
+    /// Override this property to control which refresh events trigger StateHasChanged.
+    /// By default, only OnAppStateChanged is subscribed.
     /// </summary>
     protected virtual RefreshEvents SubscribeTo => RefreshEvents.AppState;
 
@@ -68,7 +68,7 @@ public abstract class RefreshAwareComponent : ComponentBase, IDisposable
     }
 
     /// <summary>
-    ///     Override this method to add custom disposal logic.
+    /// Override this method to add custom disposal logic.
     /// </summary>
     protected virtual void Dispose(bool disposing)
     {
@@ -76,7 +76,7 @@ public abstract class RefreshAwareComponent : ComponentBase, IDisposable
 }
 
 /// <summary>
-///     Flags enum to control which refresh events a component subscribes to.
+/// Flags enum to control which refresh events a component subscribes to.
 /// </summary>
 [Flags]
 public enum RefreshEvents

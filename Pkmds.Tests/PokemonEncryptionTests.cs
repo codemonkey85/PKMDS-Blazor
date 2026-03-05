@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for Pokémon encryption, decryption, and checksum validation
+/// Tests for Pokémon encryption, decryption, and checksum validation
 /// </summary>
 public class PokemonEncryptionTests
 {

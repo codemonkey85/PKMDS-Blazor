@@ -1,7 +1,7 @@
 ﻿namespace Pkmds.Rcl;
 
 /// <summary>
-///     Partial class for accent icon sprite filename generation (gender, lock, party, legality indicators, etc.).
+/// Partial class for accent icon sprite filename generation (gender, lock, party, legality indicators, etc.).
 /// </summary>
 public static partial class ImageHelper
 {

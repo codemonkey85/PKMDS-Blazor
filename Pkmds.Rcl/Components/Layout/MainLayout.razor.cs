@@ -63,7 +63,9 @@ public partial class MainLayout : IDisposable
         {
             isDarkMode = newValue;
             RefreshService.RefreshTheme(isDarkMode);
-            var themeStr = newValue ? "dark" : "light";
+            var themeStr = newValue
+                ? "dark"
+                : "light";
             await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
             StateHasChanged();
         }
@@ -75,7 +77,9 @@ public partial class MainLayout : IDisposable
         isDarkMode = ComputeIsDarkMode();
         RefreshService.RefreshTheme(isDarkMode);
 
-        var themeStr = isDarkMode ? "dark" : "light";
+        var themeStr = isDarkMode
+            ? "dark"
+            : "light";
         await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
 
         if (themeMode == ThemeMode.System)

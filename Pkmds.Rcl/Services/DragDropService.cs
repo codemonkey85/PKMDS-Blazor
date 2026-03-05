@@ -1,8 +1,8 @@
 namespace Pkmds.Rcl.Services;
 
 /// <summary>
-///     Implementation of drag-and-drop service for managing Pokémon drag operations.
-///     Maintains state about the current drag operation including source location and Pokémon data.
+/// Implementation of drag-and-drop service for managing Pokémon drag operations.
+/// Maintains state about the current drag operation including source location and Pokémon data.
 /// </summary>
 public class DragDropService : IDragDropService
 {

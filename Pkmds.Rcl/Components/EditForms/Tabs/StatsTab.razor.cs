@@ -40,7 +40,7 @@ public partial class StatsTab : IDisposable
         }
 
         var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in r, false);
+        return ctx.Humanize(in r);
     }
 
     protected override void OnInitialized() =>

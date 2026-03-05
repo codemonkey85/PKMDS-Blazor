@@ -11,7 +11,7 @@ public partial class LegalityReportTab : RefreshAwareComponent
     private LegalityStatus? statusFilter;
 
     /// <summary>
-    ///     Callback invoked after a row is clicked to jump to the Party / Box tab.
+    /// Callback invoked after a row is clicked to jump to the Party / Box tab.
     /// </summary>
     [Parameter]
     public EventCallback OnJumpToPartyBox { get; set; }
@@ -124,7 +124,7 @@ public partial class LegalityReportTab : RefreshAwareComponent
         {
             if (!result.Valid)
             {
-                return ctx.Humanize(in result, false);
+                return ctx.Humanize(in result);
             }
         }
 

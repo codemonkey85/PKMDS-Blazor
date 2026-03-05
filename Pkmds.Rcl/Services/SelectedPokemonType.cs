@@ -1,7 +1,7 @@
 ﻿namespace Pkmds.Rcl.Services;
 
 /// <summary>
-///     Enum representing the type of Pokémon slot currently selected.
+/// Enum representing the type of Pokémon slot currently selected.
 /// </summary>
 public enum SelectedPokemonType
 {

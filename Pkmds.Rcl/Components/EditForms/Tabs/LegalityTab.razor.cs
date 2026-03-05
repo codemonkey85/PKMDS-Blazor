@@ -85,7 +85,7 @@ public partial class LegalityTab : IDisposable
             return;
         }
 
-        Pokemon.SetMoveset(false);
+        Pokemon.SetMoveset();
 
         // Update Technical Records (Gen 8+ SwSh / SV / ZA) to reflect the new moves,
         // mirroring PKMEditor's SetSuggestedMoves behaviour.
@@ -281,6 +281,6 @@ public partial class LegalityTab : IDisposable
         }
 
         var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in result, false);
+        return ctx.Humanize(in result);
     }
 }

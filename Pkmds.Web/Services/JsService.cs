@@ -1,14 +1,14 @@
 ﻿namespace Pkmds.Web.Services;
 
 /// <summary>
-///     Service for JavaScript interop, providing cryptographic operations via crypto-js library.
-///     This service bridges .NET code with JavaScript implementations of AES and MD5,
-///     which are necessary because these cryptographic APIs are not fully supported in Blazor WebAssembly.
+/// Service for JavaScript interop, providing cryptographic operations via crypto-js library.
+/// This service bridges .NET code with JavaScript implementations of AES and MD5,
+/// which are necessary because these cryptographic APIs are not fully supported in Blazor WebAssembly.
 /// </summary>
 public class JsService(IJSRuntime js)
 {
     /// <summary>
-    ///     Gets the synchronous JavaScript runtime, throwing if not available.
+    /// Gets the synchronous JavaScript runtime, throwing if not available.
     /// </summary>
     /// <exception cref="NotSupportedException">Thrown when IJSInProcessRuntime is not available.</exception>
     private IJSInProcessRuntime SyncJs =>
@@ -16,7 +16,7 @@ public class JsService(IJSRuntime js)
         ?? throw new NotSupportedException("Requested an in process javascript interop, but none was found");
 
     /// <summary>
-    ///     Encrypts data using AES with the specified key and cipher mode.
+    /// Encrypts data using AES with the specified key and cipher mode.
     /// </summary>
     /// <param name="origin">The plaintext data to encrypt.</param>
     /// <param name="destination">The span to write the encrypted data to.</param>
@@ -34,7 +34,7 @@ public class JsService(IJSRuntime js)
     }
 
     /// <summary>
-    ///     Decrypts data using AES with the specified key and cipher mode.
+    /// Decrypts data using AES with the specified key and cipher mode.
     /// </summary>
     /// <param name="origin">The ciphertext data to decrypt.</param>
     /// <param name="destination">The span to write the decrypted data to.</param>
@@ -52,7 +52,7 @@ public class JsService(IJSRuntime js)
     }
 
     /// <summary>
-    ///     Converts a hexadecimal string to a byte array.
+    /// Converts a hexadecimal string to a byte array.
     /// </summary>
     /// <param name="hex">The hexadecimal string (without separators).</param>
     /// <returns>The byte array representation.</returns>
@@ -68,7 +68,7 @@ public class JsService(IJSRuntime js)
     }
 
     /// <summary>
-    ///     Computes the MD5 hash of the input data using JavaScript interop.
+    /// Computes the MD5 hash of the input data using JavaScript interop.
     /// </summary>
     /// <param name="toArray">The data to hash.</param>
     /// <returns>The MD5 hash as a byte array (16 bytes).</returns>

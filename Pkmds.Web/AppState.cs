@@ -1,9 +1,9 @@
 ﻿namespace Pkmds.Web;
 
 /// <summary>
-///     Blazor WebAssembly implementation of the application state.
-///     This record holds the global state for the PKMDS application including the current save file,
-///     selected slots, clipboard data, and UI preferences.
+/// Blazor WebAssembly implementation of the application state.
+/// This record holds the global state for the PKMDS application including the current save file,
+/// selected slots, clipboard data, and UI preferences.
 /// </summary>
 public record AppState : IAppState
 {

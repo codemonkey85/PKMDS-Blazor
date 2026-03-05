@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests validating the fix for Gen II nickname encoding issues
+/// Tests validating the fix for Gen II nickname encoding issues
 /// </summary>
 public class Gen2NicknameFallbackTests
 {

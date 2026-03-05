@@ -151,10 +151,7 @@ public partial class MovesTab
     {
         var parameters = new DialogParameters<RelearnFlagsDialog> { { x => x.Pokemon, Pokemon } };
 
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true
-        };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true };
 
         await DialogService.ShowAsync<RelearnFlagsDialog>("TR Relearn Editor", parameters, options);
     }
@@ -163,10 +160,7 @@ public partial class MovesTab
     {
         var parameters = new DialogParameters<PlusFlagsDialog> { { x => x.Pokemon, Pokemon } };
 
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true
-        };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true };
 
         await DialogService.ShowAsync<PlusFlagsDialog>("Plus Flags Editor", parameters, options);
     }
@@ -175,10 +169,7 @@ public partial class MovesTab
     {
         var parameters = new DialogParameters<MoveShopDialog> { { x => x.Pokemon, Pokemon } };
 
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true
-        };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true };
 
         await DialogService.ShowAsync<MoveShopDialog>("Move Shop Editor", parameters, options);
     }

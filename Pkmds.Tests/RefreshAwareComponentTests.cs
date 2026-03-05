@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for RefreshAwareComponent functionality
+/// Tests for RefreshAwareComponent functionality
 /// </summary>
 public class RefreshAwareComponentTests
 {

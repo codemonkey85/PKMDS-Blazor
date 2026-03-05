@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Tests for extension methods in PkmExtensions
+/// Tests for extension methods in PkmExtensions
 /// </summary>
 public class ExtensionTests
 {

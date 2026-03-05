@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-///     Test Gen II Silver save (English) for nickname handling
+/// Test Gen II Silver save (English) for nickname handling
 /// </summary>
 public class Gen2SilverTest
 {
