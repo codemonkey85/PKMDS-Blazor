@@ -14,15 +14,18 @@ internal static class MoveCategoryData
     /// </summary>
     /// <param name="moveId">Move ID (PKHeX <see cref="PKHeX.Core.Move"/> cast to ushort).</param>
     /// <returns>The move's damage category, or <see cref="GameInfoUtilities.MoveCategory.Status"/> for unknown IDs.</returns>
-    internal static GameInfoUtilities.MoveCategory GetMoveCategory(ushort moveId) =>
-        moveId >= CategoryTable.Length
+    internal static GameInfoUtilities.MoveCategory GetMoveCategory(ushort moveId)
+    {
+        var table = CategoryTable;
+        return moveId >= table.Length
             ? GameInfoUtilities.MoveCategory.Status
-            : (GameInfoUtilities.MoveCategory)CategoryTable[moveId];
+            : (GameInfoUtilities.MoveCategory)table[moveId];
+    }
 
     /// <summary>
     /// Category table indexed by move ID. Values: 0 = Status, 1 = Physical, 2 = Special.
     /// </summary>
-    private static ReadOnlySpan<byte> CategoryTable =>
+    private static readonly byte[] CategoryTable =
     [
         0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 1, 2, 1, 0, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
