@@ -102,6 +102,37 @@ public partial class StatsTab : IDisposable
         _ => EffortValues.Max252
     };
 
+    private string GetIvFieldClass(int iv, Stats stat)
+    {
+        var maxIv = AppState?.SaveFile?.Generation is 1 or 2
+            ? 15
+            : 31;
+        var maxClass = iv >= maxIv
+            ? "stat-maxed"
+            : string.Empty;
+        var natureClass = stat == Stats.Hp
+            ? string.Empty
+            : GetStatClass(stat);
+        return $"{natureClass} {maxClass}".Trim();
+    }
+
+    // Bold threshold for EVs: 252 for Gen 3+ (effective stat-gain cap even when stored max is 255),
+    // ushort.MaxValue for Gen 1/2 (EffortValues.Max12).
+    private static int GetEvBoldThreshold(int generation) => generation is 1 or 2
+        ? EffortValues.Max12
+        : EffortValues.Max252;
+
+    private string GetEvFieldClass(int ev, Stats stat, int saveGeneration)
+    {
+        var maxClass = ev >= GetEvBoldThreshold(saveGeneration)
+            ? "stat-maxed"
+            : string.Empty;
+        var natureClass = stat == Stats.Hp
+            ? string.Empty
+            : GetStatClass(stat);
+        return $"{natureClass} {maxClass}".Trim();
+    }
+
     private string GetStatClass(Stats stat)
     {
         if (Pokemon is null)
