@@ -38,7 +38,7 @@ public record AppSettings
     public uint DefaultSecretId { get; init; }
 
     /// <summary>
-    /// Default language for new Pokémon, stored as a <see cref="PKHeX.Core.LanguageID"/> byte value.
+    /// Default language for new Pokémon, stored as a <see cref="PKHeX.Core.LanguageID" /> byte value.
     /// </summary>
     public LanguageID DefaultLanguageId { get; init; } = LanguageID.English;
 }

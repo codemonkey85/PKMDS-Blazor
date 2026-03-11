@@ -1,6 +1,6 @@
 namespace Pkmds.Rcl.Services;
 
-/// <inheritdoc cref="ISettingsService"/>
+/// <inheritdoc cref="ISettingsService" />
 public sealed class SettingsService(
     IJSRuntime jsRuntime,
     IAppState appState,
@@ -10,12 +10,10 @@ public sealed class SettingsService(
     private const string LegacyThemeKey = "pkmds_theme";
     private const string LegacyHaxKey = "pkmds_hax_enabled";
 
-    private AppSettings _settings = new();
+    /// <inheritdoc />
+    public AppSettings Settings { get; private set; } = new();
 
-    /// <inheritdoc/>
-    public AppSettings Settings => _settings;
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task LoadAsync()
     {
         try
@@ -26,19 +24,19 @@ public sealed class SettingsService(
             {
                 try
                 {
-                    _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                    Settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
 
                     // Re-persist if ThemeMode was invalid so pkmds_theme stays in sync.
-                    if (NormalizeThemeMode(_settings.ThemeMode) != _settings.ThemeMode)
+                    if (NormalizeThemeMode(Settings.ThemeMode) != Settings.ThemeMode)
                     {
-                        await SaveAsync(_settings);
+                        await SaveAsync(Settings);
                         return;
                     }
                 }
                 catch
                 {
-                    _settings = new AppSettings();
-                    await SaveAsync(_settings);
+                    Settings = new AppSettings();
+                    await SaveAsync(Settings);
                     await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyHaxKey);
                     return;
                 }
@@ -49,14 +47,10 @@ public sealed class SettingsService(
                 var legacyTheme = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", LegacyThemeKey);
                 var legacyHax = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", LegacyHaxKey);
 
-                _settings = new AppSettings
-                {
-                    ThemeMode = legacyTheme ?? "system",
-                    IsHaXEnabled = legacyHax == "true",
-                };
+                Settings = new AppSettings { ThemeMode = legacyTheme ?? "system", IsHaXEnabled = legacyHax == "true" };
 
                 // Persist migrated settings so migration does not re-run on subsequent startups.
-                await SaveAsync(_settings);
+                await SaveAsync(Settings);
                 await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyHaxKey);
                 return;
             }
@@ -66,30 +60,30 @@ public sealed class SettingsService(
         catch (JSException)
         {
             // Fallback to in-memory defaults when localStorage is unavailable or blocked.
-            _settings = new AppSettings();
+            Settings = new AppSettings();
             ApplyToServices();
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task SaveAsync(AppSettings settings)
     {
-        _settings = settings with { ThemeMode = NormalizeThemeMode(settings.ThemeMode) };
+        Settings = settings with { ThemeMode = NormalizeThemeMode(settings.ThemeMode) };
         ApplyToServices();
 
-        var json = JsonSerializer.Serialize(_settings);
+        var json = JsonSerializer.Serialize(Settings);
         try
         {
             await jsRuntime.InvokeVoidAsync("localStorage.setItem", SettingsKey, json);
 
             // Keep pkmds_theme in sync for the JS early-load script (prevents FOUC on reload)
-            if (_settings.ThemeMode == "system")
+            if (Settings.ThemeMode == "system")
             {
                 await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyThemeKey);
             }
             else
             {
-                await jsRuntime.InvokeVoidAsync("localStorage.setItem", LegacyThemeKey, _settings.ThemeMode);
+                await jsRuntime.InvokeVoidAsync("localStorage.setItem", LegacyThemeKey, Settings.ThemeMode);
             }
         }
         catch (JSException)
@@ -98,15 +92,17 @@ public sealed class SettingsService(
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task ResetAsync() => SaveAsync(new AppSettings());
 
     private static string NormalizeThemeMode(string value) =>
-        value is "light" or "dark" ? value : "system";
+        value is "light" or "dark"
+            ? value
+            : "system";
 
     private void ApplyToServices()
     {
-        appState.IsHaXEnabled = _settings.IsHaXEnabled;
-        loggingService.IsVerboseLoggingEnabled = _settings.IsVerboseLoggingEnabled;
+        appState.IsHaXEnabled = Settings.IsHaXEnabled;
+        loggingService.IsVerboseLoggingEnabled = Settings.IsVerboseLoggingEnabled;
     }
 }

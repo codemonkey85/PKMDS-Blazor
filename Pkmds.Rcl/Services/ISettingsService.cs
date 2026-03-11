@@ -14,13 +14,13 @@ public interface ISettingsService
     /// <summary>
     /// Loads settings from localStorage. Falls back to migrating legacy individual keys
     /// (<c>pkmds_theme</c>, <c>pkmds_hax_enabled</c>) if the JSON key is not yet present.
-    /// After loading, applies the settings to <see cref="IAppState"/> and <see cref="ILoggingService"/>.
+    /// After loading, applies the settings to <see cref="IAppState" /> and <see cref="ILoggingService" />.
     /// </summary>
     Task LoadAsync();
 
     /// <summary>
-    /// Persists <paramref name="settings"/> to localStorage and updates
-    /// <see cref="IAppState"/> and <see cref="ILoggingService"/> accordingly.
+    /// Persists <paramref name="settings" /> to localStorage and updates
+    /// <see cref="IAppState" /> and <see cref="ILoggingService" /> accordingly.
     /// Also writes the <c>pkmds_theme</c> key for the JS early-load script.
     /// </summary>
     Task SaveAsync(AppSettings settings);

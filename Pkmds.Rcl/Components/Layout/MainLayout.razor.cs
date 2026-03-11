@@ -2,9 +2,6 @@ namespace Pkmds.Rcl.Components.Layout;
 
 public partial class MainLayout : IDisposable
 {
-    [Inject]
-    private ISettingsService SettingsService { get; set; } = null!;
-
     [StringSyntax(StringSyntaxAttribute.Uri)]
     private const string GitHubRepoLink = "https://github.com/codemonkey85/PKMDS-Blazor";
 
@@ -15,6 +12,9 @@ public partial class MainLayout : IDisposable
     private MudThemeProvider? mudThemeProvider;
     private bool systemIsDarkMode;
     private ThemeMode themeMode = ThemeMode.System;
+
+    [Inject]
+    private ISettingsService SettingsService { get; set; } = null!;
 
     public void Dispose() => RefreshService.OnAppStateChanged -= StateHasChanged;
 
@@ -60,7 +60,9 @@ public partial class MainLayout : IDisposable
         {
             isDarkMode = newValue;
             RefreshService.RefreshTheme(isDarkMode);
-            var themeStr = newValue ? "dark" : "light";
+            var themeStr = newValue
+                ? "dark"
+                : "light";
             await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
             StateHasChanged();
         }
@@ -76,7 +78,9 @@ public partial class MainLayout : IDisposable
         {
             ThemeMode.Light => "light",
             ThemeMode.Dark => "dark",
-            _ => isDarkMode ? "dark" : "light",
+            _ => isDarkMode
+                ? "dark"
+                : "light"
         };
         await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
 
@@ -87,7 +91,7 @@ public partial class MainLayout : IDisposable
             {
                 ThemeMode.Light => "light",
                 ThemeMode.Dark => "dark",
-                _ => "system",
+                _ => "system"
             }
         });
 
@@ -98,17 +102,9 @@ public partial class MainLayout : IDisposable
 
     private async Task ShowSettingsDialog()
     {
-        var parameters = new DialogParameters
-        {
-            { nameof(AppSettingsDialog.InitialSettings), SettingsService.Settings }
-        };
+        var parameters = new DialogParameters { { nameof(AppSettingsDialog.InitialSettings), SettingsService.Settings } };
 
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseOnEscapeKey = true,
-        };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseOnEscapeKey = true };
 
         var dialog = await DialogService.ShowAsync<AppSettingsDialog>("Settings", parameters, options);
         var result = await dialog.Result;
@@ -123,12 +119,14 @@ public partial class MainLayout : IDisposable
             {
                 "light" => ThemeMode.Light,
                 "dark" => ThemeMode.Dark,
-                _ => ThemeMode.System,
+                _ => ThemeMode.System
             };
             isDarkMode = ComputeIsDarkMode();
             RefreshService.RefreshTheme(isDarkMode);
 
-            var themeStr = isDarkMode ? "dark" : "light";
+            var themeStr = isDarkMode
+                ? "dark"
+                : "light";
             await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
 
             StateHasChanged();
