@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "Eaat0N+A",
+  "version": "Gb9PHU7x",
   "assets": [
     {
       "hash": "sha256-ocTTuvwGdfwNBTdUQMJ40/QJlTMHjVFuE+zeR5fqjLA=",
@@ -12874,16 +12874,16 @@ self.assetsManifest = {
       "url": "_framework/PKHeX.Core.97yn5qsshd.wasm"
     },
     {
-      "hash": "sha256-49Ghr/gBbtODVeeF6NmuIPaJiLEIB9b9kcA9AYtS/8w=",
-      "url": "_framework/Pkmds.Core.dg9h09qiiq.wasm"
+      "hash": "sha256-v2j5x33QXpDosh797FT1aoim2sASihfkeOFmIb9phPA=",
+      "url": "_framework/Pkmds.Core.xcr32u7kr0.wasm"
     },
     {
-      "hash": "sha256-XF5arMBjtEVIZSklJ0/mDDE5OJBxwsdvbd9s5dkZpOQ=",
-      "url": "_framework/Pkmds.Rcl.sstukqn32u.wasm"
+      "hash": "sha256-2sT0eE74TZfswjGj5wRVro4/MNf9NMrjuuYU2k4rzx4=",
+      "url": "_framework/Pkmds.Rcl.qj6sf3h3ss.wasm"
     },
     {
-      "hash": "sha256-imMl3Ts4FfR8uyhSCoJIevyb5ei1uneV1KN2PqJVqrQ=",
-      "url": "_framework/Pkmds.Web.6x2bs5vfau.wasm"
+      "hash": "sha256-hMixqHXMwfc8nCKoduAe2LQb0lDdJvhbHtErzzKNKbM=",
+      "url": "_framework/Pkmds.Web.44bxqekeab.wasm"
     },
     {
       "hash": "sha256-NHk6xRS3dIv7nLWuBUZvce3EXz7kvxiBsrjE7KvSMcI=",
@@ -13090,6 +13090,10 @@ self.assetsManifest = {
       "url": "_framework/de/Humanizer.resources.604odd4mwd.wasm"
     },
     {
+      "hash": "sha256-Prqxbc+Znoim+DvEIA5GR5AD3Dz02RyDs4AwKcwhqJM=",
+      "url": "_framework/dotnet.6703280jxh.js"
+    },
+    {
       "hash": "sha256-U4i3oLsvtmpzo2aeZlKQhk/KeWP5URfxaESQ/bY94k4=",
       "url": "_framework/dotnet.native.bm3sbf472y.wasm"
     },
@@ -13100,10 +13104,6 @@ self.assetsManifest = {
     {
       "hash": "sha256-YdXsn/a7hb+UMypOFCf8bmv3S6PbDPewiNWqmUM/1dk=",
       "url": "_framework/dotnet.runtime.zj9dll5ffg.js"
-    },
-    {
-      "hash": "sha256-j6zsVeZAlkpsGQ+7ztYxF+MZ4BO0CV11a3RZ4ROwXQg=",
-      "url": "_framework/dotnet.zjgb0dnr33.js"
     },
     {
       "hash": "sha256-hp/qv7cfaGXTXgvAsFReeVkK6DmUgu5ZkC78OA1Rw1g=",
@@ -13286,7 +13286,7 @@ self.assetsManifest = {
       "url": "_framework/zh-Hant/Humanizer.resources.99c9jzyifr.wasm"
     },
     {
-      "hash": "sha256-ZFwqX0mrAzSkjhLHu8ZTXa3JNEP6uJTYiD5JZulwlh4=",
+      "hash": "sha256-dsW7qDlVbCCtO7/A3evhGNGO+QXvWucgtZYscDieMBc=",
       "url": "index.html"
     },
     {
