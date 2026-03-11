@@ -6,14 +6,14 @@
         <PackageVersion Include="bUnit" Version="2.6.2"/>
         <PackageVersion Include="coverlet.collector" Version="8.0.0"/>
         <PackageVersion Include="FluentAssertions" Version="8.8.0"/>
-        <PackageVersion Include="Humanizer" Version="3.0.8"/>
+        <PackageVersion Include="Humanizer" Version="3.0.10"/>
         <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="3.3.0"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.3"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.3"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.4"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.4"/>
         <PackageVersion Include="Microsoft.JSInterop" Version="10.0.3"/>
         <PackageVersion Include="Microsoft.JSInterop.WebAssembly" Version="10.0.3"/>
         <PackageVersion Include="MudBlazor" Version="9.1.0"/>
-        <PackageVersion Include="PKHeX.Core" Version="26.1.31"/>
+        <PackageVersion Include="PKHeX.Core" Version="26.3.6"/>
         <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0"/>
         <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>

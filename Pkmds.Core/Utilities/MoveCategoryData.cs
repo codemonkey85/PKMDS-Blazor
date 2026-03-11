@@ -3,26 +3,12 @@ namespace Pkmds.Core.Utilities;
 /// <summary>
 /// Move category (Physical / Special / Status) lookup table for Gen 4+ moves.
 /// Data sourced from Pokémon Showdown (smogon/pokemon-showdown data/moves.ts).
-/// Indexed by move ID; value encodes <see cref="GameInfoUtilities.MoveCategory"/>.
+/// Indexed by move ID; value encodes <see cref="GameInfoUtilities.MoveCategory" />.
 /// Odd Z-move IDs (623–657) are the Special variants of their Physical counterparts.
 /// IDs 921–999 are reserved/unused slots; they default to Status (0).
 /// </summary>
 internal static class MoveCategoryData
 {
-    /// <summary>
-    /// Gets the <see cref="GameInfoUtilities.MoveCategory"/> for a Gen 4+ move.
-    /// </summary>
-    /// <param name="moveId">Move ID (PKHeX <see cref="PKHeX.Core.Move"/> cast to ushort).</param>
-    /// <returns>The move's damage category, or <see cref="GameInfoUtilities.MoveCategory.Status"/> for unknown IDs.</returns>
-    internal static GameInfoUtilities.MoveCategory GetMoveCategory(ushort moveId)
-    {
-        // caching in a local within GetMoveCategory to ensure it’s created once
-        var table = CategoryTable;
-        return moveId >= table.Length
-            ? GameInfoUtilities.MoveCategory.Status
-            : (GameInfoUtilities.MoveCategory)table[moveId];
-    }
-
     /// <summary>
     /// Category table indexed by move ID. Values: 0 = Status, 1 = Physical, 2 = Special.
     /// </summary>
@@ -78,6 +64,20 @@ internal static class MoveCategoryData
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        1,
+        1
     ];
+
+    /// <summary>
+    /// Gets the <see cref="GameInfoUtilities.MoveCategory" /> for a Gen 4+ move.
+    /// </summary>
+    /// <param name="moveId">Move ID (PKHeX <see cref="PKHeX.Core.Move" /> cast to ushort).</param>
+    /// <returns>The move's damage category, or <see cref="GameInfoUtilities.MoveCategory.Status" /> for unknown IDs.</returns>
+    internal static GameInfoUtilities.MoveCategory GetMoveCategory(ushort moveId)
+    {
+        // caching in a local within GetMoveCategory to ensure it’s created once
+        var table = CategoryTable;
+        return moveId >= table.Length
+            ? GameInfoUtilities.MoveCategory.Status
+            : (GameInfoUtilities.MoveCategory)table[moveId];
+    }
 }

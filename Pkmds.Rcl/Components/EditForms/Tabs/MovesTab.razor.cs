@@ -19,7 +19,7 @@ public partial class MovesTab
         }
 
         var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.FormatMove(result, index + 1, (byte)AppState.SaveFile!.Context);
+        return ctx.FormatMove(result, index + 1, AppState.SaveFile!.Context);
     }
 
     private Task<IEnumerable<ComboItem>> SearchMoves(string searchString, CancellationToken token) =>

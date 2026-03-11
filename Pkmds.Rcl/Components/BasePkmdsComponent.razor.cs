@@ -10,33 +10,43 @@ public partial class BasePkmdsComponent
     {
         var (up, dn) = nature.GetNatureModification();
         if (up == dn)
+        {
             return NatureModifier.Neutral;
+        }
+
         if (up == (int)stat)
+        {
             return NatureModifier.Boosted;
-        return dn == (int)stat ? NatureModifier.Hindered : NatureModifier.Neutral;
+        }
+
+        return dn == (int)stat
+            ? NatureModifier.Hindered
+            : NatureModifier.Neutral;
     }
 
     protected static string GetNatureAdornmentIcon(NatureModifier modifier) => modifier switch
     {
         NatureModifier.Boosted => Icons.Material.Filled.ArrowUpward,
         NatureModifier.Hindered => Icons.Material.Filled.ArrowDownward,
-        _ => string.Empty,
+        _ => string.Empty
     };
 
     protected static Color GetNatureAdornmentColor(NatureModifier modifier) => modifier switch
     {
         NatureModifier.Boosted => Color.Error,
         NatureModifier.Hindered => Color.Info,
-        _ => Color.Default,
+        _ => Color.Default
     };
 
     protected static Adornment GetNatureAdornment(NatureModifier modifier) =>
-        modifier is NatureModifier.Neutral ? Adornment.None : Adornment.End;
+        modifier is NatureModifier.Neutral
+            ? Adornment.None
+            : Adornment.End;
 
     protected static string GetNatureTooltip(NatureModifier modifier) => modifier switch
     {
         NatureModifier.Boosted => "Boosted by nature (+10%)",
         NatureModifier.Hindered => "Hindered by nature (-10%)",
-        _ => string.Empty,
+        _ => string.Empty
     };
 }
