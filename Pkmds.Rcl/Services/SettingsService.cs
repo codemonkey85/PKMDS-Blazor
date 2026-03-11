@@ -31,6 +31,7 @@ public sealed class SettingsService(
             catch
             {
                 _settings = new AppSettings();
+                await jsRuntime.InvokeVoidAsync("localStorage.removeItem", SettingsKey);
             }
         }
         else
@@ -44,6 +45,10 @@ public sealed class SettingsService(
                 ThemeMode = legacyTheme ?? "system",
                 IsHaXEnabled = legacyHax == "true",
             };
+
+            // Persist migrated settings so migration does not re-run on subsequent startups.
+            await SaveAsync(_settings);
+            return;
         }
 
         ApplyToServices();

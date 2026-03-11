@@ -48,6 +48,7 @@ public partial class MainLayout : IDisposable
         };
         isDarkMode = ComputeIsDarkMode();
         RefreshService.RefreshTheme(isDarkMode);
+        RefreshService.Refresh();
 
         StateHasChanged();
     }
@@ -115,6 +116,7 @@ public partial class MainLayout : IDisposable
         if (result is { Data: AppSettings updated })
         {
             await SettingsService.SaveAsync(updated);
+            RefreshService.Refresh();
 
             // Re-apply theme from the updated settings
             themeMode = updated.ThemeMode switch
