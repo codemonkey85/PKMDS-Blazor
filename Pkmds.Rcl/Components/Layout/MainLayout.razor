@@ -124,16 +124,6 @@
                        Disabled="@(AppService.EditFormPokemon is null)">
                 Export Selected Pokémon
             </MudButton>
-            <MudButton OnClick="@CheckForUpdate"
-                       Variant="@Variant.Filled"
-                       StartIcon="@Icons.Material.Filled.SystemUpdateAlt"
-                       FullWidth="@false"
-                       Style="width: 80%; align-self: center;"
-                       Disabled="@isCheckingForUpdate">
-                @(isCheckingForUpdate
-                    ? "Checking..."
-                    : "Check for Updates")
-            </MudButton>
         </MudStack>
         <MudSpacer/>
         <MudStack Spacing="1"
