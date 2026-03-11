@@ -182,7 +182,7 @@ public partial class StatsTab : IDisposable
 
     private void OnSetDv(Stats stat, int newValue)
     {
-        if (Pokemon is not PK1 or PK2)
+        if (Pokemon is not (PK1 or PK2))
         {
             return;
         }

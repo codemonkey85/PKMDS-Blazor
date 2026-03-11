@@ -4,5 +4,5 @@ public enum NatureModifier
 {
     Neutral,
     Boosted,
-    Hindered,
+    Hindered
 }
