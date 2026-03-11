@@ -1,8 +1,6 @@
 namespace Pkmds.Rcl.Services;
 
-/// <summary>
 /// <inheritdoc cref="ISettingsService"/>
-/// </summary>
 public sealed class SettingsService(
     IJSRuntime jsRuntime,
     IAppState appState,
@@ -20,40 +18,50 @@ public sealed class SettingsService(
     /// <inheritdoc/>
     public async Task LoadAsync()
     {
-        var json = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", SettingsKey);
-
-        if (json is not null)
+        try
         {
-            try
+            var json = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", SettingsKey);
+
+            if (json is not null)
             {
-                _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                try
+                {
+                    _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                }
+                catch
+                {
+                    _settings = new AppSettings();
+                    await SaveAsync(_settings);
+                    await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyHaxKey);
+                    return;
+                }
             }
-            catch
+            else
             {
-                _settings = new AppSettings();
+                // Migrate from legacy individual keys on first run
+                var legacyTheme = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", LegacyThemeKey);
+                var legacyHax = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", LegacyHaxKey);
+
+                _settings = new AppSettings
+                {
+                    ThemeMode = legacyTheme ?? "system",
+                    IsHaXEnabled = legacyHax == "true",
+                };
+
+                // Persist migrated settings so migration does not re-run on subsequent startups.
                 await SaveAsync(_settings);
                 await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyHaxKey);
                 return;
             }
+
+            ApplyToServices();
         }
-        else
+        catch (JSException)
         {
-            // Migrate from legacy individual keys on first run
-            var legacyTheme = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", LegacyThemeKey);
-            var legacyHax = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", LegacyHaxKey);
-
-            _settings = new AppSettings
-            {
-                ThemeMode = legacyTheme ?? "system",
-                IsHaXEnabled = legacyHax == "true",
-            };
-
-            // Persist migrated settings so migration does not re-run on subsequent startups.
-            await SaveAsync(_settings);
-            return;
+            // Fallback to in-memory defaults when localStorage is unavailable or blocked.
+            _settings = new AppSettings();
+            ApplyToServices();
         }
-
-        ApplyToServices();
     }
 
     /// <inheritdoc/>
@@ -63,16 +71,23 @@ public sealed class SettingsService(
         ApplyToServices();
 
         var json = JsonSerializer.Serialize(_settings);
-        await jsRuntime.InvokeVoidAsync("localStorage.setItem", SettingsKey, json);
+        try
+        {
+            await jsRuntime.InvokeVoidAsync("localStorage.setItem", SettingsKey, json);
 
-        // Keep pkmds_theme in sync for the JS early-load script (prevents FOUC on reload)
-        if (_settings.ThemeMode == "system")
-        {
-            await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyThemeKey);
+            // Keep pkmds_theme in sync for the JS early-load script (prevents FOUC on reload)
+            if (_settings.ThemeMode == "system")
+            {
+                await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyThemeKey);
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("localStorage.setItem", LegacyThemeKey, _settings.ThemeMode);
+            }
         }
-        else
+        catch (JSException)
         {
-            await jsRuntime.InvokeVoidAsync("localStorage.setItem", LegacyThemeKey, _settings.ThemeMode);
+            // Ignore persistence failures so the app continues with in-memory settings.
         }
     }
 
