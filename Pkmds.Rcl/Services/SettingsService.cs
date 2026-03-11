@@ -31,7 +31,9 @@ public sealed class SettingsService(
             catch
             {
                 _settings = new AppSettings();
-                await jsRuntime.InvokeVoidAsync("localStorage.removeItem", SettingsKey);
+                await SaveAsync(_settings);
+                await jsRuntime.InvokeVoidAsync("localStorage.removeItem", LegacyHaxKey);
+                return;
             }
         }
         else
@@ -57,7 +59,7 @@ public sealed class SettingsService(
     /// <inheritdoc/>
     public async Task SaveAsync(AppSettings settings)
     {
-        _settings = settings;
+        _settings = settings with { ThemeMode = NormalizeThemeMode(settings.ThemeMode) };
         ApplyToServices();
 
         var json = JsonSerializer.Serialize(_settings);
@@ -76,6 +78,9 @@ public sealed class SettingsService(
 
     /// <inheritdoc/>
     public Task ResetAsync() => SaveAsync(new AppSettings());
+
+    private static string NormalizeThemeMode(string value) =>
+        value is "light" or "dark" ? value : "system";
 
     private void ApplyToServices()
     {
