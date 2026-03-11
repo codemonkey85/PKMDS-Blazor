@@ -156,6 +156,9 @@
                 </MudLink>
             </MudText>
             <MudText Typo="@Typo.subtitle2">
+                Built date: @AppState.AppBuildDate?.ToString("MMM dd, yyyy hh:mm:ss tt")
+            </MudText>
+            <MudText Typo="@Typo.subtitle2">
                 Created by
                 <MudLink Href="https://bondcodes.com/"
                          Target="_blank">

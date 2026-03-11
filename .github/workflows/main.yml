@@ -42,7 +42,7 @@ jobs:
       # Compute the version number once to ensure consistency
       - name: Compute version number
         id: version
-        run: echo "VERSION=$(date -u '+%Y.%m.%d.%H%M')" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(date -u '+%Y.%m.%d%H.%M%S')" >> $GITHUB_OUTPUT
 
       # publishes Blazor project to the release-folder with the computed version
       - name: Publish .NET Project

@@ -235,6 +235,7 @@ public class AdvancedSearchTests
         public int? SelectedPartySlotNumber { get; set; }
         public bool ShowProgressIndicator { get; set; }
         public string AppVersion => "Test";
+        public DateTime? AppBuildDate { get; }
         public bool SelectedSlotsAreValid => true;
         public bool IsHaXEnabled { get; set; }
     }

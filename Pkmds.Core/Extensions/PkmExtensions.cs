@@ -29,13 +29,6 @@ public static class PkmExtensions
     /// <returns>True if the species ID is invalid; otherwise, false.</returns>
     public static bool IsInvalidSpecies(this ushort speciesId) => !speciesId.IsValidSpecies();
 
-    /// <summary>
-    /// Determines whether a nullable species ID is invalid.
-    /// </summary>
-    /// <param name="speciesId">The nullable species ID to validate.</param>
-    /// <returns>True if the species ID is null or invalid; otherwise, false.</returns>
-    public static bool IsInvalidSpecies(this ushort? speciesId) => !speciesId.IsValidSpecies();
-
     extension(PKM pkm)
     {
         /// <summary>
@@ -197,60 +190,6 @@ public static class PkmExtensions
             var ppUps = pkm.GetPPUps()[moveIndex];
 
             return moveBasePP + moveBasePP * ppUps / 5;
-        }
-
-        /// <summary>
-        /// Gets a specific relearn move by index.
-        /// Relearn moves are available in Gen 6+ and represent moves a Pokémon can relearn.
-        /// For pre-Gen 6 Pokemon, the properties exist but will typically be 0.
-        /// </summary>
-        /// <param name="index">The relearn move slot index (0-3).</param>
-        /// <returns>The move ID, or 0 if the index is invalid.</returns>
-        public ushort GetRelearnMove(int index)
-        {
-            if (index is < 0 or > 3)
-            {
-                return 0;
-            }
-
-            return index switch
-            {
-                0 => pkm.RelearnMove1,
-                1 => pkm.RelearnMove2,
-                2 => pkm.RelearnMove3,
-                3 => pkm.RelearnMove4,
-                _ => 0
-            };
-        }
-
-        /// <summary>
-        /// Sets a specific relearn move by index.
-        /// Relearn moves are available in Gen 6+ and represent moves a Pokémon can relearn.
-        /// </summary>
-        /// <param name="index">The relearn move slot index (0-3).</param>
-        /// <param name="move">The move ID to set.</param>
-        public void SetRelearnMove(int index, ushort move)
-        {
-            if (index is < 0 or > 3)
-            {
-                return;
-            }
-
-            switch (index)
-            {
-                case 0:
-                    pkm.RelearnMove1 = move;
-                    break;
-                case 1:
-                    pkm.RelearnMove2 = move;
-                    break;
-                case 2:
-                    pkm.RelearnMove3 = move;
-                    break;
-                case 3:
-                    pkm.RelearnMove4 = move;
-                    break;
-            }
         }
 
         /// <summary>
