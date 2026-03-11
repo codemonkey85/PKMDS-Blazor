@@ -8,7 +8,6 @@ public partial class MainLayout : IDisposable
     private const string GitHubTooltip = "Source code on GitHub";
 
     private IBrowserFile? browserLoadSaveFile;
-    private bool isCheckingForUpdate;
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
     private bool systemIsDarkMode;
@@ -131,46 +130,6 @@ public partial class MainLayout : IDisposable
     }
 
     private void DrawerToggle() => AppService.ToggleDrawer();
-
-    private async Task CheckForUpdate()
-    {
-        isCheckingForUpdate = true;
-        StateHasChanged();
-
-        try
-        {
-            var response = await JSRuntime.InvokeAsync<UpdateCheckResponse>("checkForUpdate");
-            var result = response.Result;
-            var detail = response.Detail ?? string.Empty;
-
-            var (message, severity) = result switch
-            {
-                "update-found" => ("Update found! It will be applied on next reload.", Severity.Success),
-                "no-update" => ("You're up to date — no updates available.", Severity.Info),
-                "no-sw" => ($"Service worker is not available. {detail}", Severity.Warning),
-                "error" => ($"An error occurred while checking for updates: {detail}", Severity.Error),
-                _ => ($"Unexpected update check result: {result}. {detail}", Severity.Warning)
-            };
-
-            Logger.LogInformation("Update check result: {Result} - {Detail}", result, detail);
-            Snackbar.Add(message, severity);
-        }
-        catch (JSException ex)
-        {
-            Logger.LogWarning(ex, "Failed to check for updates due to JavaScript interop error");
-            Snackbar.Add($"Unable to check for updates: {ex.Message}", Severity.Warning);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Unexpected error while checking for updates");
-            Snackbar.Add($"An unexpected error occurred while checking for updates: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isCheckingForUpdate = false;
-            StateHasChanged();
-        }
-    }
 
     private async Task ShowLoadSaveFileDialog()
     {
