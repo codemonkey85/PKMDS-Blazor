@@ -69,6 +69,8 @@ public record AppState : IAppState
     /// <inheritdoc />
     public string? AppVersion => Assembly.GetAssembly(typeof(Program))?.GetName().Version?.ToVersionString();
 
+    public DateTime? AppBuildDate => Assembly.GetAssembly(typeof(Program))?.GetName().Version?.ToDateTime();
+
     /// <inheritdoc />
     public bool IsHaXEnabled { get; set; }
 }

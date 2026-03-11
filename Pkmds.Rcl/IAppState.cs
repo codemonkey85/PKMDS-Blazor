@@ -64,6 +64,11 @@ public interface IAppState
     string? AppVersion { get; }
 
     /// <summary>
+    /// Gets the build date of the application, derived from the assembly version.
+    /// </summary>
+    DateTime? AppBuildDate { get; }
+
+    /// <summary>
     /// Gets the version of PKHeX.Core library being used.
     /// </summary>
     static string? PkhexVersion => Assembly.GetAssembly(typeof(PKM))?.GetName().Version?.ToString();
