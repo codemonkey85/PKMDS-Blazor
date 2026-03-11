@@ -55,7 +55,7 @@ public static class VersionExtensions
                     $"Version build '{version.Build}' and revision '{version.Revision}' must be in DDHH and MMSS formats respectively.")
                 : (DateTime?)DateTime.SpecifyKind(
                     new DateTime(version.Major, version.Minor, day, hour, minute, second),
-                    DateTimeKind.Utc).ToLocalTime();
+                    DateTimeKind.Utc);
         }
     }
 }
