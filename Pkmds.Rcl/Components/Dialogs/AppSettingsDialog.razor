@@ -1,0 +1,139 @@
+@inherits MudComponentBase
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="@Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Settings"
+                     Class="mr-2"
+                     Style="vertical-align: middle;"/>
+            Settings
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTabs Elevation="0"
+                 Rounded="false"
+                 ApplyEffectsToContainer="true">
+
+            <!-- Tab 1: UI Preferences -->
+            <MudTabPanel Text="UI">
+                <MudStack Spacing="3"
+                          Class="pa-4">
+                    <MudText Typo="@Typo.subtitle1"
+                             Color="@Color.Primary">
+                        Theme
+                    </MudText>
+                    <MudButtonGroup Variant="@Variant.Outlined"
+                                    Size="@Size.Small">
+                        <MudIconButton Icon="@Icons.Material.Filled.LightMode"
+                                       Color="@Color.Inherit"
+                                       Style="@(_themeMode == ThemeMode.Light
+                                                  ? "background-color: var(--mud-palette-primary-lighten);"
+                                                  : "opacity: 0.6;")"
+                                       title="Light mode"
+                                       OnClick="@(() => _themeMode = ThemeMode.Light)"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.SettingsBrightness"
+                                       Color="@Color.Inherit"
+                                       Style="@(_themeMode == ThemeMode.System
+                                                  ? "background-color: var(--mud-palette-primary-lighten);"
+                                                  : "opacity: 0.6;")"
+                                       title="System default"
+                                       OnClick="@(() => _themeMode = ThemeMode.System)"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.DarkMode"
+                                       Color="@Color.Inherit"
+                                       Style="@(_themeMode == ThemeMode.Dark
+                                                  ? "background-color: var(--mud-palette-primary-lighten);"
+                                                  : "opacity: 0.6;")"
+                                       title="Dark mode"
+                                       OnClick="@(() => _themeMode = ThemeMode.Dark)"/>
+                    </MudButtonGroup>
+
+                    <MudDivider/>
+
+                    <MudText Typo="@Typo.subtitle1"
+                             Color="@Color.Primary">
+                        Developer Options
+                    </MudText>
+                    <MudSwitch Value="@_isHaXEnabled"
+                               Color="@Color.Warning"
+                               Label="PKHaX Mode"
+                               title="Enables unrestricted editing. May create illegal/untradable Pokémon. Use at your own risk."
+                               ValueChanged="@((bool value) => OnHaXEnabledChanged(value))"/>
+                    <MudSwitch @bind-Value="@_isVerboseLogging"
+                               Color="@Color.Primary"
+                               Label="Verbose Logging"
+                               title="Enable verbose logging to browser console"/>
+                </MudStack>
+            </MudTabPanel>
+
+            <!-- Tab 2: Trainer Defaults -->
+            <MudTabPanel Text="Trainer Defaults">
+                <MudStack Spacing="3"
+                          Class="pa-4">
+                    <MudText Typo="@Typo.caption"
+                             Color="@Color.Secondary">
+                        These values will be used as defaults when creating new Pokémon.
+                    </MudText>
+                    <MudTextField @bind-Value="@_defaultOtName"
+                                  Label="Default OT Name"
+                                  MaxLength="12"
+                                  Variant="@Variant.Outlined"
+                                  Clearable="true"/>
+                    <MudNumericField @bind-Value="@_defaultTrainerId"
+                                     Label="Default TID"
+                                     Variant="@Variant.Outlined"
+                                     Min="@((uint)0)"
+                                     Max="@((uint)999999)"/>
+                    <MudNumericField @bind-Value="@_defaultSecretId"
+                                     Label="Default SID"
+                                     Variant="@Variant.Outlined"
+                                     Min="@((uint)0)"
+                                     Max="@((uint)65535)"/>
+                    <MudSelect @bind-Value="@_defaultLanguageId"
+                               Label="Default Language"
+                               Variant="@Variant.Outlined">
+                        @foreach (var lang in SupportedLanguages)
+                        {
+                            <MudSelectItem Value="@lang.Id">@lang.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudStack>
+            </MudTabPanel>
+
+            <!-- Tab 3: Advanced (placeholder) -->
+            <MudTabPanel Text="Advanced">
+                <MudStack Class="pa-4"
+                          AlignItems="@AlignItems.Center"
+                          Justify="@Justify.Center"
+                          Style="min-height: 120px;">
+                    <MudIcon Icon="@Icons.Material.Outlined.Construction"
+                             Color="@Color.Secondary"
+                             Size="@Size.Large"/>
+                    <MudText Typo="@Typo.body1"
+                             Color="@Color.Secondary"
+                             Align="@Align.Center">
+                        Auto-backup, export folders, and database settings — coming soon.
+                    </MudText>
+                </MudStack>
+            </MudTabPanel>
+
+        </MudTabs>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@OnResetAll"
+                   Color="@Color.Error"
+                   StartIcon="@Icons.Material.Filled.RestartAlt"
+                   Variant="@Variant.Text">
+            Reset All
+        </MudButton>
+        <MudSpacer/>
+        <MudButton OnClick="@Cancel"
+                   Variant="@Variant.Text">
+            Cancel
+        </MudButton>
+        <MudButton OnClick="@Save"
+                   Color="@Color.Primary"
+                   Variant="@Variant.Filled">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>

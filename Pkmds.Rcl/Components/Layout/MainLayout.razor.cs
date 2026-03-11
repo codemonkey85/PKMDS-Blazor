@@ -2,6 +2,9 @@ namespace Pkmds.Rcl.Components.Layout;
 
 public partial class MainLayout : IDisposable
 {
+    [Inject]
+    private ISettingsService SettingsService { get; set; } = null!;
+
     [StringSyntax(StringSyntaxAttribute.Uri)]
     private const string GitHubRepoLink = "https://github.com/codemonkey85/PKMDS-Blazor";
 
@@ -34,9 +37,10 @@ public partial class MainLayout : IDisposable
         systemIsDarkMode = await mudThemeProvider.GetSystemDarkModeAsync();
         await mudThemeProvider.WatchSystemDarkModeAsync(OnSystemPreferenceChanged);
 
-        // Restore persisted theme preference
-        var storedTheme = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_theme");
-        themeMode = storedTheme switch
+        // Load all persisted settings (theme, PKHaX, verbose logging, trainer defaults)
+        await SettingsService.LoadAsync();
+
+        themeMode = SettingsService.Settings.ThemeMode switch
         {
             "dark" => ThemeMode.Dark,
             "light" => ThemeMode.Light,
@@ -44,13 +48,6 @@ public partial class MainLayout : IDisposable
         };
         isDarkMode = ComputeIsDarkMode();
         RefreshService.RefreshTheme(isDarkMode);
-
-        var storedHaX = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_hax_enabled");
-        if (storedHaX == "true")
-        {
-            AppState.IsHaXEnabled = true;
-            RefreshService.Refresh();
-        }
 
         StateHasChanged();
     }
@@ -62,9 +59,7 @@ public partial class MainLayout : IDisposable
         {
             isDarkMode = newValue;
             RefreshService.RefreshTheme(isDarkMode);
-            var themeStr = newValue
-                ? "dark"
-                : "light";
+            var themeStr = newValue ? "dark" : "light";
             await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
             StateHasChanged();
         }
@@ -76,60 +71,67 @@ public partial class MainLayout : IDisposable
         isDarkMode = ComputeIsDarkMode();
         RefreshService.RefreshTheme(isDarkMode);
 
-        var themeStr = isDarkMode
-            ? "dark"
-            : "light";
+        var themeStr = themeMode switch
+        {
+            ThemeMode.Light => "light",
+            ThemeMode.Dark => "dark",
+            _ => isDarkMode ? "dark" : "light",
+        };
         await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
 
-        if (themeMode == ThemeMode.System)
+        // Persist the new theme through the settings service (keeps pkmds_theme in sync too)
+        await SettingsService.SaveAsync(SettingsService.Settings with
         {
-            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "pkmds_theme");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_theme", themeStr);
-        }
-
-        StateHasChanged();
-    }
-
-    private async Task OnHaXChanged(bool newValue)
-    {
-        if (newValue && !AppState.IsHaXEnabled)
-        {
-            var ack = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "pkmds_hax_warning_ack");
-            if (ack != "true")
+            ThemeMode = themeMode switch
             {
-                await DialogService.ShowMessageBoxAsync(
-                    "PKHaX Mode",
-                    "Illegal mode activated. Editing restrictions are now lifted. " +
-                    "Pokémon created or modified in this mode may be illegal and untradable. " +
-                    "Please behave.",
-                    "I understand");
-                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_warning_ack", "true");
+                ThemeMode.Light => "light",
+                ThemeMode.Dark => "dark",
+                _ => "system",
             }
-        }
+        });
 
-        AppState.IsHaXEnabled = newValue;
-        Logger.LogInformation("PKHaX mode {Status}", newValue
-            ? "enabled"
-            : "disabled");
-        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "pkmds_hax_enabled", newValue
-            ? "true"
-            : "false");
-        RefreshService.Refresh();
-    }
-
-    private void OnVerboseLoggingChanged(bool newValue)
-    {
-        LoggingService.IsVerboseLoggingEnabled = newValue;
-        Logger.LogInformation("Verbose logging {Status}", newValue
-            ? "enabled"
-            : "disabled");
         StateHasChanged();
     }
 
     private void DrawerToggle() => AppService.ToggleDrawer();
+
+    private async Task ShowSettingsDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(AppSettingsDialog.InitialSettings), SettingsService.Settings }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseOnEscapeKey = true,
+        };
+
+        var dialog = await DialogService.ShowAsync<AppSettingsDialog>("Settings", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Data: AppSettings updated })
+        {
+            await SettingsService.SaveAsync(updated);
+
+            // Re-apply theme from the updated settings
+            themeMode = updated.ThemeMode switch
+            {
+                "light" => ThemeMode.Light,
+                "dark" => ThemeMode.Dark,
+                _ => ThemeMode.System,
+            };
+            isDarkMode = ComputeIsDarkMode();
+            RefreshService.RefreshTheme(isDarkMode);
+
+            var themeStr = isDarkMode ? "dark" : "light";
+            await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
+
+            StateHasChanged();
+        }
+    }
 
     private async Task ShowLoadSaveFileDialog()
     {
@@ -538,19 +540,3 @@ public partial class MainLayout : IDisposable
 
     private enum ThemeMode { Light, System, Dark }
 }
-
-//private MudTheme myTheme = new()
-//{
-//    Palette = new Palette
-//    {
-//        //Primary = "#0074D9",
-//        //Secondary = "#3D9970",
-//        //Info = "#001f3f",
-//        //Success = "#2ECC40",
-//        //Warning = "#FF851B",
-//        //Error = "#F012BE",
-//        //AppbarBackground = "#85144b",
-//        // more color properties
-//        //TextPrimary = Colors.Shades.White,
-//    }
-//};
