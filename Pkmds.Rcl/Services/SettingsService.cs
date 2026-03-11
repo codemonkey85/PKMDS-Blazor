@@ -27,6 +27,13 @@ public sealed class SettingsService(
                 try
                 {
                     _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+
+                    // Re-persist if ThemeMode was invalid so pkmds_theme stays in sync.
+                    if (NormalizeThemeMode(_settings.ThemeMode) != _settings.ThemeMode)
+                    {
+                        await SaveAsync(_settings);
+                        return;
+                    }
                 }
                 catch
                 {
