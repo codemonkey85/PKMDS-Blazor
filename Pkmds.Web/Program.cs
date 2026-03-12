@@ -38,6 +38,7 @@ services
     .AddSingleton<IAppService, AppService>()
     .AddSingleton<IDragDropService, DragDropService>()
     .AddSingleton<ILoggingService, LoggingService>()
+    .AddSingleton<ISettingsService, SettingsService>()
     .AddSingleton(levelSwitch)
     .AddSingleton<JsService>()
     .AddSingleton<BlazorAesProvider>()

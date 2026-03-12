@@ -1,6 +1,6 @@
-namespace Pkmds.Tests;
-
 using Pkmds.Rcl.Extensions;
+
+namespace Pkmds.Tests;
 
 public class VersionExtensionsTests
 {
@@ -41,9 +41,9 @@ public class VersionExtensionsTests
     }
 
     [Theory]
-    [InlineData(3224, 0)]     // invalid hour (24)
-    [InlineData(100, 6000)]   // invalid minute (60)
-    [InlineData(100, 160)]    // invalid second (60)
+    [InlineData(3224, 0)] // invalid hour (24)
+    [InlineData(100, 6000)] // invalid minute (60)
+    [InlineData(100, 160)] // invalid second (60)
     public void ToDateTime_InvalidBuildOrRevision_ThrowsArgumentOutOfRangeException(int build, int revision)
     {
         // Arrange
