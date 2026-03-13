@@ -118,11 +118,23 @@ public partial class StatsChart : IDisposable
         radarChartOptions.GridLevels = Math.Max(maxStatValue / StatStepSize, 2);
     }
 
-    private List<int> GetPokemonStats() => Pokemon is null
-        ? []
-        : AppState.SaveFile?.Generation == 1 && Pokemon is PK1 pk1
-            ? [pk1.Stat_HPMax, pk1.Stat_ATK, pk1.Stat_DEF, pk1.Stat_SPE, pk1.Stat_SPC]
-            : [.. Pokemon.Stats];
+    private List<int> GetPokemonStats()
+    {
+        if (Pokemon is null)
+        {
+            return [];
+        }
+
+        if (AppState.SaveFile?.Generation == 1 && Pokemon is PK1 pk1)
+        {
+            return [pk1.Stat_HPMax, pk1.Stat_ATK, pk1.Stat_DEF, pk1.Stat_SPE, pk1.Stat_SPC];
+        }
+
+        // Reorder from PKM.Stats [HP, Atk, Def, Spe, SpA, SpD]
+        // to chart axis order  [HP, Atk, Def, Spe, SpD, SpA] (Sp. Def before Sp. Atk)
+        var s = Pokemon.Stats;
+        return [s[0], s[1], s[2], s[3], s[5], s[4]];
+    }
 
     private List<int> GetNatureModifiers(byte saveGeneration)
     {
@@ -136,6 +148,7 @@ public partial class StatsChart : IDisposable
             return [0, 0, 0, 0, 0];
         }
 
+        // Indices follow chart axis order: [HP(0), Atk(1), Def(2), Spe(3), SpD(4), SpA(5)]
         return Pokemon.StatNature switch
         {
             Nature.Adamant => [0, 1, 0, 0, 0, -1],
@@ -154,7 +167,7 @@ public partial class StatsChart : IDisposable
             Nature.Naive => [0, 0, 0, 1, -1, 0],
             Nature.Naughty => [0, 1, 0, 0, -1, 0],
             Nature.Quiet => [0, 0, 0, -1, 0, 1],
-            Nature.Rash => [0, 0, -1, 0, 0, 1],
+            Nature.Rash => [0, 0, 0, 0, -1, 1],
             Nature.Relaxed => [0, 0, 1, -1, 0, 0],
             Nature.Sassy => [0, 0, 0, -1, 1, 0],
             Nature.Timid => [0, -1, 0, 1, 0, 0],
