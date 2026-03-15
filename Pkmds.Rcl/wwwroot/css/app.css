@@ -13,6 +13,12 @@ body, html {
 
 }
 
+.pkm-sprite-hires {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .shiny-indicator-icon {
     position: absolute;
     top: 2px;

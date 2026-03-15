@@ -15,17 +15,24 @@
         @if (Pokemon is not null && Pokemon.Species > 0)
         {
             var title = GetPokemonTitle();
-            <object class="pkm-sprite w-full h-auto object-contain block"
+            var highResUrl = ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon.Species);
+            <object class="@($"pkm-sprite {(_highResSrc is not null ? "pkm-sprite-hires" : "w-full")} h-auto object-contain block")"
                     type="image/png"
-                    data="@(Pokemon is { Species: > 0 }
-                              ? ImageHelper.GetPokemonSpriteFilename(Pokemon)
-                              : null)"
+                    data="@(_highResSrc ?? ImageHelper.GetPokemonSpriteFilename(Pokemon))"
                     title="@title">
                 <img class="pkm-sprite w-full h-auto object-contain block"
                      src="@ImageHelper.PokemonFallbackImageFileName"
                      title="@title"
                      alt="@title">
             </object>
+            @if (highResUrl is not null && _highResSrc is null)
+            {
+                <img src="@highResUrl"
+                     style="display:none;position:absolute;pointer-events:none"
+                     alt=""
+                     @onload="OnHighResSpriteLoaded"
+                     @onerror="OnHighResSpriteError" />
+            }
             @if (Pokemon.GetIsShinySafe())
             {
                 <div class="shiny-indicator-icon"

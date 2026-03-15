@@ -3,6 +3,8 @@ namespace Pkmds.Rcl.Components;
 public partial class PokemonSlotComponent : IDisposable
 {
     private bool? legalityValid;
+    private string? _highResSrc;
+    private ushort _lastLoadedSpecies;
     // Removed isDragOverWithFile field - no longer showing drag indicators
 
     [Parameter]
@@ -44,7 +46,23 @@ public partial class PokemonSlotComponent : IDisposable
         ComputeLegalityValid();
     }
 
-    protected override void OnParametersSet() => ComputeLegalityValid();
+    protected override void OnParametersSet()
+    {
+        ComputeLegalityValid();
+        if (Pokemon?.Species != _lastLoadedSpecies)
+        {
+            _highResSrc = null;
+            _lastLoadedSpecies = Pokemon?.Species ?? 0;
+        }
+    }
+
+    private void OnHighResSpriteLoaded()
+    {
+        _highResSrc = ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon!.Species);
+        StateHasChanged();
+    }
+
+    private void OnHighResSpriteError() { /* keep showing the bundled sprite */ }
 
     private void RefreshLegality()
     {
