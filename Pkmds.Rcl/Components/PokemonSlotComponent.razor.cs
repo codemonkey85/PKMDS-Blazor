@@ -2,14 +2,17 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
-    // Tracks (species, isShiny) pairs whose high-res sprites have loaded at least once this session.
-    // Shared across all instances so switching boxes doesn't re-flash already-seen sprites.
-    private static readonly HashSet<(ushort Species, bool IsShiny)> HighResLoadedSpecies = [];
+    // Tracks (species, form, formArg, isShiny, isFemale) tuples whose high-res sprites have loaded
+    // at least once this session. Shared across all instances so switching boxes doesn't re-flash.
+    private static readonly HashSet<(ushort Species, byte Form, uint FormArg, bool IsShiny, bool IsFemale)> HighResLoadedSpecies = [];
 
     private bool? legalityValid;
     private bool _highResLoaded;
     private ushort _lastLoadedSpecies;
+    private byte _lastLoadedForm;
+    private uint _lastLoadedFormArg;
     private bool _lastLoadedIsShiny;
+    private bool _lastLoadedIsFemale;
     // Removed isDragOverWithFile field - no longer showing drag indicators
 
     [Parameter]
@@ -55,12 +58,23 @@ public partial class PokemonSlotComponent : IDisposable
     {
         ComputeLegalityValid();
         var currentIsShiny = Pokemon?.GetIsShinySafe() ?? false;
-        if (Pokemon?.Species != _lastLoadedSpecies || currentIsShiny != _lastLoadedIsShiny)
+        var currentForm = Pokemon?.Form ?? 0;
+        var currentFormArg = Pokemon?.GetFormArgument(0) ?? 0;
+        var currentIsFemale = Pokemon is not null && ImageHelper.HasFemaleHomeSprite(Pokemon.Species, (byte)Pokemon.Gender);
+        if (Pokemon?.Species != _lastLoadedSpecies
+            || currentForm != _lastLoadedForm
+            || currentFormArg != _lastLoadedFormArg
+            || currentIsShiny != _lastLoadedIsShiny
+            || currentIsFemale != _lastLoadedIsFemale)
         {
             _lastLoadedSpecies = Pokemon?.Species ?? 0;
+            _lastLoadedForm = currentForm;
+            _lastLoadedFormArg = currentFormArg;
             _lastLoadedIsShiny = currentIsShiny;
-            // If this (species, shiny) combo has already loaded high-res in this session, skip the bundled sprite entirely.
-            _highResLoaded = _lastLoadedSpecies > 0 && HighResLoadedSpecies.Contains((_lastLoadedSpecies, _lastLoadedIsShiny));
+            _lastLoadedIsFemale = currentIsFemale;
+            // If this combo has already loaded high-res in this session, skip the bundled sprite entirely.
+            _highResLoaded = _lastLoadedSpecies > 0
+                && HighResLoadedSpecies.Contains((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale));
         }
     }
 
@@ -69,7 +83,7 @@ public partial class PokemonSlotComponent : IDisposable
         _highResLoaded = true;
         if (_lastLoadedSpecies > 0)
         {
-            HighResLoadedSpecies.Add((_lastLoadedSpecies, _lastLoadedIsShiny));
+            HighResLoadedSpecies.Add((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale));
         }
         StateHasChanged();
     }
