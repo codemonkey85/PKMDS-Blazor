@@ -33,6 +33,10 @@ body, html {
     width: 50%;
 }
 
+.pkm-sprite-hires--lg {
+    width: 100%;
+}
+
 @keyframes sprite-fade-in {
     from { opacity: 0; }
     to { opacity: 1; }

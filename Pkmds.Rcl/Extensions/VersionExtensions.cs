@@ -9,11 +9,11 @@ public static class VersionExtensions
     extension(Version? version)
     {
         /// <summary>
-        /// Converts a Version to a formatted string in the format "YYYY.MM.DD.HHMMSS".
+        /// Converts a Version to a formatted string matching the GitHub tag format "YYYY.MM.DDHH.mmss".
         /// The assembly version packs day+hour into the Build component (DDHH) and
-        /// minute+second into the Revision component (MMSS) to stay within the 0–65535 limit.
+        /// minute+second into the Revision component (mmss) to stay within the 0–65535 limit.
         /// </summary>
-        /// <returns>A formatted version string (e.g., "2026.01.27.094912").</returns>
+        /// <returns>A formatted version string (e.g., "2026.01.2709.4912").</returns>
         /// <exception cref="ArgumentNullException">Thrown if version is null.</exception>
         public string ToVersionString()
         {
@@ -22,11 +22,7 @@ public static class VersionExtensions
                 throw new ArgumentNullException(nameof(version));
             }
 
-            var day = version.Build / 100;
-            var hour = version.Build % 100;
-            var minute = version.Revision / 100;
-            var second = version.Revision % 100;
-            return $"{version.Major:D4}.{version.Minor:D2}.{day:D2}.{hour:D2}{minute:D2}{second:D2}";
+            return $"{version.Major}.{version.Minor:D2}.{version.Build:D4}.{version.Revision:D4}";
         }
 
         /// <summary>
