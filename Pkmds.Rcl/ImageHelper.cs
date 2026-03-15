@@ -358,6 +358,22 @@ public static partial class ImageHelper
 
     /// <summary>
     /// Returns <see langword="true"/> if the given game version's sprite directory on PokeAPI
+    /// includes a <c>transparent/</c> subdirectory with background-transparent sprites.
+    /// Gen I and Gen II CDN directories have transparent/ variants.
+    /// </summary>
+    private static bool HasTransparentCdnSprite(GameVersion version) => version switch
+    {
+        GameVersion.RD or GameVersion.GN or GameVersion.BU
+            or GameVersion.RB or GameVersion.RBY
+            or GameVersion.YW => true,
+        GameVersion.GD or GameVersion.GS
+            or GameVersion.SI
+            or GameVersion.C => true,
+        _ => false
+    };
+
+    /// <summary>
+    /// Returns <see langword="true"/> if the given game version's sprite directory on PokeAPI
     /// includes a <c>female/</c> subdirectory for gender-specific sprites.
     /// Gen I, II, III, and VIII (SwSh/PLA/BDSP) do not have one.
     /// </summary>
@@ -437,9 +453,13 @@ public static partial class ImageHelper
             form = FormInfo.GetTotemBaseForm(species, form);
 
         var baseUrl = $"{PokeApiVersionsBaseUrl}{versionPath}/";
-        // Some CDN directories lack a shiny/ subdirectory (Gen I, BDSP, Gen IX).
-        // For those, serve the non-shiny CDN sprite rather than falling back to bundled.
-        var shinyPath = isShiny && HasShinyCdnSprite(version) ? "shiny/" : "";
+        // Determine the sprite subdirectory prefix:
+        //   shiny/       — shiny sprites (Gen II+, where CDN has a shiny/ dir)
+        //   transparent/ — Gen I and Gen II non-shiny sprites with transparent backgrounds
+        //   (empty)      — all other generations
+        var spritePrefix = (isShiny && HasShinyCdnSprite(version)) ? "shiny/"
+            : HasTransparentCdnSprite(version) ? "transparent/"
+            : "";
         var canUseFemale = HasFemaleGameSprite(version);
 
         // Alcremie: build named-form URL (same naming convention as HOME sprites)
@@ -447,14 +467,14 @@ public static partial class ImageHelper
         {
             var creamIdx = form < AlcremieCreamNames.Length ? form : 0;
             var sweetIdx = formArg is { } arg && arg < AlcremieSweetNames.Length ? (int)arg : 0;
-            return $"{baseUrl}{shinyPath}{species}-{AlcremieCreamNames[creamIdx]}-{AlcremieSweetNames[sweetIdx]}.png";
+            return $"{baseUrl}{spritePrefix}{species}-{AlcremieCreamNames[creamIdx]}-{AlcremieSweetNames[sweetIdx]}.png";
         }
 
         // Forms stored as named suffix files (e.g. 201-a.png, 201-b.png)
         if (PokeApiFormSuffixes.TryGetValue((species, form), out var s))
         {
             var femaleSuffixPath = canUseFemale && HasFemaleHomeSprite(species, gender) ? "female/" : "";
-            return $"{baseUrl}{shinyPath}{femaleSuffixPath}{species}-{s}.png";
+            return $"{baseUrl}{spritePrefix}{femaleSuffixPath}{species}-{s}.png";
         }
 
         // Forms stored as PokeAPI pokemon IDs (Megas, regionals, gender-as-form, and others)
@@ -463,28 +483,28 @@ public static partial class ImageHelper
             var femaleIdPath = canUseFemale && gender == (byte)Gender.Female && FemaleFormIds.Contains(pokeApiId)
                 ? "female/"
                 : "";
-            return $"{baseUrl}{shinyPath}{femaleIdPath}{pokeApiId}.png";
+            return $"{baseUrl}{spritePrefix}{femaleIdPath}{pokeApiId}.png";
         }
 
         // Maushold: PKHeX form 0 = Family-of-Three (PokeAPI 10257), form 1 = Family-of-Four (base 925)
         if (species == (ushort)Species.Maushold)
         {
             var mausholdId = form == 0 ? "10257" : "925";
-            return $"{baseUrl}{shinyPath}{mausholdId}.png";
+            return $"{baseUrl}{spritePrefix}{mausholdId}.png";
         }
 
         // Base form (form 0) not in any form dictionary: use species number directly
         if (form == 0)
         {
             var femaleBasePath = canUseFemale && HasFemaleHomeSprite(species, gender) ? "female/" : "";
-            return $"{baseUrl}{shinyPath}{femaleBasePath}{species}.png";
+            return $"{baseUrl}{spritePrefix}{femaleBasePath}{species}.png";
         }
 
         // Species where all forms share a single sprite: use base species URL
         if (PokeApiFormIndifferentSpecies.Contains(species))
         {
             var femaleIndPath = canUseFemale && HasFemaleHomeSprite(species, gender) ? "female/" : "";
-            return $"{baseUrl}{shinyPath}{femaleIndPath}{species}.png";
+            return $"{baseUrl}{spritePrefix}{femaleIndPath}{species}.png";
         }
 
         // form > 0 not in any mapping: no game sprite — fall back to home sprite or bundled
