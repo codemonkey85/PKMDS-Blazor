@@ -95,13 +95,23 @@ public partial class PokemonSlotComponent : IDisposable
         }
     }
 
-    // X/Y and OR/AS sprites are tightly cropped 60×60 px images that visually fill the slot more
-    // than other generations — scale them down slightly.
-    private string GetHiResSizeClass() =>
-        AppState.SpriteStyle == SpriteStyle.Game
-        && AppState.SaveFile?.Version is GameVersion.X or GameVersion.Y or GameVersion.OR or GameVersion.AS
-            ? "pkm-sprite-hires--sm"
-            : string.Empty;
+    // Gen I/II transparent sprites are 40×40 px — scale up to fill the slot.
+    // X/Y and OR/AS sprites are tightly cropped 60×60 px — scale down slightly.
+    private string GetHiResSizeClass()
+    {
+        if (AppState.SpriteStyle != SpriteStyle.Game)
+            return string.Empty;
+        return AppState.SaveFile?.Version switch
+        {
+            GameVersion.RD or GameVersion.GN or GameVersion.BU
+                or GameVersion.RB or GameVersion.RBY or GameVersion.YW
+                or GameVersion.GD or GameVersion.GS or GameVersion.SI or GameVersion.C
+                => "pkm-sprite-hires--lg",
+            GameVersion.X or GameVersion.Y or GameVersion.OR or GameVersion.AS
+                => "pkm-sprite-hires--sm",
+            _ => string.Empty
+        };
+    }
 
     private void OnHighResSpriteLoaded()
     {

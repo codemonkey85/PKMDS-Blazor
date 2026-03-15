@@ -6,9 +6,9 @@ public class VersionExtensionsTests
 {
     // Build = DDHH (day * 100 + hour), Revision = MMSS (minute * 100 + second)
     [Theory]
-    [InlineData(2026, 3, 1109, 4912, "2026.03.11.094912", 2026, 3, 11, 9, 49, 12)]
-    [InlineData(2026, 3, 100, 500, "2026.03.01.000500", 2026, 3, 1, 0, 5, 0)]
-    [InlineData(2026, 3, 3123, 5959, "2026.03.31.235959", 2026, 3, 31, 23, 59, 59)]
+    [InlineData(2026, 3, 1109, 4912, "2026.03.1109.4912", 2026, 3, 11, 9, 49, 12)]
+    [InlineData(2026, 3, 100, 500, "2026.03.0100.0500", 2026, 3, 1, 0, 5, 0)]
+    [InlineData(2026, 3, 3123, 5959, "2026.03.3123.5959", 2026, 3, 31, 23, 59, 59)]
     public void ToDateTime_ValidVersion_ParsesUtcDateTime(
         int year, int month, int build, int revision,
         string expectedVersionString,
