@@ -165,5 +165,6 @@ public class HaXModeTests
         public DateTime? AppBuildDate { get; }
         public bool SelectedSlotsAreValid => true;
         public bool IsHaXEnabled { get; set; }
+        public SpriteStyle SpriteStyle { get; set; }
     }
 }

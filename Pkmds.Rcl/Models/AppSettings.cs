@@ -41,4 +41,10 @@ public record AppSettings
     /// Default language for new Pokémon, stored as a <see cref="PKHeX.Core.LanguageID" /> byte value.
     /// </summary>
     public LanguageID DefaultLanguageId { get; init; } = LanguageID.English;
+
+    /// <summary>
+    /// Which CDN sprite set to display in box and party slots.
+    /// Defaults to <see cref="SpriteStyle.Home" /> (high-res HOME sprites).
+    /// </summary>
+    public SpriteStyle SpriteStyle { get; init; } = SpriteStyle.Home;
 }

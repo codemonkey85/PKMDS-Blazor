@@ -51,6 +51,42 @@
 
                     <MudText Typo="@Typo.subtitle1"
                              Color="@Color.Primary">
+                        Sprite Style
+                    </MudText>
+                    <MudButtonGroup Variant="@Variant.Outlined"
+                                    Size="@Size.Small">
+                        <MudButton StartIcon="@Icons.Material.Filled.Home"
+                                   Color="@Color.Inherit"
+                                   Style="@(_spriteStyle == SpriteStyle.Home
+                                              ? "background-color: var(--mud-palette-primary-lighten);"
+                                              : "opacity: 0.6;")"
+                                   title="Home (high-res 512×512 sprites)"
+                                   OnClick="@(() => _spriteStyle = SpriteStyle.Home)">
+                            Home
+                        </MudButton>
+                        <MudButton StartIcon="@Icons.Material.Filled.VideogameAsset"
+                                   Color="@Color.Inherit"
+                                   Style="@(_spriteStyle == SpriteStyle.Game
+                                              ? "background-color: var(--mud-palette-primary-lighten);"
+                                              : "opacity: 0.6;")"
+                                   title="Game (era-accurate pixel-art sprites matched to save file)"
+                                   OnClick="@(() => _spriteStyle = SpriteStyle.Game)">
+                            Game
+                        </MudButton>
+                    </MudButtonGroup>
+                    <MudButton StartIcon="@Icons.Material.Filled.ImageNotSupported"
+                               Variant="@Variant.Text"
+                               Size="@Size.Small"
+                               Color="@Color.Default"
+                               title="Forces all high-res sprites to reload from the CDN"
+                               OnClick="@(() => PokemonSlotComponent.ClearSpriteCache())">
+                        Clear Sprite Cache
+                    </MudButton>
+
+                    <MudDivider/>
+
+                    <MudText Typo="@Typo.subtitle1"
+                             Color="@Color.Primary">
                         Developer Options
                     </MudText>
                     <MudSwitch Value="@_isHaXEnabled"

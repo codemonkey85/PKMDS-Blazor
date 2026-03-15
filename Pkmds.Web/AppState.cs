@@ -73,4 +73,7 @@ public record AppState : IAppState
 
     /// <inheritdoc />
     public bool IsHaXEnabled { get; set; }
+
+    /// <inheritdoc />
+    public SpriteStyle SpriteStyle { get; set; }
 }

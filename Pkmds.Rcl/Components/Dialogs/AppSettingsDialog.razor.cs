@@ -22,6 +22,7 @@ public partial class AppSettingsDialog
     private uint _defaultTrainerId;
     private bool _isHaXEnabled;
     private bool _isVerboseLogging;
+    private SpriteStyle _spriteStyle;
 
     // Working copy — only committed on Save
     private ThemeMode _themeMode;
@@ -42,6 +43,7 @@ public partial class AppSettingsDialog
         };
         _isHaXEnabled = InitialSettings.IsHaXEnabled;
         _isVerboseLogging = InitialSettings.IsVerboseLoggingEnabled;
+        _spriteStyle = InitialSettings.SpriteStyle;
         _defaultOtName = InitialSettings.DefaultOtName;
         _defaultTrainerId = InitialSettings.DefaultTrainerId;
         _defaultSecretId = InitialSettings.DefaultSecretId;
@@ -85,6 +87,7 @@ public partial class AppSettingsDialog
         _themeMode = ThemeMode.System;
         _isHaXEnabled = defaults.IsHaXEnabled;
         _isVerboseLogging = defaults.IsVerboseLoggingEnabled;
+        _spriteStyle = defaults.SpriteStyle;
         _defaultOtName = defaults.DefaultOtName;
         _defaultTrainerId = defaults.DefaultTrainerId;
         _defaultSecretId = defaults.DefaultSecretId;
@@ -108,6 +111,7 @@ public partial class AppSettingsDialog
             ThemeMode = themeStr,
             IsHaXEnabled = _isHaXEnabled,
             IsVerboseLoggingEnabled = _isVerboseLogging,
+            SpriteStyle = _spriteStyle,
             DefaultOtName = _defaultOtName,
             DefaultTrainerId = _defaultTrainerId,
             DefaultSecretId = _defaultSecretId,

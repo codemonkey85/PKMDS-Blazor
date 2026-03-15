@@ -103,6 +103,7 @@ public sealed class SettingsService(
     private void ApplyToServices()
     {
         appState.IsHaXEnabled = Settings.IsHaXEnabled;
+        appState.SpriteStyle = Settings.SpriteStyle;
         loggingService.IsVerboseLoggingEnabled = Settings.IsVerboseLoggingEnabled;
     }
 }
