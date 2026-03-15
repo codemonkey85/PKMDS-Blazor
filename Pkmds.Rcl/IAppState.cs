@@ -85,4 +85,10 @@ public interface IAppState
     /// Persisted across sessions via localStorage.
     /// </summary>
     bool IsHaXEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the sprite style used for box and party slot images.
+    /// Persisted across sessions via localStorage.
+    /// </summary>
+    SpriteStyle SpriteStyle { get; set; }
 }

@@ -2,9 +2,13 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
-    // Tracks (species, form, formArg, isShiny, isFemale) tuples whose high-res sprites have loaded
+    // Tracks (species, form, formArg, isShiny, isFemale, spriteStyle) tuples whose high-res sprites have loaded
     // at least once this session. Shared across all instances so switching boxes doesn't re-flash.
-    private static readonly HashSet<(ushort Species, byte Form, uint FormArg, bool IsShiny, bool IsFemale)> HighResLoadedSpecies = [];
+    // SpriteStyle is included so switching the setting mid-session never shows stale cached state.
+    private static readonly HashSet<(ushort Species, byte Form, uint FormArg, bool IsShiny, bool IsFemale, SpriteStyle Style)> HighResLoadedSpecies = [];
+
+    /// <summary>Clears the session sprite cache, forcing all high-res sprites to reload.</summary>
+    public static void ClearSpriteCache() => HighResLoadedSpecies.Clear();
 
     private bool? legalityValid;
     private bool _highResLoaded;
@@ -13,6 +17,7 @@ public partial class PokemonSlotComponent : IDisposable
     private uint _lastLoadedFormArg;
     private bool _lastLoadedIsShiny;
     private bool _lastLoadedIsFemale;
+    private SpriteStyle _lastLoadedSpriteStyle;
     // Removed isDragOverWithFile field - no longer showing drag indicators
 
     [Parameter]
@@ -57,42 +62,63 @@ public partial class PokemonSlotComponent : IDisposable
     protected override void OnParametersSet()
     {
         ComputeLegalityValid();
+        UpdateSpriteState();
+    }
+
+    // Updates sprite tracking state from current Pokemon + AppState.SpriteStyle.
+    // Called from both OnParametersSet (parent-driven re-render) and RefreshLegality
+    // (event-driven re-render) so the two paths stay in sync — particularly important
+    // when the sprite style changes mid-session via the settings dialog.
+    private void UpdateSpriteState()
+    {
         var currentIsShiny = Pokemon?.GetIsShinySafe() ?? false;
         var currentForm = Pokemon?.Form ?? 0;
         var currentFormArg = Pokemon?.GetFormArgument(0) ?? 0;
         var currentIsFemale = Pokemon is not null && ImageHelper.HasFemaleHomeSprite(Pokemon.Species, (byte)Pokemon.Gender);
+        var currentSpriteStyle = AppState.SpriteStyle;
         if (Pokemon?.Species != _lastLoadedSpecies
             || currentForm != _lastLoadedForm
             || currentFormArg != _lastLoadedFormArg
             || currentIsShiny != _lastLoadedIsShiny
-            || currentIsFemale != _lastLoadedIsFemale)
+            || currentIsFemale != _lastLoadedIsFemale
+            || currentSpriteStyle != _lastLoadedSpriteStyle)
         {
             _lastLoadedSpecies = Pokemon?.Species ?? 0;
             _lastLoadedForm = currentForm;
             _lastLoadedFormArg = currentFormArg;
             _lastLoadedIsShiny = currentIsShiny;
             _lastLoadedIsFemale = currentIsFemale;
+            _lastLoadedSpriteStyle = currentSpriteStyle;
             // If this combo has already loaded high-res in this session, skip the bundled sprite entirely.
             _highResLoaded = _lastLoadedSpecies > 0
-                && HighResLoadedSpecies.Contains((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale));
+                && HighResLoadedSpecies.Contains((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale, _lastLoadedSpriteStyle));
         }
     }
+
+    // X/Y and OR/AS sprites are tightly cropped 60×60 px images that visually fill the slot more
+    // than other generations — scale them down slightly.
+    private string GetHiResSizeClass() =>
+        AppState.SpriteStyle == SpriteStyle.Game
+        && AppState.SaveFile?.Version is GameVersion.X or GameVersion.Y or GameVersion.OR or GameVersion.AS
+            ? "pkm-sprite-hires--sm"
+            : string.Empty;
 
     private void OnHighResSpriteLoaded()
     {
         _highResLoaded = true;
         if (_lastLoadedSpecies > 0)
         {
-            HighResLoadedSpecies.Add((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale));
+            HighResLoadedSpecies.Add((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale, _lastLoadedSpriteStyle));
         }
         StateHasChanged();
     }
 
-    private void OnHighResSpriteError() { /* keep showing the bundled sprite */ }
+    private void OnHighResSpriteError() { /* keep showing the bundled sprite — _highResLoaded is already false */ }
 
     private void RefreshLegality()
     {
         ComputeLegalityValid();
+        UpdateSpriteState();
         StateHasChanged();
     }
 

@@ -11,6 +11,8 @@ public static partial class ImageHelper
     private const string SpritesRoot = "_content/Pkmds.Rcl/sprites/";
     private const string PokeApiHomeBaseUrl =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/";
+    private const string PokeApiVersionsBaseUrl =
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/";
     private const int PikachuStarterForm = 8;
     private const int EeveeStarterForm = 1;
 
@@ -33,7 +35,9 @@ public static partial class ImageHelper
     // Regional variants and other forms using 10xxx PokeAPI IDs are in PokeApiFormIds below.
     private static readonly Dictionary<(ushort Species, byte Form), string> PokeApiFormSuffixes = new()
     {
-        // Unown (201) — forms 1-25 = b-z, 26 = exclamation, 27 = question; form 0 (A) uses base URL
+        // Unown (201) — forms 0-25 = a-z, 26 = exclamation, 27 = question.
+        // Form 0 (A) uses 201.png for HOME (both 201.png and 201-a.png exist); game sprite dirs only have 201-a.png.
+        { (201, 0), "a" },
         { (201, 1), "b" }, { (201, 2), "c" }, { (201, 3), "d" }, { (201, 4), "e" },
         { (201, 5), "f" }, { (201, 6), "g" }, { (201, 7), "h" }, { (201, 8), "i" },
         { (201, 9), "j" }, { (201, 10), "k" }, { (201, 11), "l" }, { (201, 12), "m" },
@@ -335,6 +339,159 @@ public static partial class ImageHelper
         gender == (byte)Gender.Female && FemaleFormSpecies.Contains(species);
 
     /// <summary>
+    /// Returns <see langword="true"/> if the given game version's sprite directory on PokeAPI
+    /// includes a <c>shiny/</c> subdirectory.
+    /// Gen I (shiny didn't exist), Gen VIII BDSP, and Gen IX do not have one in the CDN repo.
+    /// </summary>
+    private static bool HasShinyCdnSprite(GameVersion version) => version switch
+    {
+        // Gen I: shiny mechanic didn't exist
+        GameVersion.RD or GameVersion.GN or GameVersion.BU
+            or GameVersion.RB or GameVersion.RBY
+            or GameVersion.YW => false,
+        // Gen VIII BDSP: PokeAPI CDN has no shiny/ subdirectory
+        GameVersion.BD or GameVersion.SP => false,
+        // Gen IX: PokeAPI CDN has no shiny/ subdirectory
+        GameVersion.SL or GameVersion.VL => false,
+        _ => true
+    };
+
+    /// <summary>
+    /// Returns <see langword="true"/> if the given game version's sprite directory on PokeAPI
+    /// includes a <c>female/</c> subdirectory for gender-specific sprites.
+    /// Gen I, II, III, and VIII (SwSh/PLA/BDSP) do not have one.
+    /// </summary>
+    private static bool HasFemaleGameSprite(GameVersion version) => version switch
+    {
+        // Gen IV — SAV4DP/HGSS report combined GameVersion.DP / GameVersion.HGSS
+        GameVersion.D or GameVersion.P or GameVersion.DP
+            or GameVersion.Pt
+            or GameVersion.HG or GameVersion.SS or GameVersion.HGSS => true,
+        GameVersion.B or GameVersion.W or GameVersion.B2 or GameVersion.W2 => true,
+        GameVersion.X or GameVersion.Y or GameVersion.OR or GameVersion.AS => true,
+        GameVersion.SN or GameVersion.MN or GameVersion.US or GameVersion.UM
+            or GameVersion.GP or GameVersion.GE => true,
+        GameVersion.SL or GameVersion.VL => true,
+        _ => false
+    };
+
+    /// <summary>
+    /// Maps a <see cref="GameVersion"/> to its PokeAPI versions/ subdirectory path segment,
+    /// or <see langword="null"/> if no game-specific sprite directory exists (e.g. SwSh, PLA).
+    /// </summary>
+    private static string? GetPokeApiVersionPath(GameVersion version) => version switch
+    {
+        // Gen I — SAV1 reports GameVersion.RB for Red/Blue (after game detection) or RBY as fallback
+        GameVersion.RD or GameVersion.GN or GameVersion.BU
+            or GameVersion.RB or GameVersion.RBY => "generation-i/red-blue",
+        GameVersion.YW => "generation-i/yellow",
+        // Gen II — SAV2 reports GameVersion.GS for Gold/Silver (combined); use gold as the target dir
+        GameVersion.GD or GameVersion.GS => "generation-ii/gold",
+        GameVersion.SI => "generation-ii/silver",
+        GameVersion.C => "generation-ii/crystal",
+        // Gen III — SAV3RS reports GameVersion.RS for Ruby/Sapphire (combined)
+        GameVersion.R or GameVersion.S or GameVersion.RS => "generation-iii/ruby-sapphire",
+        GameVersion.E => "generation-iii/emerald",
+        GameVersion.FR or GameVersion.LG => "generation-iii/firered-leafgreen",
+        // Gen IV — SAV4DP reports GameVersion.DP, SAV4HGSS reports GameVersion.HGSS (both combined)
+        GameVersion.D or GameVersion.P or GameVersion.DP => "generation-iv/diamond-pearl",
+        GameVersion.Pt => "generation-iv/platinum",
+        GameVersion.HG or GameVersion.SS or GameVersion.HGSS => "generation-iv/heartgold-soulsilver",
+        // Gen V — PokeAPI has no separate B2W2 dir; BW is used for both
+        GameVersion.B or GameVersion.W
+            or GameVersion.B2 or GameVersion.W2 => "generation-v/black-white",
+        // Gen VI
+        GameVersion.X or GameVersion.Y => "generation-vi/x-y",
+        GameVersion.OR or GameVersion.AS => "generation-vi/omegaruby-alphasapphire",
+        // Gen VII — PokeAPI has only USUM; used for SM, USUM, and Let's Go
+        GameVersion.SN or GameVersion.MN
+            or GameVersion.US or GameVersion.UM
+            or GameVersion.GP or GameVersion.GE => "generation-vii/ultra-sun-ultra-moon",
+        // Gen VIII — BDSP only; SwSh and PLA return null so the component falls back to Home sprites
+        GameVersion.BD or GameVersion.SP => "generation-viii/brilliant-diamond-shining-pearl",
+        // Gen IX
+        GameVersion.SL or GameVersion.VL => "generation-ix/scarlet-violet",
+        _ => null
+    };
+
+    /// <summary>
+    /// Gets the game-version-appropriate PokeAPI sprite URL for a Pokémon.
+    /// Uses the pixel-art sprite from the save file's specific game directory on the PokeAPI CDN.
+    /// Returns null when the version has no PokeAPI sprite directory (e.g. SwSh, PLA) or the
+    /// species/form has no sprite in that generation — callers should fall back to the home sprite or
+    /// the bundled sprite in those cases.
+    /// </summary>
+    public static string? GetPokeApiVersionSpriteUrl(ushort species, byte form = 0, uint? formArg = null,
+        bool isShiny = false, byte gender = 0, GameVersion version = GameVersion.Any)
+    {
+        if (!species.IsValidSpecies())
+            return null;
+
+        var versionPath = GetPokeApiVersionPath(version);
+        if (versionPath is null)
+            return null;
+
+        // Totem forms: map to their base regional/standard form for CDN sprite lookup.
+        // e.g. Totem Raticate-Alola (form 2) → Raticate-Alola (form 1).
+        if (FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form))
+            form = FormInfo.GetTotemBaseForm(species, form);
+
+        var baseUrl = $"{PokeApiVersionsBaseUrl}{versionPath}/";
+        // Some CDN directories lack a shiny/ subdirectory (Gen I, BDSP, Gen IX).
+        // For those, serve the non-shiny CDN sprite rather than falling back to bundled.
+        var shinyPath = isShiny && HasShinyCdnSprite(version) ? "shiny/" : "";
+        var canUseFemale = HasFemaleGameSprite(version);
+
+        // Alcremie: build named-form URL (same naming convention as HOME sprites)
+        if (species == (ushort)Species.Alcremie)
+        {
+            var creamIdx = form < AlcremieCreamNames.Length ? form : 0;
+            var sweetIdx = formArg is { } arg && arg < AlcremieSweetNames.Length ? (int)arg : 0;
+            return $"{baseUrl}{shinyPath}{species}-{AlcremieCreamNames[creamIdx]}-{AlcremieSweetNames[sweetIdx]}.png";
+        }
+
+        // Forms stored as named suffix files (e.g. 201-a.png, 201-b.png)
+        if (PokeApiFormSuffixes.TryGetValue((species, form), out var s))
+        {
+            var femaleSuffixPath = canUseFemale && HasFemaleHomeSprite(species, gender) ? "female/" : "";
+            return $"{baseUrl}{shinyPath}{femaleSuffixPath}{species}-{s}.png";
+        }
+
+        // Forms stored as PokeAPI pokemon IDs (Megas, regionals, gender-as-form, and others)
+        if (PokeApiFormIds.TryGetValue((species, form), out var pokeApiId))
+        {
+            var femaleIdPath = canUseFemale && gender == (byte)Gender.Female && FemaleFormIds.Contains(pokeApiId)
+                ? "female/"
+                : "";
+            return $"{baseUrl}{shinyPath}{femaleIdPath}{pokeApiId}.png";
+        }
+
+        // Maushold: PKHeX form 0 = Family-of-Three (PokeAPI 10257), form 1 = Family-of-Four (base 925)
+        if (species == (ushort)Species.Maushold)
+        {
+            var mausholdId = form == 0 ? "10257" : "925";
+            return $"{baseUrl}{shinyPath}{mausholdId}.png";
+        }
+
+        // Base form (form 0) not in any form dictionary: use species number directly
+        if (form == 0)
+        {
+            var femaleBasePath = canUseFemale && HasFemaleHomeSprite(species, gender) ? "female/" : "";
+            return $"{baseUrl}{shinyPath}{femaleBasePath}{species}.png";
+        }
+
+        // Species where all forms share a single sprite: use base species URL
+        if (PokeApiFormIndifferentSpecies.Contains(species))
+        {
+            var femaleIndPath = canUseFemale && HasFemaleHomeSprite(species, gender) ? "female/" : "";
+            return $"{baseUrl}{shinyPath}{femaleIndPath}{species}.png";
+        }
+
+        // form > 0 not in any mapping: no game sprite — fall back to home sprite or bundled
+        return null;
+    }
+
+    /// <summary>
     /// Gets the high-resolution PokeAPI home sprite URL for a Pokémon.
     /// Handles form variants, gender differences, shiny variants, and Alcremie decorations.
     /// Returns null for invalid species or forms with no PokeAPI home sprite.
@@ -347,6 +504,10 @@ public static partial class ImageHelper
             return null;
 
         var shinyPath = isShiny ? "shiny/" : "";
+
+        // Totem forms: map to their base regional/standard form for CDN sprite lookup.
+        if (FormInfo.HasTotemForm(species) && FormInfo.IsTotemForm(species, form))
+            form = FormInfo.GetTotemBaseForm(species, form);
 
         // Alcremie: 9 cream forms (PKHeX form) × 7 sweets (PKHeX formArg)
         if (species == (ushort)Species.Alcremie)

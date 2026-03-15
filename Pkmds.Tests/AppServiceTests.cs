@@ -268,6 +268,7 @@ public class AppServiceTests
         public DateTime? AppBuildDate { get; }
         public bool SelectedSlotsAreValid => true;
         public bool IsHaXEnabled { get; set; }
+        public SpriteStyle SpriteStyle { get; set; }
     }
 
     private class TestRefreshService : IRefreshService
