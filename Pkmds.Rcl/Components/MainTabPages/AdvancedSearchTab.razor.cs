@@ -3,6 +3,7 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 public partial class AdvancedSearchTab : RefreshAwareComponent
 {
     private const string LocalStorageKey = "pkmds.search.filters";
+    private readonly string saveFilterName = string.Empty;
     private int? abilityId;
 
     // ── Ability autocomplete ──────────────────────────────────────────────
@@ -49,7 +50,6 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
 
     // Saved filters
     private Dictionary<string, AdvancedSearchFilter> savedFilters = [];
-    private string saveFilterName = string.Empty;
     private HashSet<AdvancedSearchResult> selectedRows = [];
     private string? selectedSavedFilter;
 

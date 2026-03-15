@@ -3,8 +3,8 @@ namespace Pkmds.Rcl.Components;
 public partial class BasePkmdsComponent
 {
     /// <summary>
-    /// Returns the nature modifier for a given stat, taking into account Gen 8+
-    /// StatNature vs Nature.
+    ///     Returns the nature modifier for a given stat, taking into account Gen 8+
+    ///     StatNature vs Nature.
     /// </summary>
     protected static NatureModifier GetNatureModifier(Nature nature, Stats stat)
     {

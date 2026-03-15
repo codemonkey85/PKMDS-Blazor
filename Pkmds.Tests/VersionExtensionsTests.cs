@@ -24,7 +24,8 @@ public class VersionExtensionsTests
 
         // Assert
         versionString.Should().Be(expectedVersionString);
-        dateTime.Should().Be(new DateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute, expectedSecond, DateTimeKind.Utc));
+        dateTime.Should().Be(new DateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMinute,
+            expectedSecond, DateTimeKind.Utc));
     }
 
     [Fact]

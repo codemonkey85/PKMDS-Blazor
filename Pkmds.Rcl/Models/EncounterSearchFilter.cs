@@ -1,8 +1,8 @@
 namespace Pkmds.Rcl.Models;
 
 /// <summary>
-/// Holds all optional filter criteria for the Encounter Database feature.
-/// Every field is nullable — a missing value means "any".
+///     Holds all optional filter criteria for the Encounter Database feature.
+///     Every field is nullable — a missing value means "any".
 /// </summary>
 public sealed record EncounterSearchFilter
 {
@@ -13,8 +13,8 @@ public sealed record EncounterSearchFilter
     public byte? Form { get; init; }
 
     /// <summary>
-    /// Specific game version to search, or <see langword="null" /> to search all versions
-    /// compatible with the current save file's format.
+    ///     Specific game version to search, or <see langword="null" /> to search all versions
+    ///     compatible with the current save file's format.
     /// </summary>
     public GameVersion? Version { get; init; }
 
@@ -25,10 +25,10 @@ public sealed record EncounterSearchFilter
     public byte? LevelMax { get; init; }
 
     /// <summary>
-    /// Shiny lock filter:
-    /// <see langword="true" /> = shiny-locked encounters only (Shiny.Never),
-    /// <see langword="false" /> = encounters that can be shiny,
-    /// <see langword="null" /> = any.
+    ///     Shiny lock filter:
+    ///     <see langword="true" /> = shiny-locked encounters only (Shiny.Never),
+    ///     <see langword="false" /> = encounters that can be shiny,
+    ///     <see langword="null" /> = any.
     /// </summary>
     public bool? IsShinyLocked { get; init; }
 

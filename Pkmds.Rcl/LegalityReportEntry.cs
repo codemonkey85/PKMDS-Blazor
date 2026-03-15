@@ -1,8 +1,8 @@
 namespace Pkmds.Rcl;
 
 /// <summary>
-/// Represents a single row in the batch legality report, describing the legality
-/// status of one Pokémon slot (party or box).
+///     Represents a single row in the batch legality report, describing the legality
+///     status of one Pokémon slot (party or box).
 /// </summary>
 public sealed record LegalityReportEntry
 {

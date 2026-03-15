@@ -1,7 +1,7 @@
 ﻿namespace Pkmds.Rcl.Extensions;
 
 /// <summary>
-/// Extension methods for System.Version.
+///     Extension methods for System.Version.
 /// </summary>
 public static class VersionExtensions
 {
@@ -9,9 +9,9 @@ public static class VersionExtensions
     extension(Version? version)
     {
         /// <summary>
-        /// Converts a Version to a formatted string matching the GitHub tag format "YYYY.MM.DDHH.mmss".
-        /// The assembly version packs day+hour into the Build component (DDHH) and
-        /// minute+second into the Revision component (mmss) to stay within the 0–65535 limit.
+        ///     Converts a Version to a formatted string matching the GitHub tag format "YYYY.MM.DDHH.mmss".
+        ///     The assembly version packs day+hour into the Build component (DDHH) and
+        ///     minute+second into the Revision component (mmss) to stay within the 0–65535 limit.
         /// </summary>
         /// <returns>A formatted version string (e.g., "2026.01.2709.4912").</returns>
         /// <exception cref="ArgumentNullException">Thrown if version is null.</exception>
@@ -26,11 +26,11 @@ public static class VersionExtensions
         }
 
         /// <summary>
-        /// Converts a Version to a DateTime object. The components are encoded as:
-        /// - Major: Year (e.g., 2026)
-        /// - Minor: Month (1-12)
-        /// - Build: Day and Hour packed as DDHH (e.g., 1109 = day 11, hour 09)
-        /// - Revision: Minute and Second packed as MMSS (e.g., 4912 = minute 49, second 12)
+        ///     Converts a Version to a DateTime object. The components are encoded as:
+        ///     - Major: Year (e.g., 2026)
+        ///     - Minor: Month (1-12)
+        ///     - Build: Day and Hour packed as DDHH (e.g., 1109 = day 11, hour 09)
+        ///     - Revision: Minute and Second packed as MMSS (e.g., 4912 = minute 49, second 12)
         /// </summary>
         /// <returns>A DateTime object representing the version, or null if version is null.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when Build or Revision contain invalid values.</exception>

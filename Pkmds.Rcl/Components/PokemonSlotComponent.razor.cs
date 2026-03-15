@@ -5,19 +5,19 @@ public partial class PokemonSlotComponent : IDisposable
     // Tracks (species, form, formArg, isShiny, isFemale, spriteStyle) tuples whose high-res sprites have loaded
     // at least once this session. Shared across all instances so switching boxes doesn't re-flash.
     // SpriteStyle is included so switching the setting mid-session never shows stale cached state.
-    private static readonly HashSet<(ushort Species, byte Form, uint FormArg, bool IsShiny, bool IsFemale, SpriteStyle Style)> HighResLoadedSpecies = [];
+    private static readonly
+        HashSet<(ushort Species, byte Form, uint FormArg, bool IsShiny, bool IsFemale, SpriteStyle Style)>
+        HighResLoadedSpecies = [];
 
-    /// <summary>Clears the session sprite cache, forcing all high-res sprites to reload.</summary>
-    public static void ClearSpriteCache() => HighResLoadedSpecies.Clear();
+    private bool highResLoaded;
+    private byte lastLoadedForm;
+    private uint lastLoadedFormArg;
+    private bool lastLoadedIsFemale;
+    private bool lastLoadedIsShiny;
+    private ushort lastLoadedSpecies;
+    private SpriteStyle lastLoadedSpriteStyle;
 
     private bool? legalityValid;
-    private bool _highResLoaded;
-    private ushort _lastLoadedSpecies;
-    private byte _lastLoadedForm;
-    private uint _lastLoadedFormArg;
-    private bool _lastLoadedIsShiny;
-    private bool _lastLoadedIsFemale;
-    private SpriteStyle _lastLoadedSpriteStyle;
     // Removed isDragOverWithFile field - no longer showing drag indicators
 
     [Parameter]
@@ -47,6 +47,9 @@ public partial class PokemonSlotComponent : IDisposable
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= RefreshLegality;
 
+    /// <summary>Clears the session sprite cache, forcing all high-res sprites to reload.</summary>
+    public static void ClearSpriteCache() => HighResLoadedSpecies.Clear();
+
     private async Task HandleClick() =>
         await OnSlotClick.InvokeAsync();
 
@@ -74,25 +77,28 @@ public partial class PokemonSlotComponent : IDisposable
         var currentIsShiny = Pokemon?.GetIsShinySafe() ?? false;
         var currentForm = Pokemon?.Form ?? 0;
         var currentFormArg = Pokemon?.GetFormArgument(0) ?? 0;
-        var currentIsFemale = Pokemon is not null && ImageHelper.HasFemaleHomeSprite(Pokemon.Species, (byte)Pokemon.Gender);
+        var currentIsFemale = Pokemon is not null && ImageHelper.HasFemaleHomeSprite(Pokemon.Species, Pokemon.Gender);
         var currentSpriteStyle = AppState.SpriteStyle;
-        if (Pokemon?.Species != _lastLoadedSpecies
-            || currentForm != _lastLoadedForm
-            || currentFormArg != _lastLoadedFormArg
-            || currentIsShiny != _lastLoadedIsShiny
-            || currentIsFemale != _lastLoadedIsFemale
-            || currentSpriteStyle != _lastLoadedSpriteStyle)
+        if (Pokemon?.Species == lastLoadedSpecies
+            && currentForm == lastLoadedForm
+            && currentFormArg == lastLoadedFormArg
+            && currentIsShiny == lastLoadedIsShiny
+            && currentIsFemale == lastLoadedIsFemale
+            && currentSpriteStyle == lastLoadedSpriteStyle)
         {
-            _lastLoadedSpecies = Pokemon?.Species ?? 0;
-            _lastLoadedForm = currentForm;
-            _lastLoadedFormArg = currentFormArg;
-            _lastLoadedIsShiny = currentIsShiny;
-            _lastLoadedIsFemale = currentIsFemale;
-            _lastLoadedSpriteStyle = currentSpriteStyle;
-            // If this combo has already loaded high-res in this session, skip the bundled sprite entirely.
-            _highResLoaded = _lastLoadedSpecies > 0
-                && HighResLoadedSpecies.Contains((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale, _lastLoadedSpriteStyle));
+            return;
         }
+
+        lastLoadedSpecies = Pokemon?.Species ?? 0;
+        lastLoadedForm = currentForm;
+        lastLoadedFormArg = currentFormArg;
+        lastLoadedIsShiny = currentIsShiny;
+        lastLoadedIsFemale = currentIsFemale;
+        lastLoadedSpriteStyle = currentSpriteStyle;
+        // If this combo has already loaded high-res in this session, skip the bundled sprite entirely.
+        highResLoaded = lastLoadedSpecies > 0
+                        && HighResLoadedSpecies.Contains((lastLoadedSpecies, lastLoadedForm, lastLoadedFormArg,
+                            lastLoadedIsShiny, lastLoadedIsFemale, lastLoadedSpriteStyle));
     }
 
     // Gen I/II transparent sprites are 40×40 px — scale up to fill the slot.
@@ -100,7 +106,10 @@ public partial class PokemonSlotComponent : IDisposable
     private string GetHiResSizeClass()
     {
         if (AppState.SpriteStyle != SpriteStyle.Game)
+        {
             return string.Empty;
+        }
+
         return AppState.SaveFile?.Version switch
         {
             GameVersion.RD or GameVersion.GN or GameVersion.BU
@@ -115,15 +124,20 @@ public partial class PokemonSlotComponent : IDisposable
 
     private void OnHighResSpriteLoaded()
     {
-        _highResLoaded = true;
-        if (_lastLoadedSpecies > 0)
+        highResLoaded = true;
+        if (lastLoadedSpecies > 0)
         {
-            HighResLoadedSpecies.Add((_lastLoadedSpecies, _lastLoadedForm, _lastLoadedFormArg, _lastLoadedIsShiny, _lastLoadedIsFemale, _lastLoadedSpriteStyle));
+            HighResLoadedSpecies.Add((lastLoadedSpecies, lastLoadedForm, lastLoadedFormArg, lastLoadedIsShiny,
+                lastLoadedIsFemale, lastLoadedSpriteStyle));
         }
+
         StateHasChanged();
     }
 
-    private void OnHighResSpriteError() { /* keep showing the bundled sprite — _highResLoaded is already false */ }
+    private void OnHighResSpriteError()
+    {
+        /* keep showing the bundled sprite — _highResLoaded is already false */
+    }
 
     private void RefreshLegality()
     {
@@ -162,8 +176,8 @@ public partial class PokemonSlotComponent : IDisposable
     };
 
     /// <returns>
-    /// <see langword="true" /> = legal, <see langword="false" /> = illegal/fishy,
-    /// <see langword="null" /> = no Pokémon in slot (skip indicator).
+    ///     <see langword="true" /> = legal, <see langword="false" /> = illegal/fishy,
+    ///     <see langword="null" /> = no Pokémon in slot (skip indicator).
     /// </returns>
     private bool? GetLegalityValid() => legalityValid;
 

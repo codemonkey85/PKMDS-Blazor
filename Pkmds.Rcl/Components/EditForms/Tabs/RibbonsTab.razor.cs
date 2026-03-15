@@ -13,11 +13,11 @@ public partial class RibbonsTab : IDisposable
         RefreshService.OnAppStateChanged -= StateHasChanged;
 
     /// <summary>
-    /// Returns the worst-severity legality check result for a given mark property name,
-    /// or null if the mark is valid or is a regular ribbon (not a mark).
-    /// Only marks have per-entry <see cref="CheckResult" />s with <see cref="CheckResult.Argument" />
-    /// set to the <see cref="RibbonIndex" />. Regular ribbon checks are grouped into a single result
-    /// with Argument = count, so per-ribbon targeting is not possible for them.
+    ///     Returns the worst-severity legality check result for a given mark property name,
+    ///     or null if the mark is valid or is a regular ribbon (not a mark).
+    ///     Only marks have per-entry <see cref="CheckResult" />s with <see cref="CheckResult.Argument" />
+    ///     set to the <see cref="RibbonIndex" />. Regular ribbon checks are grouped into a single result
+    ///     with Argument = count, so per-ribbon targeting is not possible for them.
     /// </summary>
     private CheckResult? GetRibbonCheckResult(string propertyName)
     {
@@ -112,8 +112,8 @@ public partial class RibbonsTab : IDisposable
     }
 
     /// <summary>
-    /// Returns the message portion of a humanized check result, stripping the leading "Severity: "
-    /// prefix. Used in the Ribbon Issues list where the icon already communicates severity.
+    ///     Returns the message portion of a humanized check result, stripping the leading "Severity: "
+    ///     prefix. Used in the Ribbon Issues list where the icon already communicates severity.
     /// </summary>
     private string GetRibbonIssueMessage(CheckResult result)
     {

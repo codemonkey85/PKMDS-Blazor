@@ -1,14 +1,14 @@
 ﻿namespace Pkmds.Core.Utilities;
 
 /// <summary>
-/// Utility methods for working with PKHeX GameInfo data.
+///     Utility methods for working with PKHeX GameInfo data.
 /// </summary>
 public static class GameInfoUtilities
 {
     /// <summary>
-    /// The damage category of a move (Physical, Special, or Status).
-    /// Introduced as an explicit per-move property in Gen 4; prior generations derive
-    /// category from the move's elemental type.
+    ///     The damage category of a move (Physical, Special, or Status).
+    ///     Introduced as an explicit per-move property in Gen 4; prior generations derive
+    ///     category from the move's elemental type.
     /// </summary>
     public enum MoveCategory
     {
@@ -18,19 +18,19 @@ public static class GameInfoUtilities
     }
 
     /// <summary>
-    /// Gets the damage category of a move for the given game context.
+    ///     Gets the damage category of a move for the given game context.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Gen 1–3 did not have an explicit Physical/Special/Status split per move;
-    /// category was determined solely by the move's elemental type. This method applies
-    /// that type-based split for those generations.
-    /// </para>
-    /// <para>
-    /// From Gen 4 onward every move has its own explicit category. The only
-    /// known inter-generational change is Water Shuriken (#594), which was Physical
-    /// in Gen 6 (XY/ORAS) and became Special from Gen 7 (SM) onward.
-    /// </para>
+    ///     <para>
+    ///         Gen 1–3 did not have an explicit Physical/Special/Status split per move;
+    ///         category was determined solely by the move's elemental type. This method applies
+    ///         that type-based split for those generations.
+    ///     </para>
+    ///     <para>
+    ///         From Gen 4 onward every move has its own explicit category. The only
+    ///         known inter-generational change is Water Shuriken (#594), which was Physical
+    ///         in Gen 6 (XY/ORAS) and became Special from Gen 7 (SM) onward.
+    ///     </para>
     /// </remarks>
     public static MoveCategory GetMoveCategory(ushort moveId, EntityContext context) =>
         context switch
@@ -48,8 +48,8 @@ public static class GameInfoUtilities
         };
 
     /// <summary>
-    /// Derives a Gen 1–3 move category from its elemental type using the type-based split
-    /// that existed before the explicit Physical/Special/Status split introduced in Gen 4.
+    ///     Derives a Gen 1–3 move category from its elemental type using the type-based split
+    ///     that existed before the explicit Physical/Special/Status split introduced in Gen 4.
     /// </summary>
     private static MoveCategory GetMoveCategoryFromType(MoveType type) =>
         type switch
@@ -70,7 +70,7 @@ public static class GameInfoUtilities
         };
 
     /// <summary>
-    /// Gets the display name of a move category.
+    ///     Gets the display name of a move category.
     /// </summary>
     public static string GetCategoryName(MoveCategory moveCategory) =>
         moveCategory switch

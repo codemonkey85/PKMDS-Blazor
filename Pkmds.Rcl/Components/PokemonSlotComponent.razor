@@ -18,12 +18,14 @@
             var isShiny = Pokemon.GetIsShinySafe();
             var highResUrl = AppState.SpriteStyle == SpriteStyle.Game
                 ? ImageHelper.GetPokeApiVersionSpriteUrl(Pokemon.Species, Pokemon.Form,
-                    Pokemon.GetFormArgument(0), isShiny, (byte)Pokemon.Gender,
+                    Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender,
                     AppState.SaveFile?.Version ?? GameVersion.Any)
                 : ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon.Species, Pokemon.Form,
-                    Pokemon.GetFormArgument(0), isShiny, (byte)Pokemon.Gender);
+                    Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender);
             <object class="pkm-sprite w-full h-auto object-contain block"
-                    style="@(_highResLoaded ? "display:none" : "")"
+                    style="@(highResLoaded
+                               ? "display:none"
+                               : "")"
                     type="image/png"
                     data="@ImageHelper.GetPokemonSpriteFilename(Pokemon)"
                     title="@title">
@@ -34,14 +36,15 @@
             </object>
             @if (highResUrl is not null)
             {
-                <img @key="@((Pokemon.Species, Pokemon.Form, Pokemon.GetFormArgument(0), isShiny, _lastLoadedIsFemale, AppState.SpriteStyle))"
-                     class="@($"pkm-sprite-hires {GetHiResSizeClass()} {(_highResLoaded ? "pkm-sprite-hires--loaded" : "")}")"
+                <img @key="@((Pokemon.Species, Pokemon.Form, Pokemon.GetFormArgument(0), isShiny, lastLoadedIsFemale, AppState.SpriteStyle))"
+                     class="@($"pkm-sprite-hires {GetHiResSizeClass()} {(highResLoaded ? "pkm-sprite-hires--loaded" : "")}")"
                      src="@highResUrl"
                      title="@title"
                      alt="@title"
                      @onload="OnHighResSpriteLoaded"
-                     @onerror="OnHighResSpriteError" />
+                     @onerror="OnHighResSpriteError"/>
             }
+
             @if (Pokemon.GetIsShinySafe())
             {
                 <div class="shiny-indicator-icon"
