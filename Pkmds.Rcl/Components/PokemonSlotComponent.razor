@@ -15,7 +15,8 @@
         @if (Pokemon is not null && Pokemon.Species > 0)
         {
             var title = GetPokemonTitle();
-            var highResUrl = ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon.Species);
+            var isShiny = Pokemon.GetIsShinySafe();
+            var highResUrl = ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon.Species, isShiny);
             <object class="pkm-sprite w-full h-auto object-contain block"
                     style="@(_highResLoaded ? "display:none" : "")"
                     type="image/png"
@@ -28,7 +29,7 @@
             </object>
             @if (highResUrl is not null)
             {
-                <img @key="@Pokemon.Species"
+                <img @key="@((Pokemon.Species, isShiny))"
                      class="@($"pkm-sprite-hires {(_highResLoaded ? "pkm-sprite-hires--loaded" : "")}")"
                      src="@highResUrl"
                      title="@title"

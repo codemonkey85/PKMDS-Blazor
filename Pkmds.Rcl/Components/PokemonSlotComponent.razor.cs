@@ -2,13 +2,14 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
-    // Tracks species whose high-res sprites have loaded at least once this session.
-    // Shared across all instances so switching boxes doesn't re-flash already-seen species.
-    private static readonly HashSet<ushort> HighResLoadedSpecies = [];
+    // Tracks (species, isShiny) pairs whose high-res sprites have loaded at least once this session.
+    // Shared across all instances so switching boxes doesn't re-flash already-seen sprites.
+    private static readonly HashSet<(ushort Species, bool IsShiny)> HighResLoadedSpecies = [];
 
     private bool? legalityValid;
     private bool _highResLoaded;
     private ushort _lastLoadedSpecies;
+    private bool _lastLoadedIsShiny;
     // Removed isDragOverWithFile field - no longer showing drag indicators
 
     [Parameter]
@@ -53,11 +54,13 @@ public partial class PokemonSlotComponent : IDisposable
     protected override void OnParametersSet()
     {
         ComputeLegalityValid();
-        if (Pokemon?.Species != _lastLoadedSpecies)
+        var currentIsShiny = Pokemon?.GetIsShinySafe() ?? false;
+        if (Pokemon?.Species != _lastLoadedSpecies || currentIsShiny != _lastLoadedIsShiny)
         {
             _lastLoadedSpecies = Pokemon?.Species ?? 0;
-            // If this species has already loaded high-res in this session, skip the bundled sprite entirely.
-            _highResLoaded = _lastLoadedSpecies > 0 && HighResLoadedSpecies.Contains(_lastLoadedSpecies);
+            _lastLoadedIsShiny = currentIsShiny;
+            // If this (species, shiny) combo has already loaded high-res in this session, skip the bundled sprite entirely.
+            _highResLoaded = _lastLoadedSpecies > 0 && HighResLoadedSpecies.Contains((_lastLoadedSpecies, _lastLoadedIsShiny));
         }
     }
 
@@ -66,7 +69,7 @@ public partial class PokemonSlotComponent : IDisposable
         _highResLoaded = true;
         if (_lastLoadedSpecies > 0)
         {
-            HighResLoadedSpecies.Add(_lastLoadedSpecies);
+            HighResLoadedSpecies.Add((_lastLoadedSpecies, _lastLoadedIsShiny));
         }
         StateHasChanged();
     }
