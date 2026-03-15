@@ -29,6 +29,10 @@ body, html {
     animation: sprite-fade-in 0.15s ease forwards;
 }
 
+.pkm-sprite-hires--sm {
+    width: 50%;
+}
+
 @keyframes sprite-fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
