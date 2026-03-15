@@ -16,20 +16,23 @@
         {
             var title = GetPokemonTitle();
             var highResUrl = ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon.Species);
-            <object class="@($"pkm-sprite {(_highResSrc is not null ? "pkm-sprite-hires" : "w-full")} h-auto object-contain block")"
+            <object class="pkm-sprite w-full h-auto object-contain block"
+                    style="@(_highResLoaded ? "display:none" : "")"
                     type="image/png"
-                    data="@(_highResSrc ?? ImageHelper.GetPokemonSpriteFilename(Pokemon))"
+                    data="@ImageHelper.GetPokemonSpriteFilename(Pokemon)"
                     title="@title">
                 <img class="pkm-sprite w-full h-auto object-contain block"
                      src="@ImageHelper.PokemonFallbackImageFileName"
                      title="@title"
                      alt="@title">
             </object>
-            @if (highResUrl is not null && _highResSrc is null)
+            @if (highResUrl is not null)
             {
-                <img src="@highResUrl"
-                     style="display:none;position:absolute;pointer-events:none"
-                     alt=""
+                <img @key="@Pokemon.Species"
+                     class="@($"pkm-sprite-hires {(_highResLoaded ? "pkm-sprite-hires--loaded" : "")}")"
+                     src="@highResUrl"
+                     title="@title"
+                     alt="@title"
                      @onload="OnHighResSpriteLoaded"
                      @onerror="OnHighResSpriteError" />
             }
