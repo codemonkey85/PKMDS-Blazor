@@ -15,7 +15,7 @@ body, html {
 
 .pkm-sprite-hires {
     position: absolute;
-    width: 60%;
+    width: 80%;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);

@@ -16,7 +16,8 @@
         {
             var title = GetPokemonTitle();
             var isShiny = Pokemon.GetIsShinySafe();
-            var highResUrl = ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon.Species, isShiny);
+            var highResUrl = ImageHelper.GetPokeApiHomeSpriteUrl(Pokemon.Species, Pokemon.Form,
+                Pokemon.GetFormArgument(0), isShiny, (byte)Pokemon.Gender);
             <object class="pkm-sprite w-full h-auto object-contain block"
                     style="@(_highResLoaded ? "display:none" : "")"
                     type="image/png"
@@ -29,7 +30,7 @@
             </object>
             @if (highResUrl is not null)
             {
-                <img @key="@((Pokemon.Species, isShiny))"
+                <img @key="@((Pokemon.Species, Pokemon.Form, Pokemon.GetFormArgument(0), isShiny, _lastLoadedIsFemale))"
                      class="@($"pkm-sprite-hires {(_highResLoaded ? "pkm-sprite-hires--loaded" : "")}")"
                      src="@highResUrl"
                      title="@title"
