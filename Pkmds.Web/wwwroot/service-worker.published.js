@@ -14,6 +14,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => event.respondWith(onFetch(event)));
 
 const cacheNamePrefix = 'offline-cache-';
+const spriteCacheName = 'pokeapi-sprites-v1';
+const spriteOrigin = 'https://raw.githubusercontent.com';
 const CACHE_VERSION = '%%CACHE_VERSION%%'
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}${CACHE_VERSION}`;
 
@@ -47,6 +49,20 @@ async function onActivate(event) {
 }
 
 async function onFetch(event) {
+    // Cache-first strategy for PokeAPI sprites — separate long-lived cache that survives app updates
+    if (event.request.method === 'GET' && event.request.url.startsWith(spriteOrigin)) {
+        event.respondWith(
+            caches.open(spriteCacheName).then(async cache => {
+                const cached = await cache.match(event.request);
+                if (cached) return cached;
+                const response = await fetch(event.request);
+                if (response.ok) cache.put(event.request, response.clone());
+                return response;
+            })
+        );
+        return;
+    }
+
     let cachedResponse = null;
     if (event.request.method === 'GET') {
         // For all navigation requests, try to serve index.html from cache,

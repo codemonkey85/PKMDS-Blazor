@@ -2,7 +2,13 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
+    // Tracks species whose high-res sprites have loaded at least once this session.
+    // Shared across all instances so switching boxes doesn't re-flash already-seen species.
+    private static readonly HashSet<ushort> HighResLoadedSpecies = [];
+
     private bool? legalityValid;
+    private bool _highResLoaded;
+    private ushort _lastLoadedSpecies;
     // Removed isDragOverWithFile field - no longer showing drag indicators
 
     [Parameter]
@@ -44,7 +50,28 @@ public partial class PokemonSlotComponent : IDisposable
         ComputeLegalityValid();
     }
 
-    protected override void OnParametersSet() => ComputeLegalityValid();
+    protected override void OnParametersSet()
+    {
+        ComputeLegalityValid();
+        if (Pokemon?.Species != _lastLoadedSpecies)
+        {
+            _lastLoadedSpecies = Pokemon?.Species ?? 0;
+            // If this species has already loaded high-res in this session, skip the bundled sprite entirely.
+            _highResLoaded = _lastLoadedSpecies > 0 && HighResLoadedSpecies.Contains(_lastLoadedSpecies);
+        }
+    }
+
+    private void OnHighResSpriteLoaded()
+    {
+        _highResLoaded = true;
+        if (_lastLoadedSpecies > 0)
+        {
+            HighResLoadedSpecies.Add(_lastLoadedSpecies);
+        }
+        StateHasChanged();
+    }
+
+    private void OnHighResSpriteError() { /* keep showing the bundled sprite */ }
 
     private void RefreshLegality()
     {

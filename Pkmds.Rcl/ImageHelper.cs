@@ -9,8 +9,17 @@ namespace Pkmds.Rcl;
 public static partial class ImageHelper
 {
     private const string SpritesRoot = "_content/Pkmds.Rcl/sprites/";
+    private const string PokeApiHomeBaseUrl =
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/";
     private const int PikachuStarterForm = 8;
     private const int EeveeStarterForm = 1;
+
+    /// <summary>
+    /// Gets the high-resolution PokeAPI home sprite URL for a Pokémon species (base form).
+    /// Returns null for invalid species. Use as a lazy-load upgrade over the bundled fallback sprite.
+    /// </summary>
+    public static string? GetPokeApiHomeSpriteUrl(ushort species) =>
+        species.IsValidSpecies() ? $"{PokeApiHomeBaseUrl}{species}.png" : null;
 
     /// <summary>Fallback image path for unknown items.</summary>
     public const string ItemFallbackImageFileName = $"{SpritesRoot}bi/bitem_unk.png";
