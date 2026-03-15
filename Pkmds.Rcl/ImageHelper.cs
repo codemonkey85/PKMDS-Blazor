@@ -18,8 +18,10 @@ public static partial class ImageHelper
     /// Gets the high-resolution PokeAPI home sprite URL for a Pokémon species (base form).
     /// Returns null for invalid species. Use as a lazy-load upgrade over the bundled fallback sprite.
     /// </summary>
-    public static string? GetPokeApiHomeSpriteUrl(ushort species) =>
-        species.IsValidSpecies() ? $"{PokeApiHomeBaseUrl}{species}.png" : null;
+    public static string? GetPokeApiHomeSpriteUrl(ushort species, bool isShiny = false) =>
+        species.IsValidSpecies()
+            ? $"{PokeApiHomeBaseUrl}{(isShiny ? "shiny/" : "")}{species}.png"
+            : null;
 
     /// <summary>Fallback image path for unknown items.</summary>
     public const string ItemFallbackImageFileName = $"{SpritesRoot}bi/bitem_unk.png";
