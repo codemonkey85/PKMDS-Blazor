@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for Gen 1-2 Catch Rate and Status Condition editing.
+///     Tests for Gen 1-2 Catch Rate and Status Condition editing.
 /// </summary>
 public class CatchRateStatusConditionTests
 {

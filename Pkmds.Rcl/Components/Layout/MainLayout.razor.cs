@@ -102,7 +102,8 @@ public partial class MainLayout : IDisposable
 
     private async Task ShowSettingsDialog()
     {
-        var parameters = new DialogParameters { { nameof(AppSettingsDialog.InitialSettings), SettingsService.Settings } };
+        var parameters =
+            new DialogParameters { { nameof(AppSettingsDialog.InitialSettings), SettingsService.Settings } };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseOnEscapeKey = true };
 

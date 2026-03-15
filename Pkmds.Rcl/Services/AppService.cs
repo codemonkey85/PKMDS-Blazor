@@ -986,8 +986,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
     private AdvancedSearchResult BuildSearchResult(PKM pkm, bool isParty, int box, int slot)
     {
-        var speciesName = GetPokemonSpeciesName(pkm.Species)
-                          ?? pkm.Species.ToString(CultureInfo.InvariantCulture);
+        var speciesName = GetPokemonSpeciesName(pkm.Species);
         var location = isParty
             ? $"Party {slot + 1}"
             : $"Box {box + 1}, Slot {slot + 1}";
@@ -1004,9 +1003,9 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Returns <see langword="true" /> when <paramref name="pkm" /> satisfies every
-    /// non-null/non-empty criterion in <paramref name="f" />.
-    /// Cheap equality checks run first; expensive legality analysis runs last.
+    ///     Returns <see langword="true" /> when <paramref name="pkm" /> satisfies every
+    ///     non-null/non-empty criterion in <paramref name="f" />.
+    ///     Cheap equality checks run first; expensive legality analysis runs last.
     /// </summary>
     private bool Matches(PKM pkm, AdvancedSearchFilter f)
     {
@@ -1221,13 +1220,15 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
         // ── Legality (expensive — evaluated last) ─────────────────────────
 
-        if (f.IsLegal.HasValue)
+        if (!f.IsLegal.HasValue)
         {
-            var isLegal = new LegalityAnalysis(pkm).Valid;
-            if (isLegal != f.IsLegal.Value)
-            {
-                return false;
-            }
+            return true;
+        }
+
+        var isLegal = new LegalityAnalysis(pkm).Valid;
+        if (isLegal != f.IsLegal.Value)
+        {
+            return false;
         }
 
         return true;
@@ -1260,8 +1261,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Compacts a box by shifting all Pokémon left to fill gaps (for Gen 1 and Gen 2 games).
-    /// In these generations, boxes were lists, not grids, so they should have no gaps.
+    ///     Compacts a box by shifting all Pokémon left to fill gaps (for Gen 1 and Gen 2 games).
+    ///     In these generations, boxes were lists, not grids, so they should have no gaps.
     /// </summary>
     private static void CompactBox(SaveFile saveFile, int boxNumber)
     {
@@ -1294,8 +1295,7 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
 
     private EncounterSearchResult BuildEncounterResult(IEncounterable enc)
     {
-        var speciesName = GetPokemonSpeciesName(enc.Species)
-                          ?? enc.Species.ToString(CultureInfo.InvariantCulture);
+        var speciesName = GetPokemonSpeciesName(enc.Species);
 
         var gameName = GameInfo.FilteredSources.Games
                            .FirstOrDefault(g => g.Value == (int)enc.Version)?.Text
@@ -1321,8 +1321,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Returns the human-readable location name for an encounter, or <see langword="null" />
-    /// when no location is associated (e.g., location ID is 0).
+    ///     Returns the human-readable location name for an encounter, or <see langword="null" />
+    ///     when no location is associated (e.g., location ID is 0).
     /// </summary>
     private static string? GetEncounterLocationName(IEncounterable enc)
     {
@@ -1339,8 +1339,8 @@ public class AppService(IAppState appState, IRefreshService refreshService) : IA
     }
 
     /// <summary>
-    /// Classifies an <see cref="IEncounterable" /> into one of the five
-    /// <see cref="EncounterTypeGroup" /> buckets.
+    ///     Classifies an <see cref="IEncounterable" /> into one of the five
+    ///     <see cref="EncounterTypeGroup" /> buckets.
     /// </summary>
     private static EncounterTypeGroup GetEncounterTypeGroup(IEncounterable enc)
     {

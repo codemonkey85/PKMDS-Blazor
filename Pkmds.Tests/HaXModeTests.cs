@@ -1,7 +1,7 @@
 namespace Pkmds.Tests;
 
 /// <summary>
-/// Tests for PKHaX (Illegal Mode) stat-editing behaviour.
+///     Tests for PKHaX (Illegal Mode) stat-editing behaviour.
 /// </summary>
 public class HaXModeTests
 {

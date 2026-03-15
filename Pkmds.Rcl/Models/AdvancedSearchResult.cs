@@ -1,7 +1,7 @@
 namespace Pkmds.Rcl.Models;
 
 /// <summary>
-/// Represents a single row in the Advanced Search results table.
+///     Represents a single row in the Advanced Search results table.
 /// </summary>
 public sealed record AdvancedSearchResult
 {
