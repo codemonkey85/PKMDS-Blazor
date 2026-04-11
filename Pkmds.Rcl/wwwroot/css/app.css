@@ -565,6 +565,11 @@ body, html {
 
 .square-slot[draggable="true"] {
     cursor: grab !important;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: element;
+    touch-action: manipulation;
 }
 
 .square-slot[draggable="true"]:active {
