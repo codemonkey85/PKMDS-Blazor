@@ -4,22 +4,22 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="Azure.Storage.Blobs" Version="12.27.0"/>
-        <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.51.0"/>
+        <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.52.0"/>
         <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.0"/>
         <PackageVersion Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7"/>
         <PackageVersion Include="Octokit" Version="14.0.0"/>
     </ItemGroup>
     <ItemGroup>
         <PackageVersion Include="bUnit" Version="2.7.2"/>
-        <PackageVersion Include="coverlet.collector" Version="8.0.1"/>
+        <PackageVersion Include="coverlet.collector" Version="10.0.0"/>
         <PackageVersion Include="FluentAssertions" Version="8.9.0"/>
         <PackageVersion Include="Humanizer" Version="3.0.10"/>
         <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="4.0.0"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.6"/>
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.6"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.7"/>
         <PackageVersion Include="Microsoft.JSInterop" Version="10.0.3"/>
         <PackageVersion Include="Microsoft.JSInterop.WebAssembly" Version="10.0.3"/>
-        <PackageVersion Include="MudBlazor" Version="9.3.0"/>
+        <PackageVersion Include="MudBlazor" Version="9.4.0"/>
         <PackageVersion Include="PKHeX.Core" Version="26.4.11"/>
         <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0"/>
         <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0"/>
