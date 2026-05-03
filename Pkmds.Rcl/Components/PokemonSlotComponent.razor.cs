@@ -315,9 +315,14 @@ public partial class PokemonSlotComponent : IDisposable
 
     private static int GetBattleReadyCount(SaveFile saveFile)
     {
-        // Count battle-ready Pokémon in party (non-Eggs with Species > 0)
+        // Clamp PartyCount to the canonical 6-slot maximum. SAV3.PartyCount reads a single
+        // raw byte from the save block, and a corrupt or unusual GBA save can report > 6,
+        // which would slice past the party buffer in GetPartySlotAtIndex and throw
+        // ArgumentOutOfRangeException during render. Mirrors PKHeX's own SaveFile.PartyData
+        // getter (issue #844).
+        var partyCount = Math.Min(saveFile.PartyCount, 6);
         var count = 0;
-        for (var i = 0; i < saveFile.PartyCount; i++)
+        for (var i = 0; i < partyCount; i++)
         {
             var partyMon = saveFile.GetPartySlotAtIndex(i);
             if (partyMon is { Species: > 0, IsEgg: false })
