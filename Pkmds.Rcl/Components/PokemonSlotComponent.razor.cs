@@ -2,6 +2,9 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonSlotComponent : IDisposable
 {
+    // Mirrors PKHeX's internal SaveFile.MaxPartyCount (private there, so we can't reuse it).
+    private const int MaxPartyCount = 6;
+
     // Tracks (species, form, formArg, isShiny, isFemale, spriteStyle) tuples whose high-res sprites have loaded
     // at least once this session. Shared across all instances so switching boxes doesn't re-flash.
     // SpriteStyle is included so switching the setting mid-session never shows stale cached state.
@@ -315,9 +318,14 @@ public partial class PokemonSlotComponent : IDisposable
 
     private static int GetBattleReadyCount(SaveFile saveFile)
     {
-        // Count battle-ready Pokémon in party (non-Eggs with Species > 0)
+        // Clamp PartyCount to the canonical 6-slot maximum. SAV3.PartyCount reads a single
+        // raw byte from the save block, and a corrupt or unusual GBA save can report > 6,
+        // which would slice past the party buffer in GetPartySlotAtIndex and throw
+        // ArgumentOutOfRangeException during render. Mirrors PKHeX's own SaveFile.PartyData
+        // getter (issue #844).
+        var partyCount = Math.Min(saveFile.PartyCount, MaxPartyCount);
         var count = 0;
-        for (var i = 0; i < saveFile.PartyCount; i++)
+        for (var i = 0; i < partyCount; i++)
         {
             var partyMon = saveFile.GetPartySlotAtIndex(i);
             if (partyMon is { Species: > 0, IsEgg: false })
