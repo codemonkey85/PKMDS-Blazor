@@ -593,7 +593,8 @@ public partial class MainLayout : IDisposable
                 DialogService,
                 "You have unsaved changes to a Pokémon. Save them to the slot before exporting, or export without those changes?",
                 saveText: "Save & Export",
-                discardText: "Export Anyway"))
+                discardText: "Export Anyway",
+                snackbar: Snackbar))
         {
             return;
         }

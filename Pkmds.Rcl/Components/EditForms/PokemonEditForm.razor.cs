@@ -226,7 +226,35 @@ public partial class PokemonEditForm : IDisposable
 
         void PastePokemon()
         {
-            Pokemon = AppState.CopiedPokemon.Clone();
+            if (AppState.SaveFile is not { } saveFile || AppState.CopiedPokemon is null)
+            {
+                return;
+            }
+
+            var pasted = AppState.CopiedPokemon.Clone();
+
+            // The copied Pokémon may originate from a different save loaded earlier in the
+            // session (e.g. copy from a Gen 6 save, then load a Gen 5 Black 2 save). PKHeX's
+            // SetPartySlot/SetBoxSlot throw ArgumentException when the runtime PKM type
+            // doesn't match the save's PKMType, so convert first and surface a friendly error
+            // when conversion isn't possible instead of crashing.
+            if (pasted.GetType() != saveFile.PKMType)
+            {
+                var converted = EntityConverter.ConvertToType(pasted, saveFile.PKMType, out var c);
+                if (!c.IsSuccess || converted is null)
+                {
+                    Snackbar.Add(
+                        $"Could not paste Pokémon: {c.GetDisplayString(pasted, saveFile.PKMType)}",
+                        Severity.Error);
+                    return;
+                }
+
+                pasted = converted;
+            }
+
+            saveFile.AdaptToSaveFile(pasted);
+
+            Pokemon = pasted;
             AppService.SavePokemon(Pokemon);
 
             var selectedPokemonType =

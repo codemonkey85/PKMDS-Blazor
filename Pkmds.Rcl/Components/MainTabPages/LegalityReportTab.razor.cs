@@ -379,7 +379,8 @@ public partial class LegalityReportTab : RefreshAwareComponent
         if (!await UnsavedChangesGuard.ConfirmAsync(
                 AppService,
                 DialogService,
-                "This Pokémon has unsaved changes. Save them to the slot before jumping to the report entry?"))
+                "This Pokémon has unsaved changes. Save them to the slot before jumping to the report entry?",
+                snackbar: Snackbar))
         {
             return;
         }

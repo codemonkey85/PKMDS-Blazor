@@ -321,7 +321,8 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
         if (!await UnsavedChangesGuard.ConfirmAsync(
                 AppService,
                 DialogService,
-                "This Pokémon has unsaved changes. Save them to the slot before jumping to the search result?"))
+                "This Pokémon has unsaved changes. Save them to the slot before jumping to the search result?",
+                snackbar: Snackbar))
         {
             return;
         }

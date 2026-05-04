@@ -10,7 +10,9 @@ public static class UnsavedChangesGuard
     /// <summary>
     /// If the edit form has unsaved Pokémon changes, prompts the user to Save,
     /// Discard, or Cancel. Returns true when it is safe to proceed (no edits, or
-    /// the user chose Save/Discard); false when the user chose Cancel.
+    /// the user chose Save/Discard); false when the user chose Cancel or the save
+    /// itself failed (so the caller does not silently abandon the user's edits by
+    /// continuing on to discard them).
     /// </summary>
     public static async Task<bool> ConfirmAsync(
         IAppService appService,
@@ -18,7 +20,8 @@ public static class UnsavedChangesGuard
         string message,
         string saveText = "Save",
         string discardText = "Discard",
-        string cancelText = "Cancel")
+        string cancelText = "Cancel",
+        ISnackbar? snackbar = null)
     {
         if (!appService.EditFormHasUnsavedChanges())
         {
@@ -39,7 +42,22 @@ public static class UnsavedChangesGuard
 
         if (result is true)
         {
-            appService.SavePokemon(appService.EditFormPokemon);
+            // SavePokemon ultimately calls PKHeX's SetPartySlotAtIndex / SetBoxSlotAtIndex,
+            // which throw ArgumentException when the runtime PKM type doesn't match the
+            // save's PKMType (see #843). Surface a friendly error and cancel the action
+            // so the user's edits aren't discarded by the navigation/export that would
+            // have followed a successful save.
+            try
+            {
+                appService.SavePokemon(appService.EditFormPokemon);
+            }
+            catch (ArgumentException ex)
+            {
+                snackbar?.Add(
+                    $"Could not save Pokémon to slot: {ex.Message}",
+                    Severity.Error);
+                return false;
+            }
         }
 
         return true;
