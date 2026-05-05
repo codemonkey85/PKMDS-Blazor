@@ -1,4 +1,6 @@
-﻿namespace Pkmds.Web.Services;
+﻿using Pkmds.Rcl.Theming;
+
+namespace Pkmds.Web.Services;
 
 /// <summary>
 /// Blazor WebAssembly implementation of the refresh service.
@@ -76,6 +78,12 @@ public class RefreshService : IRefreshService
 
     /// <inheritdoc />
     public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);
+
+    /// <inheritdoc />
+    public event Action<PreviewPalette>? OnPaletteChanged;
+
+    /// <inheritdoc />
+    public void RefreshPalette(PreviewPalette palette) => OnPaletteChanged?.Invoke(palette);
 
     /// <summary>
     /// JavaScript-invokable method called by the service worker when an app update is detected.

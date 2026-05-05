@@ -26,30 +26,29 @@
                                  Color="@Color.Primary">
                             Theme
                         </MudText>
-                        <MudButtonGroup Variant="@Variant.Outlined"
+                        <MudToggleGroup T="ThemeMode"
+                                        @bind-Value="@themeMode"
+                                        Color="@Color.Primary"
                                         Size="@Size.Small">
-                            <MudIconButton Icon="@Icons.Material.Filled.LightMode"
-                                           Color="@Color.Inherit"
-                                           Style="@(themeMode == ThemeMode.Light
-                                                      ? "background-color: var(--mud-palette-primary-lighten);"
-                                                      : "opacity: 0.6;")"
-                                           title="Light mode"
-                                           OnClick="@(() => themeMode = ThemeMode.Light)"/>
-                            <MudIconButton Icon="@Icons.Material.Filled.SettingsBrightness"
-                                           Color="@Color.Inherit"
-                                           Style="@(themeMode == ThemeMode.System
-                                                      ? "background-color: var(--mud-palette-primary-lighten);"
-                                                      : "opacity: 0.6;")"
-                                           title="System default"
-                                           OnClick="@(() => themeMode = ThemeMode.System)"/>
-                            <MudIconButton Icon="@Icons.Material.Filled.DarkMode"
-                                           Color="@Color.Inherit"
-                                           Style="@(themeMode == ThemeMode.Dark
-                                                      ? "background-color: var(--mud-palette-primary-lighten);"
-                                                      : "opacity: 0.6;")"
-                                           title="Dark mode"
-                                           OnClick="@(() => themeMode = ThemeMode.Dark)"/>
-                        </MudButtonGroup>
+                            <MudToggleItem T="ThemeMode"
+                                           Value="@ThemeMode.Light"
+                                           title="Light mode">
+                                <MudIcon Icon="@Icons.Material.Filled.LightMode"
+                                         Size="@Size.Small"/>
+                            </MudToggleItem>
+                            <MudToggleItem T="ThemeMode"
+                                           Value="@ThemeMode.System"
+                                           title="System default">
+                                <MudIcon Icon="@Icons.Material.Filled.SettingsBrightness"
+                                         Size="@Size.Small"/>
+                            </MudToggleItem>
+                            <MudToggleItem T="ThemeMode"
+                                           Value="@ThemeMode.Dark"
+                                           title="Dark mode">
+                                <MudIcon Icon="@Icons.Material.Filled.DarkMode"
+                                         Size="@Size.Small"/>
+                            </MudToggleItem>
+                        </MudToggleGroup>
 
                         <MudDivider/>
                     }
@@ -63,25 +62,33 @@
                                  Color="@Color.Primary">
                             Sprite Style
                         </MudText>
-                        <MudButtonGroup Variant="@Variant.Filled"
+                        <MudToggleGroup T="SpriteStyle"
+                                        @bind-Value="@spriteStyle"
+                                        Color="@Color.Primary"
                                         Size="@Size.Small">
-                            <MudButton StartIcon="@Icons.Material.Filled.Home"
-                                       Color="@(spriteStyle == SpriteStyle.Home
-                                                  ? Color.Primary
-                                                  : Color.Default)"
-                                       title="Home (high-res 512×512 sprites)"
-                                       OnClick="@(() => spriteStyle = SpriteStyle.Home)">
-                                Home
-                            </MudButton>
-                            <MudButton StartIcon="@Icons.Material.Filled.VideogameAsset"
-                                       Color="@(spriteStyle == SpriteStyle.Game
-                                                  ? Color.Primary
-                                                  : Color.Default)"
-                                       title="Game (era-accurate pixel-art sprites matched to save file)"
-                                       OnClick="@(() => spriteStyle = SpriteStyle.Game)">
-                                Game
-                            </MudButton>
-                        </MudButtonGroup>
+                            <MudToggleItem T="SpriteStyle"
+                                           Value="@SpriteStyle.Home"
+                                           title="Home (high-res 512×512 sprites)">
+                                <MudStack Row
+                                          AlignItems="@AlignItems.Center"
+                                          Spacing="1">
+                                    <MudIcon Icon="@Icons.Material.Filled.Home"
+                                             Size="@Size.Small"/>
+                                    <span>Home</span>
+                                </MudStack>
+                            </MudToggleItem>
+                            <MudToggleItem T="SpriteStyle"
+                                           Value="@SpriteStyle.Game"
+                                           title="Game (era-accurate pixel-art sprites matched to save file)">
+                                <MudStack Row
+                                          AlignItems="@AlignItems.Center"
+                                          Spacing="1">
+                                    <MudIcon Icon="@Icons.Material.Filled.VideogameAsset"
+                                             Size="@Size.Small"/>
+                                    <span>Game</span>
+                                </MudStack>
+                            </MudToggleItem>
+                        </MudToggleGroup>
                         <MudButton StartIcon="@Icons.Material.Filled.ImageNotSupported"
                                    Variant="@Variant.Filled"
                                    Size="@Size.Small"

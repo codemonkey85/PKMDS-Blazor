@@ -516,7 +516,7 @@ body, html {
 }
 
 .slot-selected {
-    background-color: orange;
+    background-color: var(--pkmds-slot-selected, #7C3AED);
 }
 
 .current-tera-type-image {

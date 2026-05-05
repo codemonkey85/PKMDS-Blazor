@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Pkmds.Rcl.Components.Dialogs;
+using Pkmds.Rcl.Theming;
 
 namespace Pkmds.Web;
 
@@ -9,6 +10,7 @@ public partial class App : IDisposable
     private ErrorBoundary? errorBoundary;
     private MudThemeProvider? mudThemeProvider;
     private bool isDarkMode;
+    private MudTheme? currentTheme;
 
     [Inject]
     private IRefreshService RefreshService { get; set; } = null!;
@@ -16,14 +18,27 @@ public partial class App : IDisposable
     [Inject]
     private IDialogOptionsHelper DialogOptionsHelper { get; set; } = null!;
 
-    public void Dispose() => RefreshService.OnThemeChanged -= HandleThemeChanged;
+    public void Dispose()
+    {
+        RefreshService.OnThemeChanged -= HandleThemeChanged;
+        RefreshService.OnPaletteChanged -= HandlePaletteChanged;
+    }
 
-    protected override void OnInitialized() =>
+    protected override void OnInitialized()
+    {
         RefreshService.OnThemeChanged += HandleThemeChanged;
+        RefreshService.OnPaletteChanged += HandlePaletteChanged;
+    }
 
     private void HandleThemeChanged(bool darkMode)
     {
         isDarkMode = darkMode;
+        StateHasChanged();
+    }
+
+    private void HandlePaletteChanged(PreviewPalette palette)
+    {
+        currentTheme = PreviewPalettes.Resolve(palette);
         StateHasChanged();
     }
 

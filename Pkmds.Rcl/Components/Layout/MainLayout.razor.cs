@@ -1,3 +1,5 @@
+using Pkmds.Rcl.Theming;
+
 namespace Pkmds.Rcl.Components.Layout;
 
 public partial class MainLayout : IDisposable
@@ -12,6 +14,7 @@ public partial class MainLayout : IDisposable
     private bool systemIsDarkMode;
     private bool settingsLoaded;
     private ThemeMode themeMode = ThemeMode.System;
+    private PreviewPalette previewPalette = PreviewPalette.Default;
 
     [Inject]
     private IBackupService BackupService { get; set; } = null!;
@@ -224,6 +227,21 @@ public partial class MainLayout : IDisposable
     }
 
     private void DrawerToggle() => AppService.ToggleDrawer();
+
+    private void OnPaletteSelected(PreviewPalette palette)
+    {
+        previewPalette = palette;
+        RefreshService.RefreshPalette(palette);
+        StateHasChanged();
+    }
+
+    private string PreviewPalettePreviewColor(PreviewPalette palette) => palette switch
+    {
+        PreviewPalette.Pokedex => "#1E40AF",
+        PreviewPalette.Workshop => "#0D9488",
+        PreviewPalette.Dawn => "#4F46E5",
+        _ => "#9CA3AF",
+    };
 
 #if DEBUG
     private static bool IsDebugBuild => true;

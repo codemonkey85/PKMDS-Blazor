@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@using Pkmds.Rcl.Theming
 @inject ILogger<MainLayout> Logger
 
 <MudLayout>
@@ -47,30 +48,55 @@
         {
             <MudStack Row
                       AlignItems="@AlignItems.Center">
-                <MudButtonGroup Variant="@Variant.Outlined"
+                <MudMenu Icon="@Icons.Material.Filled.Palette"
+                         Color="@Color.Inherit"
+                         AnchorOrigin="@Origin.BottomRight"
+                         TransformOrigin="@Origin.TopRight"
+                         title="Preview color palette">
+                    @foreach (var option in Enum.GetValues<PreviewPalette>())
+                    {
+                        <MudMenuItem OnClick="@(() => OnPaletteSelected(option))">
+                            @if (option == previewPalette)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Check"
+                                         Size="@Size.Small"
+                                         Class="mr-2"/>
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Circle"
+                                         Size="@Size.Small"
+                                         Class="mr-2"
+                                         Style="@($"color:{PreviewPalettePreviewColor(option)};")"/>
+                            }
+                            @PreviewPalettes.DisplayName(option)
+                        </MudMenuItem>
+                    }
+                </MudMenu>
+                <MudToggleGroup T="ThemeMode"
+                                Value="@themeMode"
+                                ValueChanged="@OnThemeModeChanged"
+                                Color="@Color.Inherit"
                                 Size="@Size.Small">
-                    <MudIconButton Icon="@Icons.Material.Filled.LightMode"
-                                   Color="@Color.Inherit"
-                                   Style="@(themeMode == ThemeMode.Light
-                                              ? "background-color: rgba(255,255,255,0.2);"
-                                              : "opacity: 0.6;")"
-                                   title="Light mode"
-                                   OnClick="@(() => OnThemeModeChanged(ThemeMode.Light))"/>
-                    <MudIconButton Icon="@Icons.Material.Filled.SettingsBrightness"
-                                   Color="@Color.Inherit"
-                                   Style="@(themeMode == ThemeMode.System
-                                              ? "background-color: rgba(255,255,255,0.2);"
-                                              : "opacity: 0.6;")"
-                                   title="System default"
-                                   OnClick="@(() => OnThemeModeChanged(ThemeMode.System))"/>
-                    <MudIconButton Icon="@Icons.Material.Filled.DarkMode"
-                                   Color="@Color.Inherit"
-                                   Style="@(themeMode == ThemeMode.Dark
-                                              ? "background-color: rgba(255,255,255,0.2);"
-                                              : "opacity: 0.6;")"
-                                   title="Dark mode"
-                                   OnClick="@(() => OnThemeModeChanged(ThemeMode.Dark))"/>
-                </MudButtonGroup>
+                    <MudToggleItem T="ThemeMode"
+                                   Value="@ThemeMode.Light"
+                                   title="Light mode">
+                        <MudIcon Icon="@Icons.Material.Filled.LightMode"
+                                 Size="@Size.Small"/>
+                    </MudToggleItem>
+                    <MudToggleItem T="ThemeMode"
+                                   Value="@ThemeMode.System"
+                                   title="System default">
+                        <MudIcon Icon="@Icons.Material.Filled.SettingsBrightness"
+                                 Size="@Size.Small"/>
+                    </MudToggleItem>
+                    <MudToggleItem T="ThemeMode"
+                                   Value="@ThemeMode.Dark"
+                                   title="Dark mode">
+                        <MudIcon Icon="@Icons.Material.Filled.DarkMode"
+                                 Size="@Size.Small"/>
+                    </MudToggleItem>
+                </MudToggleGroup>
                 <MudButton Class="d-none d-md-flex"
                            EndIcon="@Icons.Custom.Brands.GitHub"
                            Href="@GitHubRepoLink"
@@ -216,7 +242,7 @@
             <MudButton OnClick="@ShowBugReportDialog"
                        StartIcon="@Icons.Material.Filled.BugReport"
                        Variant="@Variant.Filled"
-                       Color="@Color.Warning"
+                       Color="@Color.Tertiary"
                        FullWidth>
                 Report a Bug
             </MudButton>
