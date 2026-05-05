@@ -513,6 +513,7 @@ body, html {
 
 .square-slot {
     aspect-ratio: 1 / 1;
+    border: 1px solid var(--mud-palette-lines-default);
 }
 
 .slot-selected {

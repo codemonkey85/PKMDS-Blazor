@@ -39,8 +39,8 @@ public static class AppTheme
             TextPrimary = "#FAFAF9",
             TextSecondary = "#A8A29E",
             ActionDefault = "#A8A29E",
-            Divider = "#44403C",
-            LinesDefault = "#44403C",
+            Divider = "#57534E",
+            LinesDefault = "#57534E",
         },
     };
 }
