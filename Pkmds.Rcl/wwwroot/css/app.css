@@ -745,6 +745,21 @@ body, html {
     }
 }
 
+/* ── App-bar theme toggle contrast ──
+   The appbar MudToggleGroup uses Color.Inherit so the icons pick up the
+   appbar's white text color. But MudToggleItem's selected state (Variant.Filled
+   with Color.Inherit) renders without a background fill, making the selection
+   indistinguishable from the unselected outlined items. Restore the previous
+   button-group behavior: a semi-transparent white fill on the active item, and
+   a slight opacity dim on inactive items so the selection stands out clearly. */
+.appbar-theme-toggle .mud-toggle-item:not(.mud-toggle-item-selected) {
+    opacity: 0.6;
+}
+
+.appbar-theme-toggle .mud-toggle-item-selected {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 /* ── Choose Evolution picker — high-contrast selected item ──
    MudBlazor's default selected-list-item styling pairs primary-colored
    text with a pale primary-hover background, which is near-unreadable
