@@ -147,15 +147,15 @@ public partial class BadgesComponent : IDisposable
                 break;
 
             case EntityContext.Gen4 when saveFile is SAV4DP sav4dp:
-                sav4dp.Badges = ToggleBadge(sav4dp.Badges, badgeIndex);
+                sav4dp.Badges = (byte)ToggleBadge(sav4dp.Badges, badgeIndex);
                 break;
 
             case EntityContext.Gen4 when saveFile is SAV4Pt sav4pt:
-                sav4pt.Badges = ToggleBadge(sav4pt.Badges, badgeIndex);
+                sav4pt.Badges = (byte)ToggleBadge(sav4pt.Badges, badgeIndex);
                 break;
 
             case EntityContext.Gen4 when saveFile is SAV4HGSS sav4hgss:
-                sav4hgss.Badges = ToggleBadge(sav4hgss.Badges, badgeIndex);
+                sav4hgss.Badges = (byte)ToggleBadge(sav4hgss.Badges, badgeIndex);
                 break;
 
             case EntityContext.Gen5 when saveFile is SAV5BW sav5bw:

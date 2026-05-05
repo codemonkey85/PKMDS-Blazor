@@ -20,7 +20,7 @@
         <PackageVersion Include="Microsoft.JSInterop" Version="10.0.3"/>
         <PackageVersion Include="Microsoft.JSInterop.WebAssembly" Version="10.0.3"/>
         <PackageVersion Include="MudBlazor" Version="9.4.0"/>
-        <PackageVersion Include="PKHeX.Core" Version="26.4.11"/>
+        <PackageVersion Include="PKHeX.Core" Version="26.5.5"/>
         <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0"/>
         <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
