@@ -1,6 +1,4 @@
-﻿using Pkmds.Rcl.Theming;
-
-namespace Pkmds.Rcl.Services;
+﻿namespace Pkmds.Rcl.Services;
 
 /// <summary>
 /// Service for managing UI refresh events across the application.
@@ -87,15 +85,4 @@ public interface IRefreshService
     /// </summary>
     // ReSharper disable once UnusedMember.Global
     void ShowUpdateMessage();
-
-    /// <summary>
-    /// Event triggered when the preview color palette selection changes. Listened to by
-    /// the top-level theme provider so it can swap the active <see cref="MudTheme"/>.
-    /// </summary>
-    event Action<PreviewPalette>? OnPaletteChanged;
-
-    /// <summary>
-    /// Broadcasts a preview palette selection change.
-    /// </summary>
-    void RefreshPalette(PreviewPalette palette);
 }

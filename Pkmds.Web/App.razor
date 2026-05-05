@@ -2,6 +2,7 @@
 @using MudBlazor
 @using Pkmds.Rcl.Components.Layout
 @using Pkmds.Rcl.Components.Pages
+@using Pkmds.Rcl.Theming
 @inject IJSRuntime JsRuntime
 @inject IDialogService DialogService
 @inject IAppState AppState
@@ -12,7 +13,7 @@
 @* is unmounted, and would also lose theme CSS so it'd render unstyled.           *@
 <MudThemeProvider @ref="@mudThemeProvider"
                   IsDarkMode="@isDarkMode"
-                  Theme="@currentTheme"/>
+                  Theme="@AppTheme.Default"/>
 <MudPopoverProvider/>
 <MudDialogProvider BackdropClick="false"/>
 <MudSnackbarProvider/>

@@ -1,5 +1,4 @@
 @inherits LayoutComponentBase
-@using Pkmds.Rcl.Theming
 @inject ILogger<MainLayout> Logger
 
 <MudLayout>
@@ -48,31 +47,6 @@
         {
             <MudStack Row
                       AlignItems="@AlignItems.Center">
-                <MudMenu Icon="@Icons.Material.Filled.Palette"
-                         Color="@Color.Inherit"
-                         AnchorOrigin="@Origin.BottomRight"
-                         TransformOrigin="@Origin.TopRight"
-                         title="Preview color palette">
-                    @foreach (var option in Enum.GetValues<PreviewPalette>())
-                    {
-                        <MudMenuItem OnClick="@(() => OnPaletteSelected(option))">
-                            @if (option == previewPalette)
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Check"
-                                         Size="@Size.Small"
-                                         Class="mr-2"/>
-                            }
-                            else
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Circle"
-                                         Size="@Size.Small"
-                                         Class="mr-2"
-                                         Style="@($"color:{PreviewPalettePreviewColor(option)};")"/>
-                            }
-                            @PreviewPalettes.DisplayName(option)
-                        </MudMenuItem>
-                    }
-                </MudMenu>
                 <MudToggleGroup T="ThemeMode"
                                 Value="@themeMode"
                                 ValueChanged="@OnThemeModeChanged"
