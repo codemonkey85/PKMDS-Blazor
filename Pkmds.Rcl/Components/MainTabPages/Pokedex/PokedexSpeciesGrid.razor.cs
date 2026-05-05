@@ -181,25 +181,10 @@ public partial class PokedexSpeciesGrid
             // Must write through the Zukan API directly for both dex block modes.
             if (sv.Zukan.GetRevision() == 0)
             {
-                // Paldea block (pre-DLC saves).
-                // PKHeX bug: PokeDexEntry9Paldea.SetSeen(true) is a no-op when state == 0
-                // because it uses Math.Min(state, 2) instead of Math.Max.  SetSeen(false)
-                // calls SetState(2) ("seen") instead of 0 ("unknown").
-                // Workaround: call SetState() directly.
+                // Paldea block (pre-DLC saves). SetSeen(false) lands on state 1
+                // ("known but not seen") to match PKHeX semantics — not state 0.
                 var entry = sv.Zukan.DexPaldea.Get(row.SpeciesId);
-                if (value)
-                {
-                    // Raise to "seen" (state 2) only if not already seen or caught.
-                    if (entry.GetState() < 2)
-                    {
-                        entry.SetState(2u);
-                    }
-                }
-                else
-                {
-                    // Clear everything — "unknown" (state 0).
-                    entry.SetState(0u);
-                }
+                entry.SetSeen(value);
             }
             else
             {
@@ -241,14 +226,8 @@ public partial class PokedexSpeciesGrid
             if (sv.Zukan.GetRevision() == 0)
             {
                 // Paldea block (pre-DLC saves).
-                // PKHeX bug: PokeDexEntry9Paldea.SetCaught(false) calls SetState(2) ("seen")
-                // instead of leaving caught unset.
-                // Workaround: call SetState() directly.
                 var entry = sv.Zukan.DexPaldea.Get(row.SpeciesId);
-                entry.SetState(value
-                        ? 3u // caught
-                        : 2u // seen but not caught
-                );
+                entry.SetCaught(value);
             }
             else
             {

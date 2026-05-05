@@ -425,18 +425,11 @@ public partial class PokedexTab
             case SAV6AO ao:
                 ao.Zukan.SeenAll(false);
                 break;
-            // PKHeX bug: Zukan<T>.SeenAll(bool shinyToo = false) forwards shinyToo as
-            // the *value* parameter of SetAllSeen(bool value = true, bool shinyToo),
-            // so SeenAll(false) → SetAllSeen(false) which CLEARS instead of setting.
-            // Workaround: call SetAllSeen(true, false) directly.
-            // Affects all classes that inherit the base Zukan<T>.SeenAll — in practice
-            // Zukan7 (Gen 7 SM/USUM) and Zukan7b (Gen 7b LGPE).
-            // Zukan8 (SWSH) and Zukan8b (BDSP) both override SeenAll correctly.
             case SAV7 s7:
-                s7.Zukan.SetAllSeen();
+                s7.Zukan.SeenAll();
                 break;
             case SAV7b b7:
-                b7.Zukan.SetAllSeen();
+                b7.Zukan.SeenAll();
                 break;
             case SAV8SWSH swsh:
                 swsh.Zukan.SeenAll();
@@ -445,36 +438,6 @@ public partial class PokedexTab
                 bs.Zukan.SeenAll();
                 break;
             // SAV8LA: no Zukan.SeenAll(); button is disabled for LA
-
-            // SAV9SV (Paldea/T0 mode): PokeDexEntry9Paldea.SetSeen(true) has a
-            // PKHeX bug — it uses Math.Min(state, 2) instead of Math.Max, so it
-            // never *raises* state from 0 ("unknown") to 2 ("seen").
-            // Workaround: iterate dex-indexed species and call SetState(2) directly
-            // for any entry below the "seen" threshold.  Species already at state 3
-            // (caught) are left untouched.
-            // For Kitakami/DLC mode (GetRevision != 0) Zukan9Kitakami.SeenAll works
-            // correctly via FlagsFormSeen, so the standard path is used there.
-            case SAV9SV sv when sv.Zukan.GetRevision() == 0:
-                for (ushort i = 1; i <= sv.MaxSpeciesID; i++)
-                {
-                    if (!PokedexHelpers.IsSpeciesInSvDex(sv, i))
-                    {
-                        continue;
-                    }
-
-                    var entry = sv.Zukan.DexPaldea.Get(i);
-                    if (entry.GetState() < 2)
-                    {
-                        entry.SetState(2);
-                    }
-
-                    if (i % 50 == 0)
-                    {
-                        await Task.Yield();
-                    }
-                }
-
-                break;
             case SAV9SV sv:
                 sv.Zukan.SeenAll();
                 break;
