@@ -166,7 +166,7 @@ public sealed class LegalizationService : ILegalizationService
             if (ct.IsCancellationRequested)
             {
                 return new LegalizationOutcome(
-                    bestAttempt ?? BuildSetFallback(blank, set),
+                    bestAttempt ?? BuildSetFallback(blank, sav, set),
                     LegalizationStatus.Failed,
                     "Cancelled.");
             }
@@ -181,7 +181,7 @@ public sealed class LegalizationService : ILegalizationService
                 }
 
                 return new LegalizationOutcome(
-                    bestAttempt ?? BuildSetFallback(blank, set),
+                    bestAttempt ?? BuildSetFallback(blank, sav, set),
                     LegalizationStatus.Timeout,
                     $"Timed out after {timeoutSeconds}s ({attemptCount} encounters tried).");
             }
@@ -301,7 +301,7 @@ public sealed class LegalizationService : ILegalizationService
         }
 
         return new LegalizationOutcome(
-            bestAttempt ?? BuildSetFallback(blank, set),
+            bestAttempt ?? BuildSetFallback(blank, sav, set),
             LegalizationStatus.Failed,
             $"No legal result found after {attemptCount} encounters.");
     }
@@ -317,16 +317,22 @@ public sealed class LegalizationService : ILegalizationService
     /// BDSP) or when the moveset is unlearnable (so
     /// <see cref="EncounterMovesetGenerator.GenerateEncounters" /> yields zero
     /// candidates). The result is illegal but carries the user's requested
-    /// moves / item / nature / IVs, giving the caller a recognisable starting
+    /// moves / item / nature / IVs plus the save's trainer/language so it
+    /// renders correctly in the UI, giving the caller a recognisable starting
     /// point instead of a blank slot. Mirrors ALM's <c>last ?? template</c>
     /// fallback.
     /// </summary>
-    private static PKM BuildSetFallback(PKM blank, ShowdownSet set)
+    private static PKM BuildSetFallback(PKM blank, SaveFile sav, ShowdownSet set)
     {
         var pk = blank.Clone();
         pk.Species = set.Species;
         pk.Form = set.Form;
         pk.CurrentLevel = set.Level;
+        // Seed language + OT before ApplySetDetails so localized lookups (nickname,
+        // species name, etc.) resolve against the save's trainer instead of a zeroed
+        // blank. Matches the rebuild path's order at the top of the encounter loop.
+        pk.Language = sav.Language > 0 ? sav.Language : (int)LanguageID.English;
+        sav.ApplyTo(pk);
         pk.ApplySetDetails(set);
         return pk;
     }
