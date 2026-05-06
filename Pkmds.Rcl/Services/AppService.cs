@@ -406,6 +406,10 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         saveFile.DeletePartySlot(partySlotNumber);
 
         AppState.SelectedPartySlotNumber = null;
+        // Clear the edit-form PKM so the unsaved-changes guard doesn't prompt against a
+        // baseline that belongs to a Pokémon the user just deleted. The setter nulls
+        // editFormBaselineBytes for us.
+        EditFormPokemon = null;
 
         RefreshService.RefreshPartyState();
     }
@@ -421,6 +425,9 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
 
         AppState.SelectedBoxNumber = null;
         AppState.SelectedBoxSlotNumber = null;
+        // Clear the edit-form PKM so the unsaved-changes guard doesn't prompt against a
+        // baseline that belongs to a Pokémon the user just deleted.
+        EditFormPokemon = null;
 
         RefreshService.RefreshBoxState();
     }
