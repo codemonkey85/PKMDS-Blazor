@@ -25,5 +25,21 @@
                    DragAndDrop="true"
                    MaximumFileCount="1"
                    OnFilesChanged="@OnFilesChanged"
-                   Class="welcome-empty-state__dropzone"/>
+                   @bind-Dragging="@isDragging"
+                   Class="welcome-empty-state__dropzone">
+        <CustomContent Context="upload">
+            <button type="button"
+                    class="@DragClass"
+                    @onclick="@upload.OpenFilePickerAsync"
+                    @ondragenter="@(() => isDragging = true)">
+                <MudIcon Icon="@Icons.Material.Filled.Inbox"
+                         Color="@Color.Primary"
+                         Size="@Size.Large"
+                         Class="mb-2"/>
+                <MudText Color="@Color.Primary">
+                    Drag a save file here or click to browse
+                </MudText>
+            </button>
+        </CustomContent>
+    </MudFileUpload>
 </div>
