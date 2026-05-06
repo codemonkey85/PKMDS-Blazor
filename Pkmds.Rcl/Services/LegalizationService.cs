@@ -882,6 +882,20 @@ public sealed class LegalizationService : ILegalizationService
             pk.SetDefaultNickname();
         }
 
+        // Seed expected nickname trash residue for Gen 7b / Gen 8+ formats.
+        // TrashByteVerifier.VerifyTrashNickname expects a nicknamed Pokémon's
+        // NicknameTrash to carry the species default name as "underlay" — the
+        // bytes that would naturally remain after a player renamed a freshly-
+        // caught Pokémon in-game. ApplySetDetails writes into a zero buffer,
+        // so the residue is missing → "Fishy: Expected Trash Bytes".
+        // ApplyTrashBytes writes the species-name bytes past the new terminator
+        // without disturbing the user's nickname.
+        if ((pk.Format >= 8 || pk.Context == EntityContext.Gen7b) && pk.IsNicknamed)
+        {
+            var speciesName = SpeciesName.GetSpeciesNameGeneration(pk.Species, pk.Language, pk.Format);
+            StringConverter8.ApplyTrashBytes(pk.NicknameTrash, speciesName);
+        }
+
         // Average height/weight if unset.
         if (pk is IScaledSize ss && ss.HeightScalar == 0 && ss.WeightScalar == 0)
         {
