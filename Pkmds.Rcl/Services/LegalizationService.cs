@@ -7,10 +7,12 @@ namespace Pkmds.Rcl.Services;
 /// In WASM, responsiveness comes from cooperative yielding (Task.Yield) inside the
 /// legalization loop rather than wrapping the work in Task.Run.
 /// </summary>
-public sealed class LegalizationService : ILegalizationService
+public sealed class LegalizationService(IAppState appState) : ILegalizationService
 {
     /// <summary>Default maximum wall-clock time (seconds) for a single legalization attempt.</summary>
     private const int DefaultTimeoutSeconds = 15;
+
+    private IAppState AppState { get; } = appState;
 
     public async Task<LegalizationOutcome> LegalizeAsync(
         PKM pk,
@@ -300,10 +302,114 @@ public sealed class LegalizationService : ILegalizationService
             return new LegalizationOutcome(bestFishyAttempt, LegalizationStatus.Success);
         }
 
+        // HaX retry: nothing legal survived. With HaX on, do a relaxed pass that bypasses
+        // IsEncounterValid (level filter is the usual culprit — e.g. Garchomp@15 in BDSP
+        // where every encounter has LevelMin > 15) and AllowIncompatibleConversion, and
+        // returns the first non-null produced PKM as SuccessHaX. Mirrors the existing HaX
+        // bypass at PokemonSlotComponent.razor.cs:485.
+        if (AppState.IsHaXEnabled)
+        {
+            var haxResult = TryHaXRetry(
+                set, sav, blank, destType, criteria, encounters, timer, timeoutSeconds, ct);
+            if (haxResult is not null)
+            {
+                return haxResult;
+            }
+        }
+
         return new LegalizationOutcome(
             bestAttempt ?? BuildSetFallback(blank, sav, set),
             LegalizationStatus.Failed,
             $"No legal result found after {attemptCount} encounters.");
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    //  HaX retry path
+    // ──────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Relaxed retry used only when <see cref="IAppState.IsHaXEnabled" /> is true and the
+    /// normal loop produced no legal (or fishy-but-valid) result. Re-iterates the same
+    /// encounter sequence with two relaxations: <c>IsEncounterValid</c> is skipped (so
+    /// level-min mismatches no longer reject every encounter) and
+    /// <see cref="EntityConverter.AllowIncompatibleConversion" /> is set to
+    /// <see cref="EntityCompatibilitySetting.AllowIncompatibleAll" /> for the duration of
+    /// the retry. Returns the first PKM the pipeline produces, marked
+    /// <see cref="LegalizationStatus.SuccessHaX" />. Returns <c>null</c> if no encounter
+    /// survives even the relaxed pipeline (caller falls through to BuildSetFallback).
+    /// </summary>
+    private LegalizationOutcome? TryHaXRetry(
+        ShowdownSet set,
+        SaveFile sav,
+        PKM blank,
+        Type destType,
+        EncounterCriteria criteria,
+        IEnumerable<IEncounterable> encounters,
+        Stopwatch timer,
+        int timeoutSeconds,
+        CancellationToken ct)
+    {
+        var previous = EntityConverter.AllowIncompatibleConversion;
+        EntityConverter.AllowIncompatibleConversion = EntityCompatibilitySetting.AllowIncompatibleAll;
+        try
+        {
+            foreach (var enc in encounters)
+            {
+                if (ct.IsCancellationRequested || timer.Elapsed.TotalSeconds >= timeoutSeconds)
+                {
+                    return null;
+                }
+
+                try
+                {
+                    var adjustedCriteria = AdjustCriteriaForEncounter(criteria, enc, set);
+                    var raw = enc.ConvertToPKM(sav, adjustedCriteria);
+
+                    if (raw.OriginalTrainerName.Length == 0)
+                    {
+                        raw.Language = sav.Language;
+                        sav.ApplyTo(raw);
+                    }
+
+                    if (raw.IsEgg)
+                    {
+                        HatchEgg(raw, sav);
+                    }
+
+                    var pk = EntityConverter.ConvertToType(raw, destType, out _);
+                    if (pk is null)
+                    {
+                        continue;
+                    }
+
+                    pk.ApplySetDetails(set);
+                    // honourLevel: false → the user asked for set.Level explicitly. Skip the
+                    // CurrentLevel-up clamp inside ApplyPostGenerationFixes so e.g.
+                    // Garchomp@15 stays at 15 instead of being pushed up to the encounter's
+                    // LevelMin. MetLevel and ObedienceLevel are still kept ≤ CurrentLevel.
+                    ApplyPostGenerationFixes(pk, sav, enc, set, honourEncounterLevelMin: false);
+
+                    return new LegalizationOutcome(
+                        pk,
+                        LegalizationStatus.SuccessHaX,
+                        "Imported via HaX retry — illegal but populated.");
+                }
+                catch (OperationCanceledException)
+                {
+                    return null;
+                }
+                catch
+                {
+                    // Encounter conversion can throw for incompatible formats; skip silently.
+                }
+            }
+
+            return null;
+        }
+        finally
+        {
+            EntityConverter.AllowIncompatibleConversion = previous;
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -760,11 +866,18 @@ public sealed class LegalizationService : ILegalizationService
     /// Applies fixes after <see cref="CommonEdits.ApplySetDetails" /> to ensure legality.
     /// Mirrors AppService.ApplyPostImportFixes + ALM's ApplySetDetails final tweaks.
     /// </summary>
+    /// <param name="honourEncounterLevelMin">
+    /// When <c>true</c> (the default), <c>CurrentLevel</c> is bumped up to
+    /// <see cref="IEncounterTemplate.LevelMin" /> if it sits below — required for vanilla
+    /// legality. The HaX retry passes <c>false</c> so the user's requested level is
+    /// preserved (Garchomp@15 stays at 15, accepted as illegal).
+    /// </param>
     private static void ApplyPostGenerationFixes(
         PKM pk,
         SaveFile sav,
         IEncounterable enc,
-        ShowdownSet set)
+        ShowdownSet set,
+        bool honourEncounterLevelMin = true)
     {
         // Restore event-specific properties that ApplySetDetails (or intermediate
         // conversions) may have trampled. enc.ConvertToPKM already set these once,
@@ -811,8 +924,8 @@ public sealed class LegalizationService : ILegalizationService
             }
         }
 
-        // Clamp level to encounter minimum.
-        if (pk.CurrentLevel < enc.LevelMin)
+        // Clamp level to encounter minimum (skipped in HaX retry — see XML doc).
+        if (honourEncounterLevelMin && pk.CurrentLevel < enc.LevelMin)
         {
             pk.CurrentLevel = enc.LevelMin;
         }

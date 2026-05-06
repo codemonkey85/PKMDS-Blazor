@@ -13,7 +13,7 @@ public class BattleTeamTests
     public void HasBattleTeams_Gen7Save_ReturnsTrue()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasBattleTeams().Should().BeTrue();
     }
@@ -22,7 +22,7 @@ public class BattleTeamTests
     public void HasBattleTeams_Gen5Save_ReturnsFalse()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasBattleTeams().Should().BeFalse();
     }
@@ -31,7 +31,7 @@ public class BattleTeamTests
     public void HasBattleBox_Gen5Save_ReturnsTrue()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasBattleBox().Should().BeTrue();
     }
@@ -40,7 +40,7 @@ public class BattleTeamTests
     public void HasBattleBox_Gen7Save_ReturnsFalse()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasBattleBox().Should().BeFalse();
     }
@@ -51,7 +51,7 @@ public class BattleTeamTests
         // Arrange — load a Gen 7 save and place Pokémon in box slots
         var (saveFile, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
         var sav7 = (SAV7)saveFile;
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Place 3 Pokémon in box 0, slots 0–2
         var species = new ushort[] { 25, 133, 150 }; // Pikachu, Eevee, Mewtwo
@@ -87,7 +87,7 @@ public class BattleTeamTests
     {
         var (saveFile, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
         var sav7 = (SAV7)saveFile;
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Clear team 1 (all slots = -1)
         for (var i = 6; i < 12; i++)
@@ -105,7 +105,7 @@ public class BattleTeamTests
     public void IsBattleTeamLocked_Gen7_DefaultUnlocked()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         for (var i = 0; i < 6; i++)
         {
@@ -117,7 +117,7 @@ public class BattleTeamTests
     public void SetBattleTeamLocked_Gen7_TogglesLockState()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Lock team 2
         appService.SetBattleTeamLocked(2, true);
@@ -134,7 +134,7 @@ public class BattleTeamTests
         // Arrange
         var (saveFile, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
         var sav7 = (SAV7)saveFile;
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Place a Pikachu in box 0 slot 0
         var pkm = sav7.BlankPKM;
@@ -165,7 +165,7 @@ public class BattleTeamTests
         // Arrange
         var (saveFile, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
         var sav7 = (SAV7)saveFile;
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Place Pokémon in box 0
         var pkm1 = sav7.BlankPKM;
@@ -208,7 +208,7 @@ public class BattleTeamTests
     public void HasBattleTeams_Gen8Shield_ReturnsTrue()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("Test-Save-Shield.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasBattleTeams().Should().BeTrue();
     }
@@ -218,7 +218,7 @@ public class BattleTeamTests
     {
         var appState = new TestAppState { SaveFile = null };
         var refreshService = new TestRefreshService();
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         var team = appService.GetBattleTeamPokemon(0);
         team.Should().BeEmpty();
@@ -229,7 +229,7 @@ public class BattleTeamTests
     {
         var appState = new TestAppState { SaveFile = null };
         var refreshService = new TestRefreshService();
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         var result = appService.GetBattleBoxPokemon();
         result.Should().BeEmpty();
@@ -239,7 +239,7 @@ public class BattleTeamTests
     public void HasRentalTeams_Gen7Save_ReturnsFalse()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasRentalTeams().Should().BeFalse();
     }
@@ -248,7 +248,7 @@ public class BattleTeamTests
     public void HasRentalTeams_Gen8Shield_ReturnsTrue()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("Test-Save-Shield.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasRentalTeams().Should().BeTrue();
     }
@@ -257,7 +257,7 @@ public class BattleTeamTests
     public void GetBattleTeamName_Gen7_ReturnsDefaultName()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Gen 7 doesn't have custom team names — falls through to default
         var name = appService.GetBattleTeamName(0);
@@ -269,7 +269,7 @@ public class BattleTeamTests
     {
         var appState = new TestAppState();
         var refreshService = new TestRefreshService();
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         var showdown = appService.ExportTeamAsShowdown([]);
         showdown.Should().BeEmpty();
@@ -280,7 +280,7 @@ public class BattleTeamTests
     {
         var (saveFile, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
         var sav7 = (SAV7)saveFile;
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         var pkm = sav7.BlankPKM;
         pkm.Species = 25;
@@ -304,7 +304,7 @@ public class BattleTeamTests
     {
         var (saveFile, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
         var sav7 = (SAV7)saveFile;
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         var pkm1 = sav7.BlankPKM;
         pkm1.Species = 6;
@@ -340,7 +340,7 @@ public class BattleTeamTests
     {
         var (saveFile, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
         var sav7 = (SAV7)saveFile;
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         var pkm = sav7.BlankPKM;
         pkm.Species = 25;
@@ -367,7 +367,7 @@ public class BattleTeamTests
     public void UnlockAllBattleTeams_Gen7_UnlocksAllTeams()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("moon.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.SetBattleTeamLocked(0, true);
         appService.SetBattleTeamLocked(2, true);
@@ -385,7 +385,7 @@ public class BattleTeamTests
     public void HasBattleBox_Gen6XY_ReturnsTrue()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("x.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.HasBattleBox().Should().BeTrue();
     }
@@ -394,7 +394,7 @@ public class BattleTeamTests
     public void SetBattleBoxLocked_Gen5_TogglesLockState()
     {
         var (_, appState, refreshService, _) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         appService.SetBattleBoxLocked(true);
         appService.IsBattleBoxLocked().Should().BeTrue();

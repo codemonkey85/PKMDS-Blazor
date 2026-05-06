@@ -17,7 +17,7 @@ public class AdvancedSearchTests
         var data = File.ReadAllBytes(filePath);
         SaveUtil.TryGetSaveFile(data, out var saveFile, fileName).Should().BeTrue();
         var appState = new TestAppState { SaveFile = saveFile };
-        var service = new AppService(appState, new TestRefreshService(), new LegalizationService());
+        var service = new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
         return (service, saveFile!);
     }
 
