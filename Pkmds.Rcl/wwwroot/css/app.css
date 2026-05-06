@@ -1,6 +1,16 @@
 body, html {
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom, 16px) env(safe-area-inset-left, 8px);
+    /* Top inset is handled by .mud-appbar below so the iOS status bar overlays the
+       app bar (not a blank gap above it) when running as an installed PWA with
+       apple-mobile-web-app-status-bar-style=black-translucent. Adding it here too
+       would double-count and leave a 44px gap of background colour above the bar. */
+    padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom, 16px) env(safe-area-inset-left, 8px);
     box-sizing: border-box;
+}
+
+/* Push the app bar's contents below the iOS status bar in standalone PWA mode.
+   In a regular browser tab env(safe-area-inset-top) is 0, so this is a no-op. */
+.mud-appbar {
+    padding-top: env(safe-area-inset-top, 0px);
 }
 
 .menu-container {
