@@ -21,14 +21,13 @@ public partial class MainLayout : IDisposable
 
     private bool IsUpdateAvailable { get; set; }
     private bool IsCheckingForUpdates { get; set; }
-    private bool IsUpToDate { get; set; }
-    private bool IsUpdateCheckFailed { get; set; }
 
     public void Dispose()
     {
         RefreshService.OnAppStateChanged -= StateHasChanged;
         RefreshService.OnUpdateAvailable -= ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged -= OnSystemPreferenceChanged;
+        RefreshService.OnLoadSaveFileFromDrop -= HandleLoadSaveFileFromDrop;
     }
 
     protected override void OnInitialized()
@@ -36,44 +35,106 @@ public partial class MainLayout : IDisposable
         RefreshService.OnAppStateChanged += StateHasChanged;
         RefreshService.OnUpdateAvailable += ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged += OnSystemPreferenceChanged;
+        RefreshService.OnLoadSaveFileFromDrop += HandleLoadSaveFileFromDrop;
+    }
+
+    private async void HandleLoadSaveFileFromDrop(IBrowserFile file)
+    {
+        // Bridge for files dropped onto the welcome empty state — bypass the picker
+        // dialog and feed the IBrowserFile straight into the existing load pipeline.
+        try
+        {
+            browserLoadSaveFile = file;
+            await LoadSaveFile(file);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling dropped save file");
+        }
     }
 
     private void ShowUpdateMessage()
     {
+        // Both registration.update() and the SW lifecycle's own controllerchange/
+        // statechange wiring can dispatch the 'updateAvailable' window event for
+        // the same actual update, which would otherwise stack two identical
+        // snackbars on top of each other. Guard so the "update available" toast
+        // is only added once per session, and rely on the persistent snackbar
+        // (or the menu item swap) to keep the affordance available.
+        if (IsUpdateAvailable)
+        {
+            return;
+        }
+
         IsUpdateAvailable = true;
-        IsUpToDate = false;
+        Snackbar.Add(
+            "An update is available.",
+            Severity.Info,
+            options =>
+            {
+                options.RequireInteraction = true;
+                options.Action = "Reload";
+                options.ActionColor = Color.Inherit;
+                options.OnClick = async _ => await ReloadApp();
+            });
         StateHasChanged();
     }
 
     private async Task CheckForUpdates()
     {
-        IsCheckingForUpdates = true;
-        IsUpToDate = false;
-        IsUpdateCheckFailed = false;
-        StateHasChanged();
-
-        var result = await JSRuntime.InvokeAsync<string>("checkForUpdates");
-
-        IsCheckingForUpdates = false;
-        switch (result)
+        if (IsCheckingForUpdates)
         {
-            case "none":
-                IsUpToDate = true;
-                StateHasChanged();
-                await Task.Delay(3000);
-                IsUpToDate = false;
-                break;
-            case "error":
-            case "no-sw":
-                IsUpdateCheckFailed = true;
-                StateHasChanged();
-                await Task.Delay(4000);
-                IsUpdateCheckFailed = false;
-                break;
-                // "found": JS already dispatched 'updateAvailable' → ShowUpdateMessage() sets IsUpdateAvailable = true
+            return;
         }
 
+        // The menu closes on click, so the four-way inline status used to be invisible
+        // anyway. Show a persistent "checking" snackbar that's dismissed when the result
+        // arrives, then a result snackbar — and let ShowUpdateMessage handle the
+        // "update found" path via the service worker's 'updateAvailable' event.
+        IsCheckingForUpdates = true;
         StateHasChanged();
+
+        var checkingSnackbar = Snackbar.Add(
+            "Checking for updates…",
+            Severity.Info,
+            options => options.RequireInteraction = true);
+
+        try
+        {
+            var result = await JSRuntime.InvokeAsync<string>("checkForUpdates");
+
+            switch (result)
+            {
+                case "none":
+                    Snackbar.Add("You're up to date.", Severity.Success);
+                    break;
+                case "error":
+                case "no-sw":
+                    Snackbar.Add("Update check failed — try reloading.", Severity.Error);
+                    break;
+                    // "found": JS already dispatched 'updateAvailable' → ShowUpdateMessage()
+                    // shows the click-to-reload snackbar and flips IsUpdateAvailable.
+            }
+        }
+        catch (Exception ex)
+        {
+            // If the JS bridge throws (missing/overridden checkForUpdates, transient WASM
+            // interop failure), the "Checking…" snackbar would otherwise stay stuck because
+            // its removal lives in finally. Surface a failure toast so the menu action has
+            // a visible terminal state in every path.
+            Logger.LogWarning(ex, "Update check failed");
+            Snackbar.Add("Update check failed — try reloading.", Severity.Error);
+        }
+        finally
+        {
+            if (checkingSnackbar is not null)
+            {
+                Snackbar.Remove(checkingSnackbar);
+            }
+
+            IsCheckingForUpdates = false;
+            StateHasChanged();
+        }
     }
 
     private async Task ReloadApp() =>
@@ -223,8 +284,6 @@ public partial class MainLayout : IDisposable
         StateHasChanged();
     }
 
-    private void DrawerToggle() => AppService.ToggleDrawer();
-
 #if DEBUG
     private static bool IsDebugBuild => true;
 
@@ -248,6 +307,12 @@ public partial class MainLayout : IDisposable
                 Severity.Success,
                 options => options.RequireInteraction = true);
         }
+    }
+
+    private async Task ShowAboutDialog()
+    {
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
+        await DialogService.ShowAsync<AboutDialog>("About PKMDS", options);
     }
 
     private async Task ShowSettingsDialog()
@@ -355,6 +420,11 @@ public partial class MainLayout : IDisposable
         AppState.SaveFile = null;
         AppState.ShowProgressIndicator = true;
 
+        // See LoadSaveFile for the rationale: broadcast the state change so the skeleton's
+        // host re-renders, then yield via Task.Delay(1) so the browser paints before parse work.
+        RefreshService.Refresh();
+        await Task.Delay(1);
+
         try
         {
             var data = restore.SaveBytes;
@@ -445,13 +515,15 @@ public partial class MainLayout : IDisposable
         }
 
         Logger.LogInformation("Loading save file: {FileName}", selectedFile.Name);
-        AppService.ClearSelection();
-        ParseSettings.ClearActiveTrainer();
-        AppState.SaveFile = null;
-        AppState.ManicEmuSaveContext = null;
-        AppState.ShowProgressIndicator = true;
 
-        var data = Array.Empty<byte>();
+        // Read the file bytes BEFORE flipping ShowProgressIndicator/Refresh. The dropped
+        // IBrowserFile is owned by the welcome state's <InputFile> via Blazor's JS-side
+        // _blazorFilesById map; once Refresh() unmounts the welcome state (because
+        // ShowProgressIndicator hides it in Home.razor), that map entry disappears and any
+        // subsequent OpenReadStream throws "Cannot read properties of null (reading
+        // '_blazorFilesById')". Capturing the bytes first lets us tear the welcome state
+        // down safely and keep the skeleton-paint behaviour for the actual parse work.
+        byte[] data;
         try
         {
             await using var fileStream = browserLoadSaveFile.OpenReadStream(Constants.MaxFileSize);
@@ -459,7 +531,28 @@ public partial class MainLayout : IDisposable
             await fileStream.CopyToAsync(memoryStream);
             data = memoryStream.ToArray();
             Logger.LogDebug("Read {ByteCount} bytes from save file", data.Length);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error reading save file: {FileName}", selectedFile.Name);
+            await DialogService.ShowMessageBoxAsync("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+            return;
+        }
 
+        AppService.ClearSelection();
+        ParseSettings.ClearActiveTrainer();
+        AppState.SaveFile = null;
+        AppState.ManicEmuSaveContext = null;
+        AppState.ShowProgressIndicator = true;
+
+        // Now broadcast the state flip so SaveFileComponent's skeleton paints, then yield via
+        // Task.Delay(1) (Task.Yield doesn't cooperate in WASM — stays on the same JS macrotask)
+        // so the browser actually renders the skeleton before parse + auto-backup pin the thread.
+        RefreshService.Refresh();
+        await Task.Delay(1);
+
+        try
+        {
             // SaveFileLoader checks for a Manic EMU .3ds.sav ZIP (sdmc/… entries) before delegating
             // to SaveUtil.TryGetSaveFile for raw saves. The ordering matters: PKHeX's built-in
             // ZipReader would otherwise recognise the archive by its inner `main` entry and unwrap

@@ -4,17 +4,21 @@
 {
     @if (AppState.ShowProgressIndicator)
     {
-        <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
-                     Width="210px"
-                     Height="50px"/>
-        <br/>
-        <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
-                     Width="210px"
-                     Height="50px"/>
-        <br/>
-        <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
-                     Width="480px"
-                     Height="350px"/>
+        @* Mirror the eventual layout (save title row → tabs bar → content panel)
+           so the skeleton lands where boxes will render rather than collapsing
+           into a small top-left stack. *@
+        <MudStack Spacing="3"
+                  Class="save-file-loading-skeleton">
+            <MudSkeleton SkeletonType="@SkeletonType.Text"
+                         Width="40%"
+                         Height="40px"/>
+            <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
+                         Width="100%"
+                         Height="48px"/>
+            <MudSkeleton SkeletonType="@SkeletonType.Rectangle"
+                         Width="100%"
+                         Height="420px"/>
+        </MudStack>
     }
 }
 else

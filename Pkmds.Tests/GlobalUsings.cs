@@ -1,4 +1,5 @@
 ﻿global using FluentAssertions;
+global using Microsoft.AspNetCore.Components.Forms;
 global using PKHeX.Core;
 global using Pkmds.Core.Extensions;
 global using Pkmds.Core.Utilities;

@@ -60,20 +60,28 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             {
                 LoadPokemonStats(field);
             }
+
+            SnapshotEditFormBaseline();
         }
     }
 
-    public bool IsDrawerOpen
+    // Bytes of EditFormPokemon at the moment it was last assigned (or last saved). Compared
+    // against current bytes by EditFormHasUnsavedChanges to detect real user edits. Compared
+    // against the slot's bytes instead would produce false positives, because the setter
+    // clones + LoadPokemonStats normalizes the PKM (and Save round-trips can subtly differ).
+    private byte[]? editFormBaselineBytes;
+
+    private void SnapshotEditFormBaseline()
     {
-        get;
-        set
+        if (EditFormPokemon is not { } pokemon)
         {
-            field = value;
-            RefreshService.Refresh();
+            editFormBaselineBytes = null;
+            return;
         }
-    }
 
-    public void ToggleDrawer() => IsDrawerOpen = !IsDrawerOpen;
+        editFormBaselineBytes = new byte[pokemon.SIZE_STORED];
+        pokemon.WriteDecryptedDataStored(editFormBaselineBytes);
+    }
 
     public void ClearSelection()
     {
@@ -285,38 +293,29 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                 RefreshService.RefreshBoxAndPartyState();
                 break;
         }
+
+        // After saving, the edit form's current bytes are the user's accepted state — refresh
+        // the baseline so EditFormHasUnsavedChanges doesn't keep reporting dirty until the
+        // next selection change.
+        SnapshotEditFormBaseline();
     }
 
     public bool EditFormHasUnsavedChanges()
     {
-        if (AppState.SaveFile is not { } saveFile || EditFormPokemon is not { } pokemon)
+        if (EditFormPokemon is not { } pokemon || editFormBaselineBytes is null)
         {
             return false;
         }
 
-        var selectedPokemonType = GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
-
-        PKM? slotPokemon = selectedPokemonType switch
-        {
-            SelectedPokemonType.Party => saveFile.GetPartySlotAtIndex(partySlot),
-            SelectedPokemonType.Box => saveFile.GetBoxSlotAtIndex(boxNumber, boxSlot),
-            SelectedPokemonType.None when saveFile is SAV7b && AppState.SelectedBoxSlotNumber is { } lgSlot =>
-                saveFile.GetBoxSlotAtIndex(lgSlot / saveFile.BoxSlotCount, lgSlot % saveFile.BoxSlotCount),
-            _ => null
-        };
-
-        if (slotPokemon is null || pokemon.SIZE_STORED != slotPokemon.SIZE_STORED)
+        if (pokemon.SIZE_STORED != editFormBaselineBytes.Length)
         {
             return false;
         }
 
-        var editedBytes = new byte[pokemon.SIZE_STORED];
-        pokemon.WriteDecryptedDataStored(editedBytes);
+        var currentBytes = new byte[pokemon.SIZE_STORED];
+        pokemon.WriteDecryptedDataStored(currentBytes);
 
-        var slotBytes = new byte[slotPokemon.SIZE_STORED];
-        slotPokemon.WriteDecryptedDataStored(slotBytes);
-
-        return !editedBytes.AsSpan().SequenceEqual(slotBytes);
+        return !currentBytes.AsSpan().SequenceEqual(editFormBaselineBytes);
     }
 
     public string GetCleanFileName(PKM pkm) => pkm.Context switch

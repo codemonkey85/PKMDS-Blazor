@@ -159,6 +159,12 @@ public class RefreshAwareComponentTests
         public event Action? OnRequestJumpToPartyBox;
         public void RequestJumpToPartyBox() => OnRequestJumpToPartyBox?.Invoke();
 
+        public event Action? OnRequestLoadSaveFile;
+        public void RequestLoadSaveFile() => OnRequestLoadSaveFile?.Invoke();
+
+        public event Action<IBrowserFile>? OnLoadSaveFileFromDrop;
+        public void LoadSaveFileFromDrop(IBrowserFile file) => OnLoadSaveFileFromDrop?.Invoke(file);
+
         private event Action? _onAppStateChanged;
 
         private event Action? _onBoxStateChanged;

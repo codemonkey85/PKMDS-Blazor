@@ -13,16 +13,6 @@ public interface IAppService
     PKM? EditFormPokemon { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the navigation drawer is currently open.
-    /// </summary>
-    bool IsDrawerOpen { get; set; }
-
-    /// <summary>
-    /// Toggles the navigation drawer between open and closed states.
-    /// </summary>
-    void ToggleDrawer();
-
-    /// <summary>
     /// Clears the current selection (both box and party slots) and resets the edit form.
     /// </summary>
     void ClearSelection();

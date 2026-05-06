@@ -32,6 +32,12 @@ public class RefreshService : IRefreshService
     public event Action? OnRequestJumpToPartyBox;
 
     /// <inheritdoc />
+    public event Action? OnRequestLoadSaveFile;
+
+    /// <inheritdoc />
+    public event Action<IBrowserFile>? OnLoadSaveFileFromDrop;
+
+    /// <inheritdoc />
     public event Action<bool>? OnThemeChanged;
 
     /// <inheritdoc />
@@ -73,6 +79,12 @@ public class RefreshService : IRefreshService
 
     /// <inheritdoc />
     public void RequestJumpToPartyBox() => OnRequestJumpToPartyBox?.Invoke();
+
+    /// <inheritdoc />
+    public void RequestLoadSaveFile() => OnRequestLoadSaveFile?.Invoke();
+
+    /// <inheritdoc />
+    public void LoadSaveFileFromDrop(IBrowserFile file) => OnLoadSaveFileFromDrop?.Invoke(file);
 
     /// <inheritdoc />
     public void RefreshTheme(bool isDarkMode) => OnThemeChanged?.Invoke(isDarkMode);

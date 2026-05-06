@@ -40,6 +40,16 @@ document.addEventListener('dragover', function (e) {
 // stopPropagation on slot drop handlers. Storing the FileList here so readDroppedFile
 // can access it after the async yield in the Blazor drop handler.
 document.addEventListener('drop', function (e) {
+    // EXCEPTION: when the drop target is a <input type="file">, let the native file-input
+    // drop handling run. Calling preventDefault here would cancel the input's automatic
+    // assignment of `e.dataTransfer.files` to its own `files` property and the change
+    // event that follows, which is how MudFileUpload (and plain InputFile) receive
+    // dropped files. We still rely on this listener for non-file-input drops (slot
+    // drag-drop reads window.droppedFiles after it lands).
+    if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'file') {
+        return;
+    }
+
     // Always prevent default to stop browser from opening files
     e.preventDefault();
 

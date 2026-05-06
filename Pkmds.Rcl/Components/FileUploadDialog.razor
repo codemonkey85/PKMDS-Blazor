@@ -1,4 +1,4 @@
-﻿@inherits BasePkmdsComponent
+@inherits BasePkmdsComponent
 
 <MudDialog>
     <DialogContent>
@@ -7,32 +7,15 @@
             <MudAlert Severity="@Severity.Info"
                       Class="mb-3">@HintText</MudAlert>
         }
+        <MudText Typo="@Typo.subtitle2"
+                 Class="mb-2">
+            @Message
+        </MudText>
         <MudFileUpload T="@IBrowserFile"
                        Accept="*/*"
-                       @bind-Files="browserFile">
-            <CustomContent>
-                <MudButton Variant="@Variant.Filled"
-                           Color="@Color.Primary"
-                           StartIcon="@Icons.Material.Filled.CloudUpload"
-                           OnClick="@context.OpenFilePickerAsync">
-                    @Message
-                </MudButton>
-            </CustomContent>
-            <SelectedTemplate>
-                @if (context != null)
-                {
-                    <MudText>
-                        @context.Name
-                    </MudText>
-                }
-                else
-                {
-                    <MudText>
-                        No File
-                    </MudText>
-                }
-            </SelectedTemplate>
-        </MudFileUpload>
+                       DragAndDrop="true"
+                       MaximumFileCount="1"
+                       @bind-Files="browserFile"/>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@Cancel"

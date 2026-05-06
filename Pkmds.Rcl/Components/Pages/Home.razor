@@ -4,7 +4,7 @@
     @Constants.AppTitle
 </PageTitle>
 
-@if (AppState.SaveFile is null)
+@if (AppState.SaveFile is null && !AppState.ShowProgressIndicator)
 {
     @if (HostService.IsEmbedded)
     {
@@ -49,13 +49,7 @@
     }
     else
     {
-        <MudButton Variant="@Variant.Text"
-                   ButtonType="@ButtonType.Button"
-                   OnClick="@(_ => AppService.IsDrawerOpen = true)">
-            <MudText Typo="@Typo.h5">
-                Please load a save file.
-            </MudText>
-        </MudButton>
+        <WelcomeEmptyState OnFileDropped="@(file => RefreshService.LoadSaveFileFromDrop(file))"/>
     }
 }
 

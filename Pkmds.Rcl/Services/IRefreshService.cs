@@ -81,6 +81,31 @@ public interface IRefreshService
     void RequestJumpToPartyBox();
 
     /// <summary>
+    /// Event triggered when a component requests that the load-save-file dialog be opened
+    /// (e.g. the welcome empty state's CTA, which lives outside the layout that owns the
+    /// dialog logic).
+    /// </summary>
+    event Action? OnRequestLoadSaveFile;
+
+    /// <summary>
+    /// Requests that the load-save-file dialog be opened.
+    /// </summary>
+    void RequestLoadSaveFile();
+
+    /// <summary>
+    /// Event triggered when a save file has been provided via drag-and-drop and should be
+    /// loaded directly, bypassing the file-picker dialog. Subscribers (the layout) own the
+    /// load-and-validate flow.
+    /// </summary>
+    event Action<IBrowserFile>? OnLoadSaveFileFromDrop;
+
+    /// <summary>
+    /// Hands a dropped file to subscribers for direct loading.
+    /// </summary>
+    /// <param name="file">The browser file dropped onto a drop target.</param>
+    void LoadSaveFileFromDrop(IBrowserFile file);
+
+    /// <summary>
     /// Displays a message notifying the user that an application update is available.
     /// </summary>
     // ReSharper disable once UnusedMember.Global

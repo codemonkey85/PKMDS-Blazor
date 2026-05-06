@@ -1,0 +1,45 @@
+<div class="welcome-empty-state">
+    <div class="welcome-empty-state__mark">
+        <img src="_content/Pkmds.Rcl/icon.svg"
+             alt="PKMDS logo"
+             width="64"
+             height="64"/>
+    </div>
+    <div class="welcome-empty-state__text">
+        <MudText Typo="@Typo.h5"
+                 Class="welcome-empty-state__heading">
+            Welcome to PKMDS
+        </MudText>
+        <MudText Typo="@Typo.body2"
+                 Color="@Color.Secondary"
+                 Class="welcome-empty-state__subtitle">
+            Load a Pokémon save file to get started. Your file stays in your browser — nothing is uploaded.
+        </MudText>
+    </div>
+    <MudAlert Severity="@Severity.Info"
+              Class="welcome-empty-state__hint">
+        Tip: If you're using Manic EMU, upload the .3ds.sav or .3ds.save export directly for seamless round-trip import support.
+    </MudAlert>
+    <MudFileUpload T="@IBrowserFile"
+                   Accept="*/*"
+                   DragAndDrop="true"
+                   MaximumFileCount="1"
+                   OnFilesChanged="@OnFilesChanged"
+                   @bind-Dragging="@isDragging"
+                   Class="welcome-empty-state__dropzone">
+        <CustomContent Context="upload">
+            <button type="button"
+                    class="@DragClass"
+                    @onclick="@upload.OpenFilePickerAsync"
+                    @ondragenter="@(() => isDragging = true)">
+                <MudIcon Icon="@Icons.Material.Filled.Inbox"
+                         Color="@Color.Primary"
+                         Size="@Size.Large"
+                         Class="mb-2"/>
+                <MudText Color="@Color.Primary">
+                    Drag a save file here or click to browse
+                </MudText>
+            </button>
+        </CustomContent>
+    </MudFileUpload>
+</div>
