@@ -27,7 +27,6 @@ public partial class MainLayout : IDisposable
         RefreshService.OnAppStateChanged -= StateHasChanged;
         RefreshService.OnUpdateAvailable -= ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged -= OnSystemPreferenceChanged;
-        RefreshService.OnRequestLoadSaveFile -= HandleRequestLoadSaveFile;
         RefreshService.OnLoadSaveFileFromDrop -= HandleLoadSaveFileFromDrop;
     }
 
@@ -36,24 +35,7 @@ public partial class MainLayout : IDisposable
         RefreshService.OnAppStateChanged += StateHasChanged;
         RefreshService.OnUpdateAvailable += ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged += OnSystemPreferenceChanged;
-        RefreshService.OnRequestLoadSaveFile += HandleRequestLoadSaveFile;
         RefreshService.OnLoadSaveFileFromDrop += HandleLoadSaveFileFromDrop;
-    }
-
-    private async void HandleRequestLoadSaveFile()
-    {
-        // Bridge for the welcome empty state's CTA: it lives in Home.razor, but the
-        // load-save-file dialog logic is owned by this layout. async void is required
-        // because Action subscribers can't await; any exception is logged so the event
-        // doesn't tear down rendering.
-        try
-        {
-            await ShowLoadSaveFileDialog();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error handling welcome-state Load Save File request");
-        }
     }
 
     private async void HandleLoadSaveFileFromDrop(IBrowserFile file)

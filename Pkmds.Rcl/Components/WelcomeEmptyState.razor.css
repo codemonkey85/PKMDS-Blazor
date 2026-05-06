@@ -36,16 +36,9 @@
     align-items: center;
 }
 
-::deep .welcome-empty-state__cta {
-    padding: 12px 24px;
-    border-radius: 10px;
-}
-
-.welcome-empty-state__or {
-    color: var(--mud-palette-text-secondary);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+::deep .welcome-empty-state__hint {
+    width: 100%;
+    max-width: 480px;
 }
 
 ::deep .welcome-empty-state__dropzone {

@@ -49,8 +49,7 @@
     }
     else
     {
-        <WelcomeEmptyState OnLoadSaveFile="@(() => RefreshService.RequestLoadSaveFile())"
-                           OnFileDropped="@(file => RefreshService.LoadSaveFileFromDrop(file))"/>
+        <WelcomeEmptyState OnFileDropped="@(file => RefreshService.LoadSaveFileFromDrop(file))"/>
     }
 }
 

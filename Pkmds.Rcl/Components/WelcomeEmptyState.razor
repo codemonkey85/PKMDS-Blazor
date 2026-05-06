@@ -16,15 +16,10 @@
             Load a Pokémon save file to get started. Your file stays in your browser — nothing is uploaded.
         </MudText>
     </div>
-    <MudButton Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               Size="@Size.Large"
-               StartIcon="@Icons.Material.Filled.CloudUpload"
-               OnClick="@OnLoadSaveFile"
-               Class="welcome-empty-state__cta">
-        Load Save File
-    </MudButton>
-    <div class="welcome-empty-state__or">or</div>
+    <MudAlert Severity="@Severity.Info"
+              Class="welcome-empty-state__hint">
+        Tip: If you're using Manic EMU, upload the .3ds.sav or .3ds.save export directly for seamless round-trip import support.
+    </MudAlert>
     <MudFileUpload T="@IBrowserFile"
                    Accept="*/*"
                    DragAndDrop="true"
