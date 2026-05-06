@@ -352,91 +352,97 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         CancellationToken ct)
     {
         var blank = sav.BlankPKM;
-        var previous = EntityConverter.AllowIncompatibleConversion;
-        EntityConverter.AllowIncompatibleConversion = EntityCompatibilitySetting.AllowIncompatibleAll;
-        try
+        foreach (var enc in encounters)
         {
-            foreach (var enc in encounters)
+            if (ct.IsCancellationRequested)
             {
-                if (ct.IsCancellationRequested)
-                {
-                    return new LegalizationOutcome(
-                        BuildSetFallback(blank, sav, set),
-                        LegalizationStatus.Failed,
-                        "Cancelled.");
-                }
-
-                if (timer.Elapsed.TotalSeconds >= timeoutSeconds)
-                {
-                    return new LegalizationOutcome(
-                        BuildSetFallback(blank, sav, set),
-                        LegalizationStatus.Timeout,
-                        $"Timed out after {timeoutSeconds}s during HaX retry.");
-                }
-
-                // Yield to the browser event loop per encounter (each is expensive). Match
-                // the main loop's pattern — Task.Delay(1), not Task.Yield, so the JS
-                // setTimeout actually releases the main thread.
-                if (async)
-                {
-                    await Task.Delay(1, ct);
-                }
-
-                try
-                {
-                    var adjustedCriteria = AdjustCriteriaForEncounter(criteria, enc, set);
-                    var raw = enc.ConvertToPKM(sav, adjustedCriteria);
-
-                    if (raw.OriginalTrainerName.Length == 0)
-                    {
-                        raw.Language = sav.Language > 0 ? sav.Language : (int)LanguageID.English;
-                        sav.ApplyTo(raw);
-                    }
-
-                    if (raw.IsEgg)
-                    {
-                        HatchEgg(raw, sav);
-                    }
-
-                    var pk = EntityConverter.ConvertToType(raw, destType, out _);
-                    if (pk is null)
-                    {
-                        continue;
-                    }
-
-                    pk.ApplySetDetails(set);
-                    // honourEncounterLevelMin: false → the user asked for set.Level
-                    // explicitly. Skip the CurrentLevel-up clamp inside
-                    // ApplyPostGenerationFixes so e.g. Garchomp@15 stays at 15 instead of
-                    // being pushed up to the encounter's LevelMin. MetLevel and
-                    // ObedienceLevel are still kept ≤ CurrentLevel.
-                    ApplyPostGenerationFixes(pk, sav, enc, set, honourEncounterLevelMin: false);
-                    pk.RefreshChecksum();
-
-                    return new LegalizationOutcome(
-                        pk,
-                        LegalizationStatus.SuccessHaX,
-                        "Imported via HaX retry — illegal but populated.");
-                }
-                catch (OperationCanceledException)
-                {
-                    return new LegalizationOutcome(
-                        BuildSetFallback(blank, sav, set),
-                        LegalizationStatus.Failed,
-                        "Cancelled.");
-                }
-                catch
-                {
-                    // Encounter conversion can throw for incompatible formats; skip silently.
-                }
+                return new LegalizationOutcome(
+                    BuildSetFallback(blank, sav, set),
+                    LegalizationStatus.Failed,
+                    "Cancelled.");
             }
 
-            return null;
+            if (timer.Elapsed.TotalSeconds >= timeoutSeconds)
+            {
+                return new LegalizationOutcome(
+                    BuildSetFallback(blank, sav, set),
+                    LegalizationStatus.Timeout,
+                    $"Timed out after {timeoutSeconds}s during HaX retry.");
+            }
+
+            // Yield to the browser event loop per encounter (each is expensive). Match
+            // the main loop's pattern — Task.Delay(1), not Task.Yield, so the JS
+            // setTimeout actually releases the main thread.
+            if (async)
+            {
+                await Task.Delay(1, ct);
+            }
+
+            try
+            {
+                var adjustedCriteria = AdjustCriteriaForEncounter(criteria, enc, set);
+                var raw = enc.ConvertToPKM(sav, adjustedCriteria);
+
+                if (raw.OriginalTrainerName.Length == 0)
+                {
+                    raw.Language = sav.Language > 0 ? sav.Language : (int)LanguageID.English;
+                    sav.ApplyTo(raw);
+                }
+
+                if (raw.IsEgg)
+                {
+                    HatchEgg(raw, sav);
+                }
+
+                // EntityConverter.AllowIncompatibleConversion is a global static. Scope
+                // the relaxed setting to *only* the ConvertToType call so the cooperative
+                // await above (and any other concurrent async work on the WASM thread)
+                // never observes HaX conversion mode unintentionally.
+                PKM? pk;
+                var previous = EntityConverter.AllowIncompatibleConversion;
+                EntityConverter.AllowIncompatibleConversion = EntityCompatibilitySetting.AllowIncompatibleAll;
+                try
+                {
+                    pk = EntityConverter.ConvertToType(raw, destType, out _);
+                }
+                finally
+                {
+                    EntityConverter.AllowIncompatibleConversion = previous;
+                }
+
+                if (pk is null)
+                {
+                    continue;
+                }
+
+                pk.ApplySetDetails(set);
+                // honourEncounterLevelMin: false → the user asked for set.Level
+                // explicitly. Skip the CurrentLevel-up clamp inside
+                // ApplyPostGenerationFixes so e.g. Garchomp@15 stays at 15 instead of
+                // being pushed up to the encounter's LevelMin. MetLevel and
+                // ObedienceLevel are still kept ≤ CurrentLevel.
+                ApplyPostGenerationFixes(pk, sav, enc, set, honourEncounterLevelMin: false);
+                pk.RefreshChecksum();
+
+                return new LegalizationOutcome(
+                    pk,
+                    LegalizationStatus.SuccessHaX,
+                    "Imported via HaX retry — illegal but populated.");
+            }
+            catch (OperationCanceledException)
+            {
+                return new LegalizationOutcome(
+                    BuildSetFallback(blank, sav, set),
+                    LegalizationStatus.Failed,
+                    "Cancelled.");
+            }
+            catch
+            {
+                // Encounter conversion can throw for incompatible formats; skip silently.
+            }
         }
-        finally
-        {
-            EntityConverter.AllowIncompatibleConversion = previous;
-        }
+
+        return null;
     }
 
     // ──────────────────────────────────────────────────────────────────────
