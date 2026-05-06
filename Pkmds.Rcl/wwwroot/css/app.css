@@ -13,6 +13,18 @@ body, html {
     padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* The padding above grows .mud-appbar's effective height by the iOS status-bar
+   inset, but MudBlazor's .mud-main-content padding-top is fixed to the bar's
+   nominal height — so page content (e.g. the save-file title row in
+   SaveFileComponent) renders behind the now-taller bar in standalone PWA mode.
+   Match the inset here so MudMainContent's reserved space tracks the bar.
+   Selector specificity (0,2,0) matches MudBlazor's .mud-appbar-dense rule and
+   our stylesheet loads after, so this wins. We always use MudAppBar Dense, so
+   the dense variant is the only one that needs covering. */
+.mud-appbar-dense ~ .mud-main-content {
+    padding-top: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4 + env(safe-area-inset-top, 0px));
+}
+
 .menu-container {
     padding-bottom: env(safe-area-inset-bottom, 16px); /* Fallback to 16px */
     padding-left: env(safe-area-inset-left, 8px); /* Fallback to 8px */
