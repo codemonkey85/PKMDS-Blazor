@@ -637,9 +637,11 @@ body, html {
 .pkmds-splash .loading-progress circle:last-child {
     stroke: #1E40AF;
     stroke-linecap: round;
-    /* circumference of r=46 is ~289 — animate via stroke-dasharray
-       driven by --blazor-load-percentage (0–100%). */
-    stroke-dasharray: calc(2.89 * var(--blazor-load-percentage, 0%) * 1px), 1000;
+    /* circumference of r=46 is ~289. Stay percentage-based: viewBox is
+       100x100 so 1% resolves to 1 user unit, and 2.89 * percentage
+       produces the correct filled length at every load value.
+       (Mixing percentage * length would invalidate the calc.) */
+    stroke-dasharray: calc(2.89 * var(--blazor-load-percentage, 0%)), 1000%;
     transition: stroke-dasharray 0.1s ease-in-out;
 }
 
