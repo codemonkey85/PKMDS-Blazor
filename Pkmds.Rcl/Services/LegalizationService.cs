@@ -309,8 +309,8 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         // bypass at PokemonSlotComponent.razor.cs:485.
         if (AppState.IsHaXEnabled)
         {
-            var haxResult = TryHaXRetry(
-                set, sav, blank, destType, criteria, encounters, timer, timeoutSeconds, ct);
+            var haxResult = await TryHaXRetry(
+                set, sav, destType, criteria, encounters, timer, timeoutSeconds, async, ct);
             if (haxResult is not null)
             {
                 return haxResult;
@@ -335,29 +335,51 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
     /// <see cref="EntityConverter.AllowIncompatibleConversion" /> is set to
     /// <see cref="EntityCompatibilitySetting.AllowIncompatibleAll" /> for the duration of
     /// the retry. Returns the first PKM the pipeline produces, marked
-    /// <see cref="LegalizationStatus.SuccessHaX" />. Returns <c>null</c> if no encounter
-    /// survives even the relaxed pipeline (caller falls through to BuildSetFallback).
+    /// <see cref="LegalizationStatus.SuccessHaX" />. Yields cooperatively per encounter in
+    /// async mode so the WASM main thread stays responsive. Returns a Timeout / Failed-Cancelled
+    /// outcome on timer elapse / cancellation, or <c>null</c> when the encounter pool is
+    /// exhausted without a survivor (caller falls through to BuildSetFallback).
     /// </summary>
-    private LegalizationOutcome? TryHaXRetry(
+    private async Task<LegalizationOutcome?> TryHaXRetry(
         ShowdownSet set,
         SaveFile sav,
-        PKM blank,
         Type destType,
         EncounterCriteria criteria,
         IEnumerable<IEncounterable> encounters,
         Stopwatch timer,
         int timeoutSeconds,
+        bool async,
         CancellationToken ct)
     {
+        var blank = sav.BlankPKM;
         var previous = EntityConverter.AllowIncompatibleConversion;
         EntityConverter.AllowIncompatibleConversion = EntityCompatibilitySetting.AllowIncompatibleAll;
         try
         {
             foreach (var enc in encounters)
             {
-                if (ct.IsCancellationRequested || timer.Elapsed.TotalSeconds >= timeoutSeconds)
+                if (ct.IsCancellationRequested)
                 {
-                    return null;
+                    return new LegalizationOutcome(
+                        BuildSetFallback(blank, sav, set),
+                        LegalizationStatus.Failed,
+                        "Cancelled.");
+                }
+
+                if (timer.Elapsed.TotalSeconds >= timeoutSeconds)
+                {
+                    return new LegalizationOutcome(
+                        BuildSetFallback(blank, sav, set),
+                        LegalizationStatus.Timeout,
+                        $"Timed out after {timeoutSeconds}s during HaX retry.");
+                }
+
+                // Yield to the browser event loop per encounter (each is expensive). Match
+                // the main loop's pattern — Task.Delay(1), not Task.Yield, so the JS
+                // setTimeout actually releases the main thread.
+                if (async)
+                {
+                    await Task.Delay(1, ct);
                 }
 
                 try
@@ -367,7 +389,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
 
                     if (raw.OriginalTrainerName.Length == 0)
                     {
-                        raw.Language = sav.Language;
+                        raw.Language = sav.Language > 0 ? sav.Language : (int)LanguageID.English;
                         sav.ApplyTo(raw);
                     }
 
@@ -383,11 +405,13 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                     }
 
                     pk.ApplySetDetails(set);
-                    // honourLevel: false → the user asked for set.Level explicitly. Skip the
-                    // CurrentLevel-up clamp inside ApplyPostGenerationFixes so e.g.
-                    // Garchomp@15 stays at 15 instead of being pushed up to the encounter's
-                    // LevelMin. MetLevel and ObedienceLevel are still kept ≤ CurrentLevel.
+                    // honourEncounterLevelMin: false → the user asked for set.Level
+                    // explicitly. Skip the CurrentLevel-up clamp inside
+                    // ApplyPostGenerationFixes so e.g. Garchomp@15 stays at 15 instead of
+                    // being pushed up to the encounter's LevelMin. MetLevel and
+                    // ObedienceLevel are still kept ≤ CurrentLevel.
                     ApplyPostGenerationFixes(pk, sav, enc, set, honourEncounterLevelMin: false);
+                    pk.RefreshChecksum();
 
                     return new LegalizationOutcome(
                         pk,
@@ -396,7 +420,10 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                 }
                 catch (OperationCanceledException)
                 {
-                    return null;
+                    return new LegalizationOutcome(
+                        BuildSetFallback(blank, sav, set),
+                        LegalizationStatus.Failed,
+                        "Cancelled.");
                 }
                 catch
                 {
@@ -440,6 +467,25 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         pk.Language = sav.Language > 0 ? sav.Language : (int)LanguageID.English;
         sav.ApplyTo(pk);
         pk.ApplySetDetails(set);
+
+        // ApplyPostGenerationFixes is intentionally NOT run on the fallback path (no
+        // encounter ⇒ no encounter-aware fixes to apply), but the nickname/trash-byte
+        // seeding still matters here. Without these two lines, a Gen 7b / Gen 8+
+        // nicknamed import like "Garchy (Garchomp)" against a BDSP save (where every
+        // encounter is rejected by IsEncounterValid) lands with a zeroed NicknameTrash
+        // buffer and the legality report flags it "Fishy: Expected Trash Bytes."
+        if (string.IsNullOrEmpty(pk.Nickname))
+        {
+            pk.SetDefaultNickname();
+        }
+
+        if ((pk.Format >= 8 || pk.Context == EntityContext.Gen7b) && pk.IsNicknamed)
+        {
+            var speciesName = SpeciesName.GetSpeciesNameGeneration(pk.Species, pk.Language, pk.Format);
+            StringConverter8.ApplyTrashBytes(pk.NicknameTrash, speciesName);
+        }
+
+        pk.RefreshChecksum();
         return pk;
     }
 
