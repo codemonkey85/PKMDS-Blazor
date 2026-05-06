@@ -16,7 +16,7 @@ public class LegalityCheckerTests
         var data = File.ReadAllBytes(Path.Combine(TestFilesPath, fileName));
         SaveUtil.TryGetSaveFile(data, out var saveFile, fileName).Should().BeTrue();
         var appState = new TestAppState { SaveFile = saveFile };
-        return (new AppService(appState, new TestRefreshService(), new LegalizationService()), saveFile!);
+        return (new AppService(appState, new TestRefreshService(), new LegalizationService(appState)), saveFile!);
     }
 
     private static PKM LoadPkm(string fileName)
@@ -67,7 +67,8 @@ public class LegalityCheckerTests
         pkm.AbilityNumber = 4; // Hidden Ability — illegal for this specific event Lucario
         pkm.RefreshChecksum();
 
-        var service = new AppService(new TestAppState(), new TestRefreshService(), new LegalizationService());
+        var localAppState = new TestAppState();
+        var service = new AppService(localAppState, new TestRefreshService(), new LegalizationService(localAppState));
         var la = service.GetLegalityAnalysis(pkm);
 
         la.Results.Any(r => !r.Valid && r.Identifier == CheckIdentifier.Ability)
@@ -182,7 +183,7 @@ public class LegalityCheckerTests
         ParseSettings.InitFromSaveFileData(saveFile!);
 
         var appState = new TestAppState { SaveFile = saveFile };
-        var service = new AppService(appState, new TestRefreshService(), new LegalizationService());
+        var service = new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
 
         // Pick any non-empty party slot
         PKM? pkm = null;

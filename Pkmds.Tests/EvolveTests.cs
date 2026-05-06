@@ -11,7 +11,7 @@ public class EvolveTests
     private static AppService CreateService(SaveFile? saveFile = null)
     {
         var appState = new TestAppState { SaveFile = saveFile };
-        return new AppService(appState, new TestRefreshService(), new LegalizationService());
+        return new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
     }
 
     /// <summary>Creates a Gen 6 PK6 with the given species.</summary>

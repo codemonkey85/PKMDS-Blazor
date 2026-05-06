@@ -142,6 +142,16 @@ public partial class LegalityTab : IDisposable
                     ShowSuccessSnackbar(result.Pokemon, result.Changes);
                     break;
 
+                case LegalizationStatus.SuccessHaX:
+                    // HaX retry replaced the editor PKM with a populated-but-illegal result.
+                    // Still invoke OnPokemonLegalized so the editor reflects the change; the
+                    // legality alert will repaint as Invalid.
+                    await OnPokemonLegalized.InvokeAsync(result.Pokemon);
+                    Snackbar.Add(
+                        result.FailureReason ?? "Imported via HaX retry — illegal but populated.",
+                        Severity.Warning);
+                    break;
+
                 case LegalizationStatus.Timeout:
                     Snackbar.Add(result.FailureReason ?? "Legalization timed out.", Severity.Warning);
                     break;

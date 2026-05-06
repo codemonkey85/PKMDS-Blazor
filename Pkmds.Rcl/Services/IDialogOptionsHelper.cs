@@ -30,5 +30,5 @@ public interface IDialogOptionsHelper
         bool fullWidth = true,
         bool closeButton = true,
         bool closeOnEscapeKey = true,
-        bool backdropClick = true);
+        bool backdropClick = false);
 }

@@ -12,7 +12,16 @@ public enum LegalizationStatus
     Failed,
 
     /// <summary>The legalization attempt exceeded the time limit.</summary>
-    Timeout
+    Timeout,
+
+    /// <summary>
+    /// The normal pipeline produced no legal result, but a HaX retry (with
+    /// <see cref="PKHeX.Core.EntityConverter.AllowIncompatibleConversion" /> relaxed
+    /// and <c>IsEncounterValid</c>'s level pre-filter skipped) produced a populated
+    /// but illegal Pokémon. Surface this with a warning rather than the green
+    /// "successfully legalized" affordance — the result is intentionally illegal.
+    /// </summary>
+    SuccessHaX,
 }
 
 /// <summary>

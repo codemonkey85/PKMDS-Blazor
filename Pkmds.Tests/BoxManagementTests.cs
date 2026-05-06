@@ -13,7 +13,7 @@ public class BoxManagementTests
         // Arrange
         var appState = new TestAppState { SaveFile = null };
         var refreshService = new TestRefreshService();
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Act
         var result = appService.SwapBoxes(0, 1);
@@ -32,7 +32,7 @@ public class BoxManagementTests
 
         var appState = new TestAppState { SaveFile = saveFile };
         var refreshService = new TestRefreshService();
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Snapshot all slots in box 0 and box 1 before the swap
         var slotCount = saveFile!.BoxSlotCount;
@@ -68,7 +68,7 @@ public class BoxManagementTests
 
         var appState = new TestAppState { SaveFile = saveFile };
         var refreshService = new TestRefreshService();
-        var appService = new AppService(appState, refreshService, new LegalizationService());
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         var slotCount = saveFile!.BoxSlotCount;
         var box0Before = Enumerable.Range(0, slotCount)

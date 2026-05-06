@@ -214,6 +214,7 @@ public partial class ShowdownImportDialog
         var converted = new List<PKM>(parsedEntries.Count);
         var conversionFailed = 0;
         var skippedImpossible = 0;
+        var illegalAmongConverted = 0;
         foreach (var entry in parsedEntries)
         {
             // Reject blank PKMs (Species == 0). LegalizationService falls back to a
@@ -234,26 +235,34 @@ public partial class ShowdownImportDialog
             }
 
             converted.Add(pkm);
+            // The legality engine's BuildSetFallback / SuccessHaX paths produce populated
+            // but illegal PKMs (e.g. Garchomp@15 in BDSP). They survive the Species/IsPresent
+            // filters above, so without this tracking the snackbar would say "Imported 1
+            // Pokémon" with green Success severity even though the result is plainly illegal.
+            if (entry.Status == LegalityStatus.Illegal)
+            {
+                illegalAmongConverted++;
+            }
         }
 
         if (converted.Count == 0)
         {
-            ReportResult(0, conversionFailed, skippedImpossible);
+            ReportResult(0, conversionFailed, skippedImpossible, illegalAmongConverted);
             MudDialog?.Close();
             return;
         }
 
         if (importToParty)
         {
-            await ImportToPartyAsync(sav, converted, conversionFailed, skippedImpossible);
+            await ImportToPartyAsync(sav, converted, conversionFailed, skippedImpossible, illegalAmongConverted);
         }
         else
         {
-            ImportToBox(converted, conversionFailed, skippedImpossible);
+            ImportToBox(converted, conversionFailed, skippedImpossible, illegalAmongConverted);
         }
     }
 
-    private async Task ImportToPartyAsync(SaveFile sav, List<PKM> converted, int conversionFailed, int skippedImpossible)
+    private async Task ImportToPartyAsync(SaveFile sav, List<PKM> converted, int conversionFailed, int skippedImpossible, int illegalAmongConverted)
     {
         var emptySlots = 6 - sav.PartyCount;
 
@@ -269,7 +278,7 @@ public partial class ShowdownImportDialog
                 }
             }
 
-            ReportResult(placed, conversionFailed + (converted.Count - placed), skippedImpossible);
+            ReportResult(placed, conversionFailed + (converted.Count - placed), skippedImpossible, illegalAmongConverted);
             MudDialog?.Close();
             return;
         }
@@ -293,11 +302,11 @@ public partial class ShowdownImportDialog
 
         var written = AppService.OverwriteParty(converted);
         var skipped = Math.Max(0, converted.Count - written);
-        ReportResult(written, conversionFailed + skipped, skippedImpossible);
+        ReportResult(written, conversionFailed + skipped, skippedImpossible, illegalAmongConverted);
         MudDialog?.Close();
     }
 
-    private void ImportToBox(List<PKM> converted, int conversionFailed, int skippedImpossible)
+    private void ImportToBox(List<PKM> converted, int conversionFailed, int skippedImpossible, int illegalAmongConverted)
     {
         var placed = 0;
         foreach (var pkm in converted)
@@ -309,18 +318,23 @@ public partial class ShowdownImportDialog
         }
 
         RefreshService.RefreshBoxState();
-        ReportResult(placed, conversionFailed + (converted.Count - placed), skippedImpossible);
+        ReportResult(placed, conversionFailed + (converted.Count - placed), skippedImpossible, illegalAmongConverted);
         MudDialog?.Close();
     }
 
-    private void ReportResult(int imported, int failed, int skippedImpossible)
+    private void ReportResult(int imported, int failed, int skippedImpossible, int illegal)
     {
         if (imported == 0 && failed == 0 && skippedImpossible == 0)
         {
             return;
         }
 
-        var parts = new List<string>(2);
+        // Cap illegal at imported — placement failures might have dropped some illegal
+        // entries, and we can't tell which. Reporting more illegal than imported would
+        // read as nonsense to the user.
+        var illegalImported = Math.Min(illegal, imported);
+
+        var parts = new List<string>(3);
         if (failed > 0)
         {
             parts.Add($"{failed} could not be placed");
@@ -329,6 +343,11 @@ public partial class ShowdownImportDialog
         if (skippedImpossible > 0)
         {
             parts.Add($"{skippedImpossible} skipped (not in this game)");
+        }
+
+        if (illegalImported > 0)
+        {
+            parts.Add($"{illegalImported} illegal");
         }
 
         var message = parts.Count == 0
