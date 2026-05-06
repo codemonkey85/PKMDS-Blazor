@@ -29,6 +29,7 @@ public partial class MainLayout : IDisposable
         RefreshService.OnAppStateChanged -= StateHasChanged;
         RefreshService.OnUpdateAvailable -= ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged -= OnSystemPreferenceChanged;
+        RefreshService.OnRequestLoadSaveFile -= HandleRequestLoadSaveFile;
     }
 
     protected override void OnInitialized()
@@ -36,6 +37,23 @@ public partial class MainLayout : IDisposable
         RefreshService.OnAppStateChanged += StateHasChanged;
         RefreshService.OnUpdateAvailable += ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged += OnSystemPreferenceChanged;
+        RefreshService.OnRequestLoadSaveFile += HandleRequestLoadSaveFile;
+    }
+
+    private async void HandleRequestLoadSaveFile()
+    {
+        // Bridge for the welcome empty state's CTA: it lives in Home.razor, but the
+        // load-save-file dialog logic is owned by this layout. async void is required
+        // because Action subscribers can't await; any exception is logged so the event
+        // doesn't tear down rendering.
+        try
+        {
+            await ShowLoadSaveFileDialog();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling welcome-state Load Save File request");
+        }
     }
 
     private void ShowUpdateMessage()
@@ -223,8 +241,6 @@ public partial class MainLayout : IDisposable
         StateHasChanged();
     }
 
-    private void DrawerToggle() => AppService.ToggleDrawer();
-
 #if DEBUG
     private static bool IsDebugBuild => true;
 
@@ -248,6 +264,12 @@ public partial class MainLayout : IDisposable
                 Severity.Success,
                 options => options.RequireInteraction = true);
         }
+    }
+
+    private async Task ShowAboutDialog()
+    {
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
+        await DialogService.ShowAsync<AboutDialog>("About PKMDS", options);
     }
 
     private async Task ShowSettingsDialog()

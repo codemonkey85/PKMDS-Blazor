@@ -159,6 +159,9 @@ public class RefreshAwareComponentTests
         public event Action? OnRequestJumpToPartyBox;
         public void RequestJumpToPartyBox() => OnRequestJumpToPartyBox?.Invoke();
 
+        public event Action? OnRequestLoadSaveFile;
+        public void RequestLoadSaveFile() => OnRequestLoadSaveFile?.Invoke();
+
         private event Action? _onAppStateChanged;
 
         private event Action? _onBoxStateChanged;

@@ -81,6 +81,18 @@ public interface IRefreshService
     void RequestJumpToPartyBox();
 
     /// <summary>
+    /// Event triggered when a component requests that the load-save-file dialog be opened
+    /// (e.g. the welcome empty state's CTA, which lives outside the layout that owns the
+    /// dialog logic).
+    /// </summary>
+    event Action? OnRequestLoadSaveFile;
+
+    /// <summary>
+    /// Requests that the load-save-file dialog be opened.
+    /// </summary>
+    void RequestLoadSaveFile();
+
+    /// <summary>
     /// Displays a message notifying the user that an application update is available.
     /// </summary>
     // ReSharper disable once UnusedMember.Global

@@ -49,13 +49,7 @@
     }
     else
     {
-        <MudButton Variant="@Variant.Text"
-                   ButtonType="@ButtonType.Button"
-                   OnClick="@(_ => AppService.IsDrawerOpen = true)">
-            <MudText Typo="@Typo.h5">
-                Please load a save file.
-            </MudText>
-        </MudButton>
+        <WelcomeEmptyState OnLoadSaveFile="@(() => RefreshService.RequestLoadSaveFile())"/>
     }
 }
 

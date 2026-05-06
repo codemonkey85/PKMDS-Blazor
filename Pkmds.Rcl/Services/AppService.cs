@@ -63,18 +63,6 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         }
     }
 
-    public bool IsDrawerOpen
-    {
-        get;
-        set
-        {
-            field = value;
-            RefreshService.Refresh();
-        }
-    }
-
-    public void ToggleDrawer() => IsDrawerOpen = !IsDrawerOpen;
-
     public void ClearSelection()
     {
         AppState.SelectedBoxNumber = null;

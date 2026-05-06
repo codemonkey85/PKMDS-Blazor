@@ -60,23 +60,6 @@ public class AppServiceTests
     }
 
     [Fact]
-    public void ToggleDrawer_ChangesDrawerState()
-    {
-        // Arrange
-        var appState = new TestAppState();
-        var refreshService = new TestRefreshService();
-        var appService = new AppService(appState, refreshService, new LegalizationService());
-        var initialState = appService.IsDrawerOpen;
-
-        // Act
-        appService.ToggleDrawer();
-
-        // Assert
-        appService.IsDrawerOpen.Should().Be(!initialState);
-        refreshService.RefreshCount.Should().BeGreaterThan(0);
-    }
-
-    [Fact]
     public void ClearSelection_ResetsAllSelections()
     {
         // Arrange
@@ -523,6 +506,10 @@ public class AppServiceTests
         {
         }
 
+        public void RequestLoadSaveFile()
+        {
+        }
+
 #pragma warning disable CS0067 // Event is never used - these are required by interface but not needed in test mock
         public event Action? OnAppStateChanged;
         public event Action? OnBoxStateChanged;
@@ -531,6 +518,7 @@ public class AppServiceTests
         public event Action<bool>? OnThemeChanged;
         public event Action<bool>? OnSystemThemeChanged;
         public event Action? OnRequestJumpToPartyBox;
+        public event Action? OnRequestLoadSaveFile;
 #pragma warning restore CS0067
     }
 }

@@ -270,6 +270,7 @@ public class LegalityCheckerTests
         public void RefreshSystemTheme(bool systemIsDarkMode) { }
         public void ShowUpdateMessage() { }
         public void RequestJumpToPartyBox() { }
+        public void RequestLoadSaveFile() { }
 
 #pragma warning disable CS0067
         public event Action? OnAppStateChanged;
@@ -279,6 +280,7 @@ public class LegalityCheckerTests
         public event Action<bool>? OnThemeChanged;
         public event Action<bool>? OnSystemThemeChanged;
         public event Action? OnRequestJumpToPartyBox;
+        public event Action? OnRequestLoadSaveFile;
 #pragma warning restore CS0067
     }
 }

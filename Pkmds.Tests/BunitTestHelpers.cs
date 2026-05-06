@@ -103,6 +103,7 @@ internal class TestRefreshService : IRefreshService
     public void RefreshSystemTheme(bool systemIsDarkMode) { }
     public void ShowUpdateMessage() { }
     public void RequestJumpToPartyBox() { }
+    public void RequestLoadSaveFile() { }
 
 #pragma warning disable CS0067
     public event Action? OnAppStateChanged;
@@ -112,6 +113,7 @@ internal class TestRefreshService : IRefreshService
     public event Action<bool>? OnThemeChanged;
     public event Action<bool>? OnSystemThemeChanged;
     public event Action? OnRequestJumpToPartyBox;
+    public event Action? OnRequestLoadSaveFile;
 #pragma warning restore CS0067
 }
 
