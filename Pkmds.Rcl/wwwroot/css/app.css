@@ -580,6 +580,40 @@ body, html {
     display: block;
 }
 
+/* Splash ships paired light/dark logos (icon-light.svg / icon-dark.svg)
+   and shows whichever matches the active theme. theme-init.js sets
+   data-theme on <html> before render; prefers-color-scheme is the
+   no-JS fallback. */
+.pkmds-splash__mark--dark {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .pkmds-splash__mark--light {
+        display: none;
+    }
+
+    .pkmds-splash__mark--dark {
+        display: block;
+    }
+}
+
+[data-theme="light"] .pkmds-splash__mark--light {
+    display: block;
+}
+
+[data-theme="light"] .pkmds-splash__mark--dark {
+    display: none;
+}
+
+[data-theme="dark"] .pkmds-splash__mark--light {
+    display: none;
+}
+
+[data-theme="dark"] .pkmds-splash__mark--dark {
+    display: block;
+}
+
 /* Progress ring wraps the mark — original .loading-progress
    selector preserved so existing Blazor JS keeps working. */
 .pkmds-splash .loading-progress {
@@ -816,12 +850,22 @@ body, html {
    indistinguishable from the unselected outlined items. Restore the previous
    button-group behavior: a semi-transparent white fill on the active item, and
    a slight opacity dim on inactive items so the selection stands out clearly. */
+.appbar-theme-toggle .mud-toggle-item {
+    color: var(--mud-palette-appbar-text);
+}
+
 .appbar-theme-toggle .mud-toggle-item:not(.mud-toggle-item-selected) {
-    opacity: 0.6;
+    opacity: 0.7;
+}
+
+.appbar-theme-toggle .mud-toggle-item:not(.mud-toggle-item-selected):hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .appbar-theme-toggle .mud-toggle-item-selected {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.32);
+    opacity: 1;
 }
 
 /* ── Choose Evolution picker — high-contrast selected item ──
