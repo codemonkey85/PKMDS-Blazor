@@ -32,7 +32,7 @@ if ($PKHeXSourcePath -ne "") {
 try {
     Push-Location .\Pkmds.Web
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = 1
-    dotnet watch run -c Debug -v n --no-hot-reload @extraArgs
+    dotnet watch --non-interactive run -c Debug -v n @extraArgs
 }
 finally {
     Pop-Location

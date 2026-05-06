@@ -119,7 +119,7 @@
                         </MudButton>
 
                         <MudButton Variant="@Variant.Outlined"
-                                   Color="@Color.Warning"
+                                   Color="@Color.Tertiary"
                                    StartIcon="@Icons.Material.Filled.Undo"
                                    OnClick="@UndoAsync"
                                    Disabled="@(isBusy || !BatchEditorService.HasSnapshot)">
@@ -163,25 +163,18 @@
                 @* View toggle — only shown when preview results are available *@
                 @if (previewResults.Count > 0)
                 {
-                    <MudButtonGroup Variant="@Variant.Outlined"
+                    <MudToggleGroup T="bool"
+                                    @bind-Value="@showPropertiesPanel"
+                                    Color="@Color.Primary"
                                     Size="@Size.Small"
                                     Class="mb-2">
-
-                        <MudButton Color="@(showPropertiesPanel
-                                              ? Color.Primary
-                                              : Color.Default)"
-                                   OnClick="@(() => showPropertiesPanel = true)">
-                            Properties
-                        </MudButton>
-
-                        <MudButton Color="@(!showPropertiesPanel
-                                              ? Color.Secondary
-                                              : Color.Default)"
-                                   OnClick="@(() => showPropertiesPanel = false)">
-                            Preview Results
-                        </MudButton>
-
-                    </MudButtonGroup>
+                        <MudToggleItem T="bool"
+                                       Value="@true"
+                                       Text="Properties"/>
+                        <MudToggleItem T="bool"
+                                       Value="@false"
+                                       Text="Preview Results"/>
+                    </MudToggleGroup>
                 }
 
                 @if (showPropertiesPanel)

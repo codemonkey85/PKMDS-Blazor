@@ -11,7 +11,7 @@ Prereqs
 
 Local dev (Blazor WASM)
 - From repo root (PowerShell): `./watch.ps1`
-  - Equivalent from `Pkmds.Web`: `dotnet watch run -c Debug -v n --no-hot-reload`
+  - Equivalent from `Pkmds.Web`: `dotnet watch --non-interactive run -c Debug -v n`
   - Launch profiles expose: http `http://localhost:5283`, https `https://localhost:7267` (see `Pkmds.Web/Properties/launchSettings.json`).
 
 Local dev with a PKHeX.Core source checkout (manual UI testing)

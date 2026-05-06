@@ -2,6 +2,7 @@
 @using MudBlazor
 @using Pkmds.Rcl.Components.Layout
 @using Pkmds.Rcl.Components.Pages
+@using Pkmds.Rcl.Theming
 @inject IJSRuntime JsRuntime
 @inject IDialogService DialogService
 @inject IAppState AppState
@@ -11,7 +12,8 @@
 @* crash-report dialog would have no provider to render into when the child tree  *@
 @* is unmounted, and would also lose theme CSS so it'd render unstyled.           *@
 <MudThemeProvider @ref="@mudThemeProvider"
-                  IsDarkMode="@isDarkMode"/>
+                  IsDarkMode="@isDarkMode"
+                  Theme="@AppTheme.Default"/>
 <MudPopoverProvider/>
 <MudDialogProvider BackdropClick="false"/>
 <MudSnackbarProvider/>
