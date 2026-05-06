@@ -3,9 +3,20 @@
     width: 100%;
 }
 
-::deep .welcome-empty-state__upload .mud-input-control-input-container {
-    position: relative;
+/* Transparent input overlay covering the entire dropzone area. The MudBlazor
+   docs/components/fileupload sample uses this exact pattern: Hidden=false +
+   InputClass with absolute positioning. The input intercepts both clicks (→
+   OS picker) and drops (→ OnFilesChanged) without any state-toggling. */
+::deep .welcome-empty-state__input {
+    position: absolute;
     width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    opacity: 0;
+    z-index: 10;
+    cursor: pointer;
 }
 
 .welcome-empty-state {
@@ -54,7 +65,13 @@
     align-items: center;
 }
 
+/* CTA sits above the input overlay so its OnClick reaches the dialog flow.
+   The trade-off: drops landing precisely on the button itself are rejected
+   (a <button> can't accept file drops), but drops anywhere else on the card
+   work. Most users dropping on a card aim for the empty area, not the button. */
 ::deep .welcome-empty-state__cta {
+    position: relative;
+    z-index: 11;
     padding: 12px 24px;
     border-radius: 10px;
 }

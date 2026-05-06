@@ -9,23 +9,25 @@
         }
         <MudFileUpload T="@IBrowserFile"
                        Accept="*/*"
-                       DragAndDrop="true"
-                       Hidden="true"
-                       @bind-Dragging="isDragging"
-                       @bind-Files="browserFile">
+                       Hidden="false"
+                       InputClass="file-upload-dialog__input"
+                       tabindex="-1"
+                       @bind-Files="browserFile"
+                       @ondragenter="@(() => isDragging = true)"
+                       @ondragleave="@(() => isDragging = false)"
+                       @ondragend="@(() => isDragging = false)"
+                       @ondrop="@(() => isDragging = false)"
+                       Class="file-upload-dialog__upload">
             <CustomContent>
-                <div class="file-upload-dialog__drop-zone @(isDragging ? "file-upload-dialog__drop-zone--dragging" : "")"
-                     @ondragenter="@(() => isDragging = true)">
-                    <MudButton Variant="@Variant.Filled"
-                               Color="@Color.Primary"
-                               StartIcon="@Icons.Material.Filled.CloudUpload"
-                               OnClick="@context.OpenFilePickerAsync">
-                        @Message
-                    </MudButton>
+                <div class="file-upload-dialog__drop-zone @(isDragging ? "file-upload-dialog__drop-zone--dragging" : "")">
+                    <MudIcon Icon="@Icons.Material.Filled.CloudUpload"
+                             Color="@Color.Primary"
+                             Size="@Size.Large"/>
+                    <MudText Typo="@Typo.body1"
+                             Class="mt-1">@Message</MudText>
                     <MudText Typo="@Typo.caption"
-                             Color="@Color.Secondary"
-                             Class="mt-2">
-                        Or drag and drop a file here
+                             Color="@Color.Secondary">
+                        Drag a file here, or click anywhere in this area to browse
                     </MudText>
                 </div>
             </CustomContent>

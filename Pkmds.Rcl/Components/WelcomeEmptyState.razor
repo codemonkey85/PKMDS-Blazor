@@ -1,14 +1,16 @@
 <MudFileUpload T="@IBrowserFile"
-               DragAndDrop="true"
-               Hidden="true"
                Accept="*/*"
-               MaximumFileCount="1"
-               @bind-Dragging="_isDragging"
+               Hidden="false"
+               InputClass="welcome-empty-state__input"
+               tabindex="-1"
                OnFilesChanged="@OnFilesChanged"
+               @ondragenter="@SetDragging"
+               @ondragleave="@ClearDragging"
+               @ondragend="@ClearDragging"
+               @ondrop="@ClearDragging"
                Class="welcome-empty-state__upload">
     <CustomContent>
-        <div class="welcome-empty-state @(_isDragging ? "welcome-empty-state--dragging" : "")"
-             @ondragenter="@OnDragEnter">
+        <div class="welcome-empty-state @(_isDragging ? "welcome-empty-state--dragging" : "")">
             <div class="welcome-empty-state__mark">
                 <img src="_content/Pkmds.Rcl/icon.svg"
                      alt="PKMDS logo"
@@ -37,7 +39,7 @@
             <MudText Typo="@Typo.caption"
                      Color="@Color.Secondary"
                      Class="welcome-empty-state__hint">
-                Or drop a save file here
+                Or drop a save file anywhere in this area
             </MudText>
         </div>
     </CustomContent>

@@ -10,7 +10,9 @@ public partial class WelcomeEmptyState
     [Parameter]
     public EventCallback<IBrowserFile> OnFileDropped { get; set; }
 
-    private void OnDragEnter() => _isDragging = true;
+    private void SetDragging() => _isDragging = true;
+
+    private void ClearDragging() => _isDragging = false;
 
     private async Task OnFilesChanged(InputFileChangeEventArgs e)
     {
@@ -20,7 +22,6 @@ public partial class WelcomeEmptyState
             return;
         }
 
-        var file = e.File;
-        await OnFileDropped.InvokeAsync(file);
+        await OnFileDropped.InvokeAsync(e.File);
     }
 }
