@@ -1,3 +1,14 @@
+:root {
+    /* Tracks the top safe-area inset that .mud-appbar absorbs so any layout sizing
+       itself off 100vh/100dvh can subtract the same amount. Without this,
+       calc(100dvh - Xpx) heights overshoot by the inset and push their bottom
+       content (e.g. SearchTab action buttons) off screen. The viewport meta sets
+       viewport-fit=cover, so env(safe-area-inset-top) returns the device's actual
+       top inset wherever one exists (notched iPhone Safari, iPad PWA status bar,
+       etc.) and falls back to 0px on browsers/devices without a safe area. */
+    --pkmds-safe-area-top: env(safe-area-inset-top, 0px);
+}
+
 body, html {
     /* Top inset is handled by .mud-appbar below so the iOS status bar overlays the
        app bar (not a blank gap above it) when running as an installed PWA with
@@ -221,10 +232,34 @@ body, html {
 }
 
 .bag-data-grid .mud-table-container {
-    max-height: calc(100vh - 380px);
-    max-height: calc(100dvh - 380px);
+    max-height: calc(100vh - 380px - var(--pkmds-safe-area-top));
+    max-height: calc(100dvh - 380px - var(--pkmds-safe-area-top));
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+/* Mystery Gifts grid: cap height so the page doesn't grow taller than the viewport
+   and the action buttons below the grid stay reachable. The Razor template keeps
+   overflow + bottom safe-area padding inline; height lives here so there's a
+   single source of truth. */
+.mystery-gift-grid {
+    max-height: calc(100vh - 340px - var(--pkmds-safe-area-top));
+    max-height: calc(100dvh - 340px - var(--pkmds-safe-area-top));
+}
+
+/* LGPE box grid: short height on narrow viewports (the alert says "the box grid is
+   scrollable"), and on xl+ it expands to fill the viewport minus the surrounding
+   chrome. Replaces a Tailwind arbitrary-value class so we can subtract the iOS
+   safe-area inset cleanly via var(). */
+.lets-go-box-grid {
+    height: 398px;
+}
+
+@media (min-width: 1280px) {
+    .lets-go-box-grid {
+        height: calc(100vh - 319px - var(--pkmds-safe-area-top));
+        height: calc(100dvh - 319px - var(--pkmds-safe-area-top));
+    }
 }
 
 .legality-report-table,
@@ -358,7 +393,7 @@ body, html {
     .search-filter-panel {
         display: flex;
         flex-direction: column;
-        height: calc(100dvh - 160px);
+        height: calc(100dvh - 160px - var(--pkmds-safe-area-top));
         overflow: hidden;
     }
 
@@ -374,12 +409,6 @@ body, html {
         flex-shrink: 0;
         padding-top: 8px;
         padding-bottom: 4px;
-    }
-
-    /* Mystery Gifts grid: increase offset to ensure the container fits within the
-       tab panel's overflow:hidden boundary and buttons are never clipped. */
-    .mystery-gift-grid {
-        max-height: calc(100dvh - 380px);
     }
 
     .party-box-grid.mud-grid {
