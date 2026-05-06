@@ -166,7 +166,7 @@ public sealed class LegalizationService : ILegalizationService
             if (ct.IsCancellationRequested)
             {
                 return new LegalizationOutcome(
-                    bestAttempt ?? blank,
+                    bestAttempt ?? BuildSetFallback(blank, set),
                     LegalizationStatus.Failed,
                     "Cancelled.");
             }
@@ -181,7 +181,7 @@ public sealed class LegalizationService : ILegalizationService
                 }
 
                 return new LegalizationOutcome(
-                    bestAttempt ?? blank,
+                    bestAttempt ?? BuildSetFallback(blank, set),
                     LegalizationStatus.Timeout,
                     $"Timed out after {timeoutSeconds}s ({attemptCount} encounters tried).");
             }
@@ -301,9 +301,34 @@ public sealed class LegalizationService : ILegalizationService
         }
 
         return new LegalizationOutcome(
-            bestAttempt ?? blank,
+            bestAttempt ?? BuildSetFallback(blank, set),
             LegalizationStatus.Failed,
             $"No legal result found after {attemptCount} encounters.");
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    //  Best-effort fallback (no encounter found)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Builds a populated PKM from <paramref name="set" /> when the encounter
+    /// loop produces nothing — for example when every encounter is filtered out
+    /// by <see cref="IsEncounterValid" /> (Garchomp specified at Level 15 in
+    /// BDSP) or when the moveset is unlearnable (so
+    /// <see cref="EncounterMovesetGenerator.GenerateEncounters" /> yields zero
+    /// candidates). The result is illegal but carries the user's requested
+    /// moves / item / nature / IVs, giving the caller a recognisable starting
+    /// point instead of a blank slot. Mirrors ALM's <c>last ?? template</c>
+    /// fallback.
+    /// </summary>
+    private static PKM BuildSetFallback(PKM blank, ShowdownSet set)
+    {
+        var pk = blank.Clone();
+        pk.Species = set.Species;
+        pk.Form = set.Form;
+        pk.CurrentLevel = set.Level;
+        pk.ApplySetDetails(set);
+        return pk;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -855,6 +880,20 @@ public sealed class LegalizationService : ILegalizationService
         if (string.IsNullOrEmpty(pk.Nickname))
         {
             pk.SetDefaultNickname();
+        }
+
+        // Seed expected nickname trash residue for Gen 7b / Gen 8+ formats.
+        // TrashByteVerifier.VerifyTrashNickname expects a nicknamed Pokémon's
+        // NicknameTrash to carry the species default name as "underlay" — the
+        // bytes that would naturally remain after a player renamed a freshly-
+        // caught Pokémon in-game. ApplySetDetails writes into a zero buffer,
+        // so the residue is missing → "Fishy: Expected Trash Bytes".
+        // ApplyTrashBytes writes the species-name bytes past the new terminator
+        // without disturbing the user's nickname.
+        if ((pk.Format >= 8 || pk.Context == EntityContext.Gen7b) && pk.IsNicknamed)
+        {
+            var speciesName = SpeciesName.GetSpeciesNameGeneration(pk.Species, pk.Language, pk.Format);
+            StringConverter8.ApplyTrashBytes(pk.NicknameTrash, speciesName);
         }
 
         // Average height/weight if unset.

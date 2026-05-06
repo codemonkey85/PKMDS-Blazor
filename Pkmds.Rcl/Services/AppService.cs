@@ -490,8 +490,11 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         // fallback, and post-generation fixes. On Failed/Timeout, the outcome still
         // carries the best-effort attempt (with post-generation fixes already applied),
         // so we return it rather than a raw blank — the user can edit it further.
+        // A Species=0 result means even the best-effort fallback didn't catch — return
+        // null so callers (the Showdown import dialog's parse preview, etc.) can show
+        // a clear "conversion failed" state instead of an entry with a blank icon.
         var result = LegalizationService.GenerateFromSetSync(set, sav);
-        return result.Pokemon;
+        return result.Pokemon is { Species: > 0 } pkm ? pkm : null;
     }
 
     public bool TryPlacePokemonInPartySlot(PKM pkm)
