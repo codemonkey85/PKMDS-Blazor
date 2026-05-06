@@ -515,22 +515,15 @@ public partial class MainLayout : IDisposable
         }
 
         Logger.LogInformation("Loading save file: {FileName}", selectedFile.Name);
-        AppService.ClearSelection();
-        ParseSettings.ClearActiveTrainer();
-        AppState.SaveFile = null;
-        AppState.ManicEmuSaveContext = null;
-        AppState.ShowProgressIndicator = true;
 
-        // SaveFileComponent's loading skeleton is gated on ShowProgressIndicator and only
-        // re-renders when OnAppStateChanged fires — without an explicit Refresh, the EventCallback
-        // bubble from the welcome dropzone doesn't reliably reach it before the heavy parse work.
-        // Then yield with Task.Delay(1) so the browser actually paints the skeleton before we
-        // monopolize the WASM thread with file-read + parse + auto-backup. Task.Yield() doesn't
-        // cooperate in WASM (stays on the same JS macrotask).
-        RefreshService.Refresh();
-        await Task.Delay(1);
-
-        var data = Array.Empty<byte>();
+        // Read the file bytes BEFORE flipping ShowProgressIndicator/Refresh. The dropped
+        // IBrowserFile is owned by the welcome state's <InputFile> via Blazor's JS-side
+        // _blazorFilesById map; once Refresh() unmounts the welcome state (because
+        // ShowProgressIndicator hides it in Home.razor), that map entry disappears and any
+        // subsequent OpenReadStream throws "Cannot read properties of null (reading
+        // '_blazorFilesById')". Capturing the bytes first lets us tear the welcome state
+        // down safely and keep the skeleton-paint behaviour for the actual parse work.
+        byte[] data;
         try
         {
             await using var fileStream = browserLoadSaveFile.OpenReadStream(Constants.MaxFileSize);
@@ -538,7 +531,28 @@ public partial class MainLayout : IDisposable
             await fileStream.CopyToAsync(memoryStream);
             data = memoryStream.ToArray();
             Logger.LogDebug("Read {ByteCount} bytes from save file", data.Length);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error reading save file: {FileName}", selectedFile.Name);
+            await DialogService.ShowMessageBoxAsync("Error", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+            return;
+        }
 
+        AppService.ClearSelection();
+        ParseSettings.ClearActiveTrainer();
+        AppState.SaveFile = null;
+        AppState.ManicEmuSaveContext = null;
+        AppState.ShowProgressIndicator = true;
+
+        // Now broadcast the state flip so SaveFileComponent's skeleton paints, then yield via
+        // Task.Delay(1) (Task.Yield doesn't cooperate in WASM — stays on the same JS macrotask)
+        // so the browser actually renders the skeleton before parse + auto-backup pin the thread.
+        RefreshService.Refresh();
+        await Task.Delay(1);
+
+        try
+        {
             // SaveFileLoader checks for a Manic EMU .3ds.sav ZIP (sdmc/… entries) before delegating
             // to SaveUtil.TryGetSaveFile for raw saves. The ordering matters: PKHeX's built-in
             // ZipReader would otherwise recognise the archive by its inner `main` entry and unwrap
