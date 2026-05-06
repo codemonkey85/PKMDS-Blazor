@@ -9,33 +9,45 @@
     <meta content="PKMDS is a free, open-source Pokémon save editor that runs in your browser, powered by PKHeX."
           name="description"/>
     <base href="/"/>
-    <link href="manifest.webmanifest"
-          rel="manifest"/>
-    <link href="_content/MudBlazor/MudBlazor.min.css"
-          rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          rel="stylesheet"/>
-    <link href="_content/Pkmds.Rcl/css/tailwind.css"
-          rel="stylesheet"/>
-    <link href="_content/Pkmds.Rcl/css/app.css"
-          rel="stylesheet"/>
-    <link href="Pkmds.Web.styles.css"
-          rel="stylesheet"/>
-    <link href="_content/Pkmds.Rcl/icon-512.png"
-          rel="apple-touch-icon"
-          sizes="512x512"
-          type="image/png"/>
-    <link href="_content/Pkmds.Rcl/icon-192.png"
-          rel="apple-touch-icon"
-          sizes="192x192"
-          type="image/png"/>
-    <link href="_content/Pkmds.Rcl/icon-32.png"
-          rel="apple-touch-icon"
-          sizes="32x32"
-          type="image/png"/>
-    <link href="_content/Pkmds.Rcl/icon-32.png"
-          rel="icon"
-          type="image/png"/>
+
+    <!-- Theme color (matches new primary) -->
+    <meta name="theme-color" content="#1E40AF" media="(prefers-color-scheme: light)"/>
+    <meta name="theme-color" content="#60A5FA" media="(prefers-color-scheme: dark)"/>
+
+    <!-- PWA manifest -->
+    <link href="manifest.webmanifest" rel="manifest"/>
+
+    <!-- Adaptive SVG favicon (auto-swaps colors with prefers-color-scheme) -->
+    <link rel="icon" type="image/svg+xml" href="_content/Pkmds.Rcl/icon.svg"/>
+    <!-- PNG fallbacks for browsers without SVG favicon support -->
+    <link rel="icon" type="image/png" sizes="32x32" href="_content/Pkmds.Rcl/icon-32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="_content/Pkmds.Rcl/icon-16.png"/>
+
+    <!-- Apple touch (iOS Add to Home Screen) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="_content/Pkmds.Rcl/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="167x167" href="_content/Pkmds.Rcl/apple-touch-icon-167.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="_content/Pkmds.Rcl/apple-touch-icon-152.png"/>
+    <link rel="apple-touch-icon" sizes="120x120" href="_content/Pkmds.Rcl/apple-touch-icon-120.png"/>
+
+    <!-- Safari pinned tab (macOS) -->
+    <link rel="mask-icon" href="_content/Pkmds.Rcl/safari-pinned-tab.svg" color="#1E40AF"/>
+
+    <!-- Windows tiles -->
+    <meta name="msapplication-TileColor" content="#1E40AF"/>
+    <meta name="msapplication-TileImage" content="_content/Pkmds.Rcl/mstile-150x150.png"/>
+    <meta name="msapplication-config" content="browserconfig.xml"/>
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-title" content="PKMDS"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
+    <link href="_content/Pkmds.Rcl/css/tailwind.css" rel="stylesheet"/>
+    <link href="_content/Pkmds.Rcl/css/app.css" rel="stylesheet"/>
+    <link href="Pkmds.Web.styles.css" rel="stylesheet"/>
+
     <script type="importmap"></script>
     <script src="js/theme-init.js"></script>
 </head>
@@ -45,25 +57,34 @@
 <div class="status-bar-safe-area"></div>
 
 <div id="app">
-    <svg class="loading-progress">
-        <circle cx="50%"
-                cy="50%"
-                r="40%"/>
-
-        <circle cx="50%"
-                cy="50%"
-                r="40%"/>
-    </svg>
-
-    <div class="loading-progress-text"></div>
+    <!-- Splash: PKMDS logo + progress ring + wordmark.
+         The .loading-progress SVG keeps the original Blazor progress
+         circles (driven by --blazor-load-percentage), wrapped around
+         the new C6 mark. -->
+    <div class="pkmds-splash">
+        <div class="pkmds-splash__icon">
+            <img class="pkmds-splash__mark"
+                 src="_content/Pkmds.Rcl/icon.svg"
+                 alt="PKMDS logo"
+                 width="128"
+                 height="128"/>
+            <svg class="loading-progress" viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="46"/>
+                <circle cx="50" cy="50" r="46"/>
+            </svg>
+        </div>
+        <div class="pkmds-splash__wordmark" aria-hidden="true">
+            PKM<span>DS</span>
+        </div>
+        <div class="loading-progress-text"></div>
+    </div>
 </div>
 
 <div id="blazor-error-ui">
 
     An unhandled error has occurred.
 
-    <a class="reload"
-       href="">
+    <a class="reload" href="">
         Reload
     </a>
 
