@@ -552,90 +552,189 @@ body, html {
     margin-bottom: 0.5rem;
 }
 
-.loading-progress {
-    position: relative;
-    display: block;
-    width: 8rem;
-    height: 8rem;
-    margin: 20vh auto 1rem auto;
+.pkmds-splash {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    background: #FAFAF9;
+    color: #1C1917;
+    padding: 2rem;
+    z-index: 1000;
 }
 
-.loading-progress circle {
-    fill: none;
-    stroke: #e0e0e0;
-    stroke-width: 0.6rem;
-    transform-origin: 50% 50%;
+.pkmds-splash__icon {
+    position: relative;
+    width: 9rem;
+    height: 9rem;
+    display: grid;
+    place-items: center;
+}
+
+.pkmds-splash__mark {
+    width: 6rem;
+    height: 6rem;
+    display: block;
+}
+
+/* Splash ships paired light/dark logos (icon-light.svg / icon-dark.svg)
+   and shows whichever matches the active theme. theme-init.js sets
+   data-theme on <html> before render; prefers-color-scheme is the
+   no-JS fallback. */
+.pkmds-splash__mark--dark {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .pkmds-splash__mark--light {
+        display: none;
+    }
+
+    .pkmds-splash__mark--dark {
+        display: block;
+    }
+}
+
+[data-theme="light"] .pkmds-splash__mark--light {
+    display: block;
+}
+
+[data-theme="light"] .pkmds-splash__mark--dark {
+    display: none;
+}
+
+[data-theme="dark"] .pkmds-splash__mark--light {
+    display: none;
+}
+
+[data-theme="dark"] .pkmds-splash__mark--dark {
+    display: block;
+}
+
+/* Progress ring wraps the mark — original .loading-progress
+   selector preserved so existing Blazor JS keeps working. */
+.pkmds-splash .loading-progress {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
     transform: rotate(-90deg);
 }
 
-.loading-progress circle:last-child {
-    stroke: #1b6ec2;
-    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
-    transition: stroke-dasharray 0.05s ease-in-out;
+.pkmds-splash .loading-progress circle {
+    fill: none;
+    stroke: #E7E5E4;
+    stroke-width: 4;
+    cx: 50;
+    cy: 50;
+    r: 46;
+}
+
+.pkmds-splash .loading-progress circle:last-child {
+    stroke: #1E40AF;
+    stroke-linecap: round;
+    /* circumference of r=46 is ~289. Stay percentage-based: viewBox is
+       100x100 so 1% resolves to 1 user unit, and 2.89 * percentage
+       produces the correct filled length at every load value.
+       (Mixing percentage * length would invalidate the calc.) */
+    stroke-dasharray: calc(2.89 * var(--blazor-load-percentage, 0%)), 1000%;
+    transition: stroke-dasharray 0.1s ease-in-out;
+}
+
+.pkmds-splash__wordmark {
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 2.25rem;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.pkmds-splash__wordmark span {
+    color: #1E40AF;
 }
 
 .loading-progress-text {
-    position: absolute;
-    text-align: center;
-    font-weight: bold;
-    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-size: 0.8125rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #57534E;
 }
 
 .loading-progress-text:after {
     content: var(--blazor-load-percentage-text, "Loading");
 }
 
-/* System preference — no-JS path, always applied */
+/* System dark — no-JS path */
 @media (prefers-color-scheme: dark) {
-    body {
-        background-color: #27272f;
+    .pkmds-splash {
+        background: #0C0A09;
+        color: #FAFAF9;
     }
 
-    .loading-progress circle {
-        stroke: #424242;
+    .pkmds-splash .loading-progress circle {
+        stroke: #57534E;
     }
 
-    .loading-progress circle:last-child {
-        stroke: #90caf9;
+    .pkmds-splash .loading-progress circle:last-child {
+        stroke: #60A5FA;
+    }
+
+    .pkmds-splash__wordmark span {
+        color: #60A5FA;
     }
 
     .loading-progress-text {
-        color: #ffffff;
+        color: #A8A29E;
     }
 }
 
 /* Explicit dark override (set by inline script / Blazor JS interop) */
-[data-theme="dark"] body {
-    background-color: #27272f;
+[data-theme="dark"] .pkmds-splash {
+    background: #0C0A09;
+    color: #FAFAF9;
 }
 
-[data-theme="dark"] .loading-progress circle {
-    stroke: #424242;
+[data-theme="dark"] .pkmds-splash .loading-progress circle {
+    stroke: #57534E;
 }
 
-[data-theme="dark"] .loading-progress circle:last-child {
-    stroke: #90caf9;
+[data-theme="dark"] .pkmds-splash .loading-progress circle:last-child {
+    stroke: #60A5FA;
+}
+
+[data-theme="dark"] .pkmds-splash__wordmark span {
+    color: #60A5FA;
 }
 
 [data-theme="dark"] .loading-progress-text {
-    color: #ffffff;
+    color: #A8A29E;
 }
 
-/* Explicit light override (beats system dark preference when user chose light) */
-[data-theme="light"] body {
-    background-color: #ffffff;
+/* Explicit light override (beats system dark when user chose light) */
+[data-theme="light"] .pkmds-splash {
+    background: #FAFAF9;
+    color: #1C1917;
 }
 
-[data-theme="light"] .loading-progress circle {
-    stroke: #e0e0e0;
+[data-theme="light"] .pkmds-splash .loading-progress circle {
+    stroke: #E7E5E4;
 }
 
-[data-theme="light"] .loading-progress circle:last-child {
-    stroke: #1b6ec2;
+[data-theme="light"] .pkmds-splash .loading-progress circle:last-child {
+    stroke: #1E40AF;
+}
+
+[data-theme="light"] .pkmds-splash__wordmark span {
+    color: #1E40AF;
 }
 
 [data-theme="light"] .loading-progress-text {
-    color: inherit;
+    color: #57534E;
 }
 
 /* Drag and drop styles */
@@ -753,12 +852,22 @@ body, html {
    indistinguishable from the unselected outlined items. Restore the previous
    button-group behavior: a semi-transparent white fill on the active item, and
    a slight opacity dim on inactive items so the selection stands out clearly. */
+.appbar-theme-toggle .mud-toggle-item {
+    color: var(--mud-palette-appbar-text);
+}
+
 .appbar-theme-toggle .mud-toggle-item:not(.mud-toggle-item-selected) {
-    opacity: 0.6;
+    opacity: 0.7;
+}
+
+.appbar-theme-toggle .mud-toggle-item:not(.mud-toggle-item-selected):hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .appbar-theme-toggle .mud-toggle-item-selected {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.32);
+    opacity: 1;
 }
 
 /* ── Choose Evolution picker — high-contrast selected item ──
