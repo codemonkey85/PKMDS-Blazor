@@ -1,9 +1,11 @@
 :root {
-    /* Captured here so any layout that sizes itself off 100vh/100dvh can subtract
-       the iOS status-bar inset that .mud-appbar adds to the top of the viewport.
-       Without this, calc(100dvh - Xpx) heights overshoot by the inset amount in
-       PWA mode and push their bottom content (e.g. SearchTab action buttons) off
-       screen. Resolves to 0px outside of installed iOS PWAs. */
+    /* Tracks the top safe-area inset that .mud-appbar absorbs so any layout sizing
+       itself off 100vh/100dvh can subtract the same amount. Without this,
+       calc(100dvh - Xpx) heights overshoot by the inset and push their bottom
+       content (e.g. SearchTab action buttons) off screen. The viewport meta sets
+       viewport-fit=cover, so env(safe-area-inset-top) returns the device's actual
+       top inset wherever one exists (notched iPhone Safari, iPad PWA status bar,
+       etc.) and falls back to 0px on browsers/devices without a safe area. */
     --pkmds-safe-area-top: env(safe-area-inset-top, 0px);
 }
 
@@ -236,6 +238,15 @@ body, html {
     overflow-x: hidden;
 }
 
+/* Mystery Gifts grid: cap height so the page doesn't grow taller than the viewport
+   and the action buttons below the grid stay reachable. The Razor template keeps
+   overflow + bottom safe-area padding inline; height lives here so there's a
+   single source of truth. */
+.mystery-gift-grid {
+    max-height: calc(100vh - 340px - var(--pkmds-safe-area-top));
+    max-height: calc(100dvh - 340px - var(--pkmds-safe-area-top));
+}
+
 /* LGPE box grid: short height on narrow viewports (the alert says "the box grid is
    scrollable"), and on xl+ it expands to fill the viewport minus the surrounding
    chrome. Replaces a Tailwind arbitrary-value class so we can subtract the iOS
@@ -398,12 +409,6 @@ body, html {
         flex-shrink: 0;
         padding-top: 8px;
         padding-bottom: 4px;
-    }
-
-    /* Mystery Gifts grid: increase offset to ensure the container fits within the
-       tab panel's overflow:hidden boundary and buttons are never clipped. */
-    .mystery-gift-grid {
-        max-height: calc(100dvh - 380px - var(--pkmds-safe-area-top));
     }
 
     .party-box-grid.mud-grid {
