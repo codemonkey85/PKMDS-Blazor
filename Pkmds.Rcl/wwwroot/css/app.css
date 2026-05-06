@@ -985,3 +985,18 @@ body, html {
 .box-navigation .mud-icon-button {
     touch-action: manipulation;
 }
+
+/* 4. Appbar overflow menu: cap height at viewport-minus-appbar so it only
+      scrolls on short viewports, not on every desktop where the full list
+      fits comfortably. MudMenu's MaxHeight parameter takes a fixed pixel
+      int and adds an inline style + overflow-y-auto regardless of content
+      fit; using PopoverClass with a calc() max-height lets the popover
+      grow to its natural height when there's room, and only scroll when
+      there genuinely isn't.
+
+      The popover is portal-mounted at the body level, so this rule lives in
+      the global stylesheet rather than MainLayout's scoped CSS. */
+.appbar-menu-popover {
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+}
