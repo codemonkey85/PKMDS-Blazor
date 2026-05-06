@@ -209,7 +209,7 @@
                               Hover
                               Bordered
                               FixedHeader
-                              Height="calc(100dvh - 280px)"
+                              Height="calc(100dvh - 280px - var(--pkmds-safe-area-top))"
                               @bind-SelectedItem="@selectedResult"
                               SortLabel="Sort By"
                               OnRowClick="@OnRowClickAsync"

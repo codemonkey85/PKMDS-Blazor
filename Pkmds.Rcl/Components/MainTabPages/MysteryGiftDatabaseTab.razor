@@ -66,7 +66,7 @@
     </MudStack>
 
     <div class="mystery-gift-grid"
-         style="overflow-y: auto; max-height: calc(100dvh - 340px); padding-bottom: env(safe-area-inset-bottom, 0px);">
+         style="overflow-y: auto; max-height: calc(100dvh - 340px - var(--pkmds-safe-area-top)); padding-bottom: env(safe-area-inset-bottom, 0px);">
         <MudGrid Spacing="1">
             @foreach (var mysteryGift in paginatedItems)
             {
