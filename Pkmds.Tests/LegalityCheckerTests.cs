@@ -271,6 +271,7 @@ public class LegalityCheckerTests
         public void ShowUpdateMessage() { }
         public void RequestJumpToPartyBox() { }
         public void RequestLoadSaveFile() { }
+        public void LoadSaveFileFromDrop(IBrowserFile file) { }
 
 #pragma warning disable CS0067
         public event Action? OnAppStateChanged;
@@ -281,6 +282,7 @@ public class LegalityCheckerTests
         public event Action<bool>? OnSystemThemeChanged;
         public event Action? OnRequestJumpToPartyBox;
         public event Action? OnRequestLoadSaveFile;
+        public event Action<IBrowserFile>? OnLoadSaveFileFromDrop;
 #pragma warning restore CS0067
     }
 }

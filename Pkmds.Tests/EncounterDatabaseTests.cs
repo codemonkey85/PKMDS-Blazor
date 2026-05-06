@@ -267,6 +267,10 @@ public class EncounterDatabaseTests
         {
         }
 
+        public void LoadSaveFileFromDrop(IBrowserFile file)
+        {
+        }
+
 #pragma warning disable CS0067
         public event Action? OnAppStateChanged;
         public event Action? OnBoxStateChanged;
@@ -276,6 +280,7 @@ public class EncounterDatabaseTests
         public event Action<bool>? OnSystemThemeChanged;
         public event Action? OnRequestJumpToPartyBox;
         public event Action? OnRequestLoadSaveFile;
+        public event Action<IBrowserFile>? OnLoadSaveFileFromDrop;
 #pragma warning restore CS0067
     }
 }

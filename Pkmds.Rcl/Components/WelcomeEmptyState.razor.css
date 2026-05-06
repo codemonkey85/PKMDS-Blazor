@@ -1,3 +1,13 @@
+::deep .welcome-empty-state__upload {
+    display: block;
+    width: 100%;
+}
+
+::deep .welcome-empty-state__upload .mud-input-control-input-container {
+    position: relative;
+    width: 100%;
+}
+
 .welcome-empty-state {
     display: flex;
     flex-direction: column;
@@ -7,6 +17,14 @@
     padding: 48px 32px;
     text-align: center;
     min-height: 60vh;
+    border-radius: 12px;
+    border: 2px dashed transparent;
+    transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.welcome-empty-state--dragging {
+    border-color: var(--mud-palette-primary);
+    background-color: var(--mud-palette-action-default-hover);
 }
 
 .welcome-empty-state__mark {
@@ -39,4 +57,8 @@
 ::deep .welcome-empty-state__cta {
     padding: 12px 24px;
     border-radius: 10px;
+}
+
+::deep .welcome-empty-state__hint {
+    margin-top: -4px;
 }

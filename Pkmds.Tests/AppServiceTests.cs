@@ -510,6 +510,10 @@ public class AppServiceTests
         {
         }
 
+        public void LoadSaveFileFromDrop(IBrowserFile file)
+        {
+        }
+
 #pragma warning disable CS0067 // Event is never used - these are required by interface but not needed in test mock
         public event Action? OnAppStateChanged;
         public event Action? OnBoxStateChanged;
@@ -519,6 +523,7 @@ public class AppServiceTests
         public event Action<bool>? OnSystemThemeChanged;
         public event Action? OnRequestJumpToPartyBox;
         public event Action? OnRequestLoadSaveFile;
+        public event Action<IBrowserFile>? OnLoadSaveFileFromDrop;
 #pragma warning restore CS0067
     }
 }

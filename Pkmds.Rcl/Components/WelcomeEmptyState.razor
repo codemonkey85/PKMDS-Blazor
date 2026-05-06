@@ -1,27 +1,44 @@
-<div class="welcome-empty-state">
-    <div class="welcome-empty-state__mark">
-        <img src="_content/Pkmds.Rcl/icon.svg"
-             alt="PKMDS logo"
-             width="64"
-             height="64"/>
-    </div>
-    <div class="welcome-empty-state__text">
-        <MudText Typo="@Typo.h5"
-                 Class="welcome-empty-state__heading">
-            Welcome to PKMDS
-        </MudText>
-        <MudText Typo="@Typo.body2"
-                 Color="@Color.Secondary"
-                 Class="welcome-empty-state__subtitle">
-            Load a Pokémon save file to get started. Your file stays in your browser — nothing is uploaded.
-        </MudText>
-    </div>
-    <MudButton Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               Size="@Size.Large"
-               StartIcon="@Icons.Material.Filled.CloudUpload"
-               OnClick="@OnLoadSaveFile"
-               Class="welcome-empty-state__cta">
-        Load Save File
-    </MudButton>
-</div>
+<MudFileUpload T="@IBrowserFile"
+               DragAndDrop="true"
+               Hidden="true"
+               Accept="*/*"
+               MaximumFileCount="1"
+               @bind-Dragging="_isDragging"
+               OnFilesChanged="@OnFilesChanged"
+               Class="welcome-empty-state__upload">
+    <CustomContent>
+        <div class="welcome-empty-state @(_isDragging ? "welcome-empty-state--dragging" : "")"
+             @ondragenter="@OnDragEnter">
+            <div class="welcome-empty-state__mark">
+                <img src="_content/Pkmds.Rcl/icon.svg"
+                     alt="PKMDS logo"
+                     width="64"
+                     height="64"/>
+            </div>
+            <div class="welcome-empty-state__text">
+                <MudText Typo="@Typo.h5"
+                         Class="welcome-empty-state__heading">
+                    Welcome to PKMDS
+                </MudText>
+                <MudText Typo="@Typo.body2"
+                         Color="@Color.Secondary"
+                         Class="welcome-empty-state__subtitle">
+                    Load a Pokémon save file to get started. Your file stays in your browser — nothing is uploaded.
+                </MudText>
+            </div>
+            <MudButton Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       Size="@Size.Large"
+                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                       OnClick="@OnLoadSaveFile"
+                       Class="welcome-empty-state__cta">
+                Load Save File
+            </MudButton>
+            <MudText Typo="@Typo.caption"
+                     Color="@Color.Secondary"
+                     Class="welcome-empty-state__hint">
+                Or drop a save file here
+            </MudText>
+        </div>
+    </CustomContent>
+</MudFileUpload>

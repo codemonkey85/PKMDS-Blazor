@@ -104,6 +104,7 @@ internal class TestRefreshService : IRefreshService
     public void ShowUpdateMessage() { }
     public void RequestJumpToPartyBox() { }
     public void RequestLoadSaveFile() { }
+    public void LoadSaveFileFromDrop(IBrowserFile file) { }
 
 #pragma warning disable CS0067
     public event Action? OnAppStateChanged;
@@ -114,6 +115,7 @@ internal class TestRefreshService : IRefreshService
     public event Action<bool>? OnSystemThemeChanged;
     public event Action? OnRequestJumpToPartyBox;
     public event Action? OnRequestLoadSaveFile;
+    public event Action<IBrowserFile>? OnLoadSaveFileFromDrop;
 #pragma warning restore CS0067
 }
 

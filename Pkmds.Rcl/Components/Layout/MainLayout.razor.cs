@@ -30,6 +30,7 @@ public partial class MainLayout : IDisposable
         RefreshService.OnUpdateAvailable -= ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged -= OnSystemPreferenceChanged;
         RefreshService.OnRequestLoadSaveFile -= HandleRequestLoadSaveFile;
+        RefreshService.OnLoadSaveFileFromDrop -= HandleLoadSaveFileFromDrop;
     }
 
     protected override void OnInitialized()
@@ -38,6 +39,7 @@ public partial class MainLayout : IDisposable
         RefreshService.OnUpdateAvailable += ShowUpdateMessage;
         RefreshService.OnSystemThemeChanged += OnSystemPreferenceChanged;
         RefreshService.OnRequestLoadSaveFile += HandleRequestLoadSaveFile;
+        RefreshService.OnLoadSaveFileFromDrop += HandleLoadSaveFileFromDrop;
     }
 
     private async void HandleRequestLoadSaveFile()
@@ -53,6 +55,21 @@ public partial class MainLayout : IDisposable
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error handling welcome-state Load Save File request");
+        }
+    }
+
+    private async void HandleLoadSaveFileFromDrop(IBrowserFile file)
+    {
+        // Bridge for files dropped onto the welcome empty state — bypass the picker
+        // dialog and feed the IBrowserFile straight into the existing load pipeline.
+        try
+        {
+            browserLoadSaveFile = file;
+            await LoadSaveFile(file);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling dropped save file");
         }
     }
 

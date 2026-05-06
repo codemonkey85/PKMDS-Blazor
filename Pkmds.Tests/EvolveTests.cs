@@ -422,6 +422,7 @@ public class EvolveTests
         public event Action<bool>? OnSystemThemeChanged { add { } remove { } }
         public event Action? OnRequestJumpToPartyBox { add { } remove { } }
         public event Action? OnRequestLoadSaveFile { add { } remove { } }
+        public event Action<IBrowserFile>? OnLoadSaveFileFromDrop { add { } remove { } }
 
         public void Refresh() { }
         public void RefreshBoxState() { }
@@ -432,5 +433,6 @@ public class EvolveTests
         public void ShowUpdateMessage() { }
         public void RequestJumpToPartyBox() { }
         public void RequestLoadSaveFile() { }
+        public void LoadSaveFileFromDrop(IBrowserFile file) { }
     }
 }

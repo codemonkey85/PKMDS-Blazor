@@ -1,4 +1,4 @@
-﻿@inherits BasePkmdsComponent
+@inherits BasePkmdsComponent
 
 <MudDialog>
     <DialogContent>
@@ -9,25 +9,36 @@
         }
         <MudFileUpload T="@IBrowserFile"
                        Accept="*/*"
+                       DragAndDrop="true"
+                       Hidden="true"
+                       @bind-Dragging="isDragging"
                        @bind-Files="browserFile">
             <CustomContent>
-                <MudButton Variant="@Variant.Filled"
-                           Color="@Color.Primary"
-                           StartIcon="@Icons.Material.Filled.CloudUpload"
-                           OnClick="@context.OpenFilePickerAsync">
-                    @Message
-                </MudButton>
+                <div class="file-upload-dialog__drop-zone @(isDragging ? "file-upload-dialog__drop-zone--dragging" : "")"
+                     @ondragenter="@(() => isDragging = true)">
+                    <MudButton Variant="@Variant.Filled"
+                               Color="@Color.Primary"
+                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                               OnClick="@context.OpenFilePickerAsync">
+                        @Message
+                    </MudButton>
+                    <MudText Typo="@Typo.caption"
+                             Color="@Color.Secondary"
+                             Class="mt-2">
+                        Or drag and drop a file here
+                    </MudText>
+                </div>
             </CustomContent>
             <SelectedTemplate>
                 @if (context != null)
                 {
-                    <MudText>
+                    <MudText Class="mt-2">
                         @context.Name
                     </MudText>
                 }
                 else
                 {
-                    <MudText>
+                    <MudText Class="mt-2">
                         No File
                     </MudText>
                 }
