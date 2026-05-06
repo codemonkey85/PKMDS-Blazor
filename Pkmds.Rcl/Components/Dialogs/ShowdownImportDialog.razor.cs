@@ -216,7 +216,11 @@ public partial class ShowdownImportDialog
         var skippedImpossible = 0;
         foreach (var entry in parsedEntries)
         {
-            if (entry.Pokemon is not { } pkm)
+            // Reject blank PKMs (Species == 0). LegalizationService falls back to a
+            // blank when no encounter survives pre-filtering; placing one would silently
+            // succeed (writing a Species=0 entity to an empty slot is a no-op) and the
+            // user would see a green snackbar with no Pokémon imported.
+            if (entry.Pokemon is not { Species: > 0 } pkm)
             {
                 conversionFailed++;
                 continue;
