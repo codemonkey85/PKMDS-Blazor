@@ -298,6 +298,18 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             return false;
         }
 
+        // Clicking an empty slot routes through HandleNullOrEmptyPokemon, which stamps
+        // trainer defaults (OT / ID / Language / Version / MetDate / Ball) onto the edit
+        // form's blank PKM via EntityTemplates.TemplateFields. The on-disk slot is still
+        // fully zeroed, so the byte diff would otherwise report "unsaved changes" the
+        // moment the user clicks away — even though nothing was actually edited.
+        // The user can't have meaningfully edited a Pokémon until they pick a Species,
+        // so treat both-zero as no changes.
+        if (pokemon.Species == 0 && slotPokemon.Species == 0)
+        {
+            return false;
+        }
+
         var editedBytes = new byte[pokemon.SIZE_STORED];
         pokemon.WriteDecryptedDataStored(editedBytes);
 
