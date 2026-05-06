@@ -4,7 +4,7 @@
     @Constants.AppTitle
 </PageTitle>
 
-@if (AppState.SaveFile is null)
+@if (AppState.SaveFile is null && !AppState.ShowProgressIndicator)
 {
     @if (HostService.IsEmbedded)
     {

@@ -14,6 +14,7 @@
                          Color="@Color.Inherit"
                          AnchorOrigin="@Origin.BottomLeft"
                          TransformOrigin="@Origin.TopLeft"
+                         MaxHeight="480"
                          title="Menu">
                     <MudMenuItem Icon="@Icons.Material.Filled.CloudUpload"
                                  OnClick="@ShowLoadSaveFileDialog">
@@ -83,29 +84,9 @@
                     }
                     else
                     {
-                        <MudMenuItem Icon="@(IsUpToDate
-                                                 ? Icons.Material.Filled.CheckCircle
-                                                 : IsUpdateCheckFailed
-                                                     ? Icons.Material.Filled.ErrorOutline
-                                                     : Icons.Material.Filled.Refresh)"
-                                     OnClick="@CheckForUpdates"
-                                     Disabled="@IsCheckingForUpdates">
-                            @if (IsCheckingForUpdates)
-                            {
-                                @:Checking…
-                            }
-                            else if (IsUpToDate)
-                            {
-                                @:Up to date!
-                            }
-                            else if (IsUpdateCheckFailed)
-                            {
-                                @:Check failed — try reloading
-                            }
-                            else
-                            {
-                                @:Check for updates
-                            }
+                        <MudMenuItem Icon="@Icons.Material.Filled.Refresh"
+                                     OnClick="@CheckForUpdates">
+                            Check for updates
                         </MudMenuItem>
                     }
                     <MudMenuItem Icon="@Icons.Material.Filled.BugReport"

@@ -20,9 +20,6 @@ public partial class MainLayout : IDisposable
     private ISettingsService SettingsService { get; set; } = null!;
 
     private bool IsUpdateAvailable { get; set; }
-    private bool IsCheckingForUpdates { get; set; }
-    private bool IsUpToDate { get; set; }
-    private bool IsUpdateCheckFailed { get; set; }
 
     public void Dispose()
     {
@@ -76,39 +73,49 @@ public partial class MainLayout : IDisposable
     private void ShowUpdateMessage()
     {
         IsUpdateAvailable = true;
-        IsUpToDate = false;
+        Snackbar.Add(
+            "An update is available.",
+            Severity.Info,
+            options =>
+            {
+                options.RequireInteraction = true;
+                options.Action = "Reload";
+                options.ActionColor = Color.Inherit;
+                options.OnClick = async _ => await ReloadApp();
+            });
         StateHasChanged();
     }
 
     private async Task CheckForUpdates()
     {
-        IsCheckingForUpdates = true;
-        IsUpToDate = false;
-        IsUpdateCheckFailed = false;
-        StateHasChanged();
+        // The menu closes on click, so the four-way inline status used to be invisible
+        // anyway. Show a persistent "checking" snackbar that's dismissed when the result
+        // arrives, then a result snackbar — and let ShowUpdateMessage handle the
+        // "update found" path via the service worker's 'updateAvailable' event.
+        var checkingSnackbar = Snackbar.Add(
+            "Checking for updates…",
+            Severity.Info,
+            options => options.RequireInteraction = true);
 
         var result = await JSRuntime.InvokeAsync<string>("checkForUpdates");
 
-        IsCheckingForUpdates = false;
+        if (checkingSnackbar is not null)
+        {
+            Snackbar.Remove(checkingSnackbar);
+        }
+
         switch (result)
         {
             case "none":
-                IsUpToDate = true;
-                StateHasChanged();
-                await Task.Delay(3000);
-                IsUpToDate = false;
+                Snackbar.Add("You're up to date.", Severity.Success);
                 break;
             case "error":
             case "no-sw":
-                IsUpdateCheckFailed = true;
-                StateHasChanged();
-                await Task.Delay(4000);
-                IsUpdateCheckFailed = false;
+                Snackbar.Add("Update check failed — try reloading.", Severity.Error);
                 break;
-                // "found": JS already dispatched 'updateAvailable' → ShowUpdateMessage() sets IsUpdateAvailable = true
+                // "found": JS already dispatched 'updateAvailable' → ShowUpdateMessage()
+                // shows the click-to-reload snackbar and flips IsUpdateAvailable.
         }
-
-        StateHasChanged();
     }
 
     private async Task ReloadApp() =>
