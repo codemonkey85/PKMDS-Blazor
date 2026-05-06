@@ -420,6 +420,11 @@ public partial class MainLayout : IDisposable
         AppState.SaveFile = null;
         AppState.ShowProgressIndicator = true;
 
+        // See LoadSaveFile for the rationale: broadcast the state change so the skeleton's
+        // host re-renders, then yield via Task.Delay(1) so the browser paints before parse work.
+        RefreshService.Refresh();
+        await Task.Delay(1);
+
         try
         {
             var data = restore.SaveBytes;
@@ -515,6 +520,15 @@ public partial class MainLayout : IDisposable
         AppState.SaveFile = null;
         AppState.ManicEmuSaveContext = null;
         AppState.ShowProgressIndicator = true;
+
+        // SaveFileComponent's loading skeleton is gated on ShowProgressIndicator and only
+        // re-renders when OnAppStateChanged fires — without an explicit Refresh, the EventCallback
+        // bubble from the welcome dropzone doesn't reliably reach it before the heavy parse work.
+        // Then yield with Task.Delay(1) so the browser actually paints the skeleton before we
+        // monopolize the WASM thread with file-read + parse + auto-backup. Task.Yield() doesn't
+        // cooperate in WASM (stays on the same JS macrotask).
+        RefreshService.Refresh();
+        await Task.Delay(1);
 
         var data = Array.Empty<byte>();
         try
