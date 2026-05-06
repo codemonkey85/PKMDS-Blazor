@@ -121,11 +121,6 @@ public partial class MainLayout : IDisposable
         {
             var result = await JSRuntime.InvokeAsync<string>("checkForUpdates");
 
-            if (checkingSnackbar is not null)
-            {
-                Snackbar.Remove(checkingSnackbar);
-            }
-
             switch (result)
             {
                 case "none":
@@ -139,8 +134,22 @@ public partial class MainLayout : IDisposable
                     // shows the click-to-reload snackbar and flips IsUpdateAvailable.
             }
         }
+        catch (Exception ex)
+        {
+            // If the JS bridge throws (missing/overridden checkForUpdates, transient WASM
+            // interop failure), the "Checking…" snackbar would otherwise stay stuck because
+            // its removal lives in finally. Surface a failure toast so the menu action has
+            // a visible terminal state in every path.
+            Logger.LogWarning(ex, "Update check failed");
+            Snackbar.Add("Update check failed — try reloading.", Severity.Error);
+        }
         finally
         {
+            if (checkingSnackbar is not null)
+            {
+                Snackbar.Remove(checkingSnackbar);
+            }
+
             IsCheckingForUpdates = false;
             StateHasChanged();
         }
