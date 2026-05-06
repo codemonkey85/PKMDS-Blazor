@@ -85,8 +85,11 @@
                     else
                     {
                         <MudMenuItem Icon="@Icons.Material.Filled.Refresh"
-                                     OnClick="@CheckForUpdates">
-                            Check for updates
+                                     OnClick="@CheckForUpdates"
+                                     Disabled="@IsCheckingForUpdates">
+                            @(IsCheckingForUpdates
+                                ? "Checking…"
+                                : "Check for updates")
                         </MudMenuItem>
                     }
                     <MudMenuItem Icon="@Icons.Material.Filled.BugReport"

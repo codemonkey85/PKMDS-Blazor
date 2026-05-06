@@ -3,7 +3,6 @@ namespace Pkmds.Rcl.Components;
 public partial class FileUploadDialog
 {
     private IBrowserFile? browserFile;
-    private bool isDragging;
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = null!;

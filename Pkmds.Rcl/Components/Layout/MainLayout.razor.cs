@@ -20,6 +20,7 @@ public partial class MainLayout : IDisposable
     private ISettingsService SettingsService { get; set; } = null!;
 
     private bool IsUpdateAvailable { get; set; }
+    private bool IsCheckingForUpdates { get; set; }
 
     public void Dispose()
     {
@@ -72,6 +73,17 @@ public partial class MainLayout : IDisposable
 
     private void ShowUpdateMessage()
     {
+        // Both registration.update() and the SW lifecycle's own controllerchange/
+        // statechange wiring can dispatch the 'updateAvailable' window event for
+        // the same actual update, which would otherwise stack two identical
+        // snackbars on top of each other. Guard so the "update available" toast
+        // is only added once per session, and rely on the persistent snackbar
+        // (or the menu item swap) to keep the affordance available.
+        if (IsUpdateAvailable)
+        {
+            return;
+        }
+
         IsUpdateAvailable = true;
         Snackbar.Add(
             "An update is available.",
@@ -88,33 +100,49 @@ public partial class MainLayout : IDisposable
 
     private async Task CheckForUpdates()
     {
+        if (IsCheckingForUpdates)
+        {
+            return;
+        }
+
         // The menu closes on click, so the four-way inline status used to be invisible
         // anyway. Show a persistent "checking" snackbar that's dismissed when the result
         // arrives, then a result snackbar — and let ShowUpdateMessage handle the
         // "update found" path via the service worker's 'updateAvailable' event.
+        IsCheckingForUpdates = true;
+        StateHasChanged();
+
         var checkingSnackbar = Snackbar.Add(
             "Checking for updates…",
             Severity.Info,
             options => options.RequireInteraction = true);
 
-        var result = await JSRuntime.InvokeAsync<string>("checkForUpdates");
-
-        if (checkingSnackbar is not null)
+        try
         {
-            Snackbar.Remove(checkingSnackbar);
+            var result = await JSRuntime.InvokeAsync<string>("checkForUpdates");
+
+            if (checkingSnackbar is not null)
+            {
+                Snackbar.Remove(checkingSnackbar);
+            }
+
+            switch (result)
+            {
+                case "none":
+                    Snackbar.Add("You're up to date.", Severity.Success);
+                    break;
+                case "error":
+                case "no-sw":
+                    Snackbar.Add("Update check failed — try reloading.", Severity.Error);
+                    break;
+                    // "found": JS already dispatched 'updateAvailable' → ShowUpdateMessage()
+                    // shows the click-to-reload snackbar and flips IsUpdateAvailable.
+            }
         }
-
-        switch (result)
+        finally
         {
-            case "none":
-                Snackbar.Add("You're up to date.", Severity.Success);
-                break;
-            case "error":
-            case "no-sw":
-                Snackbar.Add("Update check failed — try reloading.", Severity.Error);
-                break;
-                // "found": JS already dispatched 'updateAvailable' → ShowUpdateMessage()
-                // shows the click-to-reload snackbar and flips IsUpdateAvailable.
+            IsCheckingForUpdates = false;
+            StateHasChanged();
         }
     }
 
