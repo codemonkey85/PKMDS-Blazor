@@ -78,6 +78,15 @@ else
             <MudTabPanel Text="Records">
                 <RecordsTab SaveFile="@sav3"/>
             </MudTabPanel>
+
+            @if (saveFile is SAV3RS or SAV3E)
+            {
+                <MudTabPanel Text="RTC">
+                    <div class="mt-3">
+                        <RtcTab SaveFile="@sav3"/>
+                    </div>
+                </MudTabPanel>
+            }
         }
 
         @if (saveFile is SAV3RS or SAV3E or SAV4Sinnoh or SAV8BS)
