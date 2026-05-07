@@ -1,0 +1,143 @@
+@inherits RefreshAwareComponent
+
+@if (saveBlock is null)
+{
+    <MudAlert Severity="@Severity.Info"
+              Variant="@Variant.Outlined">
+        The RTC editor is only available for Ruby/Sapphire and Emerald saves.
+    </MudAlert>
+}
+else
+{
+    <MudStack Spacing="3">
+        <MudText Typo="@Typo.h5">
+            Real Time Clock
+        </MudText>
+
+        <MudAlert Severity="@Severity.Warning"
+                  Variant="@Variant.Outlined"
+                  Icon="@Icons.Material.Filled.Warning">
+            Editing the RTC changes time-based events in-game (berry growth, Shoal Cave tides, Mirage Island).
+            Save a backup from the <strong>Backups</strong> menu before applying changes.
+        </MudAlert>
+
+        <MudPaper Class="pa-4"
+                  Outlined>
+            <MudStack Spacing="2">
+                <MudText Typo="@Typo.h6">Initial Clock</MudText>
+                <MudText Typo="@Typo.body2"
+                         Color="@Color.Tertiary">
+                    The clock value when the in-game time was first set.
+                </MudText>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <MudNumericField Label="Days"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="0"
+                                         Max="@MaxDays"
+                                         @bind-Value="@initialDay"/>
+                    </div>
+                    <div class="form-field">
+                        <MudNumericField Label="Hours"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="0"
+                                         Max="@MaxHours"
+                                         @bind-Value="@initialHour"/>
+                    </div>
+                    <div class="form-field">
+                        <MudNumericField Label="Minutes"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="@Constants.MinMinutes"
+                                         Max="@Constants.MaxMinutes"
+                                         @bind-Value="@initialMinute"/>
+                    </div>
+                    <div class="form-field">
+                        <MudNumericField Label="Seconds"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="@Constants.MinSeconds"
+                                         Max="@Constants.MaxSeconds"
+                                         @bind-Value="@initialSecond"/>
+                    </div>
+                </div>
+            </MudStack>
+        </MudPaper>
+
+        <MudPaper Class="pa-4"
+                  Outlined>
+            <MudStack Spacing="2">
+                <MudText Typo="@Typo.h6">Elapsed Clock</MudText>
+                <MudText Typo="@Typo.body2"
+                         Color="@Color.Tertiary">
+                    Time elapsed since the initial clock was set. Advance this past 734 days
+                    (≈ 2 years) to clear the Emerald berry-program glitch after a battery replacement.
+                </MudText>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <MudNumericField Label="Days"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="0"
+                                         Max="@MaxDays"
+                                         @bind-Value="@elapsedDay"/>
+                    </div>
+                    <div class="form-field">
+                        <MudNumericField Label="Hours"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="0"
+                                         Max="@MaxHours"
+                                         @bind-Value="@elapsedHour"/>
+                    </div>
+                    <div class="form-field">
+                        <MudNumericField Label="Minutes"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="@Constants.MinMinutes"
+                                         Max="@Constants.MaxMinutes"
+                                         @bind-Value="@elapsedMinute"/>
+                    </div>
+                    <div class="form-field">
+                        <MudNumericField Label="Seconds"
+                                         T="@int"
+                                         Variant="@Variant.Outlined"
+                                         Min="@Constants.MinSeconds"
+                                         Max="@Constants.MaxSeconds"
+                                         @bind-Value="@elapsedSecond"/>
+                    </div>
+                </div>
+            </MudStack>
+        </MudPaper>
+
+        <MudStack Row
+                  Spacing="2"
+                  Wrap="@Wrap.Wrap">
+            <MudButton OnClick="@Apply"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Save">
+                Apply
+            </MudButton>
+            <MudButton OnClick="@Revert"
+                       Variant="@Variant.Outlined"
+                       StartIcon="@Icons.Material.Filled.Undo">
+                Revert
+            </MudButton>
+            <MudButton OnClick="@ResetClocks"
+                       Variant="@Variant.Outlined"
+                       Color="@Color.Warning"
+                       StartIcon="@Icons.Material.Filled.RestartAlt">
+                Reset to zero
+            </MudButton>
+            <MudButton OnClick="@BerryFix"
+                       Variant="@Variant.Outlined"
+                       Color="@Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.HealthAndSafety">
+                Berry-glitch fix
+            </MudButton>
+        </MudStack>
+    </MudStack>
+}
