@@ -98,6 +98,20 @@ public partial class TrainerInfoTab : IDisposable
             : [];
     }
 
+    private void OnSav5CountryChanged(SAV5 sav5)
+    {
+        // The previous sub-region value is almost certainly invalid for the new country's
+        // list; mirror the OtMiscTab.SetRegionOriginCountry pattern and zero it.
+        sav5.Region = 0;
+        UpdateCountry();
+    }
+
+    private void OnRegionOriginCountryChanged(IRegionOrigin regionSave)
+    {
+        regionSave.Region = 0;
+        UpdateCountry();
+    }
+
     private void UpdateCountry()
     {
         if (AppState.SaveFile is not { Generation: { } saveGeneration } saveFile)
@@ -471,7 +485,9 @@ public partial class TrainerInfoTab : IDisposable
                     "Poké Miles",
                     (uint)sav6.GetRecord(63),
                     v => sav6.SetRecord(63, (int)v),
-                    uint.MaxValue);
+                    // PKHeX's record store is int-typed. Cap the UI at int.MaxValue so the
+                    // cast in the setter can't overflow into a negative value.
+                    (uint)int.MaxValue);
                 break;
 
             case SAV7 sav7:

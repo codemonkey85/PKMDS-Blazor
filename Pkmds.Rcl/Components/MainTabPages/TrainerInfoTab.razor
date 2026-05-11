@@ -150,7 +150,7 @@
                 <MudSelect Label="Country"
                            Variant="@Variant.Outlined"
                            @bind-Value="@sav5Geo.Country"
-                           @bind-Value:after="@UpdateCountry"
+                           @bind-Value:after="@(() => OnSav5CountryChanged(sav5Geo))"
                            For="@(() => sav5Geo.Country)">
                     @foreach (var country in Countries.OrderBy(c => c.Text))
                     {
@@ -184,7 +184,7 @@
                            Variant="@Variant.Outlined"
                            T="@byte"
                            @bind-Value="@regionSave.Country"
-                           @bind-Value:after="@UpdateCountry"
+                           @bind-Value:after="@(() => OnRegionOriginCountryChanged(regionSave))"
                            For="@(() => regionSave.Country)">
                     @foreach (var country in Countries.OrderBy(c => c.Text))
                     {
