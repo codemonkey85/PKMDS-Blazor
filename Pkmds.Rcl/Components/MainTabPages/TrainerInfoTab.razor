@@ -431,6 +431,19 @@
             </div>
         }
 
+        @foreach (var currency in GetExtraCurrencies(saveFile))
+        {
+            <div class="form-field" @key="@currency.Label">
+                <MudNumericField Label="@currency.Label"
+                                 T="@uint"
+                                 Variant="@Variant.Outlined"
+                                 Min="@((uint)0)"
+                                 Max="@currency.Max"
+                                 Value="@currency.Value"
+                                 ValueChanged="@currency.Set"/>
+            </div>
+        }
+
         @if (saveFile is SAV3FRLG sav3FrLgTrainerCard)
         {
             @for (var i = 0; i < 6; i++)

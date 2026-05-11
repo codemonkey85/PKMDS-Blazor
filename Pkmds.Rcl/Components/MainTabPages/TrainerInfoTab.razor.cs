@@ -405,6 +405,136 @@ public partial class TrainerInfoTab : IDisposable
         }
     }
 
+    private sealed record CurrencyDescriptor(string Label, uint Value, Action<uint> Set, uint Max);
+
+    private static IEnumerable<CurrencyDescriptor> GetExtraCurrencies(SaveFile saveFile)
+    {
+        switch (saveFile)
+        {
+            case SAV4HGSS hgss:
+                yield return new CurrencyDescriptor(
+                    "Pokéathlon Points",
+                    hgss.PokeathlonPoints,
+                    v => hgss.PokeathlonPoints = v,
+                    uint.MaxValue);
+                break;
+
+            case SAV5 sav5:
+                yield return new CurrencyDescriptor(
+                    "Battle Subway BP",
+                    (uint)sav5.BattleSubway.BP,
+                    v => sav5.BattleSubway.BP = (int)v,
+                    9999);
+                break;
+
+            case SAV6 sav6:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    (uint)sav6.BP,
+                    v => sav6.BP = (int)v,
+                    9999);
+                yield return new CurrencyDescriptor(
+                    "Poké Miles",
+                    (uint)sav6.GetRecord(63),
+                    v => sav6.SetRecord(63, (int)v),
+                    uint.MaxValue);
+                break;
+
+            case SAV7 sav7:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    sav7.Misc.BP,
+                    v => sav7.Misc.BP = v,
+                    9999);
+                yield return new CurrencyDescriptor(
+                    "Festival Coins",
+                    (uint)sav7.Festa.FestaCoins,
+                    // Setter mirrors to TotalFestaCoins via SAV.GetRecord(038) + value; never bypass.
+                    v => sav7.Festa.FestaCoins = (int)v,
+                    9_999_999);
+                break;
+
+            case SAV8SWSH swsh:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    (uint)swsh.Misc.BP,
+                    v => swsh.Misc.BP = (int)v,
+                    9999);
+                yield return new CurrencyDescriptor(
+                    "Watt",
+                    swsh.MyStatus.Watt,
+                    v =>
+                    {
+                        swsh.MyStatus.Watt = v;
+                        // Mirror to the WattTotal record so legality stays clean (mirrors SAV_Trainer8.cs).
+                        if (swsh.GetRecord(Record8.WattTotal) < (int)v)
+                        {
+                            swsh.SetRecord(Record8.WattTotal, (int)v);
+                        }
+                    },
+                    9_999_999);
+                break;
+
+            case SAV8BS bs:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    bs.BattleTower.BP,
+                    v => bs.BattleTower.BP = v,
+                    uint.MaxValue);
+                break;
+
+            case SAV8LA la:
+                yield return new CurrencyDescriptor(
+                    "Merit Points",
+                    la.Blocks.GetBlockValue<uint>(SaveBlockAccessor8LA.KMeritCurrent),
+                    v => la.Blocks.SetBlockValue(SaveBlockAccessor8LA.KMeritCurrent, v),
+                    uint.MaxValue);
+                yield return new CurrencyDescriptor(
+                    "Merit Earned (Total)",
+                    la.Blocks.GetBlockValue<uint>(SaveBlockAccessor8LA.KMeritEarnedTotal),
+                    v => la.Blocks.SetBlockValue(SaveBlockAccessor8LA.KMeritEarnedTotal, v),
+                    uint.MaxValue);
+                break;
+
+            case SAV9SV sv:
+                yield return new CurrencyDescriptor(
+                    "League Points",
+                    sv.LeaguePoints,
+                    v => sv.LeaguePoints = v,
+                    uint.MaxValue);
+                if (sv.SaveRevision >= 2)
+                {
+                    yield return new CurrencyDescriptor(
+                        "Blueberry Points",
+                        sv.BlueberryPoints,
+                        v => sv.BlueberryPoints = v,
+                        uint.MaxValue);
+                }
+                break;
+
+            case SAV9ZA za:
+                yield return new CurrencyDescriptor(
+                    "Royale Points",
+                    za.TicketPointsRoyale,
+                    v => za.TicketPointsRoyale = v,
+                    310_000);
+                yield return new CurrencyDescriptor(
+                    "Royale Points (Infinite)",
+                    za.TicketPointsRoyaleInfinite,
+                    v => za.TicketPointsRoyaleInfinite = v,
+                    50_000);
+                if (za.SaveRevision != 0)
+                {
+                    yield return new CurrencyDescriptor(
+                        "Hyperspace Survey Points",
+                        za.Blocks.GetBlockValue<uint>(SaveBlockAccessor9ZA.KHyperspaceSurveyPoints),
+                        v => za.Blocks.SetBlockValue(SaveBlockAccessor9ZA.KHyperspaceSurveyPoints, v),
+                        100_000);
+                }
+                break;
+        }
+    }
+
     private uint GetCoins() => AppState.SaveFile switch
     {
         SAV1 sav => sav.Coin,
