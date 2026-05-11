@@ -366,6 +366,45 @@ public partial class TrainerInfoTab : IDisposable
         saveFile.PlayedSeconds = 0;
     }
 
+    private static string? ValidateHexString(string value, int expectedLength)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "Required";
+        }
+
+        if (value.Length != expectedLength)
+        {
+            return $"Must be exactly {expectedLength} characters";
+        }
+
+        return value.All(IsHexChar) ? null : "Hex digits only (0-9, A-F)";
+    }
+
+    private static bool IsHexChar(char c) =>
+        (c is >= '0' and <= '9') ||
+        (c is >= 'a' and <= 'f') ||
+        (c is >= 'A' and <= 'F');
+
+    private static void SetGameSyncId(IGameSync sync, string value)
+    {
+        // PKHeX's setter throws ArgumentOutOfRangeException on length mismatch and
+        // silently accepts non-hex chars (treating them as 0). Guard both before
+        // committing so partial input stays in the textbox without corrupting the save.
+        if (value.Length == sync.GameSyncIDSize && value.All(IsHexChar))
+        {
+            sync.GameSyncID = value;
+        }
+    }
+
+    private static void SetNexUniqueId(MyStatus7 status, string value)
+    {
+        if (value.Length == MyStatus7.NexUniqueIDSize && value.All(IsHexChar))
+        {
+            status.NexUniqueID = value;
+        }
+    }
+
     private uint GetCoins() => AppState.SaveFile switch
     {
         SAV1 sav => sav.Coin,

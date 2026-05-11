@@ -227,6 +227,46 @@
             </div>
         }
 
+        @if (saveFile is SAV5 sav5GameSync)
+        {
+            <div class="form-field">
+                <MudNumericField Label="Game Sync ID"
+                                 T="@uint"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 @bind-Value="@sav5GameSync.PlayerData.GameSyncID"
+                                 For="@(() => sav5GameSync.PlayerData.GameSyncID)"/>
+            </div>
+        }
+
+        @if (saveFile is IGameSync gameSync)
+        {
+            <div class="form-field">
+                <MudTextField Label="Game Sync ID"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@gameSync.GameSyncIDSize"
+                              Placeholder="@($"{gameSync.GameSyncIDSize}-char hex")"
+                              @bind-Value:get="@gameSync.GameSyncID"
+                              @bind-Value:set="@(value => SetGameSyncId(gameSync, value))"
+                              Validation="@(new Func<string, string?>(v => ValidateHexString(v, gameSync.GameSyncIDSize)))"
+                              For="@(() => gameSync.GameSyncID)"/>
+            </div>
+        }
+
+        @if (saveFile is SAV7 sav7Nex)
+        {
+            <div class="form-field">
+                <MudTextField Label="Nex Unique ID"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@MyStatus7.NexUniqueIDSize"
+                              Placeholder="@($"{MyStatus7.NexUniqueIDSize}-char hex")"
+                              @bind-Value:get="@sav7Nex.MyStatus.NexUniqueID"
+                              @bind-Value:set="@(value => SetNexUniqueId(sav7Nex.MyStatus, value))"
+                              Validation="@(new Func<string, string?>(v => ValidateHexString(v, MyStatus7.NexUniqueIDSize)))"
+                              For="@(() => sav7Nex.MyStatus.NexUniqueID)"/>
+            </div>
+        }
+
         <div class="form-field playtime-group">
             <div class="playtime-header">
                 <span class="playtime-label">Playtime</span>
