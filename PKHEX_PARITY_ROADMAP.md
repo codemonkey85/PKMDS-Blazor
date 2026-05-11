@@ -2,7 +2,7 @@
 
 This roadmap outlines the path to achieving 100% feature parity with PKHeX. Tasks are broken down into actionable items organized by feature category and priority.
 
-**Last Updated:** 2026-04-14 (Auto-Legality Mod Phase 1 implemented — §5.1, tracks #344; Legalize button on Legality tab; "Legalize All in Box" toolbar action scoped to Illegal-only entries — tracks #693; Batch legalize from Legality Report tab with cancel, per-Pokémon timeout, and in-place report updates — tracks #690; Showdown import now delegates to legalization engine — tracks #691; Mystery Gift event properties preserved during legalization — tracks #695; Original details (OT, met data, ribbons) preserved when legalizing existing PKM — tracks #705; Tri-state legality indicators with per-state visibility toggles + Fishy reasons in Legality Report; MudToggleGroup filter UI on Legality Report; Gen 2 trade evolutions handled with beauty/item conditions — tracks #688. Earlier — Teams Tab implemented — §1.4, tracks #661; Showdown / PokePaste import implemented — §4.2, tracks #656; Backup management system implemented — §4.2/§5.5; Save file info viewer + repair tool implemented — §5.5; Display party stats implemented — tracks #658; In-app browser detection + warning implemented — §4.1, tracks #663; Non-exportable save detection implemented — tracks #675/#679; Save File Utilities §5.5 partially complete — backup manager, info viewer, repair tool, and encryption status done; remaining tasks tracked in #657. Earlier — Pokémon Bank implemented — §2.1b, tracks #330; One-Touch Evolve implemented — §1.1, tracks #448; Gen-Specific editor tab implemented — §1.1 #419; Box pop-out dialogs implemented — §6.2, tracks #352; Pokédex per-species grid + LA research editor implemented — §2.5, tracks #414/#437/#438/#439; Fix Load Pokémon/Gift File slot behaviour implemented — §4.1, tracks #445; Trash bytes auto-fixer added to legality tab — tracks #542; Spinda spot preview implemented — tracks #554; Manic EMU `.3ds.sav` ZIP round-trip support added — tracks #537; §6.6 Settings & Preferences mostly complete — `AppSettingsDialog` covers UI, trainer defaults, and auto-backup; settings import/export + reset remain. §7.2a Bag virtualization corrected — virtualization was reverted (commit 48ce4f15) and remains blocked on MudBlazor/MudBlazor#12799; Info popovers for moves/items/abilities/balls added — §4.1, tracks #579)
+**Last Updated:** 2026-05-11 (Gen 3 RTC editor implemented — §3.8, closes #865; Wonder Card in-app viewer + Gen 3 WC3 import — §3.8, closes #811; Feebas tile locator/seed editor (Gen 3 RSE + Gen 4 DPPt/BDSP) — §3.7/§3.8, closes #815; Pokémon Bank import of `.pk*`/`.zip` + export as `.pk*`/ZIP — §2.1b, closes #780/#779; Legalization change report on legalise — §5.1, closes #833; HaX retry path for failed Showdown imports + blank-PKM guard — §5.1, closes #859/#858; Showdown import trash bytes seeding for Gen 8+/7b — closes #860; Cross-save trade phases 1–4 implemented (phase 3 multi-select still open #712) — §5.8; Advanced Search type/origin/flags/ribbons/marks filters — §2.4, closes #737; All dropdowns → type-to-filter autocomplete; Trainer customization phases 1–5 (trainer card, currency editors, game sync ID, Gen 6 sayings, game start/HoF time, Game Corner Joyful records, language dropdown hidden for Gen 3 ILangDeviantSave saves, Gen 4 HGSS NSparkle flag) — §6.1, tracks #361/#870; PKHeX.Core updated to 26.5.5, closes #851; Mobile full-screen dialogs — closes #740; Embedded host mode (iOS WKWebView) — closes #787/#799; Drag-and-drop to open saves; New app layout (left app bar replaces side drawer); New branding (logo, adaptive favicon, icon set); Theme palette switcher (preview); Import warnings for illegal Pokémon snackbar; Smarter legalization fallback handling; Gen 4 badge toggling fixed; iOS PWA status-bar/safe-area fixes; Dark mode slot borders. Earlier — Auto-Legality Mod Phase 1 implemented — §5.1, tracks #344; Legalize button on Legality tab; "Legalize All in Box" toolbar action scoped to Illegal-only entries — tracks #693; Batch legalize from Legality Report tab with cancel, per-Pokémon timeout, and in-place report updates — tracks #690; Showdown import now delegates to legalization engine — tracks #691; Mystery Gift event properties preserved during legalization — tracks #695; Original details (OT, met data, ribbons) preserved when legalizing existing PKM — tracks #705; Tri-state legality indicators with per-state visibility toggles + Fishy reasons in Legality Report; MudToggleGroup filter UI on Legality Report; Gen 2 trade evolutions handled with beauty/item conditions — tracks #688. Earlier — Teams Tab implemented — §1.4, tracks #661; Showdown / PokePaste import implemented — §4.2, tracks #656; Backup management system implemented — §4.2/§5.5; Save file info viewer + repair tool implemented — §5.5; Display party stats implemented — tracks #658; In-app browser detection + warning implemented — §4.1, tracks #663; Non-exportable save detection implemented — tracks #675/#679; Save File Utilities §5.5 partially complete — backup manager, info viewer, repair tool, and encryption status done; remaining tasks tracked in #657. Earlier — Pokémon Bank implemented — §2.1b, tracks #330; One-Touch Evolve implemented — §1.1, tracks #448; Gen-Specific editor tab implemented — §1.1 #419; Box pop-out dialogs implemented — §6.2, tracks #352; Pokédex per-species grid + LA research editor implemented — §2.5, tracks #414/#437/#438/#439; Fix Load Pokémon/Gift File slot behaviour implemented — §4.1, tracks #445; Trash bytes auto-fixer added to legality tab — tracks #542; Spinda spot preview implemented — tracks #554; Manic EMU `.3ds.sav` ZIP round-trip support added — tracks #537; §6.6 Settings & Preferences mostly complete — `AppSettingsDialog` covers UI, trainer defaults, and auto-backup; settings import/export + reset remain. §7.2a Bag virtualization corrected — virtualization was reverted (commit 48ce4f15) and remains blocked on MudBlazor/MudBlazor#12799; Info popovers for moves/items/abilities/balls added — §4.1, tracks #579)
 
 ---
 
@@ -54,8 +54,20 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - **In-App Browser Detection** — Detects when the app is loaded inside an in-app browser (Telegram, WhatsApp, WeChat, Instagram, Facebook, etc.) and shows a warning so users open the site in a real browser where File System Access works
 - **Display Party Stats** — Party slots show current HP and status condition, with stat-recalculation skipped for PB7 entities that already have party stats persisted
 - **Auto-Legality Engine (Phase 1)** — `ILegalizationService` / `LegalizationService` wraps PKHeX.Core's encounter/criteria pipeline to generate legal PKM from a template or Showdown set; supports Gen 3–5 Method-1 PID↔IV correlation via `ClassicEraRNG`, Gen 8 SwSh overworld PID/IV, Gen 8b BDSP, and Gen 9 Tera raids; preserves original OT/met/ribbon details when legalizing an existing PKM and preserves event properties when legalizing a Mystery Gift
-- **Legalize Actions** — "Legalize" button on the Legality tab; **"Legalize All in Box"** toolbar action (scoped to Illegal-only entries, disabled when the box is empty); **batch legalize from the Legality Report tab** with a cancel button, per-Pokémon timeout, and in-place report entry updates; Showdown / PokePaste import now routes through the legalization engine instead of ad-hoc fix-ups
+- **Legalize Actions** — "Legalize" button on the Legality tab; **"Legalize All in Box"** toolbar action (scoped to Illegal-only entries, disabled when the box is empty); **batch legalize from the Legality Report tab** with a cancel button, per-Pokémon timeout, and in-place report entry updates; Showdown / PokePaste import now routes through the legalization engine instead of ad-hoc fix-ups; **HaX retry path** for Showdown imports that fail the first pass; **blank-PKM guard** prevents importing empty Pokémon when legalization fails entirely; **legalization change report** shows exactly what was modified when a Pokémon is legalized
 - **Tri-State Legality Indicators** — Legality Report tab shows Legal / Fishy / Illegal with independent visibility toggles (MudToggleGroup); Fishy reasons surface in the "First issue" column; visually marks the active filter
+- **Gen 3 RTC Editor** — view and adjust the Real-Time Clock for Ruby, Sapphire, and Emerald saves; supports battery-dead clock repair (#865)
+- **Feebas Tile Locator** — finds which Route 119 (Gen 3) / Mt. Coronet (Gen 4/BDSP) water tiles contain Feebas for the save's RNG seed; includes a Feebas seed editor (#815)
+- **Wonder Card In-App Viewer** — browse Wonder Cards / Mystery Gifts stored in the save file without leaving the app; Gen 3 `.wc3` import supported (#811)
+- **Cross-Save Pokémon Transfer** — load two saves in a single session; transfer Pokémon between them via drag-and-drop with compatibility checks; held items returned to source bag on transfer; phases 1–4 done (move-mode multi-select #712 still open)
+- **Pokémon Bank Import/Export** — import `.pk*` and `.zip` (containing `.pk*`) files directly into the Bank; export individual or multi-selected Pokémon as `.pk*` files or a ZIP (#780/#779)
+- **Embedded Host Mode** — PKMDS can run embedded inside a native iOS/iPadOS WKWebView host (#787/#799)
+- **Trainer Customization (Phases 1–5)** — expanded Trainer tab with per-gen currency editors (money, coins, BP, Poké Miles, Watts, Festival Coins, Roto Tokens, League Points); Game Sync ID (Gen 5/6/7/7b); Gen 8 SwSh Trainer Card dialog (card name, card number, trainer ID, Roto Rally score); Gen 6 Sayings dialog (read-only view); game start and Hall of Fame timestamps; Gen 3 Game Corner Joyful Records; Gen 4 HGSS NSparkle flag; language dropdown hidden for `ILangDeviantSave` saves (Gen 1–3, Stadium) (#361, #870)
+- **Drag-and-Drop Save Open** — drop save files onto the welcome screen or load dialog to open immediately
+- **New App Layout** — left app bar menu replaces the side drawer; welcoming empty state on no-save
+- **New Branding** — fresh logo, adaptive favicon, and full icon set
+- **Theme Palette Switcher** — segmented-control palette switcher in the app bar (preview)
+- **Import Warning Snackbar** — notifies when imported Pokémon are illegal after a Showdown import
 
 ---
 
@@ -362,6 +374,8 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [x] Invalid record cleanup — corrupt/unparseable IndexedDB entries auto-deleted on load
 
 **Remaining:**
+- [x] Import `.pk*` and `.zip` (containing `.pk*`) files directly into the Bank (#780)
+- [x] Export individual or multi-selected Pokémon from Bank as `.pk*` files or a ZIP (#779)
 - [ ] Create advanced search filters (#645): species/forms, moves, abilities, ribbons, stats/IVs, ball type, OT/TID, generation/origin, source save
 - [ ] Add folder/tag organization system (#646)
 - [ ] Support drag-and-drop from database to save (#647)
@@ -427,6 +441,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [x] Support batch operations on search results (Showdown text copy)
 - [x] Add search export functionality (Showdown clipboard export)
 - [x] **Info popovers on filter fields and result rows (#579)** — ball/ability/held item filter fields show item sprites and description popovers; result rows show ball and held item sprites; explicit "Jump to Pokémon" button per row replaces implicit row-click navigation
+- [x] **Extended filters (#737)** — type filter, origin game, flags (shiny, egg, nicknamed, etc.), ribbons, marks; all dropdowns converted to type-to-filter autocomplete inputs
 
 ### 2.5 Pokédex Editor
 **Tracks:** #414, #654
@@ -637,6 +652,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 
 ### 3.2 Generation 8.5 (BDSP)
 **Tasks:**
+- [x] **Feebas tile locator** (BDSP — Mt. Coronet B1F) — finds Feebas tiles for the save's RNG seed; includes Feebas seed editor — closes #815
 - [ ] Underground editor (SAV_Underground8b)
 - [ ] Poffin editor (SAV_Poffin8b)
 - [ ] Ball Capsule/Seal Stickers editor (SAV_SealStickers8b)
@@ -732,6 +748,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 
 ### 3.7 Generation 4 (Diamond/Pearl/Platinum, HGSS)
 **Tasks:**
+- [x] **Feebas tile locator** (DPPt — Mt. Coronet B1F) — finds Feebas tiles for the save's RNG seed; includes Feebas seed editor — closes #815
 - [ ] Pokéwalker editor (SAV_Pokéwalker4)
   - [ ] Route unlocks
   - [ ] Steps counter
@@ -751,14 +768,15 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 
 ### 3.8 Generation 3 (Ruby/Sapphire/Emerald, FR/LG, Colosseum/XD)
 **Tasks:**
-- [ ] **WC3 Wonder Card import** (`IGen3Wonder`: write `WonderCard3` from `.wc3` file to save's wonder card slot; Emerald and FR/LG only) — see #423
+- [x] **WC3 Wonder Card import** (`IGen3Wonder`: write `WonderCard3` from `.wc3` file to save's wonder card slot; Emerald and FR/LG only) — closes #811
+- [x] **RTC (Real Time Clock) editor** (`SAV_RTC3`) — view/adjust in-game time; supports battery-dead clock repair — closes #865
+- [x] **Feebas tile locator** (Gen 3 RSE) — finds Feebas tiles on Route 119 for the save's RNG seed; includes Feebas seed editor — closes #815
 - [ ] Secret Base editor (SAV_SecretBase3)
   - [ ] Location
   - [ ] Decorations
   - [ ] Registry
 - [ ] Berry Master/Berry trees
 - [ ] Roamer Pokemon editor (SAV_Roamer3)
-- [ ] RTC (Real Time Clock) editor (SAV_RTC3)
 - [ ] Misc editor (SAV_Misc3)
 - [ ] PokeBlock Case editor (PokeBlock3CaseEditor)
 - [ ] Battle Frontier symbols
@@ -817,10 +835,11 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [x] **Showdown text import** — `ShowdownImportDialog` parses Showdown text into legal PKM and delegates generation to the Auto-Legality engine (see §5.1), with HOME tracker / Scale fix-ups and overwrite-party confirmation flow (closes #656 and #691; partial coverage of #61)
 - [x] **PokePaste import / export** — `PokePasteExportDialog` exports the current party as a PokePaste paste; PokePaste URLs can be imported directly via the same Showdown import flow
 - [x] **Backup management system** — `BackupService` (browser IndexedDB) + `BackupManagerDialog` for client-side save backups with retention enforcement, restore, and per-entry delete; backup restore is guarded against non-exportable saves (closes the §5.5 backup manager task as well)
-- [ ] Add bulk Pokemon import from .pk* files (drag-and-drop)
-- [ ] Support .pk* file drag-and-drop
+- [x] Add bulk Pokémon import from .pk* files and .zip — via Bank import (#780)
+- [x] Support .pk* file drag-and-drop — drop onto editor places in selected slot; drop onto Bank imports
+- [x] Add Gen 3 `.wc3` Wonder Card file import — closes #811
 - [ ] Support Battle Video Pokemon extraction
-- [ ] Add .wc* (Wonder Card) file import
+- [ ] Add .wc* Wonder Card import for other generations
 - [ ] Implement save file conversion between formats
 - [ ] Add CSV export for Pokemon data
 - [ ] Support JSON export/import
@@ -917,6 +936,10 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 - [x] **Batch legalize from Legality Report tab** — cancel button, per-Pokémon timeout, skips save-file adapt-on-import when writing legalized PKMs, updates report entries in place; prefers Legal over Fishy outcomes; prioritises Illegal over Fishy when choosing candidates (#690)
 - [x] **Preserve original details when legalizing an existing PKM** — OT, met data, and ribbons are retained where compatible (#705)
 - [x] **Preserve Mystery Gift event properties during legalization** (#695)
+- [x] **HaX retry path** — when a Showdown import fails legalization, automatically retries with HaX constraints relaxed (#859)
+- [x] **Blank-PKM guard** — prevents importing empty Pokémon when legalization fails entirely (#858)
+- [x] **Showdown import trash bytes seeding** — seeds expected nickname/OT trash bytes for Gen 8+/Gen 7b after legalization (#860)
+- [x] **Legalization change report** — after legalizing a Pokémon, shows exactly which fields were changed (#833)
 - [ ] Create legal move set generator (Phase 2 follow-ups)
 - [ ] Implement legal ribbon/memory assignment (Phase 2 follow-ups)
 - [x] Add smart PID/EC generation (covered by ClassicEraRNG path above; extended RNG sources remain)
@@ -1066,39 +1089,45 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 - Tera type STAB (SV)
 
 ### 5.8 Cross-Save Pokémon Transfer
-**Status:** ❌ Not Implemented
+**Status:** ⚠️ Partial (phases 1–4 implemented — #710/#711/#713; move-mode multi-select + mobile layout #712 still open)
 **Complexity:** High
 **Priority:** Medium
-**Tracks:** #14
-**Note:** Browser sandboxing prevents the PKHeX model (two separate windows). PKMDS will instead support loading two save files within a single session.
+**Tracks:** #14, #710, #711, #712, #713
+**Note:** Browser sandboxing prevents the PKHeX model (two separate windows). PKMDS instead loads two save files within a single session.
 
 **Overview:** Allow a second save file to be loaded into memory alongside the primary save. A transfer UI lets the user move or copy Pokémon between the two saves. The secondary save's file can be written back to disk independently.
 
 **PKHeX Reference:** The PKHeX WinForms app supports opening a second save via `File > Open` in the `SAV_BoxViewer` context, allowing drag-and-drop between the two windows. PKMDS adapts this into a split-pane or dialog-based transfer UI within a single browser session.
 
 **Tasks:**
-- [ ] Extend `IAppState` with `SaveFile? SecondaryFile` and corresponding DI plumbing
-- [ ] Add "Open Second Save" button/menu item; loads a file into `SecondaryFile` without replacing `PrimaryFile`
-- [ ] Build `CrossSaveTransferDialog` (or a dedicated split-pane view) showing both saves' boxes side by side
-- [ ] Implement click-to-copy and/or drag-and-drop of Pokémon from secondary → primary (and bidirectionally)
-- [ ] Block transfers that PKHeX.Core would reject due to format incompatibility; surface a user-friendly error
-- [ ] Add "Save Secondary File" action to write the modified secondary save back to disk
-- [ ] Clear `SecondaryFile` on explicit close or when primary file is replaced
-- [ ] Write unit tests for the transfer logic (slot swap correctness, format-incompatibility guard)
+- [x] Extend `IAppState` with `SaveFile? SecondaryFile` and corresponding DI plumbing — #710
+- [x] Add "Open Second Save" button/menu item; loads a file into `SecondaryFile` without replacing `PrimaryFile` — #710
+- [x] Build `CrossSaveTransferDialog` showing both saves' boxes side by side — #710
+- [x] Implement drag-and-drop of Pokémon between saves with compatibility checks; held items returned to source bag on transfer — #711
+- [x] Block transfers that PKHeX.Core would reject due to format incompatibility; surface user-friendly error — #711
+- [x] Add "Save Secondary File" action to write the modified secondary save back to disk — #713
+- [x] Clear `SecondaryFile` on explicit close or when primary file is replaced — #710
+- [ ] Move-mode multi-select + mobile layout — #712
 
 ---
 
 ## Priority 6: Minor Features & Polishing
 
 ### 6.1 Trainer Customization Enhancements
-**Tracks:** #41
+**Status:** ⚠️ Partial (phases 1–5 implemented — #361, #870; trainer appearance/avatar editor remains — #873)
+**Tracks:** #41, #361
 **Tasks:**
-- [ ] Add trainer appearance/avatar editor
-- [ ] Implement trainer card customization
-- [ ] Add money/BP/currency editors for all types
-- [ ] Create playtime editor
-- [ ] Add language selection
-- [ ] Implement game sync ID editor
+- [ ] Add trainer appearance/avatar editor — #873
+- [x] Implement trainer card customization — Gen 8 SwSh `TrainerCardDialog` (card name, card number 0–999, trainer ID, Roto Rally score)
+- [x] Add money/BP/currency editors for all types — per-gen currency editors: Gen 3 (money, coins, BP), Gen 4 (money, coins, BP, Watts HGSS), Gen 5 (money, coins, BP), Gen 6 (money, coins, BP, Poké Miles), Gen 7 (money, coins, BP, Festival Coins), Gen 7b (money, coins, BP), Gen 8 SwSh (money, coins, BP, Watts, Roto Tokens), Gen 8 BDSP (money, coins, BP), Gen 8 LA (money, Poké Miles), Gen 9 (money, coins, BP, League Points)
+- [x] Create playtime editor — hours/minutes/seconds numeric fields with reset button
+- [x] Add language selection — shown for Gen 4+ saves; hidden for `ILangDeviantSave` saves (Gen 1–3 R/S/E/FR/LG, Stadium)
+- [x] Implement game sync ID editor — Gen 5/6/7/7b with copy-to-clipboard
+- [x] Game start timestamp editor — `DateTimeLocal` picker for Gen 4–8 LA; date-only for SwSh/SV; time portion correctly persisted
+- [x] Hall of Fame timestamp editor — Gen 4–7
+- [x] Gen 6 Trainer Card Sayings viewer — read-only display (free-form text is view-only to avoid abuse vectors)
+- [x] Gen 3 Game Corner Joyful Records editor — closes #870
+- [x] Gen 4 HGSS NSparkle (National Park Sparkle) flag
 - [ ] Add trainer memo/notes
 
 ### 6.2 Box Viewer Enhancements
