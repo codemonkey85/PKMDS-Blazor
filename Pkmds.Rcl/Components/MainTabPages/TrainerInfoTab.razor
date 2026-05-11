@@ -372,6 +372,30 @@
             </div>
         }
 
+        @if (saveFile is SAV6 sav6Sayings)
+        {
+            <div class="form-field">
+                <MudButton Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Edit"
+                           OnClick="@(() => OpenSayingsDialog(sav6Sayings))">
+                    Edit Trainer Card Sayings…
+                </MudButton>
+            </div>
+        }
+
+        @if (saveFile is SAV8SWSH sav8Card)
+        {
+            <div class="form-field">
+                <MudButton Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Edit"
+                           OnClick="@(() => OpenTrainerCardDialog(sav8Card))">
+                    Edit Trainer Card…
+                </MudButton>
+            </div>
+        }
+
         @if (saveFile is SAV1 sav1Rival)
         {
             <div class="form-field">

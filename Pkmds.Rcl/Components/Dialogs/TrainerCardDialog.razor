@@ -1,0 +1,50 @@
+@inherits BasePkmdsComponent
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="@Typo.h6">Trainer Card</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (Save is { } saveFile)
+        {
+            <MudTextField Label="Trainer Card Name"
+                          Variant="@Variant.Outlined"
+                          MaxLength="@saveFile.MaxStringLengthTrainer"
+                          @bind-Value="@cardOt"
+                          Class="mb-3"
+                          HelperText="@($"Separate from the save OT ({saveFile.OT}). Defaults to it.")"/>
+
+            <MudTextField Label="Card Number"
+                          Variant="@Variant.Outlined"
+                          MaxLength="3"
+                          @bind-Value="@cardNumber"
+                          Class="mb-3"
+                          HelperText="Three ASCII characters. Also written to MyStatus.Number for in-game consistency."/>
+
+            <MudNumericField Label="Trainer ID (League Card)"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             Max="@int.MaxValue"
+                             @bind-Value="@trainerId"
+                             Class="mb-3"
+                             HelperText="Six-digit display ID on the League Card. Independent of the save's TID/SID."/>
+
+            <MudNumericField Label="Roto Rally Score"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             Max="@TrainerCard8.RotoRallyScoreMax"
+                             @bind-Value="@rotoRallyScore"
+                             HelperText="@($"Max {TrainerCard8.RotoRallyScoreMax:N0}. Setter mirrors to the Roto Rally record block.")"/>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Default">Cancel</MudButton>
+        <MudButton OnClick="@Confirm"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Primary">Confirm</MudButton>
+    </DialogActions>
+</MudDialog>

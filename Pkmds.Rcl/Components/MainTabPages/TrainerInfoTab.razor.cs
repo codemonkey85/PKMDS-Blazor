@@ -408,6 +408,37 @@ public partial class TrainerInfoTab : IDisposable
         }
     }
 
+    private async Task OpenSayingsDialog(SAV6 sav6)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(SayingsDialog.Status), sav6.Status },
+            { nameof(SayingsDialog.XyNickname), sav6 is SAV6XY xy ? xy.Status : null },
+        };
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
+        var dialog = await DialogService.ShowAsync<SayingsDialog>("Trainer Card Sayings", parameters, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenTrainerCardDialog(SAV8SWSH sav8)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(TrainerCardDialog.Save), sav8 },
+        };
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
+        var dialog = await DialogService.ShowAsync<TrainerCardDialog>("Trainer Card", parameters, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            StateHasChanged();
+        }
+    }
+
     private sealed record CurrencyDescriptor(string Label, uint Value, Action<uint> Set, uint Max);
 
     private static IEnumerable<CurrencyDescriptor> GetExtraCurrencies(SaveFile saveFile)
