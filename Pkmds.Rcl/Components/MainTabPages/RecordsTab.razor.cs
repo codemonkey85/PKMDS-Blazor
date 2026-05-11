@@ -2,6 +2,12 @@ namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class RecordsTab
 {
+    // Trainer-card star thresholds (Pokémon Jump / Dodrio Berry Picking) require 200 points;
+    // PKHeX caps the underlying field at 99,990. See ISaveBlock3SmallExpansion.
+    private const uint JoyfulScoreMax = 99_990;
+    private const ushort JoyfulCounterMax = 9_999;
+    private const uint BerryPowderMax = 99_999;
+
     [Parameter]
     [EditorRequired]
     public SAV3? SaveFile { get; set; }
@@ -17,6 +23,8 @@ public partial class RecordsTab
     private byte HallOfFameMinutes { get; set; }
 
     private byte HallOfFameSeconds { get; set; }
+
+    private ISaveBlock3SmallExpansion? JoyfulBlock { get; set; }
 
     private bool HallOfFameIndexSelected => (SaveFile, CurrentRecordIndex) switch
     {
@@ -36,11 +44,69 @@ public partial class RecordsTab
     {
         if (SaveFile is null)
         {
+            JoyfulBlock = null;
             return;
         }
 
         RecordComboItems = Record3.GetItems(SaveFile);
+        JoyfulBlock = SaveFile.SmallBlock as ISaveBlock3SmallExpansion;
         GetRecord();
+    }
+
+    private uint JoyfulJumpScore
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulJumpScore ?? 0U;
+        set => JoyfulBlock?.JoyfulJumpScore = Math.Min(JoyfulScoreMax, value);
+    }
+
+    private ushort JoyfulJumpInRow
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulJumpInRow ?? 0;
+        set => JoyfulBlock?.JoyfulJumpInRow = Math.Min(JoyfulCounterMax, value);
+    }
+
+    private ushort JoyfulJump5InRow
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulJump5InRow ?? 0;
+        set => JoyfulBlock?.JoyfulJump5InRow = Math.Min(JoyfulCounterMax, value);
+    }
+
+    private ushort JoyfulJumpGamesMaxPlayers
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulJumpGamesMaxPlayers ?? 0;
+        set => JoyfulBlock?.JoyfulJumpGamesMaxPlayers = Math.Min(JoyfulCounterMax, value);
+    }
+
+    private uint JoyfulBerriesScore
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulBerriesScore ?? 0U;
+        set => JoyfulBlock?.JoyfulBerriesScore = Math.Min(JoyfulScoreMax, value);
+    }
+
+    private ushort JoyfulBerriesInRow
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulBerriesInRow ?? 0;
+        set => JoyfulBlock?.JoyfulBerriesInRow = Math.Min(JoyfulCounterMax, value);
+    }
+
+    private ushort JoyfulBerries5InRow
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulBerries5InRow ?? 0;
+        set => JoyfulBlock?.JoyfulBerries5InRow = Math.Min(JoyfulCounterMax, value);
+    }
+
+    private uint BerryPowder
+    {
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.BerryPowder ?? 0U;
+        set => JoyfulBlock?.BerryPowder = Math.Min(BerryPowderMax, value);
     }
 
     private void GetRecord()
