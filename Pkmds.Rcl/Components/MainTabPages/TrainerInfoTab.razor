@@ -93,6 +93,24 @@
             </div>
         }
 
+        @if (Languages.Count > 0)
+        {
+            <div class="form-field">
+                <MudSelect Label="Language"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@saveFile.Language"
+                           For="@(() => saveFile.Language)">
+                    @foreach (var language in Languages)
+                    {
+                        <MudSelectItem Value="@language.Value"
+                                       @key="@language.Value">
+                            @language.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        }
+
         @if (saveFile is SAV4 sav4Geo)
         {
             <div class="form-field">
