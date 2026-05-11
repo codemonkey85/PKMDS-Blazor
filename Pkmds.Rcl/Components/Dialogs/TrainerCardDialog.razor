@@ -14,12 +14,14 @@
                           Class="mb-3"
                           HelperText="@($"Separate from the save OT ({saveFile.OT}). Defaults to it.")"/>
 
-            <MudTextField Label="Card Number"
-                          Variant="@Variant.Outlined"
-                          MaxLength="3"
-                          @bind-Value="@cardNumber"
-                          Class="mb-3"
-                          HelperText="Three ASCII characters. Also written to MyStatus.Number for in-game consistency."/>
+            <MudNumericField Label="Card Number"
+                             T="@int"
+                             Variant="@Variant.Outlined"
+                             Min="0"
+                             Max="999"
+                             @bind-Value="@cardNumber"
+                             Class="mb-3"
+                             HelperText="Three-digit number (000–999). Also written to MyStatus.Number for in-game consistency."/>
 
             <MudNumericField Label="Trainer ID (League Card)"
                              T="@int"

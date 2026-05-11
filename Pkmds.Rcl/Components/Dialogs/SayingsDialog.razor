@@ -11,7 +11,7 @@
             {
                 <MudTextField Label="Trainer Card Nickname"
                               Variant="@Variant.Outlined"
-                              MaxLength="@NicknameMaxChars"
+                              ReadOnly="true"
                               @bind-Value="@nickname"
                               Class="mb-3"/>
             }
@@ -21,9 +21,8 @@
                 var index = i;
                 <MudTextField Label="@($"Saying {index + 1}")"
                               Variant="@Variant.Outlined"
-                              MaxLength="@SayingMaxChars"
+                              ReadOnly="true"
                               Value="@sayings[index]"
-                              ValueChanged="@(v => sayings[index] = v)"
                               T="@string"
                               Class="mb-2"/>
             }
@@ -32,9 +31,6 @@
     <DialogActions>
         <MudButton OnClick="@Cancel"
                    Variant="@Variant.Filled"
-                   Color="@Color.Default">Cancel</MudButton>
-        <MudButton OnClick="@Confirm"
-                   Variant="@Variant.Filled"
-                   Color="@Color.Primary">Confirm</MudButton>
+                   Color="@Color.Default">Close</MudButton>
     </DialogActions>
 </MudDialog>

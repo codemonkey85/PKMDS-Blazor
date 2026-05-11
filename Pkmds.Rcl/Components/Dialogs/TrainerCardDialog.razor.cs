@@ -3,7 +3,7 @@ namespace Pkmds.Rcl.Components.Dialogs;
 public partial class TrainerCardDialog
 {
     private string cardOt = string.Empty;
-    private string cardNumber = string.Empty;
+    private int cardNumber;
     private int trainerId;
     private int rotoRallyScore;
 
@@ -23,7 +23,7 @@ public partial class TrainerCardDialog
 
         var card = Save.Blocks.TrainerCard;
         cardOt = card.OT;
-        cardNumber = card.Number;
+        cardNumber = int.TryParse(card.Number, out var n) ? n : 0;
         trainerId = card.TrainerID;
         rotoRallyScore = card.RotoRallyScore;
     }
@@ -44,8 +44,9 @@ public partial class TrainerCardDialog
 
         // PKHeX writes Number to both MyStatus and TrainerCard to keep them in sync —
         // mismatch leaves the in-game card displaying a different number than the trainer.
-        Save.Blocks.MyStatus.Number = cardNumber;
-        card.Number = cardNumber;
+        var cardNumberStr = cardNumber.ToString("D3");
+        Save.Blocks.MyStatus.Number = cardNumberStr;
+        card.Number = cardNumberStr;
 
         card.TrainerID = trainerId;
         // Setter auto-mirrors to the KRotoRally record block.
