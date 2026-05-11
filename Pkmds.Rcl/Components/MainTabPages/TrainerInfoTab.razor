@@ -227,34 +227,40 @@
             </div>
         }
 
-        <div class="form-field">
-            <MudNumericField Label="Hours"
-                             T="@int"
-                             Variant="@Variant.Outlined"
-                             Min="0"
-                             Max="@ushort.MaxValue"
-                             @bind-Value="@saveFile.PlayedHours"
-                             For="@(() => saveFile.PlayedHours)"/>
-        </div>
-
-        <div class="form-field">
-            <MudNumericField Label="Minutes"
-                             T="@int"
-                             Variant="@Variant.Outlined"
-                             Min="0"
-                             Max="59"
-                             @bind-Value="@saveFile.PlayedMinutes"
-                             For="@(() => saveFile.PlayedMinutes)"/>
-        </div>
-
-        <div class="form-field">
-            <MudNumericField Label="Seconds"
-                             T="@int"
-                             Variant="@Variant.Outlined"
-                             Min="0"
-                             Max="59"
-                             @bind-Value="@saveFile.PlayedSeconds"
-                             For="@(() => saveFile.PlayedSeconds)"/>
+        <div class="form-field playtime-group">
+            <div class="playtime-header">
+                <span class="playtime-label">Playtime</span>
+                <span class="playtime-readout">@FormatPlaytime(saveFile)</span>
+                <MudTooltip Text="Reset to 0:00:00">
+                    <MudIconButton Icon="@Icons.Material.Filled.RestartAlt"
+                                   Size="@Size.Small"
+                                   OnClick="@(() => ResetPlaytime(saveFile))"
+                                   aria-label="Reset playtime"/>
+                </MudTooltip>
+            </div>
+            <div class="playtime-inputs">
+                <MudNumericField Label="Hours"
+                                 T="@int"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="@ushort.MaxValue"
+                                 @bind-Value="@saveFile.PlayedHours"
+                                 For="@(() => saveFile.PlayedHours)"/>
+                <MudNumericField Label="Minutes"
+                                 T="@int"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="59"
+                                 @bind-Value="@saveFile.PlayedMinutes"
+                                 For="@(() => saveFile.PlayedMinutes)"/>
+                <MudNumericField Label="Seconds"
+                                 T="@int"
+                                 Variant="@Variant.Outlined"
+                                 Min="0"
+                                 Max="59"
+                                 @bind-Value="@saveFile.PlayedSeconds"
+                                 For="@(() => saveFile.PlayedSeconds)"/>
+            </div>
         </div>
 
         @if (saveGeneration >= 4)

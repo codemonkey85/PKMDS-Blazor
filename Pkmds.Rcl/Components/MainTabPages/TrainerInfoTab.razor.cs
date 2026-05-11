@@ -356,6 +356,16 @@ public partial class TrainerInfoTab : IDisposable
         // Gen 3 does not store OT gender on the PKM, so skip the gender check for those.
         (pkm.Format <= 3 || pkm.OriginalTrainerGender == gender);
 
+    private static string FormatPlaytime(SaveFile saveFile) =>
+        $"{saveFile.PlayedHours}:{saveFile.PlayedMinutes:D2}:{saveFile.PlayedSeconds:D2}";
+
+    private static void ResetPlaytime(SaveFile saveFile)
+    {
+        saveFile.PlayedHours = 0;
+        saveFile.PlayedMinutes = 0;
+        saveFile.PlayedSeconds = 0;
+    }
+
     private uint GetCoins() => AppState.SaveFile switch
     {
         SAV1 sav => sav.Coin,
