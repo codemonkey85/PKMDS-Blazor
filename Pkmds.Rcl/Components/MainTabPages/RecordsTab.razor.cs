@@ -55,98 +55,58 @@ public partial class RecordsTab
 
     private uint JoyfulJumpScore
     {
+        // ReSharper disable once UnusedMember.Local
         get => JoyfulBlock?.JoyfulJumpScore ?? 0U;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.JoyfulJumpScore = Math.Min(JoyfulScoreMax, value);
-            }
-        }
+        set => JoyfulBlock?.JoyfulJumpScore = Math.Min(JoyfulScoreMax, value);
     }
 
     private ushort JoyfulJumpInRow
     {
-        get => JoyfulBlock?.JoyfulJumpInRow ?? (ushort)0;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.JoyfulJumpInRow = Math.Min(JoyfulCounterMax, value);
-            }
-        }
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulJumpInRow ?? 0;
+        set => JoyfulBlock?.JoyfulJumpInRow = Math.Min(JoyfulCounterMax, value);
     }
 
     private ushort JoyfulJump5InRow
     {
-        get => JoyfulBlock?.JoyfulJump5InRow ?? (ushort)0;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.JoyfulJump5InRow = Math.Min(JoyfulCounterMax, value);
-            }
-        }
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulJump5InRow ?? 0;
+        set => JoyfulBlock?.JoyfulJump5InRow = Math.Min(JoyfulCounterMax, value);
     }
 
     private ushort JoyfulJumpGamesMaxPlayers
     {
-        get => JoyfulBlock?.JoyfulJumpGamesMaxPlayers ?? (ushort)0;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.JoyfulJumpGamesMaxPlayers = Math.Min(JoyfulCounterMax, value);
-            }
-        }
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulJumpGamesMaxPlayers ?? 0;
+        set => JoyfulBlock?.JoyfulJumpGamesMaxPlayers = Math.Min(JoyfulCounterMax, value);
     }
 
     private uint JoyfulBerriesScore
     {
+        // ReSharper disable once UnusedMember.Local
         get => JoyfulBlock?.JoyfulBerriesScore ?? 0U;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.JoyfulBerriesScore = Math.Min(JoyfulScoreMax, value);
-            }
-        }
+        set => JoyfulBlock?.JoyfulBerriesScore = Math.Min(JoyfulScoreMax, value);
     }
 
     private ushort JoyfulBerriesInRow
     {
-        get => JoyfulBlock?.JoyfulBerriesInRow ?? (ushort)0;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.JoyfulBerriesInRow = Math.Min(JoyfulCounterMax, value);
-            }
-        }
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulBerriesInRow ?? 0;
+        set => JoyfulBlock?.JoyfulBerriesInRow = Math.Min(JoyfulCounterMax, value);
     }
 
     private ushort JoyfulBerries5InRow
     {
-        get => JoyfulBlock?.JoyfulBerries5InRow ?? (ushort)0;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.JoyfulBerries5InRow = Math.Min(JoyfulCounterMax, value);
-            }
-        }
+        // ReSharper disable once UnusedMember.Local
+        get => JoyfulBlock?.JoyfulBerries5InRow ?? 0;
+        set => JoyfulBlock?.JoyfulBerries5InRow = Math.Min(JoyfulCounterMax, value);
     }
 
     private uint BerryPowder
     {
+        // ReSharper disable once UnusedMember.Local
         get => JoyfulBlock?.BerryPowder ?? 0U;
-        set
-        {
-            if (JoyfulBlock is not null)
-            {
-                JoyfulBlock.BerryPowder = Math.Min(BerryPowderMax, value);
-            }
-        }
+        set => JoyfulBlock?.BerryPowder = Math.Min(BerryPowderMax, value);
     }
 
     private void GetRecord()
