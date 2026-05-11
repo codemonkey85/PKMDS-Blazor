@@ -15,15 +15,7 @@ public partial class TrainerInfoTab : IDisposable
         }
     }
 
-    private TimeSpan? GameStartedTime
-    {
-        get;
-        set
-        {
-            field = value;
-            UpdateGameStarted();
-        }
-    }
+
 
     private DateTime? HallOfFameDate
     {
@@ -47,13 +39,20 @@ public partial class TrainerInfoTab : IDisposable
 
     private InputDateType GameStartType => AppState.SaveFile switch
     {
-        SAV4 or SAV5 or SAV6 or SAV7 or SAV8SWSH or SAV8BS or SAV8LA => InputDateType.DateTimeLocal,
+        // SwSh stores the adventure-start as Year/Month/Day on the Trainer Card
+        // with no time component, so use a date-only picker.
+        SAV8SWSH => InputDateType.Date,
+        SAV4 or SAV5 or SAV6 or SAV7 or SAV8BS or SAV8LA => InputDateType.DateTimeLocal,
         _ => InputDateType.Date
     };
 
     private List<ComboItem> Countries { get; set; } = [];
 
     private List<ComboItem> Regions { get; set; } = [];
+
+    private List<ComboItem> ConsoleRegions { get; set; } = [];
+
+    private List<ComboItem> Languages { get; set; } = [];
 
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= StateHasChanged;
@@ -64,10 +63,10 @@ public partial class TrainerInfoTab : IDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        (GameStartedDate, GameStartedTime) = GetGameStarted();
+        GameStartedDate = GetGameStarted();
         (HallOfFameDate, HallOfFameTime) = GetHallOfFame();
 
-        if (AppState.SaveFile is not { Generation: { } saveGeneration })
+        if (AppState.SaveFile is not { Generation: { } saveGeneration } saveFile)
         {
             return;
         }
@@ -80,6 +79,28 @@ public partial class TrainerInfoTab : IDisposable
         };
 
         Countries = Util.GetCountryRegionList(countriesName, GameInfo.CurrentLanguage);
+        UpdateCountry();
+
+        ConsoleRegions = saveFile is IRegionOrigin
+            ? [..GameInfo.FilteredSources.ConsoleRegions]
+            : [];
+
+        Languages = saveFile is not ILangDeviantSave && saveGeneration >= 3 && saveFile.Language >= 0
+            ? [..GameInfo.LanguageDataSource(saveGeneration, saveFile.Context)]
+            : [];
+    }
+
+    private void OnSav5CountryChanged(SAV5 sav5)
+    {
+        // The previous sub-region value is almost certainly invalid for the new country's
+        // list; mirror the OtMiscTab.SetRegionOriginCountry pattern and zero it.
+        sav5.Region = 0;
+        UpdateCountry();
+    }
+
+    private void OnRegionOriginCountryChanged(IRegionOrigin regionSave)
+    {
+        regionSave.Region = 0;
         UpdateCountry();
     }
 
@@ -344,6 +365,218 @@ public partial class TrainerInfoTab : IDisposable
         // Gen 3 does not store OT gender on the PKM, so skip the gender check for those.
         (pkm.Format <= 3 || pkm.OriginalTrainerGender == gender);
 
+    private static string FormatPlaytime(SaveFile saveFile) =>
+        $"{saveFile.PlayedHours}:{saveFile.PlayedMinutes:D2}:{saveFile.PlayedSeconds:D2}";
+
+    private static void ResetPlaytime(SaveFile saveFile)
+    {
+        saveFile.PlayedHours = 0;
+        saveFile.PlayedMinutes = 0;
+        saveFile.PlayedSeconds = 0;
+    }
+
+    private static string? ValidateHexString(string value, int expectedLength)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "Required";
+        }
+
+        if (value.Length != expectedLength)
+        {
+            return $"Must be exactly {expectedLength} characters";
+        }
+
+        return value.All(IsHexChar) ? null : "Hex digits only (0-9, A-F)";
+    }
+
+    private static bool IsHexChar(char c) =>
+        (c is >= '0' and <= '9') ||
+        (c is >= 'a' and <= 'f') ||
+        (c is >= 'A' and <= 'F');
+
+    private static void SetGameSyncId(IGameSync sync, string value)
+    {
+        // PKHeX's setter throws ArgumentOutOfRangeException on length mismatch and
+        // silently accepts non-hex chars (treating them as 0). Guard both before
+        // committing so partial input stays in the textbox without corrupting the save.
+        if (value.Length == sync.GameSyncIDSize && value.All(IsHexChar))
+        {
+            sync.GameSyncID = value;
+        }
+    }
+
+    private static void SetNexUniqueId(MyStatus7 status, string value)
+    {
+        if (value.Length == MyStatus7.NexUniqueIDSize && value.All(IsHexChar))
+        {
+            status.NexUniqueID = value;
+        }
+    }
+
+    private async Task OpenSayingsDialog(SAV6 sav6)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(SayingsDialog.Status), sav6.Status },
+            { nameof(SayingsDialog.XyNickname), sav6 is SAV6XY xy ? xy.Status : null },
+        };
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
+        var dialog = await DialogService.ShowAsync<SayingsDialog>("Trainer Card Sayings", parameters, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenTrainerCardDialog(SAV8SWSH sav8)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(TrainerCardDialog.Save), sav8 },
+        };
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
+        var dialog = await DialogService.ShowAsync<TrainerCardDialog>("Trainer Card", parameters, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            StateHasChanged();
+        }
+    }
+
+    private sealed record CurrencyDescriptor(string Label, uint Value, Action<uint> Set, uint Max);
+
+    private static IEnumerable<CurrencyDescriptor> GetExtraCurrencies(SaveFile saveFile)
+    {
+        switch (saveFile)
+        {
+            case SAV4HGSS hgss:
+                yield return new CurrencyDescriptor(
+                    "Pokéathlon Points",
+                    hgss.PokeathlonPoints,
+                    v => hgss.PokeathlonPoints = v,
+                    uint.MaxValue);
+                break;
+
+            case SAV5 sav5:
+                yield return new CurrencyDescriptor(
+                    "Battle Subway BP",
+                    (uint)sav5.BattleSubway.BP,
+                    v => sav5.BattleSubway.BP = (int)v,
+                    9999);
+                break;
+
+            case SAV6 sav6:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    (uint)sav6.BP,
+                    v => sav6.BP = (int)v,
+                    9999);
+                yield return new CurrencyDescriptor(
+                    "Poké Miles",
+                    (uint)sav6.GetRecord(63),
+                    v => sav6.SetRecord(63, (int)v),
+                    // PKHeX's record store is int-typed. Cap the UI at int.MaxValue so the
+                    // cast in the setter can't overflow into a negative value.
+                    (uint)int.MaxValue);
+                break;
+
+            case SAV7 sav7:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    sav7.Misc.BP,
+                    v => sav7.Misc.BP = v,
+                    9999);
+                yield return new CurrencyDescriptor(
+                    "Festival Coins",
+                    (uint)sav7.Festa.FestaCoins,
+                    // Setter mirrors to TotalFestaCoins via SAV.GetRecord(038) + value; never bypass.
+                    v => sav7.Festa.FestaCoins = (int)v,
+                    9_999_999);
+                break;
+
+            case SAV8SWSH swsh:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    (uint)swsh.Misc.BP,
+                    v => swsh.Misc.BP = (int)v,
+                    9999);
+                yield return new CurrencyDescriptor(
+                    "Watt",
+                    swsh.MyStatus.Watt,
+                    v =>
+                    {
+                        swsh.MyStatus.Watt = v;
+                        // Mirror to the WattTotal record so legality stays clean (mirrors SAV_Trainer8.cs).
+                        if (swsh.GetRecord(Record8.WattTotal) < (int)v)
+                        {
+                            swsh.SetRecord(Record8.WattTotal, (int)v);
+                        }
+                    },
+                    9_999_999);
+                break;
+
+            case SAV8BS bs:
+                yield return new CurrencyDescriptor(
+                    "BP",
+                    bs.BattleTower.BP,
+                    v => bs.BattleTower.BP = v,
+                    uint.MaxValue);
+                break;
+
+            case SAV8LA la:
+                yield return new CurrencyDescriptor(
+                    "Merit Points",
+                    la.Blocks.GetBlockValue<uint>(SaveBlockAccessor8LA.KMeritCurrent),
+                    v => la.Blocks.SetBlockValue(SaveBlockAccessor8LA.KMeritCurrent, v),
+                    uint.MaxValue);
+                yield return new CurrencyDescriptor(
+                    "Merit Earned (Total)",
+                    la.Blocks.GetBlockValue<uint>(SaveBlockAccessor8LA.KMeritEarnedTotal),
+                    v => la.Blocks.SetBlockValue(SaveBlockAccessor8LA.KMeritEarnedTotal, v),
+                    uint.MaxValue);
+                break;
+
+            case SAV9SV sv:
+                yield return new CurrencyDescriptor(
+                    "League Points",
+                    sv.LeaguePoints,
+                    v => sv.LeaguePoints = v,
+                    uint.MaxValue);
+                if (sv.SaveRevision >= 2)
+                {
+                    yield return new CurrencyDescriptor(
+                        "Blueberry Points",
+                        sv.BlueberryPoints,
+                        v => sv.BlueberryPoints = v,
+                        uint.MaxValue);
+                }
+                break;
+
+            case SAV9ZA za:
+                yield return new CurrencyDescriptor(
+                    "Royale Points",
+                    za.TicketPointsRoyale,
+                    v => za.TicketPointsRoyale = v,
+                    310_000);
+                yield return new CurrencyDescriptor(
+                    "Royale Points (Infinite)",
+                    za.TicketPointsRoyaleInfinite,
+                    v => za.TicketPointsRoyaleInfinite = v,
+                    50_000);
+                if (za.SaveRevision != 0)
+                {
+                    yield return new CurrencyDescriptor(
+                        "Hyperspace Survey Points",
+                        za.Blocks.GetBlockValue<uint>(SaveBlockAccessor9ZA.KHyperspaceSurveyPoints),
+                        v => za.Blocks.SetBlockValue(SaveBlockAccessor9ZA.KHyperspaceSurveyPoints, v),
+                        100_000);
+                }
+                break;
+        }
+    }
+
     private uint GetCoins() => AppState.SaveFile switch
     {
         SAV1 sav => sav.Coin,
@@ -394,89 +627,102 @@ public partial class TrainerInfoTab : IDisposable
         sav.SetWork(0x43 + index, g3Species);
     }
 
-    private (DateTime? Date, TimeSpan? Time) GetGameStarted()
+    private DateTime? GetGameStarted()
     {
         if (AppState.SaveFile is not { } saveFile)
         {
-            return (null, null);
+            return null;
         }
 
         DateTime date;
-        DateTime time;
 
         switch (saveFile)
         {
             case SAV4 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV5 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV6 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV7 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV8SWSH sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+            {
+                // SwSh doesn't use SecondsToStart; adventure-start lives on the Trainer Card
+                // as separate Y/M/D bytes. Year=0 means uninitialized.
+                var card = sav.Blocks.TrainerCard;
+                if (card.StartedYear == 0)
+                {
+                    return null;
+                }
+                date = new DateTime(card.StartedYear, card.StartedMonth, card.StartedDay);
                 break;
+            }
             case SAV8BS sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                // BDSP stores the start as a real DateTime under SystemData8b, not seconds.
+                date = sav.System.LocalTimestampStart;
                 break;
             case SAV8LA sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV9SV sav:
                 date = sav.EnrollmentDate.Timestamp;
-                time = sav.EnrollmentDate.Timestamp;
                 break;
             default:
-                return (null, null);
+                return null;
         }
 
-        return (date, time.TimeOfDay);
+        return date;
     }
 
     private void UpdateGameStarted()
     {
-        if (AppState.SaveFile is not { } saveFile || GameStartedDate is null || GameStartedTime is null)
+        if (AppState.SaveFile is not { } saveFile || GameStartedDate is null)
         {
             return;
         }
 
         var date = GameStartedDate.Value;
-        var time = GameStartedTime.Value;
 
         switch (saveFile)
         {
             case SAV4 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV5 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV6 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV7 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8SWSH sav:
-                sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+            {
+                var card = sav.Blocks.TrainerCard;
+                card.StartedYear = (ushort)date.Year;
+                card.StartedMonth = (byte)date.Month;
+                card.StartedDay = (byte)date.Day;
                 break;
+            }
             case SAV8BS sav:
-                sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.System.LocalTimestampStart = new DateTime(
+                    date.Year, date.Month, date.Day,
+                    date.Hour, date.Minute, date.Second,
+                    DateTimeKind.Local);
                 break;
             case SAV8LA sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV9SV sav:
                 sav.EnrollmentDate.Timestamp = date;
@@ -543,35 +789,35 @@ public partial class TrainerInfoTab : IDisposable
         {
             case SAV4 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV5 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV6 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV7 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8SWSH sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8BS sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8LA sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV9SV sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             default:
                 return;

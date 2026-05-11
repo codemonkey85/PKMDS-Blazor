@@ -603,6 +603,42 @@ body, html {
     margin-bottom: 0.5rem;
 }
 
+.playtime-group {
+    grid-column: 1 / -1;
+}
+
+.playtime-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.playtime-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mud-palette-text-secondary);
+}
+
+.playtime-readout {
+    font-family: var(--mud-typography-monospace-family, ui-monospace, monospace);
+    font-size: 0.875rem;
+    color: var(--mud-palette-text-primary);
+}
+
+.playtime-inputs {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.playtime-inputs > .mud-input-control {
+    flex: 1 1 6rem;
+    min-width: 5rem;
+    max-width: 10rem;
+}
+
 .pkmds-splash {
     position: fixed;
     inset: 0;

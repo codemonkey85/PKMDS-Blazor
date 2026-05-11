@@ -1,0 +1,36 @@
+@inherits BasePkmdsComponent
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="@Typo.h6">Trainer Card Sayings</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (Status is not null)
+        {
+            @if (XyNickname is not null)
+            {
+                <MudTextField Label="Trainer Card Nickname"
+                              Variant="@Variant.Outlined"
+                              ReadOnly="true"
+                              @bind-Value="@nickname"
+                              Class="mb-3"/>
+            }
+
+            @for (var i = 0; i < sayings.Length; i++)
+            {
+                var index = i;
+                <MudTextField Label="@($"Saying {index + 1}")"
+                              Variant="@Variant.Outlined"
+                              ReadOnly="true"
+                              Value="@sayings[index]"
+                              T="@string"
+                              Class="mb-2"/>
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Default">Close</MudButton>
+    </DialogActions>
+</MudDialog>
