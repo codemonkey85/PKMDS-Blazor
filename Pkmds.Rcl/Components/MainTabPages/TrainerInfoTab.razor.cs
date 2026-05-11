@@ -82,11 +82,11 @@ public partial class TrainerInfoTab : IDisposable
         UpdateCountry();
 
         ConsoleRegions = saveFile is IRegionOrigin
-            ? [..GameInfo.FilteredSources.ConsoleRegions]
+            ? [.. GameInfo.FilteredSources.ConsoleRegions]
             : [];
 
         Languages = saveFile is not ILangDeviantSave && saveGeneration >= 3 && saveFile.Language >= 0
-            ? [..GameInfo.LanguageDataSource(saveGeneration, saveFile.Context)]
+            ? [.. GameInfo.LanguageDataSource(saveGeneration, saveFile.Context)]
             : [];
     }
 
@@ -651,17 +651,17 @@ public partial class TrainerInfoTab : IDisposable
                 DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV8SWSH sav:
-            {
-                // SwSh doesn't use SecondsToStart; adventure-start lives on the Trainer Card
-                // as separate Y/M/D bytes. Year=0 means uninitialized.
-                var card = sav.Blocks.TrainerCard;
-                if (card.StartedYear == 0)
                 {
-                    return null;
+                    // SwSh doesn't use SecondsToStart; adventure-start lives on the Trainer Card
+                    // as separate Y/M/D bytes. Year=0 means uninitialized.
+                    var card = sav.Blocks.TrainerCard;
+                    if (card.StartedYear == 0)
+                    {
+                        return null;
+                    }
+                    date = new DateTime(card.StartedYear, card.StartedMonth, card.StartedDay);
+                    break;
                 }
-                date = new DateTime(card.StartedYear, card.StartedMonth, card.StartedDay);
-                break;
-            }
             case SAV8BS sav:
                 // BDSP stores the start as a real DateTime under SystemData8b, not seconds.
                 date = sav.System.LocalTimestampStart;
@@ -707,13 +707,13 @@ public partial class TrainerInfoTab : IDisposable
                     (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8SWSH sav:
-            {
-                var card = sav.Blocks.TrainerCard;
-                card.StartedYear = (ushort)date.Year;
-                card.StartedMonth = (byte)date.Month;
-                card.StartedDay = (byte)date.Day;
-                break;
-            }
+                {
+                    var card = sav.Blocks.TrainerCard;
+                    card.StartedYear = (ushort)date.Year;
+                    card.StartedMonth = (byte)date.Month;
+                    card.StartedDay = (byte)date.Day;
+                    break;
+                }
             case SAV8BS sav:
                 sav.System.LocalTimestampStart = new DateTime(
                     date.Year, date.Month, date.Day,
@@ -822,6 +822,112 @@ public partial class TrainerInfoTab : IDisposable
             default:
                 return;
         }
+    }
+
+    private static double GetSvRotation(SAV9SV sv) =>
+        Math.Atan2(sv.RZ, sv.RW) * 360.0 / Math.PI;
+
+    private static void SetSvRotation(SAV9SV sv, double angle)
+    {
+        var rad = angle * Math.PI / 360.0;
+        sv.SetPlayerRotation(0, (float)Math.Sin(rad), 0, (float)Math.Cos(rad));
+    }
+
+    private static string GetThrowStyleName(ThrowStyle9 style) => style switch
+    {
+        ThrowStyle9.OriginalStyle => "Original style",
+        ThrowStyle9.LeftHandedStyle => "Left-handed style",
+        ThrowStyle9.ElegantStyle => "Elegant style",
+        ThrowStyle9.ReverentStyle => "Reverent style",
+        ThrowStyle9.NinjaStyle => "Ninja style",
+        ThrowStyle9.DaintyStyle => "Dainty style",
+        ThrowStyle9.TwirlingStyle => "Twirling style",
+        ThrowStyle9.SmugStyle => "Smug style",
+        ThrowStyle9.GalarianStarStyle => "Galarian Star style",
+        _ => style.ToString(),
+    };
+
+    private static string GetZaStreetName(SAV9ZA za) =>
+        za.GetString(za.Blocks.GetBlock(SaveBlockAccessor9ZA.KStreetName).Data);
+
+    private static void SetZaStreetName(SAV9ZA za, string value) =>
+        za.SetString(za.Blocks.GetBlock(SaveBlockAccessor9ZA.KStreetName).Data, value, 18, StringConverterOption.ClearZero);
+
+    private static readonly string[] SvFlyLocationBlockNames =
+    [
+        "FSYS_YMAP_FLY_01", "FSYS_YMAP_FLY_02", "FSYS_YMAP_FLY_03", "FSYS_YMAP_FLY_04",
+        "FSYS_YMAP_FLY_05", "FSYS_YMAP_FLY_06", "FSYS_YMAP_FLY_07", "FSYS_YMAP_FLY_08",
+        "FSYS_YMAP_FLY_09", "FSYS_YMAP_FLY_10", "FSYS_YMAP_FLY_11", "FSYS_YMAP_FLY_12",
+        "FSYS_YMAP_FLY_13", "FSYS_YMAP_FLY_14", "FSYS_YMAP_FLY_15", "FSYS_YMAP_FLY_16",
+        "FSYS_YMAP_FLY_17", "FSYS_YMAP_FLY_18", "FSYS_YMAP_FLY_19", "FSYS_YMAP_FLY_20",
+        "FSYS_YMAP_FLY_21", "FSYS_YMAP_FLY_22", "FSYS_YMAP_FLY_23", "FSYS_YMAP_FLY_24",
+        "FSYS_YMAP_FLY_25", "FSYS_YMAP_FLY_26", "FSYS_YMAP_FLY_27", "FSYS_YMAP_FLY_28",
+        "FSYS_YMAP_FLY_29", "FSYS_YMAP_FLY_30", "FSYS_YMAP_FLY_31", "FSYS_YMAP_FLY_32",
+        "FSYS_YMAP_FLY_33", "FSYS_YMAP_FLY_34", "FSYS_YMAP_FLY_35",
+        "FSYS_YMAP_FLY_MAGATAMA", "FSYS_YMAP_FLY_MOKKAN", "FSYS_YMAP_FLY_TSURUGI", "FSYS_YMAP_FLY_UTSUWA",
+        "FSYS_YMAP_POKECEN_02", "FSYS_YMAP_POKECEN_03", "FSYS_YMAP_POKECEN_04", "FSYS_YMAP_POKECEN_05",
+        "FSYS_YMAP_POKECEN_06", "FSYS_YMAP_POKECEN_07", "FSYS_YMAP_POKECEN_08", "FSYS_YMAP_POKECEN_09",
+        "FSYS_YMAP_POKECEN_10", "FSYS_YMAP_POKECEN_11", "FSYS_YMAP_POKECEN_12", "FSYS_YMAP_POKECEN_13",
+        "FSYS_YMAP_POKECEN_14", "FSYS_YMAP_POKECEN_15", "FSYS_YMAP_POKECEN_16", "FSYS_YMAP_POKECEN_17",
+        "FSYS_YMAP_POKECEN_18", "FSYS_YMAP_POKECEN_19", "FSYS_YMAP_POKECEN_20", "FSYS_YMAP_POKECEN_21",
+        "FSYS_YMAP_POKECEN_22", "FSYS_YMAP_POKECEN_23", "FSYS_YMAP_POKECEN_24", "FSYS_YMAP_POKECEN_25",
+        "FSYS_YMAP_POKECEN_26", "FSYS_YMAP_POKECEN_27", "FSYS_YMAP_POKECEN_28", "FSYS_YMAP_POKECEN_29",
+        "FSYS_YMAP_POKECEN_30", "FSYS_YMAP_POKECEN_31", "FSYS_YMAP_POKECEN_32", "FSYS_YMAP_POKECEN_33",
+        "FSYS_YMAP_POKECEN_34", "FSYS_YMAP_POKECEN_35",
+        "FSYS_YMAP_MAGATAMA", "FSYS_YMAP_MOKKAN", "FSYS_YMAP_TSURUGI", "FSYS_YMAP_UTSUWA",
+        "FSYS_YMAP_SU1MAP_CHANGE",
+        "FSYS_YMAP_FLY_SU1_AREA10", "FSYS_YMAP_FLY_SU1_BUSSTOP", "FSYS_YMAP_FLY_SU1_CENTER01",
+        "FSYS_YMAP_FLY_SU1_PLAZA",
+        "FSYS_YMAP_FLY_SU1_SPOT01", "FSYS_YMAP_FLY_SU1_SPOT02", "FSYS_YMAP_FLY_SU1_SPOT03",
+        "FSYS_YMAP_FLY_SU1_SPOT04", "FSYS_YMAP_FLY_SU1_SPOT05", "FSYS_YMAP_FLY_SU1_SPOT06",
+        "FSYS_YMAP_S2_MAPCHANGE_ENABLE",
+        "FSYS_YMAP_FLY_SU2_DRAGON", "FSYS_YMAP_FLY_SU2_ENTRANCE", "FSYS_YMAP_FLY_SU2_FAIRY",
+        "FSYS_YMAP_FLY_SU2_HAGANE", "FSYS_YMAP_FLY_SU2_HONOO",
+        "FSYS_YMAP_FLY_SU2_SPOT01", "FSYS_YMAP_FLY_SU2_SPOT02", "FSYS_YMAP_FLY_SU2_SPOT03",
+        "FSYS_YMAP_FLY_SU2_SPOT04", "FSYS_YMAP_FLY_SU2_SPOT05", "FSYS_YMAP_FLY_SU2_SPOT06",
+        "FSYS_YMAP_FLY_SU2_SPOT07", "FSYS_YMAP_FLY_SU2_SPOT08", "FSYS_YMAP_FLY_SU2_SPOT09",
+        "FSYS_YMAP_FLY_SU2_SPOT10", "FSYS_YMAP_FLY_SU2_SPOT11",
+        "FSYS_YMAP_POKECEN_SU02",
+    ];
+
+    private void UnlockSvFlyLocations(SAV9SV sv)
+    {
+        var accessor = sv.Blocks;
+        foreach (var name in SvFlyLocationBlockNames)
+        {
+            if (accessor.TryGetBlock(name, out var block))
+                block.ChangeBooleanType(SCTypeCode.Bool2);
+        }
+        Snackbar.Add("Unlocked all fly locations.", Severity.Success);
+    }
+
+    private void UnlockSvBikeUpgrades(SAV9SV sv)
+    {
+        var accessor = sv.Blocks;
+        accessor.GetBlock("FSYS_RIDE_DASH_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
+        accessor.GetBlock("FSYS_RIDE_SWIM_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
+        accessor.GetBlock("FSYS_RIDE_HIJUMP_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
+        accessor.GetBlock("FSYS_RIDE_GLIDE_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
+        accessor.GetBlock("FSYS_RIDE_CLIMB_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
+        if (accessor.TryGetBlock("FSYS_RIDE_FLIGHT_ENABLE", out var fly))
+            fly.ChangeBooleanType(SCTypeCode.Bool2);
+        Snackbar.Add("Unlocked all ride upgrades.", Severity.Success);
+    }
+
+    private void CollectZaTechnicalMachines(SAV9ZA za)
+    {
+        var count = TechnicalMachine9a.SetAllTechnicalMachines(za, true);
+        Snackbar.Add(count == 0
+            ? "All Technical Machines already collected."
+            : $"Collected Technical Machines ×{count}.", Severity.Success);
+    }
+
+    private void CollectZaColorfulScrews(SAV9ZA za)
+    {
+        var count = ColorfulScrew9a.CollectScrews(za);
+        Snackbar.Add(count == 0
+            ? "All Colorful Screws already collected."
+            : $"Collected Colorful Screws ×{count}.", Severity.Success);
     }
 
     private ComboItem GetGen1RivalStarter(SAV1 sav1)
