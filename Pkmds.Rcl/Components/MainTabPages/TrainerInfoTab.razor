@@ -339,6 +339,39 @@
             }
         }
 
+        @if (saveFile is SAV7 sav7Festa)
+        {
+            <div class="form-field">
+                <MudTextField Label="Festival Plaza Name"
+                              Variant="@Variant.Outlined"
+                              MaxLength="20"
+                              @bind-Value="@sav7Festa.Festa.FestivalPlazaName"
+                              For="@(() => sav7Festa.Festa.FestivalPlazaName)"/>
+            </div>
+        }
+
+        @if (saveFile is SAV9SV sav9Birthday)
+        {
+            <div class="form-field">
+                <MudNumericField Label="Birth Month"
+                                 T="@byte"
+                                 Variant="@Variant.Outlined"
+                                 Min="@((byte)1)"
+                                 Max="@((byte)12)"
+                                 @bind-Value="@sav9Birthday.MyStatus.BirthMonth"
+                                 For="@(() => sav9Birthday.MyStatus.BirthMonth)"/>
+            </div>
+            <div class="form-field">
+                <MudNumericField Label="Birth Day"
+                                 T="@byte"
+                                 Variant="@Variant.Outlined"
+                                 Min="@((byte)1)"
+                                 Max="@((byte)31)"
+                                 @bind-Value="@sav9Birthday.MyStatus.BirthDay"
+                                 For="@(() => sav9Birthday.MyStatus.BirthDay)"/>
+            </div>
+        }
+
         @if (saveFile is SAV1 sav1Rival)
         {
             <div class="form-field">

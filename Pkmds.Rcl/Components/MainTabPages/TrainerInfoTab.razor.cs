@@ -47,7 +47,10 @@ public partial class TrainerInfoTab : IDisposable
 
     private InputDateType GameStartType => AppState.SaveFile switch
     {
-        SAV4 or SAV5 or SAV6 or SAV7 or SAV8SWSH or SAV8BS or SAV8LA => InputDateType.DateTimeLocal,
+        // SwSh stores the adventure-start as Year/Month/Day on the Trainer Card
+        // with no time component, so use a date-only picker.
+        SAV8SWSH => InputDateType.Date,
+        SAV4 or SAV5 or SAV6 or SAV7 or SAV8BS or SAV8LA => InputDateType.DateTimeLocal,
         _ => InputDateType.Date
     };
 
@@ -610,10 +613,22 @@ public partial class TrainerInfoTab : IDisposable
                 DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
                 break;
             case SAV8SWSH sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+            {
+                // SwSh doesn't use SecondsToStart; adventure-start lives on the Trainer Card
+                // as separate Y/M/D bytes. Year=0 means uninitialized.
+                var card = sav.Blocks.TrainerCard;
+                if (card.StartedYear == 0)
+                {
+                    return (null, null);
+                }
+                date = new DateTime(card.StartedYear, card.StartedMonth, card.StartedDay);
+                time = date;
                 break;
+            }
             case SAV8BS sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                // BDSP stores the start as a real DateTime under SystemData8b, not seconds.
+                date = sav.System.LocalTimestampStart;
+                time = date;
                 break;
             case SAV8LA sav:
                 DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
@@ -658,12 +673,18 @@ public partial class TrainerInfoTab : IDisposable
                     (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
                 break;
             case SAV8SWSH sav:
-                sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+            {
+                var card = sav.Blocks.TrainerCard;
+                card.StartedYear = (ushort)date.Year;
+                card.StartedMonth = (byte)date.Month;
+                card.StartedDay = (byte)date.Day;
                 break;
+            }
             case SAV8BS sav:
-                sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                sav.System.LocalTimestampStart = new DateTime(
+                    date.Year, date.Month, date.Day,
+                    time.Hours, time.Minutes, time.Seconds,
+                    DateTimeKind.Local);
                 break;
             case SAV8LA sav:
                 sav.SecondsToStart =
