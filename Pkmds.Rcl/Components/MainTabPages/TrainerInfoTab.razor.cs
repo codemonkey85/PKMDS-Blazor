@@ -15,15 +15,7 @@ public partial class TrainerInfoTab : IDisposable
         }
     }
 
-    private TimeSpan? GameStartedTime
-    {
-        get;
-        set
-        {
-            field = value;
-            UpdateGameStarted();
-        }
-    }
+
 
     private DateTime? HallOfFameDate
     {
@@ -71,7 +63,7 @@ public partial class TrainerInfoTab : IDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        (GameStartedDate, GameStartedTime) = GetGameStarted();
+        GameStartedDate = GetGameStarted();
         (HallOfFameDate, HallOfFameTime) = GetHallOfFame();
 
         if (AppState.SaveFile is not { Generation: { } saveGeneration } saveFile)
@@ -93,7 +85,7 @@ public partial class TrainerInfoTab : IDisposable
             ? [..GameInfo.FilteredSources.ConsoleRegions]
             : [];
 
-        Languages = saveGeneration >= 3 && saveFile.Language >= 0
+        Languages = saveFile is not ILangDeviantSave && saveGeneration >= 3 && saveFile.Language >= 0
             ? [..GameInfo.LanguageDataSource(saveGeneration, saveFile.Context)]
             : [];
     }
@@ -635,29 +627,28 @@ public partial class TrainerInfoTab : IDisposable
         sav.SetWork(0x43 + index, g3Species);
     }
 
-    private (DateTime? Date, TimeSpan? Time) GetGameStarted()
+    private DateTime? GetGameStarted()
     {
         if (AppState.SaveFile is not { } saveFile)
         {
-            return (null, null);
+            return null;
         }
 
         DateTime date;
-        DateTime time;
 
         switch (saveFile)
         {
             case SAV4 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV5 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV6 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV7 sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV8SWSH sav:
             {
@@ -666,58 +657,54 @@ public partial class TrainerInfoTab : IDisposable
                 var card = sav.Blocks.TrainerCard;
                 if (card.StartedYear == 0)
                 {
-                    return (null, null);
+                    return null;
                 }
                 date = new DateTime(card.StartedYear, card.StartedMonth, card.StartedDay);
-                time = date;
                 break;
             }
             case SAV8BS sav:
                 // BDSP stores the start as a real DateTime under SystemData8b, not seconds.
                 date = sav.System.LocalTimestampStart;
-                time = date;
                 break;
             case SAV8LA sav:
-                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out time);
+                DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV9SV sav:
                 date = sav.EnrollmentDate.Timestamp;
-                time = sav.EnrollmentDate.Timestamp;
                 break;
             default:
-                return (null, null);
+                return null;
         }
 
-        return (date, time.TimeOfDay);
+        return date;
     }
 
     private void UpdateGameStarted()
     {
-        if (AppState.SaveFile is not { } saveFile || GameStartedDate is null || GameStartedTime is null)
+        if (AppState.SaveFile is not { } saveFile || GameStartedDate is null)
         {
             return;
         }
 
         var date = GameStartedDate.Value;
-        var time = GameStartedTime.Value;
 
         switch (saveFile)
         {
             case SAV4 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV5 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV6 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV7 sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8SWSH sav:
             {
@@ -730,12 +717,12 @@ public partial class TrainerInfoTab : IDisposable
             case SAV8BS sav:
                 sav.System.LocalTimestampStart = new DateTime(
                     date.Year, date.Month, date.Day,
-                    time.Hours, time.Minutes, time.Seconds,
+                    date.Hour, date.Minute, date.Second,
                     DateTimeKind.Local);
                 break;
             case SAV8LA sav:
                 sav.SecondsToStart =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV9SV sav:
                 sav.EnrollmentDate.Timestamp = date;
@@ -802,35 +789,35 @@ public partial class TrainerInfoTab : IDisposable
         {
             case SAV4 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV5 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV6 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV7 sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8SWSH sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8BS sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8LA sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV9SV sav:
                 sav.SecondsToFame =
-                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, time.Hours, time.Minutes, time.Seconds));
+                    (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             default:
                 return;
