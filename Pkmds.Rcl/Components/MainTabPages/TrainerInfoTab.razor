@@ -144,6 +144,89 @@
             </div>
         }
 
+        @if (saveFile is SAV5 sav5Geo)
+        {
+            <div class="form-field">
+                <MudSelect Label="Country"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav5Geo.Country"
+                           @bind-Value:after="@UpdateCountry"
+                           For="@(() => sav5Geo.Country)">
+                    @foreach (var country in Countries.OrderBy(c => c.Text))
+                    {
+                        <MudSelectItem Value="@country.Value"
+                                       @key="@country.Value">
+                            @country.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="form-field">
+                <MudSelect Label="Region"
+                           Variant="@Variant.Outlined"
+                           @bind-Value="@sav5Geo.Region"
+                           For="@(() => sav5Geo.Region)">
+                    @foreach (var region in Regions)
+                    {
+                        <MudSelectItem Value="@region.Value"
+                                       @key="@region.Value">
+                            @region.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        }
+
+        @if (saveFile is IRegionOrigin regionSave)
+        {
+            <div class="form-field">
+                <MudSelect Label="Country"
+                           Variant="@Variant.Outlined"
+                           T="@byte"
+                           @bind-Value="@regionSave.Country"
+                           @bind-Value:after="@UpdateCountry"
+                           For="@(() => regionSave.Country)">
+                    @foreach (var country in Countries.OrderBy(c => c.Text))
+                    {
+                        <MudSelectItem Value="@((byte)country.Value)"
+                                       @key="@country.Value">
+                            @country.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="form-field">
+                <MudSelect Label="Region"
+                           Variant="@Variant.Outlined"
+                           T="@byte"
+                           @bind-Value="@regionSave.Region"
+                           For="@(() => regionSave.Region)">
+                    @foreach (var region in Regions)
+                    {
+                        <MudSelectItem Value="@((byte)region.Value)"
+                                       @key="@region.Value">
+                            @region.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            <div class="form-field">
+                <MudSelect Label="3DS Region"
+                           Variant="@Variant.Outlined"
+                           T="@byte"
+                           @bind-Value="@regionSave.ConsoleRegion"
+                           For="@(() => regionSave.ConsoleRegion)">
+                    @foreach (var consoleRegion in ConsoleRegions)
+                    {
+                        <MudSelectItem Value="@((byte)consoleRegion.Value)"
+                                       @key="@consoleRegion.Value">
+                            @consoleRegion.Text
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+        }
+
         <div class="form-field">
             <MudNumericField Label="Hours"
                              T="@int"

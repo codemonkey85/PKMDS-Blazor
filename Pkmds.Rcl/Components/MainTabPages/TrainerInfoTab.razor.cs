@@ -55,6 +55,8 @@ public partial class TrainerInfoTab : IDisposable
 
     private List<ComboItem> Regions { get; set; } = [];
 
+    private List<ComboItem> ConsoleRegions { get; set; } = [];
+
     private List<ComboItem> Languages { get; set; } = [];
 
     public void Dispose() =>
@@ -83,6 +85,10 @@ public partial class TrainerInfoTab : IDisposable
 
         Countries = Util.GetCountryRegionList(countriesName, GameInfo.CurrentLanguage);
         UpdateCountry();
+
+        ConsoleRegions = saveFile is IRegionOrigin
+            ? [..GameInfo.FilteredSources.ConsoleRegions]
+            : [];
 
         Languages = saveGeneration >= 3 && saveFile.Language >= 0
             ? [..GameInfo.LanguageDataSource(saveGeneration, saveFile.Context)]
