@@ -27,7 +27,8 @@ public sealed class BenchmarkRunner
         int LegalityIterations = 100,
         int EncryptionIterations = 5000,
         int SearchIterations = 200,
-        int EncounterIterations = 10);
+        int EncounterIterations = 10,
+        int BatchLookupIterations = 1000);
 
     public BenchmarkReport Run(BenchmarkConfig? config = null)
     {
@@ -43,6 +44,7 @@ public sealed class BenchmarkRunner
             RunEncryption(pkms, config.EncryptionIterations),
             RunSearch(sav, config.SearchIterations),
             RunEncounterGeneration(sav, config.EncounterIterations),
+            RunBatchLookup(pkms, config.BatchLookupIterations),
         };
 
         return new BenchmarkReport
@@ -215,6 +217,67 @@ public sealed class BenchmarkRunner
             }
         }
         return total;
+    }
+
+    // Smoke test for the reflective property-lookup path that BatchEditingBase
+    // uses (see issue #883 trim work). EntityBatchEditor's ctor enumerates
+    // ReflectUtil.GetAllPropertyInfoCanWritePublic for each PKM type at startup
+    // and caches the PropertyInfo dicts. Under TrimMode=full, if PKM members
+    // were stripped, those dicts would be empty and TryGetHasProperty would
+    // silently return false for every name — the user-visible symptom is the
+    // Batch Editor tab returning zero matches or no-op modifies.
+    //
+    // We make this loud by asserting at start: if any of the six well-known
+    // writable PKM properties fails to resolve, throw with a clear message
+    // that the bench page propagates to data-bench-state="error" and the
+    // Playwright runner surfaces as a failed publish.
+    private static readonly string[] BatchLookupProperties =
+    [
+        nameof(PKM.Species),
+        nameof(PKM.HeldItem),
+        nameof(PKM.Nature),
+        nameof(PKM.Move1),
+        nameof(PKM.OriginalTrainerFriendship),
+        nameof(PKM.IV_HP),
+    ];
+
+    private static BenchmarkResult RunBatchLookup(PK9[] pkms, int iterations)
+    {
+        var editor = EntityBatchEditor.Instance;
+        var pkm = pkms[0];
+
+        foreach (var name in BatchLookupProperties)
+        {
+            if (!editor.TryGetHasProperty(pkm, name.AsSpan(), out var pi) || pi is null)
+            {
+                throw new InvalidOperationException(
+                    $"BatchEditor reflection check failed: TryGetHasProperty returned no PropertyInfo for PK9.{name}. " +
+                    "PKM members likely got trimmed away — verify Pkmds.Web/PreservePkmTypes.xml covers this PKM subclass.");
+            }
+        }
+
+        for (var w = 0; w < WarmupIterations; w++)
+        {
+            foreach (var name in BatchLookupProperties)
+            {
+                _ = editor.TryGetHasProperty(pkm, name.AsSpan(), out _);
+            }
+        }
+
+        var timings = new double[iterations];
+        var sw = new Stopwatch();
+        for (var it = 0; it < iterations; it++)
+        {
+            sw.Restart();
+            foreach (var name in BatchLookupProperties)
+            {
+                _ = editor.TryGetHasProperty(pkm, name.AsSpan(), out _);
+            }
+            sw.Stop();
+            timings[it] = sw.Elapsed.TotalMilliseconds;
+        }
+
+        return Summarize("batch-lookup", timings, opsPerIteration: BatchLookupProperties.Length);
     }
 
     private static BenchmarkResult Summarize(string name, double[] timings, int opsPerIteration)
