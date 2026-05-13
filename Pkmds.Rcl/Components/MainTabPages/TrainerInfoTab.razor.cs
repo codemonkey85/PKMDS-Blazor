@@ -82,11 +82,11 @@ public partial class TrainerInfoTab : IDisposable
         UpdateCountry();
 
         ConsoleRegions = saveFile is IRegionOrigin
-            ? [..GameInfo.FilteredSources.ConsoleRegions]
+            ? [.. GameInfo.FilteredSources.ConsoleRegions]
             : [];
 
         Languages = saveFile is not ILangDeviantSave && saveGeneration >= 3 && saveFile.Language >= 0
-            ? [..GameInfo.LanguageDataSource(saveGeneration, saveFile.Context)]
+            ? [.. GameInfo.LanguageDataSource(saveGeneration, saveFile.Context)]
             : [];
     }
 
@@ -538,42 +538,8 @@ public partial class TrainerInfoTab : IDisposable
                     uint.MaxValue);
                 break;
 
-            case SAV9SV sv:
-                yield return new CurrencyDescriptor(
-                    "League Points",
-                    sv.LeaguePoints,
-                    v => sv.LeaguePoints = v,
-                    uint.MaxValue);
-                if (sv.SaveRevision >= 2)
-                {
-                    yield return new CurrencyDescriptor(
-                        "Blueberry Points",
-                        sv.BlueberryPoints,
-                        v => sv.BlueberryPoints = v,
-                        uint.MaxValue);
-                }
-                break;
-
-            case SAV9ZA za:
-                yield return new CurrencyDescriptor(
-                    "Royale Points",
-                    za.TicketPointsRoyale,
-                    v => za.TicketPointsRoyale = v,
-                    310_000);
-                yield return new CurrencyDescriptor(
-                    "Royale Points (Infinite)",
-                    za.TicketPointsRoyaleInfinite,
-                    v => za.TicketPointsRoyaleInfinite = v,
-                    50_000);
-                if (za.SaveRevision != 0)
-                {
-                    yield return new CurrencyDescriptor(
-                        "Hyperspace Survey Points",
-                        za.Blocks.GetBlockValue<uint>(SaveBlockAccessor9ZA.KHyperspaceSurveyPoints),
-                        v => za.Blocks.SetBlockValue(SaveBlockAccessor9ZA.KHyperspaceSurveyPoints, v),
-                        100_000);
-                }
-                break;
+            // Gen 9 SV / ZA currencies live inside their respective TrainerInfoSav9*Section
+            // components so they sit next to the rest of the gen-specific fields.
         }
     }
 
@@ -651,17 +617,17 @@ public partial class TrainerInfoTab : IDisposable
                 DateUtil.GetDateTime2000(sav.SecondsToStart, out date, out _);
                 break;
             case SAV8SWSH sav:
-            {
-                // SwSh doesn't use SecondsToStart; adventure-start lives on the Trainer Card
-                // as separate Y/M/D bytes. Year=0 means uninitialized.
-                var card = sav.Blocks.TrainerCard;
-                if (card.StartedYear == 0)
                 {
-                    return null;
+                    // SwSh doesn't use SecondsToStart; adventure-start lives on the Trainer Card
+                    // as separate Y/M/D bytes. Year=0 means uninitialized.
+                    var card = sav.Blocks.TrainerCard;
+                    if (card.StartedYear == 0)
+                    {
+                        return null;
+                    }
+                    date = new DateTime(card.StartedYear, card.StartedMonth, card.StartedDay);
+                    break;
                 }
-                date = new DateTime(card.StartedYear, card.StartedMonth, card.StartedDay);
-                break;
-            }
             case SAV8BS sav:
                 // BDSP stores the start as a real DateTime under SystemData8b, not seconds.
                 date = sav.System.LocalTimestampStart;
@@ -707,13 +673,13 @@ public partial class TrainerInfoTab : IDisposable
                     (uint)DateUtil.GetSecondsFrom2000(date, new(2000, 1, 1, date.Hour, date.Minute, date.Second));
                 break;
             case SAV8SWSH sav:
-            {
-                var card = sav.Blocks.TrainerCard;
-                card.StartedYear = (ushort)date.Year;
-                card.StartedMonth = (byte)date.Month;
-                card.StartedDay = (byte)date.Day;
-                break;
-            }
+                {
+                    var card = sav.Blocks.TrainerCard;
+                    card.StartedYear = (ushort)date.Year;
+                    card.StartedMonth = (byte)date.Month;
+                    card.StartedDay = (byte)date.Day;
+                    break;
+                }
             case SAV8BS sav:
                 sav.System.LocalTimestampStart = new DateTime(
                     date.Year, date.Month, date.Day,

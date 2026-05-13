@@ -2,7 +2,10 @@
 
 @if (AppState is { SaveFile: { } saveFile, PinnedBoxNumber: { } pinnedBox })
 {
-    <div>
+    @* BoxGrid sizes itself off its container width (aspect-[6/5]); without a cap,
+       the right-hand MudItem (no max-width like the left side has) lets the grid
+       grow tall enough to overflow the viewport on wide screens. *@
+    <div style="max-width: 480px;">
         <div class="flex m-[5px] p-[5px] items-center h-[50px]">
             <MudIconButton OnClick="@GoToPreviousBox"
                            title="Previous Box"

@@ -1,0 +1,412 @@
+@inherits BasePkmdsComponent
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="@Typo.h6">Tera Raid Editor</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (SaveFile is not null)
+        {
+            <MudTabs Elevation="0">
+
+                @* ── Paldea ── *@
+                <MudTabPanel Text="Paldea">
+                    @* Global seeds (Paldea only) *@
+                    <MudStack Row
+                              Spacing="2"
+                              Class="mb-3">
+                        <MudTextField Label="Today's Seed (hex)"
+                                      Value="@_currentSeedHex"
+                                      ValueChanged="@((string v) => SetCurrentSeed(v))"
+                                      Variant="@Variant.Outlined"
+                                      MaxLength="16"
+                                      Style="max-width:210px;"/>
+                        <MudTextField Label="Tomorrow's Seed (hex)"
+                                      Value="@_tomorrowSeedHex"
+                                      ValueChanged="@((string v) => SetTomorrowSeed(v))"
+                                      Variant="@Variant.Outlined"
+                                      MaxLength="16"
+                                      Style="max-width:210px;"/>
+                    </MudStack>
+
+                    @* Raid selector *@
+                    <MudSelect T="@int"
+                               Label="Raid"
+                               Value="@_paldeaIndex"
+                               ValueChanged="@((int i) => _paldeaIndex = i)"
+                               Variant="@Variant.Outlined"
+                               Dense
+                               Style="max-width:160px;"
+                               Class="mb-3">
+                        @for (var i = 0; i < _paldeaRaids.Length; i++)
+                        {
+                            var idx = i;
+                            <MudSelectItem Value="@idx">@($"Raid {idx + 1:D3}")</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    @* Per-raid editor *@
+                    @if (_paldeaRaids.Length > 0 && _paldeaIndex < _paldeaRaids.Length)
+                    {
+                        var raid = _paldeaRaids[_paldeaIndex];
+                        <MudStack Row
+                                  Wrap="@Wrap.Wrap"
+                                  Spacing="2"
+                                  AlignItems="@AlignItems.Center"
+                                  Class="mb-2">
+                            <MudCheckBox T="@bool"
+                                         Label="Enabled"
+                                         Value="@raid.IsEnabled"
+                                         ValueChanged="@(v => raid.IsEnabled = v)"/>
+                            <MudCheckBox T="@bool"
+                                         Label="LP Claimed"
+                                         Value="@raid.IsClaimedLeaguePoints"
+                                         ValueChanged="@(v => raid.IsClaimedLeaguePoints = v)"/>
+                        </MudStack>
+                        <MudStack Row
+                                  Wrap="@Wrap.Wrap"
+                                  Spacing="2"
+                                  Class="mb-2">
+                            <MudNumericField T="@uint"
+                                             Label="Area ID"
+                                             Value="@raid.AreaID"
+                                             ValueChanged="@(v => { raid.AreaID = v; StateHasChanged(); })"
+                                             Variant="@Variant.Outlined"
+                                             Style="max-width:120px;"/>
+                            <MudNumericField T="@uint"
+                                             Label="Lottery Group"
+                                             Value="@raid.LotteryGroup"
+                                             ValueChanged="@(v => { raid.LotteryGroup = v; StateHasChanged(); })"
+                                             Variant="@Variant.Outlined"
+                                             Style="max-width:140px;"/>
+                            <MudNumericField T="@uint"
+                                             Label="Spawn Point ID"
+                                             Value="@raid.SpawnPointID"
+                                             ValueChanged="@(v => { raid.SpawnPointID = v; StateHasChanged(); })"
+                                             Variant="@Variant.Outlined"
+                                             Style="max-width:140px;"/>
+                        </MudStack>
+                        <MudStack Row
+                                  Wrap="@Wrap.Wrap"
+                                  Spacing="2"
+                                  AlignItems="@AlignItems.Center"
+                                  Class="mb-2">
+                            <MudTextField Label="Seed (hex)"
+                                          Value="@($"{raid.Seed:X8}")"
+                                          ValueChanged="@((string v) => SetRaidSeed(raid, v))"
+                                          Variant="@Variant.Outlined"
+                                          MaxLength="8"
+                                          Style="max-width:130px;"/>
+                            <MudSelect T="@TeraRaidContentType"
+                                       Label="Content"
+                                       Value="@raid.Content"
+                                       ValueChanged="@(v => raid.Content = v)"
+                                       Variant="@Variant.Outlined"
+                                       Dense
+                                       Style="max-width:220px;">
+                                <MudSelectItem Value="@TeraRaidContentType.Base05">5★ Base</MudSelectItem>
+                                <MudSelectItem Value="@TeraRaidContentType.Black6">6★ Black Crystal</MudSelectItem>
+                                <MudSelectItem Value="@TeraRaidContentType.Distribution">Distribution</MudSelectItem>
+                                <MudSelectItem Value="@TeraRaidContentType.Might7">7★ Mighty</MudSelectItem>
+                            </MudSelect>
+                        </MudStack>
+                        <MudText Typo="@Typo.caption"
+                                 Class="mb-3">@raid.ScenePointName</MudText>
+                    }
+
+                    @* Propagate *@
+                    <MudStack Row
+                              Spacing="2">
+                        <MudButton Size="@Size.Small"
+                                   Variant="@Variant.Filled"
+                                   Color="@Color.Primary"
+                                   OnClick="@(() => Propagate(SaveFile.RaidPaldea, _paldeaIndex, false))">
+                            Copy to All Raids
+                        </MudButton>
+                        <MudButton Size="@Size.Small"
+                                   Variant="@Variant.Filled"
+                                   Color="@Color.Secondary"
+                                   OnClick="@(() => Propagate(SaveFile.RaidPaldea, _paldeaIndex, true))">
+                            Copy to All Raids (incl. Seed)
+                        </MudButton>
+                    </MudStack>
+                </MudTabPanel>
+
+                @* ── Kitakami (DLC 1+) ── *@
+                @if (SaveFile.SaveRevision >= 1)
+                {
+                    <MudTabPanel Text="Kitakami">
+                        <MudSelect T="@int"
+                                   Label="Raid"
+                                   Value="@_kitakamiIndex"
+                                   ValueChanged="@((int i) => _kitakamiIndex = i)"
+                                   Variant="@Variant.Outlined"
+                                   Dense
+                                   Style="max-width:160px;"
+                                   Class="mb-3">
+                            @for (var i = 0; i < _kitakamiRaids.Length; i++)
+                            {
+                                var idx = i;
+                                <MudSelectItem Value="@idx">@($"Raid {idx + 1:D3}")</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        @if (_kitakamiRaids.Length > 0 && _kitakamiIndex < _kitakamiRaids.Length)
+                        {
+                            var raid = _kitakamiRaids[_kitakamiIndex];
+                            <MudStack Row
+                                      Wrap="@Wrap.Wrap"
+                                      Spacing="2"
+                                      AlignItems="@AlignItems.Center"
+                                      Class="mb-2">
+                                <MudCheckBox T="@bool"
+                                             Label="Enabled"
+                                             Value="@raid.IsEnabled"
+                                             ValueChanged="@(v => raid.IsEnabled = v)"/>
+                                <MudCheckBox T="@bool"
+                                             Label="LP Claimed"
+                                             Value="@raid.IsClaimedLeaguePoints"
+                                             ValueChanged="@(v => raid.IsClaimedLeaguePoints = v)"/>
+                            </MudStack>
+                            <MudStack Row
+                                      Wrap="@Wrap.Wrap"
+                                      Spacing="2"
+                                      Class="mb-2">
+                                <MudNumericField T="@uint"
+                                                 Label="Area ID"
+                                                 Value="@raid.AreaID"
+                                                 ValueChanged="@(v => { raid.AreaID = v; StateHasChanged(); })"
+                                                 Variant="@Variant.Outlined"
+                                                 Style="max-width:120px;"/>
+                                <MudNumericField T="@uint"
+                                                 Label="Lottery Group"
+                                                 Value="@raid.LotteryGroup"
+                                                 ValueChanged="@(v => { raid.LotteryGroup = v; StateHasChanged(); })"
+                                                 Variant="@Variant.Outlined"
+                                                 Style="max-width:140px;"/>
+                                <MudNumericField T="@uint"
+                                                 Label="Spawn Point ID"
+                                                 Value="@raid.SpawnPointID"
+                                                 ValueChanged="@(v => { raid.SpawnPointID = v; StateHasChanged(); })"
+                                                 Variant="@Variant.Outlined"
+                                                 Style="max-width:140px;"/>
+                            </MudStack>
+                            <MudStack Row
+                                      Wrap="@Wrap.Wrap"
+                                      Spacing="2"
+                                      AlignItems="@AlignItems.Center"
+                                      Class="mb-2">
+                                <MudTextField Label="Seed (hex)"
+                                              Value="@($"{raid.Seed:X8}")"
+                                              ValueChanged="@((string v) => SetRaidSeed(raid, v))"
+                                              Variant="@Variant.Outlined"
+                                              MaxLength="8"
+                                              Style="max-width:130px;"/>
+                                <MudSelect T="@TeraRaidContentType"
+                                           Label="Content"
+                                           Value="@raid.Content"
+                                           ValueChanged="@(v => raid.Content = v)"
+                                           Variant="@Variant.Outlined"
+                                           Dense
+                                           Style="max-width:220px;">
+                                    <MudSelectItem Value="@TeraRaidContentType.Base05">5★ Base</MudSelectItem>
+                                    <MudSelectItem Value="@TeraRaidContentType.Black6">6★ Black Crystal</MudSelectItem>
+                                    <MudSelectItem Value="@TeraRaidContentType.Distribution">Distribution</MudSelectItem>
+                                    <MudSelectItem Value="@TeraRaidContentType.Might7">7★ Mighty</MudSelectItem>
+                                </MudSelect>
+                            </MudStack>
+                            <MudText Typo="@Typo.caption"
+                                     Class="mb-3">@raid.ScenePointName</MudText>
+                        }
+
+                        <MudStack Row
+                                  Spacing="2">
+                            <MudButton Size="@Size.Small"
+                                       Variant="@Variant.Filled"
+                                       Color="@Color.Primary"
+                                       OnClick="@(() => Propagate(SaveFile.RaidKitakami, _kitakamiIndex, false))">
+                                Copy to All Raids
+                            </MudButton>
+                            <MudButton Size="@Size.Small"
+                                       Variant="@Variant.Filled"
+                                       Color="@Color.Secondary"
+                                       OnClick="@(() => Propagate(SaveFile.RaidKitakami, _kitakamiIndex, true))">
+                                Copy to All Raids (incl. Seed)
+                            </MudButton>
+                        </MudStack>
+                    </MudTabPanel>
+                }
+
+                @* ── Blueberry (DLC 2+) ── *@
+                @if (SaveFile.SaveRevision >= 2)
+                {
+                    <MudTabPanel Text="Blueberry">
+                        <MudSelect T="@int"
+                                   Label="Raid"
+                                   Value="@_blueberryIndex"
+                                   ValueChanged="@((int i) => _blueberryIndex = i)"
+                                   Variant="@Variant.Outlined"
+                                   Dense
+                                   Style="max-width:160px;"
+                                   Class="mb-3">
+                            @for (var i = 0; i < _blueberryRaids.Length; i++)
+                            {
+                                var idx = i;
+                                <MudSelectItem Value="@idx">@($"Raid {idx + 1:D3}")</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        @if (_blueberryRaids.Length > 0 && _blueberryIndex < _blueberryRaids.Length)
+                        {
+                            var raid = _blueberryRaids[_blueberryIndex];
+                            <MudStack Row
+                                      Wrap="@Wrap.Wrap"
+                                      Spacing="2"
+                                      AlignItems="@AlignItems.Center"
+                                      Class="mb-2">
+                                <MudCheckBox T="@bool"
+                                             Label="Enabled"
+                                             Value="@raid.IsEnabled"
+                                             ValueChanged="@(v => raid.IsEnabled = v)"/>
+                                <MudCheckBox T="@bool"
+                                             Label="LP Claimed"
+                                             Value="@raid.IsClaimedLeaguePoints"
+                                             ValueChanged="@(v => raid.IsClaimedLeaguePoints = v)"/>
+                            </MudStack>
+                            <MudStack Row
+                                      Wrap="@Wrap.Wrap"
+                                      Spacing="2"
+                                      Class="mb-2">
+                                <MudNumericField T="@uint"
+                                                 Label="Area ID"
+                                                 Value="@raid.AreaID"
+                                                 ValueChanged="@(v => { raid.AreaID = v; StateHasChanged(); })"
+                                                 Variant="@Variant.Outlined"
+                                                 Style="max-width:120px;"/>
+                                <MudNumericField T="@uint"
+                                                 Label="Lottery Group"
+                                                 Value="@raid.LotteryGroup"
+                                                 ValueChanged="@(v => { raid.LotteryGroup = v; StateHasChanged(); })"
+                                                 Variant="@Variant.Outlined"
+                                                 Style="max-width:140px;"/>
+                                <MudNumericField T="@uint"
+                                                 Label="Spawn Point ID"
+                                                 Value="@raid.SpawnPointID"
+                                                 ValueChanged="@(v => { raid.SpawnPointID = v; StateHasChanged(); })"
+                                                 Variant="@Variant.Outlined"
+                                                 Style="max-width:140px;"/>
+                            </MudStack>
+                            <MudStack Row
+                                      Wrap="@Wrap.Wrap"
+                                      Spacing="2"
+                                      AlignItems="@AlignItems.Center"
+                                      Class="mb-2">
+                                <MudTextField Label="Seed (hex)"
+                                              Value="@($"{raid.Seed:X8}")"
+                                              ValueChanged="@((string v) => SetRaidSeed(raid, v))"
+                                              Variant="@Variant.Outlined"
+                                              MaxLength="8"
+                                              Style="max-width:130px;"/>
+                                <MudSelect T="@TeraRaidContentType"
+                                           Label="Content"
+                                           Value="@raid.Content"
+                                           ValueChanged="@(v => raid.Content = v)"
+                                           Variant="@Variant.Outlined"
+                                           Dense
+                                           Style="max-width:220px;">
+                                    <MudSelectItem Value="@TeraRaidContentType.Base05">5★ Base</MudSelectItem>
+                                    <MudSelectItem Value="@TeraRaidContentType.Black6">6★ Black Crystal</MudSelectItem>
+                                    <MudSelectItem Value="@TeraRaidContentType.Distribution">Distribution</MudSelectItem>
+                                    <MudSelectItem Value="@TeraRaidContentType.Might7">7★ Mighty</MudSelectItem>
+                                </MudSelect>
+                            </MudStack>
+                            <MudText Typo="@Typo.caption"
+                                     Class="mb-3">@raid.ScenePointName</MudText>
+                        }
+
+                        <MudStack Row
+                                  Spacing="2">
+                            <MudButton Size="@Size.Small"
+                                       Variant="@Variant.Filled"
+                                       Color="@Color.Primary"
+                                       OnClick="@(() => Propagate(SaveFile.RaidBlueberry, _blueberryIndex, false))">
+                                Copy to All Raids
+                            </MudButton>
+                            <MudButton Size="@Size.Small"
+                                       Variant="@Variant.Filled"
+                                       Color="@Color.Secondary"
+                                       OnClick="@(() => Propagate(SaveFile.RaidBlueberry, _blueberryIndex, true))">
+                                Copy to All Raids (incl. Seed)
+                            </MudButton>
+                        </MudStack>
+                    </MudTabPanel>
+                }
+
+                @* ── 7-Star ── *@
+                <MudTabPanel Text="7-Star">
+                    @if (_activeSevenStarRaids.Count == 0)
+                    {
+                        <MudText>No 7-Star raid entries found.</MudText>
+                    }
+                    else
+                    {
+                        <MudSimpleTable Dense
+                                        Hover
+                                        Style="max-height:450px; overflow-y:auto;">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Identifier (hex)</th>
+                                <th>Captured</th>
+                                <th>Defeated</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var (index, sevenRaid) in _activeSevenStarRaids)
+                            {
+                                var r = sevenRaid;
+                                <tr>
+                                    <td>@(index + 1)</td>
+                                    <td>
+                                        <MudTextField Value="@($"{r.Identifier:X8}")"
+                                                      ValueChanged="@((string v) => SetSevenStarIdentifier(r, v))"
+                                                      Variant="@Variant.Text"
+                                                      MaxLength="8"
+                                                      Style="max-width:110px;"/>
+                                    </td>
+                                    <td>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@r.Captured"
+                                                     ValueChanged="@(v => r.Captured = v)"
+                                                     Dense/>
+                                    </td>
+                                    <td>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@r.Defeated"
+                                                     ValueChanged="@(v => r.Defeated = v)"
+                                                     Dense/>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </MudSimpleTable>
+                    }
+                </MudTabPanel>
+
+            </MudTabs>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudSpacer/>
+        <MudButton OnClick="@Cancel"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Default">
+            Cancel
+        </MudButton>
+        <MudButton OnClick="@Save"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Primary">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>

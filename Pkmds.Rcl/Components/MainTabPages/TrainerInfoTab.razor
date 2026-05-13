@@ -337,6 +337,18 @@
                                @bind-Value="@sv9.LastSaved.Timestamp"/>
                 </div>
             }
+
+            @if (saveFile is SAV9ZA za9LastSaved)
+            {
+                <div class="form-field">
+                    <label for="za-last-saved">
+                        Last Saved
+                    </label>
+                    <InputDate Type="@InputDateType.DateTimeLocal"
+                               id="za-last-saved"
+                               @bind-Value="@za9LastSaved.LastSaved.Timestamp"/>
+                </div>
+            }
         }
 
         @if (saveFile is SAV7 sav7Festa)
@@ -350,26 +362,14 @@
             </div>
         }
 
-        @if (saveFile is SAV9SV sav9Birthday)
+        @if (saveFile is SAV9SV sv9Gen9)
         {
-            <div class="form-field">
-                <MudNumericField Label="Birth Month"
-                                 T="@byte"
-                                 Variant="@Variant.Outlined"
-                                 Min="@((byte)1)"
-                                 Max="@((byte)12)"
-                                 @bind-Value="@sav9Birthday.MyStatus.BirthMonth"
-                                 For="@(() => sav9Birthday.MyStatus.BirthMonth)"/>
-            </div>
-            <div class="form-field">
-                <MudNumericField Label="Birth Day"
-                                 T="@byte"
-                                 Variant="@Variant.Outlined"
-                                 Min="@((byte)1)"
-                                 Max="@((byte)31)"
-                                 @bind-Value="@sav9Birthday.MyStatus.BirthDay"
-                                 For="@(() => sav9Birthday.MyStatus.BirthDay)"/>
-            </div>
+            <TrainerInfoSav9SvSection SaveFile="@sv9Gen9"/>
+        }
+
+        @if (saveFile is SAV9ZA za9Gen9)
+        {
+            <TrainerInfoSav9ZaSection SaveFile="@za9Gen9"/>
         }
 
         @if (saveFile is SAV6 sav6Sayings)

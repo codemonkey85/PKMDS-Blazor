@@ -387,6 +387,15 @@ body, html {
         overflow-x: hidden;
     }
 
+    /* Trainer tab content: long form grid (per-game sections + headers + buttons)
+       can exceed the panel height on shorter desktops. Without this, the panel's
+       overflow:hidden clips the bottom fields. */
+    .trainer-tab-content {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
     /* Search / EncounterDB filter column: flex column so the action buttons are always
        visible at the bottom and only the expansion panels scroll. Height is sized to
        fit within the tab panel's overflow:hidden boundary. */
@@ -601,6 +610,20 @@ body, html {
 
 .form-field {
     margin-bottom: 0.5rem;
+}
+
+/* Full-width header used to divide a .form-grid into logical sections
+   (Identity, Location, Currency, Unlocks, Editors, …). */
+.form-section-header {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--mud-palette-divider);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--mud-palette-text-secondary);
 }
 
 .playtime-group {
