@@ -32,6 +32,16 @@
         </AssemblyAttribute>
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- Embed the trim descriptor as ILLink.Descriptors.xml so the trimmer
+             discovers it automatically when trimming this assembly. The
+             TrimmerRootDescriptor MSBuild item does not propagate from an RCL
+             to the referencing app project's trim step. -->
+        <EmbeddedResource Include="PreserveRoutes.xml">
+            <LogicalName>ILLink.Descriptors.xml</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
+
     <Import Project="Tailwind.targets"/>
 
 </Project>

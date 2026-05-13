@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Trimmer root descriptor: preserve all Blazor route components.
+
+  The Router (in App.razor) discovers @page components by reflecting over
+  AppAssembly. Under TrimMode=full the trimmer otherwise strips these types
+  since nothing else references them statically — Home, NotFound, and any
+  future page would silently disappear, manifesting at runtime as a
+  CtorNotLocated exception when the router tries to activate them.
+
+  Wildcard matches every type under Pkmds.Rcl.Components.Pages.*, which is
+  where every route in this app lives by convention.
+-->
+<linker>
+  <assembly fullname="Pkmds.Rcl">
+    <type fullname="Pkmds.Rcl.Components.Pages.*" preserve="all" />
+  </assembly>
+</linker>
