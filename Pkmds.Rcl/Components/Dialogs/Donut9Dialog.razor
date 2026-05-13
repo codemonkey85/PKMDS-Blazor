@@ -23,13 +23,13 @@
                 <MudIconButton Icon="@Icons.Material.Filled.NavigateBefore"
                                Size="@Size.Small"
                                OnClick="@GotoPrev"
-                               Disabled="@(_activeIndices.IndexOf(_selectedRawIndex) <= 0)"
+                               Disabled="@(!CanGoPrev)"
                                aria-label="Previous donut"
                                title="Previous donut"/>
                 <MudIconButton Icon="@Icons.Material.Filled.NavigateNext"
                                Size="@Size.Small"
                                OnClick="@GotoNext"
-                               Disabled="@(_activeIndices.IndexOf(_selectedRawIndex) >= _activeIndices.Count - 1)"
+                               Disabled="@(!CanGoNext)"
                                aria-label="Next donut"
                                title="Next donut"/>
                 <MudText Typo="@Typo.body2">@_activeIndices.Count active donut@(_activeIndices.Count != 1 ? "s" : string.Empty)</MudText>

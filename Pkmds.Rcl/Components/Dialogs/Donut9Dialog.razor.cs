@@ -61,18 +61,51 @@ public partial class Donut9Dialog
             })];
     }
 
-    private void GotoPrev()
+    // Prev/Next must work even when the user manually selected an inactive slot
+    // (via the Slot numeric field). In that case _activeIndices.IndexOf returns -1,
+    // so we snap to the nearest occupied slot in the requested direction instead.
+    // _activeIndices is built in ascending order, so a linear scan is sufficient.
+    private int FindPrevActiveIndex()
     {
         var idx = _activeIndices.IndexOf(_selectedRawIndex);
         if (idx > 0)
-            _selectedRawIndex = _activeIndices[idx - 1];
+            return idx - 1;
+        if (idx == 0)
+            return -1;
+        for (var i = _activeIndices.Count - 1; i >= 0; i--)
+            if (_activeIndices[i] < _selectedRawIndex)
+                return i;
+        return -1;
+    }
+
+    private int FindNextActiveIndex()
+    {
+        var idx = _activeIndices.IndexOf(_selectedRawIndex);
+        if (idx >= 0 && idx < _activeIndices.Count - 1)
+            return idx + 1;
+        if (idx == _activeIndices.Count - 1)
+            return -1;
+        for (var i = 0; i < _activeIndices.Count; i++)
+            if (_activeIndices[i] > _selectedRawIndex)
+                return i;
+        return -1;
+    }
+
+    private bool CanGoPrev => FindPrevActiveIndex() >= 0;
+    private bool CanGoNext => FindNextActiveIndex() >= 0;
+
+    private void GotoPrev()
+    {
+        var i = FindPrevActiveIndex();
+        if (i >= 0)
+            _selectedRawIndex = _activeIndices[i];
     }
 
     private void GotoNext()
     {
-        var idx = _activeIndices.IndexOf(_selectedRawIndex);
-        if (idx >= 0 && idx < _activeIndices.Count - 1)
-            _selectedRawIndex = _activeIndices[idx + 1];
+        var i = FindNextActiveIndex();
+        if (i >= 0)
+            _selectedRawIndex = _activeIndices[i];
     }
 
     // Returns the donut at the currently selected raw slot.

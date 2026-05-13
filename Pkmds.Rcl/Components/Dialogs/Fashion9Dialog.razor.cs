@@ -107,15 +107,16 @@ public partial class Fashion9Dialog
         await EnsureActiveSectionLoadedAsync();
     }
 
-    // Parses the active section if not already loaded. Yields to the renderer first so
-    // the spinner appears, then performs the (synchronous) parse, then re-renders.
+    // Parses the active section if not already loaded. Task.Delay(1) (not Task.Yield —
+    // which doesn't release the JS macrotask in Blazor WASM, see batch-legalize lessons)
+    // lets the spinner paint before the synchronous parse runs, then re-renders.
     private async Task EnsureActiveSectionLoadedAsync()
     {
         if (SaveFile is SAV9SV)
         {
             if (_activePanelIndex < _svSections.Count && _svSections[_activePanelIndex].Items is null)
             {
-                await Task.Yield();
+                await Task.Delay(1);
                 _svSections[_activePanelIndex].Items = ParseSv(_svSections[_activePanelIndex].Block);
                 StateHasChanged();
             }
@@ -128,7 +129,7 @@ public partial class Fashion9Dialog
                 var section = _zaClothingSections[_activePanelIndex];
                 if (section.Items is null)
                 {
-                    await Task.Yield();
+                    await Task.Delay(1);
                     section.Items = ParseZaClothing(section.Block);
                     StateHasChanged();
                 }
@@ -141,7 +142,7 @@ public partial class Fashion9Dialog
                     var section = _zaHairSections[hairIndex];
                     if (section.Items is null)
                     {
-                        await Task.Yield();
+                        await Task.Delay(1);
                         section.Items = ParseZaHair(section.Block);
                         StateHasChanged();
                     }
