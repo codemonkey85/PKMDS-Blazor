@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  Trimmer root descriptor: preserve all Blazor route components.
+  Trimmer root descriptor: preserve all Blazor route and layout components.
 
   The Router (in App.razor) discovers @page components by reflecting over
   AppAssembly. Under TrimMode=full the trimmer otherwise strips these types
@@ -8,11 +8,16 @@
   future page would silently disappear, manifesting at runtime as a
   CtorNotLocated exception when the router tries to activate them.
 
-  Wildcard matches every type under Pkmds.Rcl.Components.Pages.*, which is
-  where every route in this app lives by convention.
+  Layout components (MainLayout, MinimalLayout) are resolved by name via
+  the @layout directive at runtime, so they are likewise invisible to the
+  static call graph and must be preserved explicitly.
+
+  Both wildcards cover every type in their respective namespaces, so future
+  additions in either folder are covered automatically.
 -->
 <linker>
   <assembly fullname="Pkmds.Rcl">
     <type fullname="Pkmds.Rcl.Components.Pages.*" preserve="all" />
+    <type fullname="Pkmds.Rcl.Components.Layout.*" preserve="all" />
   </assembly>
 </linker>
