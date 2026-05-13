@@ -157,7 +157,7 @@ public sealed class BatchEditorService(
                 return [];
             }
 
-            return JsonSerializer.Deserialize<List<BatchEditorPreset>>(json) ?? [];
+            return JsonSerializer.Deserialize(json, PkmdsJsonContext.Default.BatchEditorPresets) ?? [];
         }
         catch
         {
@@ -191,7 +191,7 @@ public sealed class BatchEditorService(
     {
         try
         {
-            var json = JsonSerializer.Serialize(presets);
+            var json = JsonSerializer.Serialize(presets, PkmdsJsonContext.Default.BatchEditorPresets);
             await jsRuntime.InvokeVoidAsync("localStorage.setItem", PresetsKey, json);
         }
         catch

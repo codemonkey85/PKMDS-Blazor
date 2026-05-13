@@ -1,6 +1,5 @@
 @page "/bench"
 @layout MinimalLayout
-@using System.Text.Json
 
 <PageTitle>Benchmark</PageTitle>
 
@@ -34,13 +33,13 @@
         {
             var runner = new BenchmarkRunner();
             var report = runner.Run();
+            // UserAgent is filled in by the Playwright runner via page.evaluate
+            // — keeping that out of C# avoids one more IJSRuntime.InvokeAsync<T>
+            // call site that the trimmer flags as reflection-unsafe.
 
-            var ua = await JSRuntime.InvokeAsync<string>("pkmdsGetUserAgent");
-            report = report with { UserAgent = ua };
-
-            resultJson = JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true });
+            resultJson = JsonSerializer.Serialize(report, PkmdsJsonContext.Default.BenchmarkReport);
             state = "done";
-            await JSRuntime.InvokeVoidAsync("console.log", "BENCH_RESULT_JSON:" + JsonSerializer.Serialize(report));
+            await JSRuntime.InvokeVoidAsync("console.log", "BENCH_RESULT_JSON:" + resultJson);
         }
         catch (Exception ex)
         {

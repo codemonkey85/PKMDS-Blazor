@@ -117,6 +117,7 @@ try {
     const resultText = await page.textContent('#bench-result');
     report = JSON.parse(resultText);
     report.NavToReadyMs = elapsedMs;
+    report.UserAgent = await page.evaluate(() => navigator.userAgent);
 } finally {
     await browser.close();
     server.close();
