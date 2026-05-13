@@ -445,6 +445,16 @@ public partial class TrainerInfoTab : IDisposable
         }
     }
 
+    private async Task OpenFashionDialog(SaveFile sav)
+    {
+        var parameters = new DialogParameters<Fashion9Dialog>
+        {
+            { x => x.SaveFile, sav },
+        };
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Large);
+        await DialogService.ShowAsync<Fashion9Dialog>("Fashion Editor", parameters, options);
+    }
+
     private sealed record CurrencyDescriptor(string Label, uint Value, Action<uint> Set, uint Max);
 
     private static IEnumerable<CurrencyDescriptor> GetExtraCurrencies(SaveFile saveFile)

@@ -1,0 +1,160 @@
+@inherits BasePkmdsComponent
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="@Typo.h6">Fashion Editor</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTabs Elevation="0">
+            @if (SaveFile is SAV9SV)
+            {
+                @foreach (var section in _svSections)
+                {
+                    <MudTabPanel Text="@section.Label">
+                        <MudDataGrid T="@FashionItemModel"
+                                     Items="@section.Items"
+                                     Hover
+                                     Dense
+                                     ReadOnly
+                                     Height="450px"
+                                     FixedHeader>
+                            <Columns>
+                                <PropertyColumn Property="@(x => x.Index)"
+                                                Title="#"/>
+                                <PropertyColumn Property="@(x => x.Value)"
+                                                Title="ID"/>
+                                <TemplateColumn Title="New">
+                                    <CellTemplate>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@context.Item.IsNew"
+                                                     ValueChanged="@(v => context.Item.IsNew = v)"
+                                                     Dense/>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            </Columns>
+                        </MudDataGrid>
+                    </MudTabPanel>
+                }
+            }
+            else if (SaveFile is SAV9ZA)
+            {
+                @foreach (var section in _zaClothingSections)
+                {
+                    var clothingItems = section.Items;
+                    <MudTabPanel Text="@section.Label">
+                        <div class="d-flex align-center gap-2 mb-2">
+                            <MudButton Size="@Size.Small"
+                                       Variant="@Variant.Filled"
+                                       Color="@Color.Primary"
+                                       OnClick="@(() => { SetAllOwned(clothingItems); StateHasChanged(); })">
+                                Set All Owned
+                            </MudButton>
+                        </div>
+                        <MudDataGrid T="@FashionItem9aModel"
+                                     Items="@section.Items"
+                                     Hover
+                                     Dense
+                                     ReadOnly
+                                     Height="400px"
+                                     FixedHeader>
+                            <Columns>
+                                <PropertyColumn Property="@(x => x.Index)"
+                                                Title="#"/>
+                                <PropertyColumn Property="@(x => x.Value)"
+                                                Title="ID"/>
+                                <TemplateColumn Title="New">
+                                    <CellTemplate>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@context.Item.IsNew"
+                                                     ValueChanged="@(v => context.Item.IsNew = v)"
+                                                     Dense/>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                                <TemplateColumn Title="New (Shop)">
+                                    <CellTemplate>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@context.Item.IsNewShop"
+                                                     ValueChanged="@(v => context.Item.IsNewShop = v)"
+                                                     Dense/>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                                <TemplateColumn Title="New (Group)">
+                                    <CellTemplate>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@context.Item.IsNewGroup"
+                                                     ValueChanged="@(v => context.Item.IsNewGroup = v)"
+                                                     Dense/>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                                <TemplateColumn Title="Equipped">
+                                    <CellTemplate>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@context.Item.IsEquipped"
+                                                     ValueChanged="@(v => context.Item.IsEquipped = v)"
+                                                     Dense/>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                                <TemplateColumn Title="Owned">
+                                    <CellTemplate>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@context.Item.IsOwned"
+                                                     ValueChanged="@(v => context.Item.IsOwned = v)"
+                                                     Dense/>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            </Columns>
+                        </MudDataGrid>
+                    </MudTabPanel>
+                }
+                @foreach (var section in _zaHairSections)
+                {
+                    <MudTabPanel Text="@section.Label">
+                        <MudDataGrid T="@FashionItemModel"
+                                     Items="@section.Items"
+                                     Hover
+                                     Dense
+                                     ReadOnly
+                                     Height="450px"
+                                     FixedHeader>
+                            <Columns>
+                                <PropertyColumn Property="@(x => x.Index)"
+                                                Title="#"/>
+                                <PropertyColumn Property="@(x => x.Value)"
+                                                Title="ID"/>
+                                <TemplateColumn Title="New">
+                                    <CellTemplate>
+                                        <MudCheckBox T="@bool"
+                                                     Value="@context.Item.IsNew"
+                                                     ValueChanged="@(v => context.Item.IsNew = v)"
+                                                     Dense/>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            </Columns>
+                        </MudDataGrid>
+                    </MudTabPanel>
+                }
+            }
+        </MudTabs>
+    </DialogContent>
+    <DialogActions>
+        @if (SaveFile is SAV9ZA)
+        {
+            <MudButton Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       OnClick="@SetAllOwnedAllTabs">
+                Set All Owned (All Tabs)
+            </MudButton>
+        }
+        <MudSpacer/>
+        <MudButton OnClick="@Cancel"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Default">
+            Cancel
+        </MudButton>
+        <MudButton OnClick="@Save"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Primary">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>

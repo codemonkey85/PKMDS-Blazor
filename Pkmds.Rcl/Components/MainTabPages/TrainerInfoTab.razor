@@ -505,6 +505,14 @@
                     Unlock Base Clothing
                 </MudButton>
             </div>
+            <div class="form-field">
+                <MudButton Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Checkroom"
+                           OnClick="@(() => OpenFashionDialog(sv9Gen9))">
+                    Fashion Editor…
+                </MudButton>
+            </div>
         }
 
         @if (saveFile is SAV9ZA za9Gen9)
@@ -563,6 +571,14 @@
                            Color="@Color.Primary"
                            OnClick="@(() => CollectZaColorfulScrews(za9Gen9))">
                     Collect All Colorful Screws
+                </MudButton>
+            </div>
+            <div class="form-field">
+                <MudButton Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Checkroom"
+                           OnClick="@(() => OpenFashionDialog(za9Gen9))">
+                    Fashion Editor…
                 </MudButton>
             </div>
         }
