@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Trimmer root descriptor: preserve PKM type hierarchy in PKHeX.Core.
+
+  EntityBatchEditor (consumed by Pkmds.Rcl/Services/BatchEditorService.cs
+  for the Batch Editor tab) extends BatchEditingBase<PKM, BatchInfo> and
+  reflects over the 18 concrete PKM types listed below, caching their
+  PropertyInfo for batch property-name lookups. Under TrimMode=full the
+  trimmer otherwise strips PKM members it doesn't see static references
+  to, causing batch editor property lookups to silently return null.
+
+  PKHeX.Core has no [DynamicDependency] annotations on this reflection
+  path because the BatchEditingBase API surface is annotated
+  [RequiresUnreferencedCode]; the caller (us) is responsible for
+  rooting the reflected-over types.
+
+  Source: EntityBatchEditor.EntityTypes in PKHeX.Core. Keep this list
+  in sync if PKHeX adds a new PKM subclass to that array.
+-->
+<linker>
+  <assembly fullname="PKHeX.Core">
+    <type fullname="PKHeX.Core.PKM" preserve="all" />
+    <type fullname="PKHeX.Core.PK1" preserve="all" />
+    <type fullname="PKHeX.Core.PK2" preserve="all" />
+    <type fullname="PKHeX.Core.SK2" preserve="all" />
+    <type fullname="PKHeX.Core.PK3" preserve="all" />
+    <type fullname="PKHeX.Core.XK3" preserve="all" />
+    <type fullname="PKHeX.Core.CK3" preserve="all" />
+    <type fullname="PKHeX.Core.PK4" preserve="all" />
+    <type fullname="PKHeX.Core.BK4" preserve="all" />
+    <type fullname="PKHeX.Core.RK4" preserve="all" />
+    <type fullname="PKHeX.Core.PK5" preserve="all" />
+    <type fullname="PKHeX.Core.PK6" preserve="all" />
+    <type fullname="PKHeX.Core.PK7" preserve="all" />
+    <type fullname="PKHeX.Core.PB7" preserve="all" />
+    <type fullname="PKHeX.Core.PK8" preserve="all" />
+    <type fullname="PKHeX.Core.PA8" preserve="all" />
+    <type fullname="PKHeX.Core.PB8" preserve="all" />
+    <type fullname="PKHeX.Core.PK9" preserve="all" />
+    <type fullname="PKHeX.Core.PA9" preserve="all" />
+  </assembly>
+</linker>

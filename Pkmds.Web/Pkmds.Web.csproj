@@ -40,6 +40,10 @@
         <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <TrimmerRootDescriptor Include="PreservePkmTypes.xml"/>
+    </ItemGroup>
+
     <Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
         <Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js"/>
     </Target>
