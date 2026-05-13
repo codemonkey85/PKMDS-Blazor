@@ -465,6 +465,16 @@ public partial class TrainerInfoTab : IDisposable
         await DialogService.ShowAsync<Raid9Dialog>("Tera Raid Editor", parameters, options);
     }
 
+    private async Task OpenDonutDialog(SAV9ZA za)
+    {
+        var parameters = new DialogParameters<Donut9Dialog>
+        {
+            { x => x.SaveFile, za },
+        };
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Large);
+        await DialogService.ShowAsync<Donut9Dialog>("Donut Editor", parameters, options);
+    }
+
     private sealed record CurrencyDescriptor(string Label, uint Value, Action<uint> Set, uint Max);
 
     private static IEnumerable<CurrencyDescriptor> GetExtraCurrencies(SaveFile saveFile)
