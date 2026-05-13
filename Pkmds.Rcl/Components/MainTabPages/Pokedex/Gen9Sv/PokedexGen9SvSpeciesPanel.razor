@@ -12,6 +12,29 @@
 
         <MudStack Spacing="3">
 
+            @* Quick actions *@
+            <MudStack Row
+                      Spacing="2">
+                <MudButton Size="@Size.Small"
+                           Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           OnClick="@(() => { dex.SetDexEntryAll(SpeciesId); StateHasChanged(); })">
+                    Fill Entry
+                </MudButton>
+                <MudButton Size="@Size.Small"
+                           Variant="@Variant.Filled"
+                           Color="@Color.Secondary"
+                           OnClick="@(() => { dex.SetDexEntryAll(SpeciesId, true); StateHasChanged(); })">
+                    Fill Entry (Shiny)
+                </MudButton>
+                <MudButton Size="@Size.Small"
+                           Variant="@Variant.Filled"
+                           Color="@Color.Error"
+                           OnClick="@(() => { dex.ClearDexEntryAll(SpeciesId); StateHasChanged(); })">
+                    Clear Entry
+                </MudButton>
+            </MudStack>
+
             @* State *@
             <MudSelect T="@uint"
                        Label="State"
@@ -196,6 +219,29 @@
         var (inPaldea, inKitakami, inBlueberry) = GetDexMembership(sav9sv, SpeciesId);
 
         <MudStack Spacing="3">
+
+            @* Quick actions *@
+            <MudStack Row
+                      Spacing="2">
+                <MudButton Size="@Size.Small"
+                           Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           OnClick="@(() => { dexKita.SetDexEntryAll(SpeciesId); StateHasChanged(); })">
+                    Fill Entry
+                </MudButton>
+                <MudButton Size="@Size.Small"
+                           Variant="@Variant.Filled"
+                           Color="@Color.Secondary"
+                           OnClick="@(() => { dexKita.SetDexEntryAll(SpeciesId, true); StateHasChanged(); })">
+                    Fill Entry (Shiny)
+                </MudButton>
+                <MudButton Size="@Size.Small"
+                           Variant="@Variant.Filled"
+                           Color="@Color.Error"
+                           OnClick="@(() => { dexKita.ClearDexEntryAll(SpeciesId); StateHasChanged(); })">
+                    Clear Entry
+                </MudButton>
+            </MudStack>
 
             @* Per-form flags *@
             @if (formCount > 0)

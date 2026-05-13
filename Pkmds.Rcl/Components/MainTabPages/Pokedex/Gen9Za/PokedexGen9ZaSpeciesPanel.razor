@@ -10,6 +10,29 @@
 
     <MudStack Spacing="3">
 
+        @* Quick actions *@
+        <MudStack Row
+                  Spacing="2">
+            <MudButton Size="@Size.Small"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Primary"
+                       OnClick="@(() => { dex.SetDexEntryAll(SpeciesId); StateHasChanged(); })">
+                Fill Entry
+            </MudButton>
+            <MudButton Size="@Size.Small"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Secondary"
+                       OnClick="@(() => { dex.SetDexEntryAll(SpeciesId, true); StateHasChanged(); })">
+                Fill Entry (Shiny)
+            </MudButton>
+            <MudButton Size="@Size.Small"
+                       Variant="@Variant.Filled"
+                       Color="@Color.Error"
+                       OnClick="@(() => { dex.ClearDexEntryAll(SpeciesId); StateHasChanged(); })">
+                Clear Entry
+            </MudButton>
+        </MudStack>
+
         @* Gender / shiny seen *@
         <MudText Typo="@Typo.subtitle2">Gender Seen</MudText>
         <MudStack Row
@@ -105,7 +128,7 @@
         <MudStack Row
                   Spacing="2">
             <MudCheckBox T="@bool"
-                         Label="Seen Mega"
+                         Label="Seen Mega 1"
                          Value="@dex.GetEntry(SpeciesId).GetIsSeenMega(0)"
                          ValueChanged="@(v =>
                                        {
@@ -118,6 +141,14 @@
                          ValueChanged="@(v =>
                                        {
                                            dex.GetEntry(SpeciesId).SetIsSeenMega(1, v);
+                                           StateHasChanged();
+                                       })"/>
+            <MudCheckBox T="@bool"
+                         Label="Seen Mega 3"
+                         Value="@dex.GetEntry(SpeciesId).GetIsSeenMega(2)"
+                         ValueChanged="@(v =>
+                                       {
+                                           dex.GetEntry(SpeciesId).SetIsSeenMega(2, v);
                                            StateHasChanged();
                                        })"/>
             <MudCheckBox T="@bool"
