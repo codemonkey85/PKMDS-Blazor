@@ -114,6 +114,15 @@ public partial class PokedexSpeciesGrid
         ApplyFilter();
     }
 
+    // Multi-dex saves always show the toggle. Single-dex saves only show it when the
+    // dex is a proper subset of the visible rows (BDSP lists all national species but
+    // only some are Sinnoh-dex; SV Rev 0 and LA already filter rows to dex members in
+    // BuildRows via PokedexHelpers.IsSpeciesInDex, so a filter would be a no-op).
+    private bool ShowRegionalDexToggle =>
+        regionalDexDefinitions.Count > 1
+        || (regionalDexDefinitions.Count == 1
+            && rows.Any(r => r.RegionalIds.Count > 0 && r.RegionalIds[0] == 0));
+
     // Delegates to the shared PokedexHelpers.IsSpeciesInDex so the grid and the
     // PokedexTab header counts always filter against the same species set.
     private static int RegionalIdForSort(PokedexGridRow row, int colIdx)

@@ -40,9 +40,11 @@
                 Seen / Not Caught
             </MudToggleItem>
         </MudToggleGroup>
-        @* Hide the regional-dex toggle when the save only has one dex (e.g. SV Rev 0,
-           BDSP, LA) — "All Dexes" and the single region would be equivalent toggles. *@
-        @if (regionalDexDefinitions.Count > 1)
+        @* Hide the regional-dex toggle when filtering by the single available dex would
+           be a no-op — i.e. when every row already belongs to that dex (SV Rev 0, LA).
+           Keep it visible when rows include species outside the single dex (BDSP, where
+           the grid lists all national species but only some are in the Sinnoh dex). *@
+        @if (ShowRegionalDexToggle)
         {
             <MudToggleGroup T="@int"
                             Value="@selectedRegionalDexFilter"
