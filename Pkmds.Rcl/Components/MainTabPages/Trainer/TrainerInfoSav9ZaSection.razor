@@ -1,0 +1,113 @@
+@inherits BasePkmdsComponent
+
+@* Legends Z-A trainer fields. Renders inside the parent .form-grid; sub-sections
+   are separated by full-width .form-section-header rows. *@
+
+<div class="form-section-header">Location</div>
+
+<div class="form-field">
+    <MudNumericField Label="Map X"
+                     T="@float"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@SaveFile.Coordinates.X"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Map Y"
+                     T="@float"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@SaveFile.Coordinates.Y"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Map Z"
+                     T="@float"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@SaveFile.Coordinates.Z"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Map Rotation"
+                     T="@double"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@SaveFile.Coordinates.Rotation"
+                     @bind-Value:set="@(v => SaveFile.Coordinates.SetPlayerRotation(v))"/>
+</div>
+<div class="form-field">
+    <MudTextField Label="Map Name"
+                  Variant="@Variant.Outlined"
+                  @bind-Value="@SaveFile.Coordinates.Map"/>
+</div>
+@if (SaveFile.SaveRevision != 0)
+{
+    <div class="form-field">
+        <MudTextField Label="Street Name"
+                      Variant="@Variant.Outlined"
+                      MaxLength="18"
+                      @bind-Value:get="@GetZaStreetName(SaveFile)"
+                      @bind-Value:set="@(v => SetZaStreetName(SaveFile, v))"/>
+    </div>
+}
+
+<div class="form-section-header">Currency</div>
+
+<div class="form-field">
+    <MudNumericField Label="Royale Points"
+                     T="@uint"
+                     Variant="@Variant.Outlined"
+                     Min="@((uint)0)"
+                     Max="@((uint)310_000)"
+                     @bind-Value="@RoyalePoints"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Royale Points (Infinite)"
+                     T="@uint"
+                     Variant="@Variant.Outlined"
+                     Min="@((uint)0)"
+                     Max="@((uint)50_000)"
+                     @bind-Value="@RoyalePointsInfinite"/>
+</div>
+@if (SaveFile.SaveRevision != 0)
+{
+    <div class="form-field">
+        <MudNumericField Label="Hyperspace Survey Points"
+                         T="@uint"
+                         Variant="@Variant.Outlined"
+                         Min="@((uint)0)"
+                         Max="@((uint)100_000)"
+                         @bind-Value="@HyperspaceSurveyPoints"/>
+    </div>
+}
+
+<div class="form-section-header">Unlocks &amp; Collections</div>
+
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@CollectZaTechnicalMachines">
+        Collect All Technical Machines
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@CollectZaColorfulScrews">
+        Collect All Colorful Screws
+    </MudButton>
+</div>
+
+<div class="form-section-header">Editors</div>
+
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               StartIcon="@Icons.Material.Filled.Checkroom"
+               OnClick="@OpenFashionDialogAsync">
+        Fashion Editor…
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               StartIcon="@Icons.Material.Filled.Cake"
+               OnClick="@OpenDonutDialogAsync">
+        Donut Editor…
+    </MudButton>
+</div>

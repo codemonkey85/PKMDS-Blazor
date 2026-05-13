@@ -603,6 +603,20 @@ body, html {
     margin-bottom: 0.5rem;
 }
 
+/* Full-width header used to divide a .form-grid into logical sections
+   (Identity, Location, Currency, Unlocks, Editors, …). */
+.form-section-header {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--mud-palette-divider);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--mud-palette-text-secondary);
+}
+
 .playtime-group {
     grid-column: 1 / -1;
 }

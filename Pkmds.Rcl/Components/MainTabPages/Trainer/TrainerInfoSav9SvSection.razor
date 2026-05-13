@@ -1,0 +1,189 @@
+@inherits BasePkmdsComponent
+
+@* Scarlet/Violet-specific trainer fields. Renders inside the parent .form-grid;
+   sub-sections are separated by full-width .form-section-header rows. *@
+
+<div class="form-section-header">Identity &amp; Records</div>
+
+<div class="form-field">
+    <MudNumericField Label="Birth Month"
+                     T="@byte"
+                     Variant="@Variant.Outlined"
+                     Min="@((byte)1)"
+                     Max="@((byte)12)"
+                     @bind-Value="@SaveFile.MyStatus.BirthMonth"
+                     For="@(() => SaveFile.MyStatus.BirthMonth)"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Birth Day"
+                     T="@byte"
+                     Variant="@Variant.Outlined"
+                     Min="@((byte)1)"
+                     Max="@((byte)31)"
+                     @bind-Value="@SaveFile.MyStatus.BirthDay"
+                     For="@(() => SaveFile.MyStatus.BirthDay)"/>
+</div>
+@if (SaveFile.SaveRevision >= 2)
+{
+    <div class="form-field">
+        <MudSelect Label="Throw Style"
+                   Variant="@Variant.Outlined"
+                   T="@ThrowStyle9"
+                   @bind-Value="@SaveFile.ThrowStyle">
+            @foreach (var style in Enum.GetValues<ThrowStyle9>())
+            {
+                <MudSelectItem Value="@style"
+                               @key="@style">
+                    @GetThrowStyleName(style)
+                </MudSelectItem>
+            }
+        </MudSelect>
+    </div>
+    <div class="form-field">
+        <MudNumericField Label="BBQ Solo Quests Completed"
+                         T="@uint"
+                         Variant="@Variant.Outlined"
+                         Min="0"
+                         Max="@uint.MaxValue"
+                         @bind-Value="@SaveFile.BlueberryQuestRecord.QuestsDoneSolo"/>
+    </div>
+    <div class="form-field">
+        <MudNumericField Label="BBQ Group Quests Completed"
+                         T="@uint"
+                         Variant="@Variant.Outlined"
+                         Min="0"
+                         Max="@uint.MaxValue"
+                         @bind-Value="@SaveFile.BlueberryQuestRecord.QuestsDoneGroup"/>
+    </div>
+}
+
+<div class="form-section-header">Location</div>
+
+<div class="form-field">
+    <MudNumericField Label="Map X"
+                     T="@float"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@SaveFile.X"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Map Y"
+                     T="@float"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@SaveFile.Y"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Map Z"
+                     T="@float"
+                     Variant="@Variant.Outlined"
+                     @bind-Value="@SaveFile.Z"/>
+</div>
+<div class="form-field">
+    <MudNumericField Label="Map Rotation"
+                     T="@double"
+                     Variant="@Variant.Outlined"
+                     @bind-Value:get="@GetSvRotation(SaveFile)"
+                     @bind-Value:set="@(v => SetSvRotation(SaveFile, v))"/>
+</div>
+
+<div class="form-section-header">Currency</div>
+
+<div class="form-field">
+    <MudNumericField Label="League Points"
+                     T="@uint"
+                     Variant="@Variant.Outlined"
+                     Min="@((uint)0)"
+                     Max="@uint.MaxValue"
+                     @bind-Value="@LeaguePoints"/>
+</div>
+@if (SaveFile.SaveRevision >= 2)
+{
+    <div class="form-field">
+        <MudNumericField Label="Blueberry Points"
+                         T="@uint"
+                         Variant="@Variant.Outlined"
+                         Min="@((uint)0)"
+                         Max="@uint.MaxValue"
+                         @bind-Value="@BlueberryPoints"/>
+    </div>
+}
+
+<div class="form-section-header">Unlocks &amp; Collections</div>
+
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@UnlockSvFlyLocations">
+        Unlock All Fly Locations
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@(() => { SaveFile.CollectAllStakes(); Snackbar.Add("Collected all shrine stakes.", Severity.Success); })">
+        Collect All Shrine Stakes
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@(() => { SaveFile.UnlockAllTMRecipes(); Snackbar.Add("Unlocked all TM recipes.", Severity.Success); })">
+        Unlock All TM Recipes
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@(() => { SaveFile.ActivateSnacksworthLegendaries(); Snackbar.Add("Activated Snacksworth legendaries.", Severity.Success); })">
+        Activate Snacksworth Legendaries
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@(() => { SaveFile.UnlockAllCoaches(); Snackbar.Add("Unlocked all coaches.", Severity.Success); })">
+        Unlock All Coaches
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@UnlockSvBikeUpgrades">
+        Unlock All Ride Upgrades
+    </MudButton>
+</div>
+@if (SaveFile.SaveRevision >= 2)
+{
+    <div class="form-field">
+        <MudButton Variant="@Variant.Filled"
+                   Color="@Color.Primary"
+                   OnClick="@(() => { SaveFile.UnlockAllThrowStyles(); Snackbar.Add("Unlocked all throw styles.", Severity.Success); })">
+            Unlock All Throw Styles
+        </MudButton>
+    </div>
+}
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               OnClick="@(() => { PlayerFashionUnlock9.UnlockBase(SaveFile.Accessor, SaveFile.Gender); Snackbar.Add("Unlocked base clothing.", Severity.Success); })">
+        Unlock Base Clothing
+    </MudButton>
+</div>
+
+<div class="form-section-header">Editors</div>
+
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               StartIcon="@Icons.Material.Filled.Checkroom"
+               OnClick="@OpenFashionDialogAsync">
+        Fashion Editor…
+    </MudButton>
+</div>
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               StartIcon="@Icons.Material.Filled.Grain"
+               OnClick="@OpenRaidDialogAsync">
+        Tera Raid Editor…
+    </MudButton>
+</div>
