@@ -1,0 +1,53 @@
+@page "/bench"
+@layout MinimalLayout
+@using System.Text.Json
+
+<PageTitle>Benchmark</PageTitle>
+
+<div id="bench-root" data-bench-state="@state">
+    <h1 style="font-family: monospace">PKHeX runtime benchmark</h1>
+    <p style="font-family: monospace">State: <strong>@state</strong></p>
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <pre id="bench-error" style="color: red; white-space: pre-wrap;">@error</pre>
+    }
+    <pre id="bench-result" style="white-space: pre-wrap; font-family: monospace;">@resultJson</pre>
+</div>
+
+@code {
+    private string state = "init";
+    private string? error;
+    private string resultJson = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        state = "running";
+        StateHasChanged();
+        await Task.Delay(1);
+
+        try
+        {
+            var runner = new BenchmarkRunner();
+            var report = runner.Run();
+
+            var ua = await JSRuntime.InvokeAsync<string>("pkmdsGetUserAgent");
+            report = report with { UserAgent = ua };
+
+            resultJson = JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true });
+            state = "done";
+            await JSRuntime.InvokeVoidAsync("console.log", "BENCH_RESULT_JSON:" + JsonSerializer.Serialize(report));
+        }
+        catch (Exception ex)
+        {
+            error = ex.ToString();
+            state = "error";
+        }
+
+        StateHasChanged();
+    }
+}

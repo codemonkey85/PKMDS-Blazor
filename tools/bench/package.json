@@ -1,0 +1,13 @@
+{
+  "name": "pkmds-bench",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Playwright runner for the /bench page. Used by measure-publish.ps1 (see issue #883).",
+  "scripts": {
+    "bench": "node run-bench.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

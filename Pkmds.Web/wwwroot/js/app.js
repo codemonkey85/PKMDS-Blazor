@@ -94,6 +94,9 @@ if (pkmdsIsEmbedded()) {
     });
 })();
 
+// Bench page helper — called from Benchmark.razor instead of eval to avoid unsafe-eval.
+window.pkmdsGetUserAgent = () => navigator.userAgent;
+
 // Listen for update events and forward to Blazor
 window.addUpdateListener = () => {
     window.addEventListener('updateAvailable', () => {

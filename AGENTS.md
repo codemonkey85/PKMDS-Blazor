@@ -202,6 +202,47 @@ dotnet run tools/scrape-pokemondb-descriptions.cs -- --force            # re-scr
 
 The scraper is incremental — re-running it only fetches entries that aren't already in the cache (or that were previously 404, unless `--retry-notfound` is passed). Ctrl+C saves partial progress. After running the scraper, rerun `generate-descriptions.cs` to pick up the new overrides; passing `--overrides` is optional because it auto-discovers `tools/data/description-overrides.json` from the repo root.
 
+## Performance measurement
+
+Used to compare WASM build configs (AOT, SIMD, trim, ...) on build time, deploy size, and runtime perf. See issue #883 for the ongoing investigation.
+
+### `measure-publish.ps1`
+
+Publishes `Pkmds.Web` in Release with optional MSBuild args, measures publish time and output size, and writes a labeled markdown report to `measurements/<Label>.md`. Cleans `release/` AND `obj/Release` for each project before publishing so build-time numbers reflect a true cold build.
+
+```powershell
+# Baseline (current settings)
+./measure-publish.ps1 -Label baseline
+
+# Flip one or more knobs
+./measure-publish.ps1 -Label simd-on  -MSBuildArgs '-p:WasmEnableSIMD=true'
+./measure-publish.ps1 -Label aot-on   -MSBuildArgs '-p:RunAOTCompilation=true'
+./measure-publish.ps1 -Label aot-simd -MSBuildArgs '-p:RunAOTCompilation=true','-p:WasmEnableSIMD=true'
+
+# Also run the runtime benchmark via Playwright (see below)
+./measure-publish.ps1 -Label baseline -RunBenchmark
+```
+
+The `measurements/` directory is gitignored — these reports are local diagnostics, not artifacts to commit.
+
+### `tools/bench/` — Playwright runtime harness
+
+Drives the hidden `/bench` route in headless Chromium against a published build and appends runtime numbers to the same `measurements/<Label>.md` report.
+
+- `Pkmds.Rcl/Components/Pages/Benchmark.razor` — unlinked `/bench` page that runs four PKHeX hot-path workloads (legality analysis, encryption roundtrip, search filter over a full populated SAV, encounter generation) and reports JSON via `#bench-result` + `console.log`.
+- `Pkmds.Rcl/Services/BenchmarkRunner.cs` — synthetic SAV9SV factory + per-workload iteration + summary stats (mean/min/max/stddev/ops-per-sec).
+- `tools/bench/run-bench.mjs` — Node script that serves the published `wwwroot`, launches Chromium, navigates to `/bench`, waits for `data-bench-state="done"`, scrapes the JSON, and appends a markdown section.
+
+One-time setup:
+```powershell
+Push-Location tools/bench
+npm install
+npx playwright install chromium
+Pop-Location
+```
+
+The bench page is hidden — no nav link, just reachable by typing `/bench`. Triggered automatically by `measure-publish.ps1 -RunBenchmark`.
+
 ## MudBlazor and Razor gotchas
 
 - `ComboItem` (PKHeX) is a **sealed record** (reference type). Using `ComboItem?` in a Razor `@bind-Value` triggers CS8669 in the Razor-generated code — use `int?` with `.Value` for select bindings instead.
