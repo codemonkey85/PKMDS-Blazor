@@ -455,6 +455,16 @@ public partial class TrainerInfoTab : IDisposable
         await DialogService.ShowAsync<Fashion9Dialog>("Fashion Editor", parameters, options);
     }
 
+    private async Task OpenRaidDialog(SAV9SV sv)
+    {
+        var parameters = new DialogParameters<Raid9Dialog>
+        {
+            { x => x.SaveFile, sv },
+        };
+        var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Large);
+        await DialogService.ShowAsync<Raid9Dialog>("Tera Raid Editor", parameters, options);
+    }
+
     private sealed record CurrencyDescriptor(string Label, uint Value, Action<uint> Set, uint Max);
 
     private static IEnumerable<CurrencyDescriptor> GetExtraCurrencies(SaveFile saveFile)
