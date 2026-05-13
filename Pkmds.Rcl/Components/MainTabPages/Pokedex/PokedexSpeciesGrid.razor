@@ -40,7 +40,9 @@
                 Seen / Not Caught
             </MudToggleItem>
         </MudToggleGroup>
-        @if (regionalDexDefinitions.Count > 0)
+        @* Hide the regional-dex toggle when the save only has one dex (e.g. SV Rev 0,
+           BDSP, LA) — "All Dexes" and the single region would be equivalent toggles. *@
+        @if (regionalDexDefinitions.Count > 1)
         {
             <MudToggleGroup T="@int"
                             Value="@selectedRegionalDexFilter"
