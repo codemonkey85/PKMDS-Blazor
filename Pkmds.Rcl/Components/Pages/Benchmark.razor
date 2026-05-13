@@ -28,14 +28,14 @@
 
         state = "running";
         StateHasChanged();
-        await Task.Yield();
+        await Task.Delay(1);
 
         try
         {
             var runner = new BenchmarkRunner();
             var report = runner.Run();
 
-            var ua = await JSRuntime.InvokeAsync<string>("eval", "navigator.userAgent");
+            var ua = await JSRuntime.InvokeAsync<string>("pkmdsGetUserAgent");
             report = report with { UserAgent = ua };
 
             resultJson = JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true });

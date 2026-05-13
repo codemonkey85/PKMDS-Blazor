@@ -64,10 +64,10 @@ if (Test-Path $publishDir) {
 # Wipe Release obj/ for all projects so emcc native-object caching doesn't
 # make a re-run look artificially fast. This forces a true cold build.
 $objDirs = @(
-    "Pkmds.Web\obj\Release",
-    "Pkmds.Rcl\obj\Release",
-    "Pkmds.Core\obj\Release"
-) | ForEach-Object { Join-Path $repoRoot $_ } | Where-Object { Test-Path $_ }
+    (Join-Path $repoRoot 'Pkmds.Web' 'obj' 'Release'),
+    (Join-Path $repoRoot 'Pkmds.Rcl' 'obj' 'Release'),
+    (Join-Path $repoRoot 'Pkmds.Core' 'obj' 'Release')
+) | Where-Object { Test-Path $_ }
 foreach ($d in $objDirs) {
     Write-Host "Cleaning $d..."
     Remove-Item -Recurse -Force $d
@@ -182,7 +182,7 @@ Write-Host ("  _framework gzip:    {0}" -f (Format-Size $frameworkGz))
 if ($RunBenchmark) {
     Write-Host ""
     Write-Host "Running runtime benchmark via Playwright..." -ForegroundColor Cyan
-    $benchDir = Join-Path $repoRoot "tools\bench"
+    $benchDir = Join-Path $repoRoot 'tools' 'bench'
     Push-Location $benchDir
     try {
         node run-bench.mjs --label $Label --site $wwwroot --output $reportPath

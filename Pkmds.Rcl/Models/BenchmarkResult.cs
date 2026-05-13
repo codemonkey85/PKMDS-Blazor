@@ -10,7 +10,7 @@ public sealed record BenchmarkResult
     public required double MinMs { get; init; }
     public required double MaxMs { get; init; }
     public required double StdDevMs { get; init; }
-    public double OpsPerSecond => Iterations * OpsPerIteration / (TotalMs / 1000.0);
+    public double OpsPerSecond => TotalMs > 0 ? Iterations * OpsPerIteration / (TotalMs / 1000.0) : 0;
 }
 
 public sealed record BenchmarkReport

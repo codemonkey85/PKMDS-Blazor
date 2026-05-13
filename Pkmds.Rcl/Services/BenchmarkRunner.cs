@@ -184,9 +184,10 @@ public sealed class BenchmarkRunner
     {
         var template = (PK9)sav.BlankPKM.Clone();
 
+        var opsPerIteration = 0;
         for (var w = 0; w < WarmupIterations; w++)
         {
-            CountAllEncounters(sav, template);
+            opsPerIteration = CountAllEncounters(sav, template);
         }
 
         var timings = new double[iterations];
@@ -199,7 +200,7 @@ public sealed class BenchmarkRunner
             timings[it] = sw.Elapsed.TotalMilliseconds;
         }
 
-        return Summarize("encounter-generation", timings, opsPerIteration: BenchSpecies.Length);
+        return Summarize("encounter-generation", timings, opsPerIteration: opsPerIteration);
     }
 
     private static int CountAllEncounters(SaveFile sav, PK9 template)

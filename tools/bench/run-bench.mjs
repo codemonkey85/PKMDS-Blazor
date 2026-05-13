@@ -49,21 +49,31 @@ const MIME = {
 const server = createServer(async (req, res) => {
     try {
         const url = new URL(req.url, 'http://localhost');
-        let path = decodeURIComponent(url.pathname);
-        if (path.endsWith('/')) path += 'index.html';
-        let filePath = join(siteDir, path);
+        let pathname = decodeURIComponent(url.pathname);
+        if (pathname.endsWith('/')) pathname += 'index.html';
 
-        // SPA fallback: any path without an extension falls back to index.html.
-        if (!extname(filePath)) {
-            filePath = join(siteDir, 'index.html');
+        // Security: reject path traversal — resolved path must stay within siteDir.
+        const filePath = resolve(join(siteDir, pathname));
+        if (!filePath.startsWith(siteDir + '/') && filePath !== siteDir) {
+            res.writeHead(400, { 'content-type': 'text/plain' });
+            res.end('Bad request');
+            return;
         }
 
-        const data = await readFile(filePath).catch(async () => {
-            // Asset miss — try SPA fallback once more for client-side routes.
-            return await readFile(join(siteDir, 'index.html'));
-        });
+        // SPA fallback only for extensionless routes (Blazor client-side navigation).
+        // Asset requests with a known extension return 404 on miss so errors aren't masked.
+        const servePath = extname(filePath) ? filePath : join(siteDir, 'index.html');
 
-        const mime = MIME[extname(filePath).toLowerCase()] ?? 'application/octet-stream';
+        let data;
+        try {
+            data = await readFile(servePath);
+        } catch {
+            res.writeHead(404, { 'content-type': 'text/plain' });
+            res.end('Not found');
+            return;
+        }
+
+        const mime = MIME[extname(servePath).toLowerCase()] ?? 'application/octet-stream';
         res.writeHead(200, { 'content-type': mime, 'cache-control': 'no-store' });
         res.end(data);
     } catch (err) {
