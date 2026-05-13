@@ -369,3 +369,6 @@ Pkmds.Rcl/bin/sha256sums.txt
 
 # Local diagnostic output from tools/report-missing-descriptions.cs
 missing-flavor-report.txt
+
+# Local diagnostic output from measure-publish.ps1 (perf measurement reports)
+measurements/
