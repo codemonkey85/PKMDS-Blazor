@@ -14,60 +14,52 @@
                       AdornmenT="@Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search"
                       Clearable/>
-        <MudButtonGroup Variant="@Variant.Outlined"
+        <MudToggleGroup T="@DexStatusFilter"
+                        Value="@selectedStatusFilter"
+                        ValueChanged="@SetStatusFilter"
+                        Color="@Color.Primary"
                         Size="@Size.Small">
-            <MudButton Color="@(selectedStatusFilter == DexStatusFilter.All
-                                  ? Color.Primary
-                                  : Color.Default)"
-                       OnClick="@(() => SetStatusFilter(DexStatusFilter.All))">
+            <MudToggleItem T="@DexStatusFilter"
+                           Value="@DexStatusFilter.All">
                 All
-            </MudButton>
-            <MudButton Color="@(selectedStatusFilter == DexStatusFilter.Seen
-                                  ? Color.Primary
-                                  : Color.Default)"
-                       OnClick="@(() => SetStatusFilter(DexStatusFilter.Seen))">
+            </MudToggleItem>
+            <MudToggleItem T="@DexStatusFilter"
+                           Value="@DexStatusFilter.Seen">
                 Seen
-            </MudButton>
-            <MudButton Color="@(selectedStatusFilter == DexStatusFilter.Caught
-                                  ? Color.Success
-                                  : Color.Default)"
-                       OnClick="@(() => SetStatusFilter(DexStatusFilter.Caught))">
+            </MudToggleItem>
+            <MudToggleItem T="@DexStatusFilter"
+                           Value="@DexStatusFilter.Caught">
                 Caught
-            </MudButton>
-            <MudButton Color="@(selectedStatusFilter == DexStatusFilter.Unseen
-                                  ? Color.Warning
-                                  : Color.Default)"
-                       OnClick="@(() => SetStatusFilter(DexStatusFilter.Unseen))">
+            </MudToggleItem>
+            <MudToggleItem T="@DexStatusFilter"
+                           Value="@DexStatusFilter.Unseen">
                 Unseen
-            </MudButton>
-            <MudButton Color="@(selectedStatusFilter == DexStatusFilter.SeenNotCaught
-                                  ? Color.Info
-                                  : Color.Default)"
-                       OnClick="@(() => SetStatusFilter(DexStatusFilter.SeenNotCaught))">
+            </MudToggleItem>
+            <MudToggleItem T="@DexStatusFilter"
+                           Value="@DexStatusFilter.SeenNotCaught">
                 Seen / Not Caught
-            </MudButton>
-        </MudButtonGroup>
+            </MudToggleItem>
+        </MudToggleGroup>
         @if (regionalDexDefinitions.Count > 0)
         {
-            <MudButtonGroup Variant="@Variant.Outlined"
+            <MudToggleGroup T="@int"
+                            Value="@selectedRegionalDexFilter"
+                            ValueChanged="@SetRegionalDexFilter"
+                            Color="@Color.Primary"
                             Size="@Size.Small">
-                <MudButton Color="@(selectedRegionalDexFilter == -1
-                                      ? Color.Primary
-                                      : Color.Default)"
-                           OnClick="@(() => SetRegionalDexFilter(-1))">
+                <MudToggleItem T="@int"
+                               Value="-1">
                     All Dexes
-                </MudButton>
+                </MudToggleItem>
                 @for (var i = 0; i < regionalDexDefinitions.Count; i++)
                 {
                     var idx = i;
-                    <MudButton Color="@(selectedRegionalDexFilter == idx
-                                          ? Color.Primary
-                                          : Color.Default)"
-                               OnClick="@(() => SetRegionalDexFilter(idx))">
+                    <MudToggleItem T="@int"
+                                   Value="@idx">
                         @regionalDexDefinitions[idx].Name
-                    </MudButton>
+                    </MudToggleItem>
                 }
-            </MudButtonGroup>
+            </MudToggleGroup>
         }
     </MudStack>
 

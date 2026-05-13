@@ -142,7 +142,29 @@ public partial class Donut9Dialog
 
     private void Compress()
     {
-        SaveFile?.Donuts.Compress();
+        if (SaveFile is null)
+            return;
+
+        // Work around upstream PKHeX bug: Donut9a.IsEmpty is inverted
+        // (returns `MillisecondsSince1970 != 0` instead of `== 0`), which makes
+        // DonutPocket9a.Compress() drop occupied slots and keep empty ones.
+        // Re-pack manually using the corrected "occupied" predicate.
+        var donuts = SaveFile.Donuts;
+        var writePos = 0;
+        for (var readPos = 0; readPos < DonutPocket9a.MaxCount; readPos++)
+        {
+            var read = donuts.GetDonut(readPos);
+            if (read.MillisecondsSince1970 == 0)
+                continue;
+            if (writePos != readPos)
+            {
+                var write = donuts.GetDonut(writePos);
+                read.CopyTo(write);
+                read.Clear();
+            }
+            writePos++;
+        }
+
         LoadData();
         StateHasChanged();
     }

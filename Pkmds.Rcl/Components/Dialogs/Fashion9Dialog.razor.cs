@@ -9,9 +9,15 @@ public partial class Fashion9Dialog
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
 
-    private List<(string Label, SCBlock Block, List<FashionItemModel> Items)> _svSections = [];
-    private List<(string Label, SCBlock Block, List<FashionItem9aModel> Items)> _zaClothingSections = [];
-    private List<(string Label, SCBlock Block, List<FashionItemModel> Items)> _zaHairSections = [];
+    private List<FashionSection<FashionItemModel>> _svSections = [];
+    private List<FashionSection<FashionItem9aModel>> _zaClothingSections = [];
+    private List<FashionSection<FashionItemModel>> _zaHairSections = [];
+
+    // Tracks the active MudTabPanel index across SV / ZA-clothing / ZA-hair so we can
+    // lazy-load only the section currently visible. Eagerly loading all 25 ZA tabs at
+    // dialog open blocks the WASM main thread long enough for Chrome to offer to kill
+    // the page.
+    private int _activePanelIndex;
 
     private static readonly (uint Key, string Label)[] SvSectionDefs =
     [
@@ -61,73 +67,111 @@ public partial class Fashion9Dialog
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        LoadData();
+        BuildDescriptors();
     }
 
-    private void LoadData()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+            await EnsureActiveSectionLoadedAsync();
+    }
+
+    // Builds the per-tab descriptors with `Items = null`; actual data parsing happens
+    // lazily when the user activates each tab.
+    private void BuildDescriptors()
     {
         _svSections.Clear();
         _zaClothingSections.Clear();
         _zaHairSections.Clear();
+        _activePanelIndex = 0;
 
         switch (SaveFile)
         {
             case SAV9SV sv:
-                LoadSvData(sv);
+                foreach (var (key, label) in SvSectionDefs)
+                    _svSections.Add(new FashionSection<FashionItemModel>(label, sv.Blocks.GetBlock(key)));
                 break;
             case SAV9ZA za:
-                LoadZaData(za);
+                foreach (var (key, label) in ZaClothingSectionDefs)
+                    _zaClothingSections.Add(new FashionSection<FashionItem9aModel>(label, za.Blocks.GetBlock(key)));
+                foreach (var (key, label) in ZaHairSectionDefs)
+                    _zaHairSections.Add(new FashionSection<FashionItemModel>(label, za.Blocks.GetBlock(key)));
                 break;
         }
     }
 
-    private void LoadSvData(SAV9SV sv)
+    private async Task OnActivePanelChanged(int newIndex)
     {
-        foreach (var (key, label) in SvSectionDefs)
-        {
-            var block = sv.Blocks.GetBlock(key);
-            var raw = FashionItem9.GetArray(block.Data);
-            var items = raw
-                .Select((item, i) => new FashionItemModel { Index = i, Value = item.Value, IsNew = item.IsNew })
-                .Where(m => m.Value != FashionItem9.None)
-                .ToList();
-            _svSections.Add((label, block, items));
-        }
+        _activePanelIndex = newIndex;
+        await EnsureActiveSectionLoadedAsync();
     }
 
-    private void LoadZaData(SAV9ZA za)
+    // Parses the active section if not already loaded. Yields to the renderer first so
+    // the spinner appears, then performs the (synchronous) parse, then re-renders.
+    private async Task EnsureActiveSectionLoadedAsync()
     {
-        foreach (var (key, label) in ZaClothingSectionDefs)
+        if (SaveFile is SAV9SV)
         {
-            var block = za.Blocks.GetBlock(key);
-            var raw = FashionItem9a.GetArray(block.Data);
-            var items = raw
-                .Select((item, i) => new FashionItem9aModel
+            if (_activePanelIndex < _svSections.Count && _svSections[_activePanelIndex].Items is null)
+            {
+                await Task.Yield();
+                _svSections[_activePanelIndex].Items = ParseSv(_svSections[_activePanelIndex].Block);
+                StateHasChanged();
+            }
+        }
+        else if (SaveFile is SAV9ZA)
+        {
+            var clothingCount = _zaClothingSections.Count;
+            if (_activePanelIndex < clothingCount)
+            {
+                var section = _zaClothingSections[_activePanelIndex];
+                if (section.Items is null)
                 {
-                    Index = i,
-                    Value = item.Value,
-                    IsNew = item.IsNew,
-                    IsNewShop = item.IsNewShop,
-                    IsNewGroup = item.IsNewGroup,
-                    IsEquipped = item.IsEquipped,
-                    IsOwned = item.IsOwned,
-                })
-                .Where(m => m.Value != FashionItem9a.None)
-                .ToList();
-            _zaClothingSections.Add((label, block, items));
-        }
-
-        foreach (var (key, label) in ZaHairSectionDefs)
-        {
-            var block = za.Blocks.GetBlock(key);
-            var raw = HairMakeItem9a.GetArray(block.Data);
-            var items = raw
-                .Select((item, i) => new FashionItemModel { Index = i, Value = item.Value, IsNew = item.IsNew })
-                .Where(m => m.Value != HairMakeItem9a.None)
-                .ToList();
-            _zaHairSections.Add((label, block, items));
+                    await Task.Yield();
+                    section.Items = ParseZaClothing(section.Block);
+                    StateHasChanged();
+                }
+            }
+            else
+            {
+                var hairIndex = _activePanelIndex - clothingCount;
+                if (hairIndex >= 0 && hairIndex < _zaHairSections.Count)
+                {
+                    var section = _zaHairSections[hairIndex];
+                    if (section.Items is null)
+                    {
+                        await Task.Yield();
+                        section.Items = ParseZaHair(section.Block);
+                        StateHasChanged();
+                    }
+                }
+            }
         }
     }
+
+    // Show every slot (including ones still set to the None sentinel) so the user can
+    // edit any row — matches PKHeX WinForms' SAV_Fashion9 behavior.
+    private static List<FashionItemModel> ParseSv(SCBlock block) =>
+        [.. FashionItem9.GetArray(block.Data)
+            .Select((item, i) => new FashionItemModel { Index = i, Value = item.Value, IsNew = item.IsNew })];
+
+    private static List<FashionItem9aModel> ParseZaClothing(SCBlock block) =>
+        [.. FashionItem9a.GetArray(block.Data)
+            .Select((item, i) => new FashionItem9aModel
+            {
+                Index = i,
+                Value = item.Value,
+                IsNew = item.IsNew,
+                IsNewShop = item.IsNewShop,
+                IsNewGroup = item.IsNewGroup,
+                IsEquipped = item.IsEquipped,
+                IsOwned = item.IsOwned,
+            })];
+
+    private static List<FashionItemModel> ParseZaHair(SCBlock block) =>
+        [.. HairMakeItem9a.GetArray(block.Data)
+            .Select((item, i) => new FashionItemModel { Index = i, Value = item.Value, IsNew = item.IsNew })];
 
     private static void SetAllOwned(List<FashionItem9aModel> items)
     {
@@ -135,10 +179,15 @@ public partial class Fashion9Dialog
             item.IsOwned = true;
     }
 
+    // Force-loads every clothing tab so "Set All Owned (All Tabs)" applies across all
+    // ten sections, not just the ones the user has visited.
     private void SetAllOwnedAllTabs()
     {
-        foreach (var (_, _, items) in _zaClothingSections)
-            SetAllOwned(items);
+        foreach (var section in _zaClothingSections)
+        {
+            section.Items ??= ParseZaClothing(section.Block);
+            SetAllOwned(section.Items);
+        }
         StateHasChanged();
     }
 
@@ -159,26 +208,32 @@ public partial class Fashion9Dialog
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
+    // Writes only sections whose items list has been materialized — unloaded sections
+    // can't have been modified, so their underlying block bytes are already correct.
     private void SaveSvData()
     {
-        foreach (var (_, block, items) in _svSections)
+        foreach (var section in _svSections)
         {
-            var raw = FashionItem9.GetArray(block.Data);
-            foreach (var m in items)
+            if (section.Items is null)
+                continue;
+            var raw = FashionItem9.GetArray(section.Block.Data);
+            foreach (var m in section.Items)
             {
                 raw[m.Index].Value = m.Value;
                 raw[m.Index].IsNew = m.IsNew;
             }
-            FashionItem9.SetArray(raw, block.Data);
+            FashionItem9.SetArray(raw, section.Block.Data);
         }
     }
 
     private void SaveZaData()
     {
-        foreach (var (_, block, items) in _zaClothingSections)
+        foreach (var section in _zaClothingSections)
         {
-            var raw = FashionItem9a.GetArray(block.Data);
-            foreach (var m in items)
+            if (section.Items is null)
+                continue;
+            var raw = FashionItem9a.GetArray(section.Block.Data);
+            foreach (var m in section.Items)
             {
                 raw[m.Index].Value = m.Value;
                 raw[m.Index].IsNew = m.IsNew;
@@ -187,22 +242,31 @@ public partial class Fashion9Dialog
                 raw[m.Index].IsEquipped = m.IsEquipped;
                 raw[m.Index].IsOwned = m.IsOwned;
             }
-            FashionItem9a.SetArray(raw, block.Data);
+            FashionItem9a.SetArray(raw, section.Block.Data);
         }
 
-        foreach (var (_, block, items) in _zaHairSections)
+        foreach (var section in _zaHairSections)
         {
-            var raw = HairMakeItem9a.GetArray(block.Data);
-            foreach (var m in items)
+            if (section.Items is null)
+                continue;
+            var raw = HairMakeItem9a.GetArray(section.Block.Data);
+            foreach (var m in section.Items)
             {
                 raw[m.Index].Value = m.Value;
                 raw[m.Index].IsNew = m.IsNew;
             }
-            HairMakeItem9a.SetArray(raw, block.Data);
+            HairMakeItem9a.SetArray(raw, section.Block.Data);
         }
     }
 
     private void Cancel() => MudDialog?.Close(DialogResult.Cancel());
+
+    public sealed class FashionSection<T>(string label, SCBlock block)
+    {
+        public string Label { get; } = label;
+        public SCBlock Block { get; } = block;
+        public List<T>? Items { get; set; }
+    }
 
     public class FashionItemModel
     {
