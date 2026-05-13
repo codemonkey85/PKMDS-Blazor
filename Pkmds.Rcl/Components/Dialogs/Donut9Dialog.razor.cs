@@ -18,6 +18,11 @@ public partial class Donut9Dialog
     // Berry options built once per save load (includes item names)
     private List<(ushort Item, string Label)> _berryOptions = [];
 
+    // Donut9a wrappers (and bulk operations on DonutPocket9a) write directly through
+    // Memory<byte> slices of the underlying SCBlock. To make Save / Cancel meaningful,
+    // we snapshot the raw block bytes on open and restore them on Cancel.
+    private byte[]? _donutsSnapshot;
+
     // Flavor perk options — constant across all saves
     private static IReadOnlyList<(ulong Hash, string Name)> FlavorOptions { get; } =
         [(0, "None"), .. DonutInfo.Flavors];
@@ -32,6 +37,8 @@ public partial class Donut9Dialog
     {
         if (SaveFile is null)
             return;
+
+        _donutsSnapshot ??= SaveFile.Donuts.Data.ToArray();
 
         _activeIndices.Clear();
         var donuts = SaveFile.Donuts;
@@ -170,5 +177,13 @@ public partial class Donut9Dialog
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel() => MudDialog?.Close(DialogResult.Cancel());
+    private void Cancel()
+    {
+        if (SaveFile is not null && _donutsSnapshot is not null)
+        {
+            _donutsSnapshot.CopyTo(SaveFile.Donuts.Data);
+            RefreshService.Refresh();
+        }
+        MudDialog?.Close(DialogResult.Cancel());
+    }
 }

@@ -11,12 +11,19 @@ public partial class Raid9Dialog
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
 
-    // TeraRaidDetail objects wrap Memory<byte> slices of the block —
-    // property setters write through to the save data directly.
+    // TeraRaidDetail / SevenStarRaidDetail wrappers write directly through Memory<byte>
+    // slices of the underlying SCBlocks. To make Save / Cancel meaningful, we snapshot the
+    // raw block bytes on open and restore them on Cancel.
     private TeraRaidDetail[] _paldeaRaids = [];
     private TeraRaidDetail[] _kitakamiRaids = [];
     private TeraRaidDetail[] _blueberryRaids = [];
     private List<(int Index, SevenStarRaidDetail Raid)> _activeSevenStarRaids = [];
+
+    private byte[]? _paldeaSnapshot;
+    private byte[]? _kitakamiSnapshot;
+    private byte[]? _blueberrySnapshot;
+    private byte[]? _sevenStarCapturedSnapshot;
+    private byte[]? _sevenStarDefeatedSnapshot;
 
     private int _paldeaIndex;
     private int _kitakamiIndex;
@@ -37,6 +44,7 @@ public partial class Raid9Dialog
         if (SaveFile is null)
             return;
 
+        _paldeaSnapshot ??= SaveFile.RaidPaldea.Data.ToArray();
         _paldeaRaids = SaveFile.RaidPaldea.GetAllRaids();
         _currentSeedHex = SaveFile.RaidPaldea.CurrentSeed.ToString("X16");
         _tomorrowSeedHex = SaveFile.RaidPaldea.TomorrowSeed.ToString("X16");
@@ -44,16 +52,20 @@ public partial class Raid9Dialog
 
         if (SaveFile.SaveRevision >= 1)
         {
+            _kitakamiSnapshot ??= SaveFile.RaidKitakami.Data.ToArray();
             _kitakamiRaids = SaveFile.RaidKitakami.GetAllRaids();
             _kitakamiIndex = 0;
         }
 
         if (SaveFile.SaveRevision >= 2)
         {
+            _blueberrySnapshot ??= SaveFile.RaidBlueberry.Data.ToArray();
             _blueberryRaids = SaveFile.RaidBlueberry.GetAllRaids();
             _blueberryIndex = 0;
         }
 
+        _sevenStarCapturedSnapshot ??= SaveFile.RaidSevenStar.Captured.Data.ToArray();
+        _sevenStarDefeatedSnapshot ??= SaveFile.RaidSevenStar.Defeated.Data.ToArray();
         _activeSevenStarRaids = SaveFile.RaidSevenStar.GetAllRaids()
             .Select((r, i) => (Index: i, Raid: r))
             .Where(x => x.Raid.Identifier != 0)
@@ -63,26 +75,26 @@ public partial class Raid9Dialog
     private void SetCurrentSeed(string hex)
     {
         _currentSeedHex = hex;
-        if (SaveFile is not null && ulong.TryParse(hex, NumberStyles.HexNumber, null, out var v))
+        if (SaveFile is not null && ulong.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var v))
             SaveFile.RaidPaldea.CurrentSeed = v;
     }
 
     private void SetTomorrowSeed(string hex)
     {
         _tomorrowSeedHex = hex;
-        if (SaveFile is not null && ulong.TryParse(hex, NumberStyles.HexNumber, null, out var v))
+        if (SaveFile is not null && ulong.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var v))
             SaveFile.RaidPaldea.TomorrowSeed = v;
     }
 
     private static void SetRaidSeed(TeraRaidDetail raid, string hex)
     {
-        if (uint.TryParse(hex, NumberStyles.HexNumber, null, out var v))
+        if (uint.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var v))
             raid.Seed = v;
     }
 
     private static void SetSevenStarIdentifier(SevenStarRaidDetail raid, string hex)
     {
-        if (uint.TryParse(hex, NumberStyles.HexNumber, null, out var v))
+        if (uint.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var v))
             raid.Identifier = v;
     }
 
@@ -99,5 +111,17 @@ public partial class Raid9Dialog
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel() => MudDialog?.Close(DialogResult.Cancel());
+    private void Cancel()
+    {
+        if (SaveFile is not null)
+        {
+            _paldeaSnapshot?.CopyTo(SaveFile.RaidPaldea.Data);
+            _kitakamiSnapshot?.CopyTo(SaveFile.RaidKitakami.Data);
+            _blueberrySnapshot?.CopyTo(SaveFile.RaidBlueberry.Data);
+            _sevenStarCapturedSnapshot?.CopyTo(SaveFile.RaidSevenStar.Captured.Data);
+            _sevenStarDefeatedSnapshot?.CopyTo(SaveFile.RaidSevenStar.Defeated.Data);
+            RefreshService.Refresh();
+        }
+        MudDialog?.Close(DialogResult.Cancel());
+    }
 }
