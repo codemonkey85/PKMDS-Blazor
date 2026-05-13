@@ -15,11 +15,7 @@
                     <MudTabPanel Text="@section.Label">
                         @if (section.Items is null)
                         {
-                            <div class="d-flex justify-center align-center"
-                                 style="height:450px;">
-                                <MudProgressCircular Indeterminate
-                                                     Color="@Color.Primary"/>
-                            </div>
+                            @LoadingPlaceholder
                         }
                         else
                         {
@@ -33,13 +29,19 @@
                                 <Columns>
                                     <PropertyColumn Property="@(x => x.Index)"
                                                     Title="#"/>
-                                    <PropertyColumn Property="@(x => x.Value)"
-                                                    Title="ID"/>
+                                    <TemplateColumn Title="ID">
+                                        <CellTemplate>
+                                            @(context.Item.IsEmpty
+                                                ? "—"
+                                                : context.Item.Value.ToString())
+                                        </CellTemplate>
+                                    </TemplateColumn>
                                     <TemplateColumn Title="New">
                                         <CellTemplate>
                                             <MudCheckBox T="@bool"
                                                          Value="@context.Item.IsNew"
                                                          ValueChanged="@(v => context.Item.IsNew = v)"
+                                                         Disabled="@context.Item.IsEmpty"
                                                          Dense/>
                                         </CellTemplate>
                                     </TemplateColumn>
@@ -57,11 +59,7 @@
                     <MudTabPanel Text="@clothingSection.Label">
                         @if (clothingSection.Items is null)
                         {
-                            <div class="d-flex justify-center align-center"
-                                 style="height:450px;">
-                                <MudProgressCircular Indeterminate
-                                                     Color="@Color.Primary"/>
-                            </div>
+                            @LoadingPlaceholder
                         }
                         else
                         {
@@ -83,13 +81,19 @@
                                 <Columns>
                                     <PropertyColumn Property="@(x => x.Index)"
                                                     Title="#"/>
-                                    <PropertyColumn Property="@(x => x.Value)"
-                                                    Title="ID"/>
+                                    <TemplateColumn Title="ID">
+                                        <CellTemplate>
+                                            @(context.Item.IsEmpty
+                                                ? "—"
+                                                : context.Item.Value.ToString())
+                                        </CellTemplate>
+                                    </TemplateColumn>
                                     <TemplateColumn Title="New">
                                         <CellTemplate>
                                             <MudCheckBox T="@bool"
                                                          Value="@context.Item.IsNew"
                                                          ValueChanged="@(v => context.Item.IsNew = v)"
+                                                         Disabled="@context.Item.IsEmpty"
                                                          Dense/>
                                         </CellTemplate>
                                     </TemplateColumn>
@@ -98,6 +102,7 @@
                                             <MudCheckBox T="@bool"
                                                          Value="@context.Item.IsNewShop"
                                                          ValueChanged="@(v => context.Item.IsNewShop = v)"
+                                                         Disabled="@context.Item.IsEmpty"
                                                          Dense/>
                                         </CellTemplate>
                                     </TemplateColumn>
@@ -106,6 +111,7 @@
                                             <MudCheckBox T="@bool"
                                                          Value="@context.Item.IsNewGroup"
                                                          ValueChanged="@(v => context.Item.IsNewGroup = v)"
+                                                         Disabled="@context.Item.IsEmpty"
                                                          Dense/>
                                         </CellTemplate>
                                     </TemplateColumn>
@@ -114,6 +120,7 @@
                                             <MudCheckBox T="@bool"
                                                          Value="@context.Item.IsEquipped"
                                                          ValueChanged="@(v => context.Item.IsEquipped = v)"
+                                                         Disabled="@context.Item.IsEmpty"
                                                          Dense/>
                                         </CellTemplate>
                                     </TemplateColumn>
@@ -122,6 +129,7 @@
                                             <MudCheckBox T="@bool"
                                                          Value="@context.Item.IsOwned"
                                                          ValueChanged="@(v => context.Item.IsOwned = v)"
+                                                         Disabled="@context.Item.IsEmpty"
                                                          Dense/>
                                         </CellTemplate>
                                     </TemplateColumn>
@@ -135,11 +143,7 @@
                     <MudTabPanel Text="@section.Label">
                         @if (section.Items is null)
                         {
-                            <div class="d-flex justify-center align-center"
-                                 style="height:450px;">
-                                <MudProgressCircular Indeterminate
-                                                     Color="@Color.Primary"/>
-                            </div>
+                            @LoadingPlaceholder
                         }
                         else
                         {
@@ -153,13 +157,19 @@
                                 <Columns>
                                     <PropertyColumn Property="@(x => x.Index)"
                                                     Title="#"/>
-                                    <PropertyColumn Property="@(x => x.Value)"
-                                                    Title="ID"/>
+                                    <TemplateColumn Title="ID">
+                                        <CellTemplate>
+                                            @(context.Item.IsEmpty
+                                                ? "—"
+                                                : context.Item.Value.ToString())
+                                        </CellTemplate>
+                                    </TemplateColumn>
                                     <TemplateColumn Title="New">
                                         <CellTemplate>
                                             <MudCheckBox T="@bool"
                                                          Value="@context.Item.IsNew"
                                                          ValueChanged="@(v => context.Item.IsNew = v)"
+                                                         Disabled="@context.Item.IsEmpty"
                                                          Dense/>
                                         </CellTemplate>
                                     </TemplateColumn>
@@ -193,3 +203,15 @@
         </MudButton>
     </DialogActions>
 </MudDialog>
+
+@code {
+    private static readonly RenderFragment LoadingPlaceholder = @<text>
+        <div class="d-flex flex-column justify-center align-center"
+             style="height:450px; gap:1rem;">
+            <MudProgressCircular Indeterminate
+                                 Color="@Color.Primary"
+                                 Size="@Size.Large"/>
+            <MudText Typo="@Typo.body1">Loading…</MudText>
+        </div>
+    </text>;
+}

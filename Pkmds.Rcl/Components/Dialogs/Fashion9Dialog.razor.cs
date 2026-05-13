@@ -274,6 +274,11 @@ public partial class Fashion9Dialog
         public int Index { get; set; }
         public uint Value { get; set; }
         public bool IsNew { get; set; }
+
+        // FashionItem9.None / FashionItem9a.None / HairMakeItem9a.None all = ushort.MaxValue.
+        // A slot at this sentinel is "empty" — every flag on it is meaningless, so the UI
+        // renders the ID as "—" and disables the per-row checkboxes.
+        public bool IsEmpty => Value == ushort.MaxValue;
     }
 
     public sealed class FashionItem9aModel : FashionItemModel
