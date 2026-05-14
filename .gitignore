@@ -372,3 +372,6 @@ missing-flavor-report.txt
 
 # Local diagnostic output from measure-publish.ps1 (perf measurement reports)
 measurements/
+
+# Playwright MCP working directory (snapshots, console logs, traces)
+.playwright-mcp/
