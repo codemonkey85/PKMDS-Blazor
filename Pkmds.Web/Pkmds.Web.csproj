@@ -21,6 +21,13 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
         <BlazorEnableCompression>true</BlazorEnableCompression>
+        <!-- Trim app code (PKHeX.Core, MudBlazor, Pkmds.Rcl) in addition to the
+             framework. Saves ~610 KB brotli; safe because PreservePkmTypes.xml
+             and Pkmds.Rcl/PreserveRoutes.xml root the reflection-discovered
+             types Blazor's Router and PKHeX's EntityBatchEditor need at
+             runtime. See issue #883 for the analysis. -->
+        <TrimMode>full</TrimMode>
+        <PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -38,6 +45,10 @@
 
     <ItemGroup>
         <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <TrimmerRootDescriptor Include="PreservePkmTypes.xml"/>
     </ItemGroup>
 
     <Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">

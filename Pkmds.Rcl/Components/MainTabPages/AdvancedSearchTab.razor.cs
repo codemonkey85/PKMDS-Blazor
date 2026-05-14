@@ -623,7 +623,7 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             var json = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", LocalStorageKey);
             if (json is not null)
             {
-                savedFilters = JsonSerializer.Deserialize<Dictionary<string, AdvancedSearchFilter>>(json) ?? [];
+                savedFilters = JsonSerializer.Deserialize(json, PkmdsJsonContext.Default.SavedSearchFilters) ?? [];
             }
         }
         catch
@@ -747,7 +747,7 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
     {
         try
         {
-            var json = JsonSerializer.Serialize(savedFilters);
+            var json = JsonSerializer.Serialize(savedFilters, PkmdsJsonContext.Default.SavedSearchFilters);
             await JSRuntime.InvokeVoidAsync("localStorage.setItem", LocalStorageKey, json);
         }
         catch

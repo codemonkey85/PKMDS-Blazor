@@ -2,15 +2,13 @@
 
 namespace Pkmds.Rcl.Services;
 
-public sealed class DescriptionService(HttpClient http, ILogger<DescriptionService> logger) : IDescriptionService
+public sealed partial class DescriptionService(HttpClient http, ILogger<DescriptionService> logger) : IDescriptionService
 {
     // -------------------------------------------------------------------------
     // Lazy loaders
     // -------------------------------------------------------------------------
 
     private const string DataRoot = "_content/Pkmds.Rcl/data/";
-
-    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     // Lazily loaded caches — store the Task so all concurrent callers share one HTTP request
     // rather than each firing their own (which causes silent failures under load in WASM).
@@ -138,26 +136,26 @@ public sealed class DescriptionService(HttpClient http, ILogger<DescriptionServi
     }
 
     private Task<Dictionary<string, JsonAbilityEntry>> GetAbilitiesAsync() =>
-        abilitiesTask ??= LoadAsync<Dictionary<string, JsonAbilityEntry>>(DataRoot + "ability-info.json");
+        abilitiesTask ??= LoadAsync(DataRoot + "ability-info.json", DescriptionJsonContext.Default.Abilities);
 
     private Task<Dictionary<string, JsonMoveEntry>> GetMovesAsync() =>
-        movesTask ??= LoadAsync<Dictionary<string, JsonMoveEntry>>(DataRoot + "move-info.json");
+        movesTask ??= LoadAsync(DataRoot + "move-info.json", DescriptionJsonContext.Default.Moves);
 
     private Task<Dictionary<string, JsonItemEntry>> GetItemsAsync() =>
-        itemsTask ??= LoadAsync<Dictionary<string, JsonItemEntry>>(DataRoot + "item-info.json");
+        itemsTask ??= LoadAsync(DataRoot + "item-info.json", DescriptionJsonContext.Default.Items);
 
     private Task<Dictionary<string, Dictionary<string, string>>> GetTmDataAsync() =>
-        tmDataTask ??= LoadAsync<Dictionary<string, Dictionary<string, string>>>(DataRoot + "tm-data.json");
+        tmDataTask ??= LoadAsync(DataRoot + "tm-data.json", DescriptionJsonContext.Default.MachineData);
 
     private Task<Dictionary<string, Dictionary<string, string>>> GetHmDataAsync() =>
-        hmDataTask ??= LoadAsync<Dictionary<string, Dictionary<string, string>>>(DataRoot + "hm-data.json");
+        hmDataTask ??= LoadAsync(DataRoot + "hm-data.json", DescriptionJsonContext.Default.MachineData);
 
-    private async Task<T> LoadAsync<T>(string path) where T : new()
+    private async Task<T> LoadAsync<T>(string path, JsonTypeInfo<T> typeInfo) where T : new()
     {
         try
         {
             await using var stream = await http.GetStreamAsync(path);
-            return await JsonSerializer.DeserializeAsync<T>(stream, JsonOptions) ?? new T();
+            return await JsonSerializer.DeserializeAsync(stream, typeInfo) ?? new T();
         }
         catch (Exception ex)
         {
@@ -413,4 +411,15 @@ public sealed class DescriptionService(HttpClient http, ILogger<DescriptionServi
         string Name,
         string Description,
         Dictionary<string, string>? Flavor);
+
+    // Source-generated JSON context for the four data shapes loaded from
+    // wwwroot/data/*.json. Nested so it can reference the private records
+    // above. PropertyNameCaseInsensitive matches the prior JsonSerializerOptions
+    // behavior (data files are camelCase; record properties are PascalCase).
+    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+    [JsonSerializable(typeof(Dictionary<string, JsonAbilityEntry>), TypeInfoPropertyName = "Abilities")]
+    [JsonSerializable(typeof(Dictionary<string, JsonMoveEntry>), TypeInfoPropertyName = "Moves")]
+    [JsonSerializable(typeof(Dictionary<string, JsonItemEntry>), TypeInfoPropertyName = "Items")]
+    [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string>>), TypeInfoPropertyName = "MachineData")]
+    private sealed partial class DescriptionJsonContext : JsonSerializerContext;
 }

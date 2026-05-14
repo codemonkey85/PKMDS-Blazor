@@ -297,7 +297,7 @@ public partial class PokemonSlotComponent : IDisposable
         var base64 = Convert.ToBase64String(partyData);
         if (JSRuntime is IJSInProcessRuntime inProcessRuntime)
         {
-            inProcessRuntime.Invoke<bool>("setDragDownloadData", filename, base64);
+            inProcessRuntime.InvokeVoid("setDragDownloadData", filename, base64);
         }
     }
 

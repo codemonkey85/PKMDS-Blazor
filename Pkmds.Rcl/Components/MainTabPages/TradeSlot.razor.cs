@@ -199,7 +199,7 @@ public partial class TradeSlot : RefreshAwareComponent
         // text/plain marker so the drag survives to dragover/drop on touch devices.
         if (JSRuntime is IJSInProcessRuntime inProcessRuntime)
         {
-            inProcessRuntime.Invoke<bool>("setSlotDragMarker", "pkmds-trade");
+            inProcessRuntime.InvokeVoid("setSlotDragMarker", "pkmds-trade");
         }
     }
 

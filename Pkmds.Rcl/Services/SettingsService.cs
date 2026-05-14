@@ -25,7 +25,7 @@ public sealed class SettingsService(
             {
                 try
                 {
-                    Settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                    Settings = JsonSerializer.Deserialize(json, PkmdsJsonContext.Default.AppSettings) ?? new AppSettings();
 
                     // Re-persist if ThemeMode was invalid so pkmds_theme stays in sync.
                     if (NormalizeThemeMode(Settings.ThemeMode) != Settings.ThemeMode)
@@ -75,7 +75,7 @@ public sealed class SettingsService(
         ApplyEmbeddedHostOverrides();
         ApplyToServices();
 
-        var json = JsonSerializer.Serialize(Settings);
+        var json = JsonSerializer.Serialize(Settings, PkmdsJsonContext.Default.AppSettings);
         try
         {
             await jsRuntime.InvokeVoidAsync("localStorage.setItem", SettingsKey, json);

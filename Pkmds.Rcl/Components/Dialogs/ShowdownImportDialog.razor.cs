@@ -105,8 +105,7 @@ public partial class ShowdownImportDialog
         try
         {
             var json = await Http.GetStringAsync(jsonUrl);
-            var response = JsonSerializer.Deserialize<PokePasteResponse>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var response = JsonSerializer.Deserialize(json, PkmdsJsonContext.Default.PokePasteResponse);
 
             if (response is null || string.IsNullOrWhiteSpace(response.Paste))
             {
