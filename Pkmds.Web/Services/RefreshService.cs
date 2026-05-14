@@ -92,6 +92,9 @@ public class RefreshService : IRefreshService
     /// <summary>
     /// JavaScript-invokable method called by the service worker when an app update is detected.
     /// </summary>
+    // Preserved under TrimMode=full via PreserveJSInvokable.xml in Pkmds.Web — the linker
+    // can't see the JS-side call via DotNet.invokeMethodAsync, and [JSInvokable] alone
+    // is not a trim root.
     [JSInvokable(nameof(ShowUpdateMessage))]
     public static void ShowUpdateMessage() => Instance?.OnUpdateAvailable?.Invoke();
 }

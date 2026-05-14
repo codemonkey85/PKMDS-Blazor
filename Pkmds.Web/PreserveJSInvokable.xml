@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Trimmer root descriptor: preserve [JSInvokable] static entry points.
+
+  Blazor's IJS dispatcher (DotNet.invokeMethodAsync from the JS side) looks up
+  these methods by name at runtime via reflection. Under TrimMode=full the
+  linker can't see those JS-side references, so the methods (and the
+  [JSInvokable] attribute metadata they carry) get stripped — invocations
+  then fail with:
+
+    System.ArgumentException: The assembly '<asm>' does not contain a public
+    invokable method with [JSInvokableAttribute("<name>")]
+
+  Adding the containing types here roots their static methods + attribute
+  metadata. Keep this in sync with any new [JSInvokable] entry points.
+-->
+<linker>
+  <assembly fullname="Pkmds.Web">
+    <type fullname="Pkmds.Web.Services.RefreshService" preserve="all" />
+  </assembly>
+  <assembly fullname="Pkmds.Rcl">
+    <type fullname="Pkmds.Rcl.Services.EmbeddedHostBridge" preserve="all" />
+  </assembly>
+</linker>
