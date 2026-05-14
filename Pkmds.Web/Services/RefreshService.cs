@@ -9,6 +9,10 @@ public class RefreshService : IRefreshService
     /// <summary>
     /// Initializes a new instance and sets the singleton instance for JavaScript interop.
     /// </summary>
+    // [JSInvokable] static methods are discovered by name from JS, so the
+    // trimmer can't see references to them and strips them under TrimMode=full.
+    // Root them via [DynamicDependency] on the ctor (which DI calls).
+    [DynamicDependency(nameof(ShowUpdateMessage), typeof(RefreshService))]
     public RefreshService() => Instance = this; // Set the singleton instance for JS interop
 
     /// <summary>

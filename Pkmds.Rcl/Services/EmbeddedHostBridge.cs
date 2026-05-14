@@ -21,6 +21,11 @@ public sealed class EmbeddedHostBridge
     private readonly IJSRuntime _jsRuntime;
     private readonly ILogger<EmbeddedHostBridge> _logger;
 
+    // [JSInvokable] static methods are discovered by name from JS, so the
+    // trimmer can't see references to them and strips them under TrimMode=full.
+    // Root them via [DynamicDependency] on the ctor (which DI calls).
+    [DynamicDependency(nameof(LoadSaveFromHost), typeof(EmbeddedHostBridge))]
+    [DynamicDependency(nameof(RequestExportFromHost), typeof(EmbeddedHostBridge))]
     public EmbeddedHostBridge(
         IAppState appState,
         IAppService appService,
