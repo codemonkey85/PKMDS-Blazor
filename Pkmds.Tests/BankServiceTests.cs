@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
@@ -8,6 +9,9 @@ namespace Pkmds.Tests;
 /// Unit tests for <see cref="BankService" /> using bUnit's JS-interop mocks.
 /// <see cref="BankService.RawEntry" /> and <see cref="BankService.RawMeta" /> are
 /// <c>internal</c> and accessible here via <c>InternalsVisibleTo</c> in Pkmds.Rcl.csproj.
+/// The bank JS contract passes JSON strings across the IJS boundary (trim-safe);
+/// these tests mirror that by serializing entries with the service's own source-gen
+/// context before handing them to the mock.
 /// </summary>
 public class BankServiceTests
 {
@@ -22,7 +26,8 @@ public class BankServiceTests
 
     /// <summary>
     /// Creates a <see cref="BankService" /> backed by bUnit's JS-interop mock with
-    /// <paramref name="bankEntries" /> pre-loaded as the <c>getAllPokemon</c> result.
+    /// <paramref name="bankEntries" /> pre-loaded as the <c>getAllPokemonJson</c>
+    /// result (serialized to a JSON string to match the production contract).
     /// </summary>
     private static (BankService Service, BunitContext Ctx) CreateService(
         BankService.RawEntry[]? bankEntries = null)
@@ -30,10 +35,14 @@ public class BankServiceTests
         var ctx = new BunitContext();
         ctx.JSInterop.Mode = JSRuntimeMode.Loose;
 
+        var json = JsonSerializer.Serialize(
+            bankEntries ?? [],
+            BankService.BankJsonContext.Default.RawEntryArray);
+
         ctx.JSInterop
             .SetupModule("./js/bank.js")
-            .Setup<BankService.RawEntry[]>("getAllPokemon")
-            .SetResult(bankEntries ?? []);
+            .Setup<string>("getAllPokemonJson")
+            .SetResult(json);
 
         var jsRuntime = ctx.Services.GetRequiredService<IJSRuntime>();
         var service = new BankService(jsRuntime);

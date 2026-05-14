@@ -1,6 +1,6 @@
 namespace Pkmds.Rcl.Services;
 
-public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
+public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
 {
     private IJSObjectReference? _module;
 
@@ -16,23 +16,45 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
     {
         var module = await GetModuleAsync();
         var b64 = Convert.ToBase64String(saveBytes);
-        var meta = new
-        {
-            fileName = fileName ?? string.Empty,
-            saveType = saveFile.GetType().Name,
-            generation = (int)saveFile.Generation,
-            gameVersion = saveFile.Version.ToString(),
-            trainerName = saveFile.OT,
-            sizeBytes = (long)saveBytes.Length,
-            isManicEmu
-        };
-        return await module.InvokeAsync<long>("addBackup", b64, meta, source);
+        var meta = new BackupMeta(
+            fileName ?? string.Empty,
+            saveFile.GetType().Name,
+            (int)saveFile.Generation,
+            saveFile.Version.ToString(),
+            saveFile.OT,
+            saveBytes.Length,
+            isManicEmu);
+        // Send a JsonDocument.RootElement (trim-safe primitive) so Blazor marshals the
+        // payload as a real object across IJS. See BankService.AddAsync for why we don't
+        // send an opaque string: a stale cached backup.js without parseMeta would store
+        // it literally in IndexedDB and break later metadata reads.
+        using var metaDoc = JsonSerializer.SerializeToDocument(meta, BackupJsonContext.Default.BackupMeta);
+        return await module.InvokeAsync<long>("addBackup", b64, metaDoc.RootElement, source);
     }
 
     public async Task<IReadOnlyList<BackupEntry>> GetAllMetadataAsync()
     {
         var module = await GetModuleAsync();
-        var raw = await module.InvokeAsync<RawBackupEntry[]>("getBackupMetadata");
+        // Prefer the *Json variant; fall back to the legacy array-returning export as
+        // JsonElement (trim-safe primitive) if a stale cached backup.js without the new
+        // export is being served during a service-worker rollout.
+        RawBackupEntry[]? raw;
+        try
+        {
+            var rawJson = await module.InvokeAsync<string>("getBackupMetadataJson");
+            if (string.IsNullOrEmpty(rawJson))
+            {
+                return [];
+            }
+            raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntryArray);
+        }
+        catch (JSException ex) when (ex.Message.Contains("is not a function", StringComparison.OrdinalIgnoreCase))
+        {
+            var element = await module.InvokeAsync<JsonElement>("getBackupMetadata");
+            raw = element.ValueKind == JsonValueKind.Array
+                ? element.Deserialize(BackupJsonContext.Default.RawBackupEntryArray)
+                : null;
+        }
 
         if (raw is null || raw.Length == 0)
         {
@@ -68,7 +90,27 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
     public async Task<byte[]?> GetBackupBytesAsync(long id)
     {
         var module = await GetModuleAsync();
-        var raw = await module.InvokeAsync<RawBackupEntry?>("getBackup", id);
+        // *Json variant — see GetAllMetadataAsync for rationale. Fall back to legacy
+        // getBackup (returns a record or null, marshalled as JsonElement) if stale JS.
+        RawBackupEntry? raw;
+        try
+        {
+            var rawJson = await module.InvokeAsync<string?>("getBackupJson", id);
+            if (string.IsNullOrEmpty(rawJson))
+            {
+                return null;
+            }
+            raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntry);
+        }
+        catch (JSException ex) when (ex.Message.Contains("is not a function", StringComparison.OrdinalIgnoreCase))
+        {
+            var element = await module.InvokeAsync<JsonElement>("getBackup", id);
+            raw = element.ValueKind switch
+            {
+                JsonValueKind.Object => element.Deserialize(BackupJsonContext.Default.RawBackupEntry),
+                _ => null
+            };
+        }
 
         if (raw?.BytesBase64 is null)
         {
@@ -117,7 +159,24 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
     private async Task<IJSObjectReference> GetModuleAsync() =>
         _module ??= await js.InvokeAsync<IJSObjectReference>("import", "./js/backup.js");
 
-    // ── Internal DTOs for JS deserialization (internal for test/mocking support) ──
+    // ── DTOs for JS interop ──────────────────────────────────────────────
+    // internal so that Pkmds.Tests can reference these types when setting up
+    // JS interop mocks (via InternalsVisibleTo in Pkmds.Rcl.csproj).
+
+    // Write-side payload (replaces the anonymous type so source-gen can describe it).
+
+    internal sealed record BackupMeta(
+        [property: JsonPropertyName("fileName")] string FileName,
+        [property: JsonPropertyName("saveType")] string SaveType,
+        [property: JsonPropertyName("generation")] int Generation,
+        [property: JsonPropertyName("gameVersion")] string GameVersion,
+        [property: JsonPropertyName("trainerName")] string TrainerName,
+        [property: JsonPropertyName("sizeBytes")] long SizeBytes,
+        [property: JsonPropertyName("isManicEmu")] bool IsManicEmu);
+
+    // Read-side payloads. Mutable POCOs because the source-gen deserializer needs a
+    // public parameterless constructor + settable properties to round-trip through
+    // System.Text.Json on a JSON object with these property names.
 
     internal sealed class RawBackupEntry
     {
@@ -160,4 +219,9 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
         [JsonPropertyName("isManicEmu")]
         public bool? IsManicEmu { get; set; }
     }
+
+    [JsonSerializable(typeof(BackupMeta))]
+    [JsonSerializable(typeof(RawBackupEntry))]
+    [JsonSerializable(typeof(RawBackupEntry[]))]
+    internal sealed partial class BackupJsonContext : JsonSerializerContext;
 }

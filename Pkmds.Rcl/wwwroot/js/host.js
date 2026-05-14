@@ -15,8 +15,25 @@
     // Outbound: post a message to the host. Uses WKWebView's
     // window.webkit.messageHandlers.pkmds when present, otherwise logs to the
     // console so the bridge stays observable in a regular browser tab.
+    //
+    // Payload arrives as a JSON string from the C# side so Blazor's IJS marshaler
+    // stays out of the trim hazard path (see EmbeddedHostBridge.SaveExportPayload).
+    // Tolerate the legacy object form too in case anything else ever calls in.
     function postMessage(kind, payload) {
-        const message = Object.assign({ kind: kind }, payload || {});
+        let payloadObj;
+        if (payload == null) {
+            payloadObj = {};
+        } else if (typeof payload === 'string') {
+            try {
+                payloadObj = JSON.parse(payload);
+            } catch (e) {
+                console.warn('[PKMDS.host] Failed to parse payload JSON:', e);
+                payloadObj = {};
+            }
+        } else {
+            payloadObj = payload;
+        }
+        const message = Object.assign({ kind: kind }, payloadObj);
         try {
             const handler = window.webkit
                 && window.webkit.messageHandlers
@@ -28,7 +45,7 @@
         } catch (e) {
             console.warn('[PKMDS.host] postMessage handler failed:', e);
         }
-        console.log('[PKMDS.host] →', kind, payload || {});
+        console.log('[PKMDS.host] →', kind, payloadObj);
     }
 
     window.PKMDS.host = {
