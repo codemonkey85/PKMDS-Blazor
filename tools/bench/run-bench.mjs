@@ -4,7 +4,7 @@
 
 import { createServer } from 'node:http';
 import { readFile, stat, appendFile } from 'node:fs/promises';
-import { join, resolve, extname, dirname } from 'node:path';
+import { join, resolve, relative, isAbsolute, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
@@ -53,8 +53,10 @@ const server = createServer(async (req, res) => {
         if (pathname.endsWith('/')) pathname += 'index.html';
 
         // Security: reject path traversal — resolved path must stay within siteDir.
+        // Use path.relative for OS-agnostic comparison (Windows uses '\', not '/').
         const filePath = resolve(join(siteDir, pathname));
-        if (!filePath.startsWith(siteDir + '/') && filePath !== siteDir) {
+        const rel = relative(siteDir, filePath);
+        if (rel.startsWith('..') || isAbsolute(rel)) {
             res.writeHead(400, { 'content-type': 'text/plain' });
             res.end('Bad request');
             return;
@@ -99,6 +101,15 @@ try {
         const text = msg.text();
         if (text.startsWith('BENCH_RESULT_JSON:')) return; // surfaced via the DOM scrape instead
         if (msg.type() === 'error') console.error('[page console]', text);
+    });
+    page.on('response', (response) => {
+        const status = response.status();
+        if (status >= 400) {
+            console.error(`[http ${status}] ${response.url()}`);
+        }
+    });
+    page.on('requestfailed', (request) => {
+        console.error(`[request failed] ${request.url()} — ${request.failure()?.errorText ?? 'unknown'}`);
     });
 
     const navStart = Date.now();
