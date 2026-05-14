@@ -1,6 +1,7 @@
 // Tiny static server for manual / Playwright MCP testing of the published
 // release/wwwroot output. Same MIME handling and SPA fallback as run-bench.mjs.
-// Prints "PORT=<n>" so a caller can capture it. Stays running until SIGINT.
+// Listens on the port passed as argv[3] (default 8765) and logs the listen
+// URL on startup. Stays running until SIGINT.
 
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -28,7 +29,7 @@ const MIME = {
     '.svg':  'image/svg+xml',
     '.webp': 'image/webp',
     '.ico':  'image/x-icon',
-    '.woff': 'font-woff',
+    '.woff': 'font/woff',
     '.woff2':'font/woff2',
 };
 
