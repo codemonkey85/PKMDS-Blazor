@@ -139,18 +139,19 @@ public sealed partial class EmbeddedHostBridge
             var base64 = Convert.ToBase64String(bytes);
             var fileName = _appState.SaveFileName ?? "save.sav";
 
-            // Pre-serialize the payload via source-gen and send as a JSON string so
-            // Blazor's reflection-based IJS marshaler isn't on the trim hazard path
-            // (anonymous types would lose ctor param names under TrimMode=full —
-            // same root cause as #894 / #896 / #898).
-            var payloadJson = JsonSerializer.Serialize(
+            // Serialize via source-gen and pass JsonDocument.RootElement (trim-safe
+            // primitive) so Blazor's IJS marshaler writes the underlying JSON object
+            // across the boundary. host.js receives an object directly — works against
+            // both the current parser-tolerant _sendMessage and any older cached host.js
+            // that would have mishandled an opaque string payload.
+            using var payloadDoc = JsonSerializer.SerializeToDocument(
                 new SaveExportPayload(base64, fileName),
                 EmbeddedHostJsonContext.Default.SaveExportPayload);
 
             await _jsRuntime.InvokeVoidAsync(
                 "PKMDS.host._sendMessage",
                 "saveExport",
-                payloadJson);
+                payloadDoc.RootElement);
 
             _logger.LogInformation("Host export emitted: {ByteCount} bytes ({FileName})",
                 bytes.Length, fileName);

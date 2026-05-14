@@ -24,27 +24,37 @@ public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDispos
             saveFile.OT,
             saveBytes.Length,
             isManicEmu);
-        // Serialize via source-gen on our side and pass a JSON string across the JS interop
-        // boundary — see BankService for the rationale (trim-safe vs. reflection-based
-        // Blazor JsonSerializer under TrimMode=full; see #894).
-        var metaJson = JsonSerializer.Serialize(meta, BackupJsonContext.Default.BackupMeta);
-        return await module.InvokeAsync<long>("addBackup", b64, metaJson, source);
+        // Send a JsonDocument.RootElement (trim-safe primitive) so Blazor marshals the
+        // payload as a real object across IJS. See BankService.AddAsync for why we don't
+        // send an opaque string: a stale cached backup.js without parseMeta would store
+        // it literally in IndexedDB and break later metadata reads.
+        using var metaDoc = JsonSerializer.SerializeToDocument(meta, BackupJsonContext.Default.BackupMeta);
+        return await module.InvokeAsync<long>("addBackup", b64, metaDoc.RootElement, source);
     }
 
     public async Task<IReadOnlyList<BackupEntry>> GetAllMetadataAsync()
     {
         var module = await GetModuleAsync();
-        // Call the *Json variant so we get a JSON string suitable for source-gen
-        // deserialization. The legacy getBackupMetadata export still returns an
-        // array for service-worker rollout safety; see backup.js.
-        var rawJson = await module.InvokeAsync<string>("getBackupMetadataJson");
-
-        if (string.IsNullOrEmpty(rawJson))
+        // Prefer the *Json variant; fall back to the legacy array-returning export as
+        // JsonElement (trim-safe primitive) if a stale cached backup.js without the new
+        // export is being served during a service-worker rollout.
+        RawBackupEntry[]? raw;
+        try
         {
-            return [];
+            var rawJson = await module.InvokeAsync<string>("getBackupMetadataJson");
+            if (string.IsNullOrEmpty(rawJson))
+            {
+                return [];
+            }
+            raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntryArray);
         }
-
-        var raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntryArray);
+        catch (JSException ex) when (ex.Message.Contains("is not a function", StringComparison.OrdinalIgnoreCase))
+        {
+            var element = await module.InvokeAsync<JsonElement>("getBackupMetadata");
+            raw = element.ValueKind == JsonValueKind.Array
+                ? element.Deserialize(BackupJsonContext.Default.RawBackupEntryArray)
+                : null;
+        }
 
         if (raw is null || raw.Length == 0)
         {
@@ -80,15 +90,27 @@ public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDispos
     public async Task<byte[]?> GetBackupBytesAsync(long id)
     {
         var module = await GetModuleAsync();
-        // *Json variant — see GetAllMetadataAsync for rationale.
-        var rawJson = await module.InvokeAsync<string?>("getBackupJson", id);
-
-        if (string.IsNullOrEmpty(rawJson))
+        // *Json variant — see GetAllMetadataAsync for rationale. Fall back to legacy
+        // getBackup (returns a record or null, marshalled as JsonElement) if stale JS.
+        RawBackupEntry? raw;
+        try
         {
-            return null;
+            var rawJson = await module.InvokeAsync<string?>("getBackupJson", id);
+            if (string.IsNullOrEmpty(rawJson))
+            {
+                return null;
+            }
+            raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntry);
         }
-
-        var raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntry);
+        catch (JSException ex) when (ex.Message.Contains("is not a function", StringComparison.OrdinalIgnoreCase))
+        {
+            var element = await module.InvokeAsync<JsonElement>("getBackup", id);
+            raw = element.ValueKind switch
+            {
+                JsonValueKind.Object => element.Deserialize(BackupJsonContext.Default.RawBackupEntry),
+                _ => null
+            };
+        }
 
         if (raw?.BytesBase64 is null)
         {

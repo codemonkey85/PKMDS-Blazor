@@ -25,18 +25,20 @@ public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
             pkm.Extension,
             tag,
             sourceSave);
-        // Serialize via source-gen on our side and pass a JSON string across the JS interop
-        // boundary. IJS marshals strings as opaque primitives, which is trim-safe; passing
-        // CLR objects would go through Blazor's reflection-based JsonSerializer and break
-        // under TrimMode=full (see #894, #896, #898).
-        var metaJson = JsonSerializer.Serialize(meta, BankJsonContext.Default.BankMeta);
-
+        // Serialize via source-gen on our side, then hand IJS a JsonDocument.RootElement
+        // (a trim-safe framework primitive). Blazor's marshaler writes the element's
+        // underlying JSON structure across the boundary, so JS receives a real object —
+        // not a string. That matters because if a service-worker rollout briefly leaves
+        // a user with a stale cached bank.js (no parseMeta), an opaque string payload
+        // would land in IndexedDB as the meta field, breaking the species/isShiny/tag
+        // indexes and all subsequent reads.
         if (module is null)
         {
             return;
         }
 
-        await module.InvokeVoidAsync("addPokemon", b64, metaJson);
+        using var metaDoc = JsonSerializer.SerializeToDocument(meta, BankJsonContext.Default.BankMeta);
+        await module.InvokeVoidAsync("addPokemon", b64, metaDoc.RootElement);
     }
 
     public async Task AddRangeAsync(IEnumerable<PKM> pokemon, string? tag = null, string? sourceSave = null)
@@ -66,8 +68,10 @@ public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
                 return;
             }
 
-            var entriesJson = JsonSerializer.Serialize(entries, BankJsonContext.Default.BankAddEntryArray);
-            await module.InvokeVoidAsync("addRange", entriesJson);
+            // JsonDocument.RootElement over the array — see AddAsync for why we avoid
+            // sending an opaque string payload across IJS during a SW rollout window.
+            using var entriesDoc = JsonSerializer.SerializeToDocument(entries, BankJsonContext.Default.BankAddEntryArray);
+            await module.InvokeVoidAsync("addRange", entriesDoc.RootElement);
         }
     }
 
@@ -79,17 +83,28 @@ public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
             return [];
         }
 
-        // Call the *Json variant so we get a JSON string suitable for source-gen
-        // deserialization. The legacy getAllPokemon export still returns an array
-        // for service-worker rollout safety; see bank.js.
-        var rawJson = await module.InvokeAsync<string>("getAllPokemonJson");
-
-        if (string.IsNullOrEmpty(rawJson))
+        // Prefer the *Json variant (JSON string → source-gen deserialize). If a stale
+        // cached bank.js without the *Json export is served during a service-worker
+        // rollout, getAllPokemonJson will throw "is not a function"; fall back to the
+        // legacy getAllPokemon (returns the raw array, marshalled here as JsonElement
+        // — a trim-safe primitive — then source-gen deserialized).
+        RawEntry[] raw;
+        try
         {
-            return [];
+            var rawJson = await module.InvokeAsync<string>("getAllPokemonJson");
+            if (string.IsNullOrEmpty(rawJson))
+            {
+                return [];
+            }
+            raw = JsonSerializer.Deserialize(rawJson, BankJsonContext.Default.RawEntryArray) ?? [];
         }
-
-        var raw = JsonSerializer.Deserialize(rawJson, BankJsonContext.Default.RawEntryArray) ?? [];
+        catch (JSException ex) when (ex.Message.Contains("is not a function", StringComparison.OrdinalIgnoreCase))
+        {
+            var element = await module.InvokeAsync<JsonElement>("getAllPokemon");
+            raw = element.ValueKind == JsonValueKind.Array
+                ? element.Deserialize(BankJsonContext.Default.RawEntryArray) ?? []
+                : [];
+        }
 
         if (raw.Length == 0)
         {
