@@ -39,6 +39,10 @@
 
     <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!-- Standard equivalent of apple-mobile-web-app-capable. Chrome warns if
+         only the Apple-prefixed form is present; iOS Safari still reads the
+         Apple-prefixed one, so both are kept for compatibility. -->
+    <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-title" content="PKMDS"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
