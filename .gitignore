@@ -359,6 +359,7 @@ Pkmds.Rcl/bin/sha256sums.txt
 .idea
 .claude/worktrees/
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 **/wwwroot/appsettings.Development.json
 
 # Azure Functions local settings (contains secrets)

@@ -1,0 +1,19 @@
+# Repos that matter to PKMDS-Blazor beyond direct ProjectReferences.
+# Used by the /sync-repos skill to focus the "what's new" report.
+#
+# Each non-blank, non-comment line is one of:
+#   - bare name           e.g.  PKHeX                       (searched under $CODE_ROOT and OS-convention roots)
+#   - owner/repo          e.g.  kwsch/PKHeX                 (disambiguates when the same name exists under multiple owners)
+#   - absolute path       e.g.  C:\Code\PKHeX  or  ~/Code/codemonkey85/PKHeX
+#   - relative path       e.g.  ../PKHeX                    (resolved relative to this file's directory)
+#
+# First existing git directory wins. See ~/.claude/skills/sync-repos/SKILL.md for the full resolution order.
+
+PKHeX
+pokemon-showdown
+pokeapi
+sprites
+PKHeX.Everywhere
+PKHeXFeebasLocatorPlugin
+PKHeXWC3Plugin
+PKHeXPluginPile

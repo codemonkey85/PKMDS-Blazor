@@ -108,10 +108,15 @@ Console.WriteLine($"Writing JSON to  : {outputDir}");
 if (overridesArg is not null) Console.WriteLine($"Overrides from   : {overridesArg}");
 Console.WriteLine();
 
-// Load description overrides (from scrape-pokemondb-descriptions.cs, if present).
-// Keys: item-info.json-style lowercase name; move-info.json-style numeric id.
+// Load description overrides (from scrape-pokemondb-descriptions.cs and manual corrections, if present).
+// Keys: item-info.json-style lowercase name; move-info.json-style numeric id; ability name (case-insensitive).
+// Item/move overrides are last-resort fallbacks when PokeAPI/Showdown have no description.
+// Ability description overrides always replace (used to correct upstream data bugs, not fill gaps).
+// abilityFlavorRemove drops specific version-group flavor entries that PokeAPI mis-attributed.
 var itemOverrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 var moveOverrides = new Dictionary<string, string>(StringComparer.Ordinal);
+var abilityOverrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+var abilityFlavorRemove = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 if (overridesArg is not null && File.Exists(overridesArg))
 {
     var overridesJson = JsonNode.Parse(File.ReadAllText(overridesArg))?.AsObject();
@@ -123,7 +128,15 @@ if (overridesArg is not null && File.Exists(overridesArg))
         foreach (var (k, v) in movesObj)
             if (v is not null && v.GetValue<string>() is { Length: > 0 } s)
                 moveOverrides[k] = s;
-    Console.WriteLine($"  → {itemOverrides.Count} item and {moveOverrides.Count} move description overrides loaded");
+    if (overridesJson?["abilities"] is JsonObject abilitiesObj)
+        foreach (var (k, v) in abilitiesObj)
+            if (v is not null && v.GetValue<string>() is { Length: > 0 } s)
+                abilityOverrides[k] = s;
+    if (overridesJson?["abilityFlavorRemove"] is JsonObject flavorRemoveObj)
+        foreach (var (k, v) in flavorRemoveObj)
+            if (v is JsonArray arr)
+                abilityFlavorRemove[k] = [.. arr.OfType<JsonValue>().Select(x => x.GetValue<string>())];
+    Console.WriteLine($"  → {itemOverrides.Count} item, {moveOverrides.Count} move, {abilityOverrides.Count} ability description overrides loaded ({abilityFlavorRemove.Count} ability flavor edits)");
     Console.WriteLine();
 }
 
@@ -660,8 +673,14 @@ List<Dictionary<string, string>> ComputeStatEpochs(
 // Generators
 // ---------------------------------------------------------------------------
 
-JsonObject GenerateAbilityInfo(string csvDir)
+JsonObject GenerateAbilityInfo(
+    string csvDir,
+    IReadOnlyDictionary<string, string>? overrides = null,
+    IReadOnlyDictionary<string, HashSet<string>>? flavorRemove = null)
 {
+    overrides ??= new Dictionary<string, string>();
+    flavorRemove ??= new Dictionary<string, HashSet<string>>();
+
     var abilities = ReadCsv(Path.Combine(csvDir, "abilities.csv"))
         .ToDictionary(r => r["id"]);
 
@@ -681,13 +700,23 @@ JsonObject GenerateAbilityInfo(string csvDir)
         if (ability.TryGetValue("is_main_series", out var main) && main == "0") continue;
         if (!names.TryGetValue(abilityId, out var name)) continue;
 
+        // Ability description overrides replace (not fall back) — used to correct upstream data bugs.
+        var description = overrides.TryGetValue(name, out var corrected)
+            ? corrected
+            : descriptions.GetValueOrDefault(abilityId, "");
+
         var entry = new JsonObject
         {
             ["name"] = name,
-            ["description"] = descriptions.GetValueOrDefault(abilityId, ""),
+            ["description"] = description,
         };
         if (flavor.TryGetValue(abilityId, out var flavorMap))
+        {
+            if (flavorRemove.TryGetValue(name, out var versionsToDrop))
+                flavorMap = flavorMap.Where(kv => !versionsToDrop.Contains(kv.Key))
+                                     .ToDictionary(kv => kv.Key, kv => kv.Value);
             entry["flavor"] = ToJsonObject(flavorMap);
+        }
         result[abilityId] = entry;
     }
     return result;
@@ -1064,9 +1093,9 @@ var serializerOptions = new JsonSerializerOptions
 
 var tasks = new (string file, Func<string, JsonObject> generator, string label)[]
 {
-    ("ability-info.json", GenerateAbilityInfo,                                        "abilities"),
-    ("move-info.json",    csv => GenerateMoveInfo(csv, showdownArg, moveOverrides),   "moves"),
-    ("item-info.json",    csv => GenerateItemInfo(csv, showdownArg, itemOverrides),   "items"),
+    ("ability-info.json", csv => GenerateAbilityInfo(csv, abilityOverrides, abilityFlavorRemove), "abilities"),
+    ("move-info.json",    csv => GenerateMoveInfo(csv, showdownArg, moveOverrides),               "moves"),
+    ("item-info.json",    csv => GenerateItemInfo(csv, showdownArg, itemOverrides),               "items"),
 };
 
 foreach (var (file, generator, label) in tasks)

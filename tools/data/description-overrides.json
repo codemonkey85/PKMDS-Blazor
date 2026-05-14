@@ -414,6 +414,15 @@
     "899": "Combat Torque deals damage and has a 30% chance of paralyzing the target. Only the Revavroom used by Team Star has this move.",
     "900": "Magical Torque deals damage and has a 30% chance of confusing the target. Only the Revavroom used by Team Star has this move."
   },
+  "abilities": {
+    "Cotton Down": "When the Pokémon is hit by an attack, it scatters cotton fluff around and lowers the Speed stat of all Pokémon except itself.",
+    "Effect Spore": "Has a 30% chance of inflicting either paralysis, poison, or sleep on attacking Pokémon on contact."
+  },
+  "abilityFlavorRemove": {
+    "Queenly Majesty": [
+      "26"
+    ]
+  },
   "notFound": {
     "items": [
       "tm101",
