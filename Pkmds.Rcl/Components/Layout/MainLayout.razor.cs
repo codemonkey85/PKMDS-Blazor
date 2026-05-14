@@ -206,7 +206,10 @@ public partial class MainLayout : IDisposable
         {
             try
             {
-                await JSRuntime.InvokeVoidAsync("PKMDS.host._sendMessage", "ready", new { });
+                // Pass null rather than `new { }` so Blazor's IJS marshaler doesn't
+                // reflect over an anonymous type — keeps this site trim-safe under
+                // TrimMode=full alongside the other PKMDS.host._sendMessage call sites.
+                await JSRuntime.InvokeVoidAsync("PKMDS.host._sendMessage", "ready", default(string));
             }
             catch (JSException ex)
             {
