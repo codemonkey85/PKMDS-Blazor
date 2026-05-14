@@ -9,6 +9,10 @@ public class RefreshService : IRefreshService
     /// <summary>
     /// Initializes a new instance and sets the singleton instance for JavaScript interop.
     /// </summary>
+    // [JSInvokable] static methods are discovered by name from JS, so the
+    // trimmer can't see references to them and strips them under TrimMode=full.
+    // Root them via [DynamicDependency] on the ctor (which DI calls).
+    [DynamicDependency(nameof(ShowUpdateMessage), typeof(RefreshService))]
     public RefreshService() => Instance = this; // Set the singleton instance for JS interop
 
     /// <summary>
@@ -92,9 +96,11 @@ public class RefreshService : IRefreshService
     /// <summary>
     /// JavaScript-invokable method called by the service worker when an app update is detected.
     /// </summary>
-    // Preserved under TrimMode=full via PreserveJSInvokable.xml in Pkmds.Web — the linker
-    // can't see the JS-side call via DotNet.invokeMethodAsync, and [JSInvokable] alone
-    // is not a trim root.
+    // Preserved under TrimMode=full via two mechanisms (belt-and-suspenders):
+    // [DynamicDependency] on the ctor above (rooted by DI activation) and
+    // PreserveJSInvokable.xml in Pkmds.Web. The linker can't see the JS-side
+    // call via DotNet.invokeMethodAsync, and [JSInvokable] alone is not a trim
+    // root.
     [JSInvokable(nameof(ShowUpdateMessage))]
     public static void ShowUpdateMessage() => Instance?.OnUpdateAvailable?.Invoke();
 }

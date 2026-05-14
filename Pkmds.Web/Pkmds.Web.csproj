@@ -6,7 +6,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <WasmEnableSIMD>false</WasmEnableSIMD>
+        <!-- Enable WASM SIMD codegen. PKHeX hot paths (legality, encryption,
+             encounter generation) benefit; cost is dropping Safari < 16.4 and
+             iOS < 16.4. The static feature test in wwwroot/index.html redirects
+             unsupported browsers to BrowserNotSupported.html. See issue #883. -->
+        <WasmEnableSIMD>true</WasmEnableSIMD>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -26,16 +30,23 @@
              - PreservePkmTypes.xml roots PKHeX's PKM type hierarchy for
                EntityBatchEditor's reflection path
              - Pkmds.Rcl/PreserveRoutes.xml roots Blazor's @page components
-             - PreserveJSInvokable.xml roots RefreshService.ShowUpdateMessage
-               and EmbeddedHostBridge's [JSInvokable] static entry points
+             - PreserveJSInvokable.xml + [DynamicDependency] attributes on
+               RefreshService and EmbeddedHostBridge ctors root the [JSInvokable]
+               static entry points called via DotNet.invokeMethodAsync
              - BankService / BackupService / EmbeddedHostBridge use source-gen
-               JSON and pass strings across the IJS boundary, so the reflection
-               path through Blazor's internal JsonSerializer is no longer hit
+               JSON and pass JsonDocument.RootElement (trim-safe primitive)
+               across the IJS boundary, so the reflection path through Blazor's
+               internal JsonSerializer is no longer hit
              Initial flip in #883 broke Bank and Backup (issues #894/#896/#898);
              re-enabled in #902 after the IJS interop and [JSInvokable] surfaces
              were hardened. -->
         <TrimMode>full</TrimMode>
         <PublishTrimmed>true</PublishTrimmed>
+        <!-- AOT-compile to native WASM for ~4-5x speedup on PKHeX hot paths
+             (legality analysis, encryption roundtrip, box search). Costs ~6 MB
+             extra brotli payload and ~3-4 min extra CI publish time. Combined
+             with SIMD above per /bench measurements on #883. -->
+        <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
 
     <PropertyGroup>

@@ -19,8 +19,15 @@ const spriteOrigin = 'https://raw.githubusercontent.com';
 const CACHE_VERSION = '%%CACHE_VERSION%%'
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}${CACHE_VERSION}`;
 
-const offlineAssetsInclude = [/\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /\.json$/, /\.css$/, /\.woff$/, /\.png$/, /\.jpe?g$/, /\.gif$/, /\.ico$/, /\.blat$/, /\.dat$/];
-const offlineAssetsExclude = [/^service-worker\.js$/, /^appsettings.*\.json$/, /^staticwebapp\.config\.json$/];
+const offlineAssetsInclude = [/\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /\.json$/, /\.css$/, /\.woff$/, /\.woff2$/, /\.png$/, /\.jpe?g$/, /\.gif$/, /\.ico$/, /\.svg$/, /\.webp$/, /\.blat$/, /\.dat$/];
+// AOT-compiled native blob (~44 MB raw, ~7.75 MB brotli) is excluded from
+// SW pre-cache because it alone has caused iOS Safari to reject the entire
+// install on tight per-origin SW cache quotas, breaking offline reload.
+// Browsers continue to serve it via the regular HTTP cache (1-year max-age
+// on the fingerprinted asset), so returning users with a populated HTTP
+// cache still get offline reload; only stone-cold first-load-offline fails
+// for this single file, which has always been a thin scenario.
+const offlineAssetsExclude = [/^service-worker\.js$/, /^appsettings.*\.json$/, /^staticwebapp\.config\.json$/, /^_framework\/dotnet\.native\.[^\/]+\.wasm$/];
 
 // Replace with your base path if you are hosting on a subfolder. Ensure there is a trailing '/'.
 const base = "/";

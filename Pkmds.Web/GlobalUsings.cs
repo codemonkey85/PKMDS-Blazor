@@ -1,4 +1,5 @@
-﻿global using System.Reflection;
+﻿global using System.Diagnostics.CodeAnalysis;
+global using System.Reflection;
 global using System.Security.Cryptography;
 global using KristofferStrube.Blazor.FileSystemAccess;
 global using Microsoft.AspNetCore.Components.Forms;
