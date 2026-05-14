@@ -113,7 +113,7 @@
 <script src="_content/Pkmds.Rcl/js/crypto.js"></script>
 
 <script>
-    //check if webassembly is supported
+    // Baseline WebAssembly support.
     const webassemblySupported = (function () {
         try {
             if (typeof WebAssembly === "object"
@@ -129,12 +129,27 @@
         }
         return false;
     })();
-    // Modern browsers e.g. Microsoft Edge
-    if (webassemblySupported) {
+
+    // WASM SIMD support. The Pkmds.Web build ships with WasmEnableSIMD=true,
+    // so browsers without SIMD (notably Safari < 16.4, iOS < 16.4) can't run
+    // the app — direct them to the fallback page instead of a silent failure.
+    // The payload below is a minimal valid module whose only function uses
+    // v128.const (opcode 0xFD 0x0F). WebAssembly.validate returns false on
+    // engines that don't understand the opcode.
+    const wasmSimdSupported = (function () {
+        try {
+            return WebAssembly.validate(new Uint8Array([
+                0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123,
+                3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11
+            ]));
+        } catch (e) {
+            return false;
+        }
+    })();
+
+    if (webassemblySupported && wasmSimdSupported) {
         Blazor.start({});
-    }
-    // Older browsers e.g. IE11
-    else {
+    } else {
         window.location = window.location + "BrowserNotSupported.html";
     }
 </script>

@@ -6,7 +6,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <WasmEnableSIMD>false</WasmEnableSIMD>
+        <!-- Enable WASM SIMD codegen. PKHeX hot paths (legality, encryption,
+             encounter generation) benefit; cost is dropping Safari < 16.4 and
+             iOS < 16.4. The static feature test in wwwroot/index.html redirects
+             unsupported browsers to BrowserNotSupported.html. See issue #883. -->
+        <WasmEnableSIMD>true</WasmEnableSIMD>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -28,6 +32,11 @@
              runtime. See issue #883 for the analysis. -->
         <TrimMode>full</TrimMode>
         <PublishTrimmed>true</PublishTrimmed>
+        <!-- AOT-compile to native WASM for ~4-5x speedup on PKHeX hot paths
+             (legality analysis, encryption roundtrip, box search). Costs ~6 MB
+             extra brotli payload and ~3-4 min extra CI publish time. Combined
+             with SIMD above per /bench measurements on #883. -->
+        <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
 
     <PropertyGroup>
