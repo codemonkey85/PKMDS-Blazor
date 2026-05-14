@@ -26,8 +26,8 @@ public class BankServiceTests
 
     /// <summary>
     /// Creates a <see cref="BankService" /> backed by bUnit's JS-interop mock with
-    /// <paramref name="bankEntries" /> pre-loaded as the <c>getAllPokemon</c> result
-    /// (serialized to a JSON string to match the production contract).
+    /// <paramref name="bankEntries" /> pre-loaded as the <c>getAllPokemonJson</c>
+    /// result (serialized to a JSON string to match the production contract).
     /// </summary>
     private static (BankService Service, BunitContext Ctx) CreateService(
         BankService.RawEntry[]? bankEntries = null)

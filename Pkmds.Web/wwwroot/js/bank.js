@@ -110,9 +110,10 @@ export async function addRange(entries) {
     });
 }
 
-// Internal helper — returns the raw entries array. Used by both the exported
-// getAllPokemon (which stringifies for IJS) and exportAll (which builds a binary
-// file payload directly from the array).
+// Internal helper — returns the raw entries array. Shared between getAllPokemon
+// (legacy export, returns the array directly), getAllPokemonJson (stringifies for
+// trim-safe IJS), and exportAll (builds a binary file payload directly from the
+// array).
 async function getAllEntries() {
     const db = await openDb();
     return new Promise((resolve, reject) => {
