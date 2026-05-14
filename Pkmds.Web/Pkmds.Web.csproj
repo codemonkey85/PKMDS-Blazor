@@ -49,6 +49,7 @@
 
     <ItemGroup>
         <TrimmerRootDescriptor Include="PreservePkmTypes.xml"/>
+        <TrimmerRootDescriptor Include="PreserveJSInvokable.xml"/>
     </ItemGroup>
 
     <Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">

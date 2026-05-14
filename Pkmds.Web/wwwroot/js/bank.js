@@ -59,7 +59,19 @@ function openDb() {
     return _dbPromise;
 }
 
+// Tolerate either a JSON string (new trim-safe path) or an already-parsed object
+// (legacy callers). Service-worker rollouts can briefly serve mismatched JS / DLL
+// pairs across cache boundaries, so the JS side defends against either shape.
+function parseMeta(value) {
+    if (value == null) return {};
+    return typeof value === 'string' ? JSON.parse(value) : value;
+}
+
 export async function addPokemon(bytesBase64, meta) {
+    // C# passes meta as a JSON string so it can serialize via source-gen and avoid
+    // Blazor's reflection-based JsonSerializer on the IJS boundary (trim-safe).
+    // An older DLL may still pass an object; parseMeta handles both.
+    meta = parseMeta(meta);
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readwrite");
@@ -81,6 +93,9 @@ export async function addPokemon(bytesBase64, meta) {
 // Bulk-insert all entries in a single readwrite transaction — much faster than
 // calling addPokemon() in a loop when importing an entire save file.
 export async function addRange(entries) {
+    // See addPokemon() — C# pre-serializes the payload for trim-safe interop,
+    // but tolerate the legacy array shape too for service-worker rollout safety.
+    entries = parseMeta(entries);
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readwrite");
@@ -95,7 +110,11 @@ export async function addRange(entries) {
     });
 }
 
-export async function getAllPokemon() {
+// Internal helper — returns the raw entries array. Shared between getAllPokemon
+// (legacy export, returns the array directly), getAllPokemonJson (stringifies for
+// trim-safe IJS), and exportAll (builds a binary file payload directly from the
+// array).
+async function getAllEntries() {
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readonly");
@@ -104,6 +123,21 @@ export async function getAllPokemon() {
         request.onsuccess = (event) => resolve(event.target.result);
         request.onerror = (event) => reject(event.target.error);
     });
+}
+
+// Legacy export — returns the raw entries array. Kept around so an older cached
+// DLL that hasn't been updated yet still works during a service-worker rollout.
+export async function getAllPokemon() {
+    return await getAllEntries();
+}
+
+// Returns the entries serialized as a JSON string so the .NET side can deserialize
+// via source-gen instead of Blazor's reflection-based JsonSerializer (which breaks
+// under TrimMode=full — see #896). New code should call this; getAllPokemon stays
+// for backward compatibility.
+export async function getAllPokemonJson() {
+    const entries = await getAllEntries();
+    return JSON.stringify(entries);
 }
 
 export async function deletePokemon(id) {
@@ -131,7 +165,7 @@ export async function clearAll() {
 }
 
 export async function exportAll() {
-    const entries = await getAllPokemon();
+    const entries = await getAllEntries();
     const json = JSON.stringify(entries);
     const encoder = new TextEncoder();
     // Return Uint8Array directly — .NET marshals this to byte[] without an extra

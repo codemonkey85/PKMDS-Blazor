@@ -1,6 +1,6 @@
 namespace Pkmds.Rcl.Services;
 
-public class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
+public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
 {
     private IJSObjectReference? module;
 
@@ -18,22 +18,25 @@ public class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
         var storedData = new byte[pkm.SIZE_STORED];
         pkm.WriteDecryptedDataStored(storedData);
         var b64 = Convert.ToBase64String(storedData);
-        var meta = new
-        {
-            species = pkm.Species,
-            isShiny = pkm.IsShiny,
-            nickname = pkm.Nickname,
-            ext = pkm.Extension,
+        var meta = new BankMeta(
+            pkm.Species,
+            pkm.IsShiny,
+            pkm.Nickname,
+            pkm.Extension,
             tag,
-            sourceSave
-        };
+            sourceSave);
+        // Serialize via source-gen on our side and pass a JSON string across the JS interop
+        // boundary. IJS marshals strings as opaque primitives, which is trim-safe; passing
+        // CLR objects would go through Blazor's reflection-based JsonSerializer and break
+        // under TrimMode=full (see #894, #896, #898).
+        var metaJson = JsonSerializer.Serialize(meta, BankJsonContext.Default.BankMeta);
 
         if (module is null)
         {
             return;
         }
 
-        await module.InvokeVoidAsync("addPokemon", b64, meta);
+        await module.InvokeVoidAsync("addPokemon", b64, metaJson);
     }
 
     public async Task AddRangeAsync(IEnumerable<PKM> pokemon, string? tag = null, string? sourceSave = null)
@@ -41,23 +44,19 @@ public class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
         await GetModuleAsync();
         // Collect all entries first and send in one JS call / one IDB transaction
         // rather than one round-trip per Pokémon.
-        var entries = pokemon.Select(object (pkm) =>
+        var entries = pokemon.Select(pkm =>
         {
             var storedData = new byte[pkm.SIZE_STORED];
             pkm.WriteDecryptedDataStored(storedData);
-            return new
-            {
-                bytesBase64 = Convert.ToBase64String(storedData),
-                meta = new
-                {
-                    species = pkm.Species,
-                    isShiny = pkm.IsShiny,
-                    nickname = pkm.Nickname,
-                    ext = pkm.Extension,
+            return new BankAddEntry(
+                Convert.ToBase64String(storedData),
+                new BankMeta(
+                    pkm.Species,
+                    pkm.IsShiny,
+                    pkm.Nickname,
+                    pkm.Extension,
                     tag,
-                    sourceSave
-                }
-            };
+                    sourceSave));
         }).ToArray();
 
         if (entries.Length > 0)
@@ -67,7 +66,8 @@ public class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
                 return;
             }
 
-            await module.InvokeVoidAsync("addRange", (object)entries);
+            var entriesJson = JsonSerializer.Serialize(entries, BankJsonContext.Default.BankAddEntryArray);
+            await module.InvokeVoidAsync("addRange", entriesJson);
         }
     }
 
@@ -79,7 +79,17 @@ public class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
             return [];
         }
 
-        var raw = await module.InvokeAsync<RawEntry[]>("getAllPokemon");
+        // Call the *Json variant so we get a JSON string suitable for source-gen
+        // deserialization. The legacy getAllPokemon export still returns an array
+        // for service-worker rollout safety; see bank.js.
+        var rawJson = await module.InvokeAsync<string>("getAllPokemonJson");
+
+        if (string.IsNullOrEmpty(rawJson))
+        {
+            return [];
+        }
+
+        var raw = JsonSerializer.Deserialize(rawJson, BankJsonContext.Default.RawEntryArray) ?? [];
 
         if (raw.Length == 0)
         {
@@ -239,9 +249,27 @@ public class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
     private async Task GetModuleAsync() =>
         module ??= await js.InvokeAsync<IJSObjectReference>("import", "./js/bank.js");
 
-    // ── Private DTOs for JS deserialization ───────────────────────────────
+    // ── DTOs for JS interop ──────────────────────────────────────────────
     // internal so that Pkmds.Tests can reference these types when setting up
     // JS interop mocks (via InternalsVisibleTo in Pkmds.Rcl.csproj).
+
+    // Write-side payloads (replace anonymous types so source-gen can describe them).
+
+    internal sealed record BankMeta(
+        [property: JsonPropertyName("species")] ushort Species,
+        [property: JsonPropertyName("isShiny")] bool IsShiny,
+        [property: JsonPropertyName("nickname")] string Nickname,
+        [property: JsonPropertyName("ext")] string Ext,
+        [property: JsonPropertyName("tag")] string? Tag,
+        [property: JsonPropertyName("sourceSave")] string? SourceSave);
+
+    internal sealed record BankAddEntry(
+        [property: JsonPropertyName("bytesBase64")] string BytesBase64,
+        [property: JsonPropertyName("meta")] BankMeta Meta);
+
+    // Read-side payloads. Mutable POCOs because the source-gen deserializer needs a
+    // public parameterless constructor + settable properties to round-trip through
+    // System.Text.Json on a JSON object with these property names.
 
     internal sealed class RawEntry
     {
@@ -278,4 +306,9 @@ public class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
         [JsonPropertyName("sourceSave")]
         public string? SourceSave { get; set; }
     }
+
+    [JsonSerializable(typeof(BankMeta))]
+    [JsonSerializable(typeof(BankAddEntry[]))]
+    [JsonSerializable(typeof(RawEntry[]))]
+    internal sealed partial class BankJsonContext : JsonSerializerContext;
 }

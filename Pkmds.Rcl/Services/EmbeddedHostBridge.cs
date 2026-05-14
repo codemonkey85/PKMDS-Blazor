@@ -13,7 +13,7 @@ namespace Pkmds.Rcl.Services;
 /// (required by <c>DotNet.invokeMethodAsync</c>) can resolve injected
 /// services without a service-locator anti-pattern.
 /// </remarks>
-public sealed class EmbeddedHostBridge
+public sealed partial class EmbeddedHostBridge
 {
     private readonly IAppState _appState;
     private readonly IAppService _appService;
@@ -38,6 +38,10 @@ public sealed class EmbeddedHostBridge
 
     private static EmbeddedHostBridge? Instance { get; set; }
 
+    // Preserved under TrimMode=full via PreserveJSInvokable.xml in Pkmds.Web — the linker
+    // can't see JS-side calls via DotNet.invokeMethodAsync, and [JSInvokable] alone is not
+    // a trim root. Without preservation these methods get stripped and the embedded host
+    // bridge silently breaks.
     [JSInvokable(nameof(LoadSaveFromHost))]
     public static Task<bool> LoadSaveFromHost(string bytesBase64, string? fileName) =>
         Task.FromResult(Instance?.LoadSaveFromHostInternal(bytesBase64, fileName) ?? false);
@@ -135,10 +139,18 @@ public sealed class EmbeddedHostBridge
             var base64 = Convert.ToBase64String(bytes);
             var fileName = _appState.SaveFileName ?? "save.sav";
 
+            // Pre-serialize the payload via source-gen and send as a JSON string so
+            // Blazor's reflection-based IJS marshaler isn't on the trim hazard path
+            // (anonymous types would lose ctor param names under TrimMode=full —
+            // same root cause as #894 / #896 / #898).
+            var payloadJson = JsonSerializer.Serialize(
+                new SaveExportPayload(base64, fileName),
+                EmbeddedHostJsonContext.Default.SaveExportPayload);
+
             await _jsRuntime.InvokeVoidAsync(
                 "PKMDS.host._sendMessage",
                 "saveExport",
-                new { data = base64, fileName });
+                payloadJson);
 
             _logger.LogInformation("Host export emitted: {ByteCount} bytes ({FileName})",
                 bytes.Length, fileName);
@@ -150,4 +162,13 @@ public sealed class EmbeddedHostBridge
             return false;
         }
     }
+
+    // ── DTO + source-gen context for the saveExport outbound payload ──────
+
+    private sealed record SaveExportPayload(
+        [property: JsonPropertyName("data")] string Data,
+        [property: JsonPropertyName("fileName")] string FileName);
+
+    [JsonSerializable(typeof(SaveExportPayload))]
+    private sealed partial class EmbeddedHostJsonContext : JsonSerializerContext;
 }
