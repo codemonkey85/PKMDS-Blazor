@@ -41,7 +41,7 @@ public class BankServiceTests
 
         ctx.JSInterop
             .SetupModule("./js/bank.js")
-            .Setup<string>("getAllPokemon")
+            .Setup<string>("getAllPokemonJson")
             .SetResult(json);
 
         var jsRuntime = ctx.Services.GetRequiredService<IJSRuntime>();

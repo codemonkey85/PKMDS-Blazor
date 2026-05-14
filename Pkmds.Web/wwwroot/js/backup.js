@@ -57,10 +57,19 @@ function openDb() {
     return _dbPromise;
 }
 
-export async function addBackup(bytesBase64, metaJson, source) {
+// Tolerate either a JSON string (new trim-safe path) or an already-parsed object
+// (legacy callers). Service-worker rollouts can briefly serve mismatched JS / DLL
+// pairs across cache boundaries, so the JS side defends against either shape.
+function parseMeta(value) {
+    if (value == null) return {};
+    return typeof value === 'string' ? JSON.parse(value) : value;
+}
+
+export async function addBackup(bytesBase64, meta, source) {
     // C# passes meta as a JSON string so it can serialize via source-gen and avoid
     // Blazor's reflection-based JsonSerializer on the IJS boundary (trim-safe).
-    const meta = JSON.parse(metaJson);
+    // An older DLL may still pass an object; parseMeta handles both.
+    meta = parseMeta(meta);
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readwrite");
@@ -79,12 +88,9 @@ export async function addBackup(bytesBase64, metaJson, source) {
     });
 }
 
-// Returns all backup records WITHOUT bytesBase64 — lightweight for list display.
-// Uses a cursor so that full blob data is never loaded into memory at once.
-// Returns a JSON string rather than the raw array so the .NET side can deserialize
-// via source-gen instead of Blazor's reflection-based JsonSerializer (trim-safe;
-// see #894).
-export async function getBackupMetadata() {
+// Internal helper — returns the metadata array (records without bytesBase64).
+// Shared between the legacy array-returning export and the new JSON-string export.
+async function getBackupMetadataInternal() {
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readonly");
@@ -95,7 +101,7 @@ export async function getBackupMetadata() {
         request.onsuccess = (event) => {
             const cursor = event.target.result;
             if (!cursor) {
-                resolve(JSON.stringify(results));
+                resolve(results);
                 return;
             }
 
@@ -110,20 +116,42 @@ export async function getBackupMetadata() {
     });
 }
 
-// Returns a single full backup record by ID (including bytesBase64) for restore/export.
-// Returns a JSON string (or null) — see getBackupMetadata for rationale.
-export async function getBackup(id) {
+// Legacy export — returns the raw metadata array. Kept around so an older cached
+// DLL that hasn't been updated yet still works during a service-worker rollout.
+// Uses a cursor so full blob data is never loaded into memory at once.
+export async function getBackupMetadata() {
+    return await getBackupMetadataInternal();
+}
+
+// Returns metadata serialized as a JSON string for source-gen deserialization
+// on the .NET side (trim-safe; see #894).
+export async function getBackupMetadataJson() {
+    return JSON.stringify(await getBackupMetadataInternal());
+}
+
+// Internal helper — returns the full record (including bytesBase64) by ID, or null.
+async function getBackupInternal(id) {
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readonly");
         const store = tx.objectStore(STORE);
         const request = store.get(id);
-        request.onsuccess = (event) => {
-            const value = event.target.result;
-            resolve(value ? JSON.stringify(value) : null);
-        };
+        request.onsuccess = (event) => resolve(event.target.result ?? null);
         request.onerror = (event) => reject(event.target.error);
     });
+}
+
+// Legacy export — returns the full backup record (or null). Used by restore/export
+// flows in older cached DLLs.
+export async function getBackup(id) {
+    return await getBackupInternal(id);
+}
+
+// Returns the full backup record serialized as a JSON string (or null) — see
+// getBackupMetadataJson for rationale.
+export async function getBackupJson(id) {
+    const value = await getBackupInternal(id);
+    return value ? JSON.stringify(value) : null;
 }
 
 export async function deleteBackup(id) {

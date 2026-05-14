@@ -79,7 +79,10 @@ public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
             return [];
         }
 
-        var rawJson = await module.InvokeAsync<string>("getAllPokemon");
+        // Call the *Json variant so we get a JSON string suitable for source-gen
+        // deserialization. The legacy getAllPokemon export still returns an array
+        // for service-worker rollout safety; see bank.js.
+        var rawJson = await module.InvokeAsync<string>("getAllPokemonJson");
 
         if (string.IsNullOrEmpty(rawJson))
         {

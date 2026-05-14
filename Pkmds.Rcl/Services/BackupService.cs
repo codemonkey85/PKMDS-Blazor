@@ -34,7 +34,10 @@ public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDispos
     public async Task<IReadOnlyList<BackupEntry>> GetAllMetadataAsync()
     {
         var module = await GetModuleAsync();
-        var rawJson = await module.InvokeAsync<string>("getBackupMetadata");
+        // Call the *Json variant so we get a JSON string suitable for source-gen
+        // deserialization. The legacy getBackupMetadata export still returns an
+        // array for service-worker rollout safety; see backup.js.
+        var rawJson = await module.InvokeAsync<string>("getBackupMetadataJson");
 
         if (string.IsNullOrEmpty(rawJson))
         {
@@ -77,7 +80,8 @@ public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDispos
     public async Task<byte[]?> GetBackupBytesAsync(long id)
     {
         var module = await GetModuleAsync();
-        var rawJson = await module.InvokeAsync<string?>("getBackup", id);
+        // *Json variant — see GetAllMetadataAsync for rationale.
+        var rawJson = await module.InvokeAsync<string?>("getBackupJson", id);
 
         if (string.IsNullOrEmpty(rawJson))
         {
