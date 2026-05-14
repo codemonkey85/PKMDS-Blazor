@@ -57,7 +57,10 @@ function openDb() {
     return _dbPromise;
 }
 
-export async function addBackup(bytesBase64, meta, source) {
+export async function addBackup(bytesBase64, metaJson, source) {
+    // C# passes meta as a JSON string so it can serialize via source-gen and avoid
+    // Blazor's reflection-based JsonSerializer on the IJS boundary (trim-safe).
+    const meta = JSON.parse(metaJson);
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readwrite");
@@ -78,6 +81,9 @@ export async function addBackup(bytesBase64, meta, source) {
 
 // Returns all backup records WITHOUT bytesBase64 — lightweight for list display.
 // Uses a cursor so that full blob data is never loaded into memory at once.
+// Returns a JSON string rather than the raw array so the .NET side can deserialize
+// via source-gen instead of Blazor's reflection-based JsonSerializer (trim-safe;
+// see #894).
 export async function getBackupMetadata() {
     const db = await openDb();
     return new Promise((resolve, reject) => {
@@ -89,7 +95,7 @@ export async function getBackupMetadata() {
         request.onsuccess = (event) => {
             const cursor = event.target.result;
             if (!cursor) {
-                resolve(results);
+                resolve(JSON.stringify(results));
                 return;
             }
 
@@ -105,13 +111,17 @@ export async function getBackupMetadata() {
 }
 
 // Returns a single full backup record by ID (including bytesBase64) for restore/export.
+// Returns a JSON string (or null) — see getBackupMetadata for rationale.
 export async function getBackup(id) {
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readonly");
         const store = tx.objectStore(STORE);
         const request = store.get(id);
-        request.onsuccess = (event) => resolve(event.target.result ?? null);
+        request.onsuccess = (event) => {
+            const value = event.target.result;
+            resolve(value ? JSON.stringify(value) : null);
+        };
         request.onerror = (event) => reject(event.target.error);
     });
 }

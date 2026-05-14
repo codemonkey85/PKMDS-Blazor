@@ -59,7 +59,10 @@ function openDb() {
     return _dbPromise;
 }
 
-export async function addPokemon(bytesBase64, meta) {
+export async function addPokemon(bytesBase64, metaJson) {
+    // C# passes meta as a JSON string so it can serialize via source-gen and avoid
+    // Blazor's reflection-based JsonSerializer on the IJS boundary (trim-safe).
+    const meta = JSON.parse(metaJson);
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readwrite");
@@ -80,7 +83,9 @@ export async function addPokemon(bytesBase64, meta) {
 
 // Bulk-insert all entries in a single readwrite transaction — much faster than
 // calling addPokemon() in a loop when importing an entire save file.
-export async function addRange(entries) {
+export async function addRange(entriesJson) {
+    // See addPokemon() — C# pre-serializes the payload for trim-safe interop.
+    const entries = JSON.parse(entriesJson);
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readwrite");
@@ -95,7 +100,10 @@ export async function addRange(entries) {
     });
 }
 
-export async function getAllPokemon() {
+// Internal helper — returns the raw entries array. Used by both the exported
+// getAllPokemon (which stringifies for IJS) and exportAll (which builds a binary
+// file payload directly from the array).
+async function getAllEntries() {
     const db = await openDb();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, "readonly");
@@ -104,6 +112,14 @@ export async function getAllPokemon() {
         request.onsuccess = (event) => resolve(event.target.result);
         request.onerror = (event) => reject(event.target.error);
     });
+}
+
+// Exported for C# — returns a JSON string rather than the raw array so the .NET
+// side can deserialize via source-gen instead of Blazor's reflection-based
+// JsonSerializer (which breaks under TrimMode=full — see #896).
+export async function getAllPokemon() {
+    const entries = await getAllEntries();
+    return JSON.stringify(entries);
 }
 
 export async function deletePokemon(id) {
@@ -131,7 +147,7 @@ export async function clearAll() {
 }
 
 export async function exportAll() {
-    const entries = await getAllPokemon();
+    const entries = await getAllEntries();
     const json = JSON.stringify(entries);
     const encoder = new TextEncoder();
     // Return Uint8Array directly — .NET marshals this to byte[] without an extra

@@ -1,6 +1,6 @@
 namespace Pkmds.Rcl.Services;
 
-public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
+public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
 {
     private IJSObjectReference? _module;
 
@@ -16,23 +16,32 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
     {
         var module = await GetModuleAsync();
         var b64 = Convert.ToBase64String(saveBytes);
-        var meta = new
-        {
-            fileName = fileName ?? string.Empty,
-            saveType = saveFile.GetType().Name,
-            generation = (int)saveFile.Generation,
-            gameVersion = saveFile.Version.ToString(),
-            trainerName = saveFile.OT,
-            sizeBytes = (long)saveBytes.Length,
-            isManicEmu
-        };
-        return await module.InvokeAsync<long>("addBackup", b64, meta, source);
+        var meta = new BackupMeta(
+            fileName ?? string.Empty,
+            saveFile.GetType().Name,
+            (int)saveFile.Generation,
+            saveFile.Version.ToString(),
+            saveFile.OT,
+            saveBytes.Length,
+            isManicEmu);
+        // Serialize via source-gen on our side and pass a JSON string across the JS interop
+        // boundary — see BankService for the rationale (trim-safe vs. reflection-based
+        // Blazor JsonSerializer under TrimMode=full; see #894).
+        var metaJson = JsonSerializer.Serialize(meta, BackupJsonContext.Default.BackupMeta);
+        return await module.InvokeAsync<long>("addBackup", b64, metaJson, source);
     }
 
     public async Task<IReadOnlyList<BackupEntry>> GetAllMetadataAsync()
     {
         var module = await GetModuleAsync();
-        var raw = await module.InvokeAsync<RawBackupEntry[]>("getBackupMetadata");
+        var rawJson = await module.InvokeAsync<string>("getBackupMetadata");
+
+        if (string.IsNullOrEmpty(rawJson))
+        {
+            return [];
+        }
+
+        var raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntryArray);
 
         if (raw is null || raw.Length == 0)
         {
@@ -68,7 +77,14 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
     public async Task<byte[]?> GetBackupBytesAsync(long id)
     {
         var module = await GetModuleAsync();
-        var raw = await module.InvokeAsync<RawBackupEntry?>("getBackup", id);
+        var rawJson = await module.InvokeAsync<string?>("getBackup", id);
+
+        if (string.IsNullOrEmpty(rawJson))
+        {
+            return null;
+        }
+
+        var raw = JsonSerializer.Deserialize(rawJson, BackupJsonContext.Default.RawBackupEntry);
 
         if (raw?.BytesBase64 is null)
         {
@@ -117,7 +133,24 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
     private async Task<IJSObjectReference> GetModuleAsync() =>
         _module ??= await js.InvokeAsync<IJSObjectReference>("import", "./js/backup.js");
 
-    // ── Internal DTOs for JS deserialization (internal for test/mocking support) ──
+    // ── DTOs for JS interop ──────────────────────────────────────────────
+    // internal so that Pkmds.Tests can reference these types when setting up
+    // JS interop mocks (via InternalsVisibleTo in Pkmds.Rcl.csproj).
+
+    // Write-side payload (replaces the anonymous type so source-gen can describe it).
+
+    internal sealed record BackupMeta(
+        [property: JsonPropertyName("fileName")] string FileName,
+        [property: JsonPropertyName("saveType")] string SaveType,
+        [property: JsonPropertyName("generation")] int Generation,
+        [property: JsonPropertyName("gameVersion")] string GameVersion,
+        [property: JsonPropertyName("trainerName")] string TrainerName,
+        [property: JsonPropertyName("sizeBytes")] long SizeBytes,
+        [property: JsonPropertyName("isManicEmu")] bool IsManicEmu);
+
+    // Read-side payloads. Mutable POCOs because the source-gen deserializer needs a
+    // public parameterless constructor + settable properties to round-trip through
+    // System.Text.Json on a JSON object with these property names.
 
     internal sealed class RawBackupEntry
     {
@@ -160,4 +193,9 @@ public class BackupService(IJSRuntime js) : IBackupService, IAsyncDisposable
         [JsonPropertyName("isManicEmu")]
         public bool? IsManicEmu { get; set; }
     }
+
+    [JsonSerializable(typeof(BackupMeta))]
+    [JsonSerializable(typeof(RawBackupEntry))]
+    [JsonSerializable(typeof(RawBackupEntry[]))]
+    internal sealed partial class BackupJsonContext : JsonSerializerContext;
 }
