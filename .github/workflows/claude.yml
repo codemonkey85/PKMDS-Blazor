@@ -5,8 +5,7 @@ on:
     types: [created]
   pull_request_review_comment:
     types: [created]
-  issues:
-    types: [opened]
+  # issues trigger removed with the triage job — re-add if the triage job is restored.
   schedule:
     - cron: '0 13 * * 1'  # Mondays at 13:00 UTC (9 AM EDT / 8 AM EST)
   workflow_dispatch:
@@ -32,58 +31,61 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--model claude-opus-4-7"
 
-  triage:
-    if: github.event_name == 'issues' && github.event.action == 'opened'
-    permissions:
-      contents: read
-      id-token: write
-      issues: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: anthropics/claude-code-action@v1.0.121
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          settings: |
-            {
-              "permissions": {
-                "allow": ["Bash"],
-                "deny": []
-              }
-            }
-          prompt: |
-            You are a triage assistant for PKMDS, a Pokémon save file editor built with Blazor WebAssembly using PKHeX.Core (https://github.com/codemonkey85/PKMDS-Blazor).
-
-            Issue number: ${{ github.event.issue.number }}
-            Issue title: ${{ github.event.issue.title }}
-
-            Fetch the full issue body with:
-              gh issue view ${{ github.event.issue.number }} --json title,body,author,labels
-
-            Review the title and body, then take one of the following actions. Post comments with `gh issue comment ${{ github.event.issue.number }} --body "..."` and apply labels with `gh issue edit ${{ github.event.issue.number }} --add-label "<label>"`.
-
-            ## Immediate close candidates — respond and apply the "invalid" or "wontfix" label if applicable:
-
-            - **ROM hacks / fan-made games**: PKHeX.Core does not support ROM hacks or fan-made games. Politely explain this limitation and suggest the user check if there is a PKHeX plugin for their specific ROM hack.
-            - **Save states**: The app only supports actual save files (.sav, .dsv, .bin, etc.), not emulator save states (.state, .ss0, etc.). Explain the distinction and ask the user to export an actual save file from their emulator.
-            - **ROM files**: If the user is trying to load a ROM rather than a save file, clarify that the app edits save files, not ROMs.
-            - **Feature already exists**: If the feature being requested clearly already exists in the app, point the user to where it is.
-            - **Duplicate**: If this is clearly a duplicate of a known issue, say so and reference the other issue if you can identify it.
-
-            ## Request more information — ask for specifics if the issue lacks enough detail to investigate:
-
-            Required information for a bug report:
-            - Which game title (e.g. Pokémon Scarlet, Sword, etc.)
-            - What they were doing when the issue occurred
-            - What happened vs. what they expected
-            - Whether the save file is from a retail game or a ROM (and if ROM, which emulator)
-            - Browser and OS, if relevant to a display or loading issue
-            - Any specific Pokémon, move, item, or field involved
-
-            If any of this is missing and the issue seems like a genuine bug, ask for the missing details in a friendly tone.
-
-            ## No action needed — if the issue is clear, well-described, and appears to be a valid bug or reasonable feature request, simply post a brief acknowledgment that it has been received and will be reviewed. Do not over-triage valid issues.
-
-            Always be friendly, helpful, and concise. Do not close issues yourself — only apply labels and post comments.
+  # Disabled 2026-05-14: the triage bot gave a user damaging advice on #894
+  # (suggested clearing site data, which wiped their IndexedDB save backups).
+  # Re-enable only after the prompt is hardened against destructive suggestions.
+  # triage:
+  #   if: github.event_name == 'issues' && github.event.action == 'opened'
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #     issues: write
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: anthropics/claude-code-action@v1.0.121
+  #       with:
+  #         claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+  #         settings: |
+  #           {
+  #             "permissions": {
+  #               "allow": ["Bash"],
+  #               "deny": []
+  #             }
+  #           }
+  #         prompt: |
+  #           You are a triage assistant for PKMDS, a Pokémon save file editor built with Blazor WebAssembly using PKHeX.Core (https://github.com/codemonkey85/PKMDS-Blazor).
+  #
+  #           Issue number: ${{ github.event.issue.number }}
+  #           Issue title: ${{ github.event.issue.title }}
+  #
+  #           Fetch the full issue body with:
+  #             gh issue view ${{ github.event.issue.number }} --json title,body,author,labels
+  #
+  #           Review the title and body, then take one of the following actions. Post comments with `gh issue comment ${{ github.event.issue.number }} --body "..."` and apply labels with `gh issue edit ${{ github.event.issue.number }} --add-label "<label>"`.
+  #
+  #           ## Immediate close candidates — respond and apply the "invalid" or "wontfix" label if applicable:
+  #
+  #           - **ROM hacks / fan-made games**: PKHeX.Core does not support ROM hacks or fan-made games. Politely explain this limitation and suggest the user check if there is a PKHeX plugin for their specific ROM hack.
+  #           - **Save states**: The app only supports actual save files (.sav, .dsv, .bin, etc.), not emulator save states (.state, .ss0, etc.). Explain the distinction and ask the user to export an actual save file from their emulator.
+  #           - **ROM files**: If the user is trying to load a ROM rather than a save file, clarify that the app edits save files, not ROMs.
+  #           - **Feature already exists**: If the feature being requested clearly already exists in the app, point the user to where it is.
+  #           - **Duplicate**: If this is clearly a duplicate of a known issue, say so and reference the other issue if you can identify it.
+  #
+  #           ## Request more information — ask for specifics if the issue lacks enough detail to investigate:
+  #
+  #           Required information for a bug report:
+  #           - Which game title (e.g. Pokémon Scarlet, Sword, etc.)
+  #           - What they were doing when the issue occurred
+  #           - What happened vs. what they expected
+  #           - Whether the save file is from a retail game or a ROM (and if ROM, which emulator)
+  #           - Browser and OS, if relevant to a display or loading issue
+  #           - Any specific Pokémon, move, item, or field involved
+  #
+  #           If any of this is missing and the issue seems like a genuine bug, ask for the missing details in a friendly tone.
+  #
+  #           ## No action needed — if the issue is clear, well-described, and appears to be a valid bug or reasonable feature request, simply post a brief acknowledgment that it has been received and will be reviewed. Do not over-triage valid issues.
+  #
+  #           Always be friendly, helpful, and concise. Do not close issues yourself — only apply labels and post comments.
 
   changelog:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
