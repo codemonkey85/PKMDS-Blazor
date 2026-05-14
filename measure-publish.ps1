@@ -73,9 +73,11 @@ foreach ($d in $objDirs) {
     Remove-Item -Recurse -Force $d
 }
 
-$gitHead = (git -C $repoRoot rev-parse --short HEAD).Trim()
-$gitBranch = (git -C $repoRoot rev-parse --abbrev-ref HEAD).Trim()
-$gitStatus = (git -C $repoRoot status --porcelain).Trim()
+$gitHead = "$(git -C $repoRoot rev-parse --short HEAD)".Trim()
+$gitBranch = "$(git -C $repoRoot rev-parse --abbrev-ref HEAD)".Trim()
+# git status --porcelain returns no output (null in PowerShell) when the tree
+# is clean — coerce to string before checking so .Trim() doesn't NRE.
+$gitStatus = "$(git -C $repoRoot status --porcelain)".Trim()
 $gitDirty = if ($gitStatus) { "yes" } else { "no" }
 
 Write-Host "Publishing '$Label'..." -ForegroundColor Cyan
