@@ -43,9 +43,11 @@ public sealed partial class EmbeddedHostBridge
 
     private static EmbeddedHostBridge? Instance { get; set; }
 
-    // Preserved under TrimMode=full via PreserveJSInvokable.xml in Pkmds.Web — the linker
-    // can't see JS-side calls via DotNet.invokeMethodAsync, and [JSInvokable] alone is not
-    // a trim root. Without preservation these methods get stripped and the embedded host
+    // Preserved under TrimMode=full via two mechanisms (belt-and-suspenders):
+    // [DynamicDependency] on the ctor above (rooted by DI activation) and
+    // PreserveJSInvokable.xml in Pkmds.Web. The linker can't see JS-side calls
+    // via DotNet.invokeMethodAsync, and [JSInvokable] alone is not a trim root —
+    // without preservation these methods get stripped and the embedded host
     // bridge silently breaks.
     [JSInvokable(nameof(LoadSaveFromHost))]
     public static Task<bool> LoadSaveFromHost(string bytesBase64, string? fileName) =>
