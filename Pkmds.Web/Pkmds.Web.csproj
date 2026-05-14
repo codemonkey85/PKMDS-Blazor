@@ -21,6 +21,21 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <BlazorWebAssemblyEnableLinking>true</BlazorWebAssemblyEnableLinking>
         <BlazorEnableCompression>true</BlazorEnableCompression>
+        <!-- Trim app code (PKHeX.Core, MudBlazor, Pkmds.Rcl) in addition to the
+             framework. Saves ~610 KB brotli; safe because:
+             - PreservePkmTypes.xml roots PKHeX's PKM type hierarchy for
+               EntityBatchEditor's reflection path
+             - Pkmds.Rcl/PreserveRoutes.xml roots Blazor's @page components
+             - PreserveJSInvokable.xml roots RefreshService.ShowUpdateMessage
+               and EmbeddedHostBridge's [JSInvokable] static entry points
+             - BankService / BackupService / EmbeddedHostBridge use source-gen
+               JSON and pass strings across the IJS boundary, so the reflection
+               path through Blazor's internal JsonSerializer is no longer hit
+             Initial flip in #883 broke Bank and Backup (issues #894/#896/#898);
+             re-enabled in #902 after the IJS interop and [JSInvokable] surfaces
+             were hardened. -->
+        <TrimMode>full</TrimMode>
+        <PublishTrimmed>true</PublishTrimmed>
     </PropertyGroup>
 
     <PropertyGroup>
