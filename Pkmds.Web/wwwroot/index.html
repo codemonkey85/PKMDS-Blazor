@@ -108,6 +108,10 @@
 <script src="_content/Pkmds.Rcl/js/appCache.js"></script>
 <script src="js/app.js"></script>
 
+<!-- Must load before blazor.webassembly.js so the error listeners are
+     registered before the WASM / AOT bootstrap can throw. -->
+<script src="js/error-reporting.js"></script>
+
 <!--prevent autostarting-->
 <script autostart="false"
         src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
