@@ -380,19 +380,25 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             return;
         }
 
-        // Validate party requirements: must keep at least one non-Egg battle-ready Pokémon
+        // Validate party requirements: must keep at least one non-Egg battle-ready Pokémon.
+        // SAV7b (Let's Go) has no separate party buffer (HasParty=false); skip the count
+        // check to avoid ArgumentOutOfRangeException from PokeListInfo with invalid slot
+        // indices on emulator / JKSM dumps.
         var battleReadyCount = 0;
-        for (var i = 0; i < saveFile.PartyCount; i++)
+        if (saveFile.HasParty)
         {
-            if (i == partySlotNumber)
+            for (var i = 0; i < saveFile.PartyCount; i++)
             {
-                continue; // Skip the one being deleted
-            }
+                if (i == partySlotNumber)
+                {
+                    continue; // Skip the one being deleted
+                }
 
-            var partyMon = saveFile.GetPartySlotAtIndex(i);
-            if (partyMon is { Species: > 0, IsEgg: false })
-            {
-                battleReadyCount++;
+                var partyMon = saveFile.GetPartySlotAtIndex(i);
+                if (partyMon is { Species: > 0, IsEgg: false })
+                {
+                    battleReadyCount++;
+                }
             }
         }
 
@@ -439,6 +445,14 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
     public string ExportPartyAsShowdown()
     {
         if (AppState.SaveFile is not { PartyCount: var partyCount } saveFile || partyCount == 0)
+        {
+            return string.Empty;
+        }
+
+        // SAV7b (Let's Go) stores party members as flagged box slots; GetPartySlotAtIndex
+        // can throw when the PokeListInfo header has an out-of-range slot index (emulator /
+        // JKSM dumps). Skip party export entirely — the player can export via the box instead.
+        if (!saveFile.HasParty)
         {
             return string.Empty;
         }
