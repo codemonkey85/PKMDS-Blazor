@@ -70,6 +70,33 @@
     Want the gritty details? Check
     <a href="https://caniuse.com/wasm-simd" target="_blank" rel="noopener">caniuse.com/wasm-simd</a>.
 </p>
+
+<hr style="margin: 2rem 0; border: none; border-top: 1px solid #d1d5db;"/>
+
+<h2 style="font-size: 1.1rem;">Loading on a supported browser but still not working?</h2>
+
+<p>
+    A stale service worker cache can prevent the app from starting after an update.
+    Try these steps — they leave your save backups and Bank storage untouched:
+</p>
+
+<ol>
+    <li><strong>Hard refresh</strong> — <kbd>Ctrl+Shift+R</kbd> (Windows/Linux/ChromeOS) or <kbd>⌘⇧R</kbd> (Mac). Usually enough.</li>
+    <li>
+        <strong>Unregister the service worker</strong> — open DevTools (<kbd>F12</kbd>),
+        go to <strong>Application → Service Workers</strong>, and click <strong>Unregister</strong>
+        next to the PKMDS entry. Reload the page.
+        <br/>
+        <em>Do not use "Clear site data" — that also wipes your local backups and Bank.</em>
+    </li>
+    <li><strong>Incognito / private window</strong> — bypasses the service worker entirely to confirm the issue is cache-related.</li>
+</ol>
+
+<p>
+    If none of those help, please
+    <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues" target="_blank" rel="noopener">open an issue</a>
+    and describe what you see (stuck spinner, error bar, or this page).
+</p>
 </body>
 
 </html>
