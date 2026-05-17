@@ -27,7 +27,12 @@ const offlineAssetsInclude = [/\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /
 // on the fingerprinted asset), so returning users with a populated HTTP
 // cache still get offline reload; only stone-cold first-load-offline fails
 // for this single file, which has always been a thin scenario.
-const offlineAssetsExclude = [/^service-worker\.js$/, /^appsettings.*\.json$/, /^staticwebapp\.config\.json$/, /^_framework\/dotnet\.native\.[^\/]+\.wasm$/];
+//
+// appsettings*.json is intentionally NOT excluded: our appsettings.json is
+// static (just the Azure function URL) and excluding it caused 429 failures
+// for users on iCloud Private Relay / GitHub Pages rate-limited IPs, crashing
+// the Blazor bootstrap before the app could start (issue #910).
+const offlineAssetsExclude = [/^service-worker\.js$/, /^staticwebapp\.config\.json$/, /^_framework\/dotnet\.native\.[^\/]+\.wasm$/];
 
 // Replace with your base path if you are hosting on a subfolder. Ensure there is a trailing '/'.
 const base = "/";
