@@ -265,6 +265,29 @@ Prefer reading local source over fetching from GitHub or relying solely on docs:
 - **Tests**: Do not run `dotnet test` locally — leave it to the CI GitHub Actions workflow (`.github/workflows/buildandtest.yml`). Run only `dotnet format` and `dotnet build -c Debug` to verify changes locally.
 - **PR review feedback**: (1) Review all comments and plan the response; (2) reply to each individual comment on the PR explaining what you're doing and why; (3) make code changes, commit, and push; (4) mark all addressed comments as resolved on the PR.
 
+## User-facing advice — protect user data
+
+When suggesting troubleshooting steps to users (in issue comments, emails, or docs),
+**never recommend "Clear site data"** (or equivalent browser commands that wipe the entire
+origin) as a fix for service worker or cache issues. Doing so silently destroys:
+
+- **Save backups** — stored in IndexedDB (`IBackupService`)
+- **Pokémon Bank** — stored in IndexedDB (`IBankService`)
+
+These are irreplaceable if the user has no other copy of their Pokémon.
+
+**Use targeted cache fixes instead:**
+
+1. Hard refresh (`Ctrl+Shift+R` / `⌘⇧R`) — bypasses SW cache for that request, safe.
+2. DevTools → Application → Service Workers → **Unregister** — removes only the cached
+   app files, leaves IndexedDB intact.
+3. Incognito / private window — bypasses the SW entirely for diagnosis.
+
+This rule applies to all agents, AI assistants, and contributors. The same principle
+extends to any advice that could destroy user-created content: always prefer the most
+targeted, reversible action. Confirm with the maintainer before recommending anything
+that cannot be undone.
+
 ## Notes
 
 - Respect the existing code style. Reference `.editorconfig` for formatting rules; Debug builds treat warnings as errors.

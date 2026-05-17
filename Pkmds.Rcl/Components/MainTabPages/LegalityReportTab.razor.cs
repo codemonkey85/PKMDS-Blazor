@@ -309,16 +309,23 @@ public partial class LegalityReportTab : RefreshAwareComponent
         var entries = new List<LegalityReportEntry>();
 
         // --- Party slots ---
-        for (var i = 0; i < saveFile.PartyCount; i++)
+        // SAV7b (Let's Go) has no separate party buffer (HasParty=false); party members
+        // are flagged box slots and are already covered by the box scan below. Iterating
+        // GetPartySlotAtIndex on SAV7b can throw ArgumentOutOfRangeException when the
+        // PokeListInfo header contains an out-of-range slot index (emulator / JKSM dumps).
+        if (saveFile.HasParty)
         {
-            var pkm = saveFile.GetPartySlotAtIndex(i);
-            if (pkm is not { Species: > 0 })
+            for (var i = 0; i < saveFile.PartyCount; i++)
             {
-                continue;
-            }
+                var pkm = saveFile.GetPartySlotAtIndex(i);
+                if (pkm is not { Species: > 0 })
+                {
+                    continue;
+                }
 
-            var la = AppService.GetLegalityAnalysis(pkm, isParty: true);
-            entries.Add(BuildEntry(pkm, la, true, 0, i));
+                var la = AppService.GetLegalityAnalysis(pkm, isParty: true);
+                entries.Add(BuildEntry(pkm, la, true, 0, i));
+            }
         }
 
         // --- Box slots (yield after every box to keep the UI responsive) ---

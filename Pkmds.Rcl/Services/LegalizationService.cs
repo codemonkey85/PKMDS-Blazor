@@ -1098,6 +1098,14 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         var laForRibbons = new LegalityAnalysis(pk);
         RibbonApplicator.SetAllValidRibbons(laForRibbons);
 
+        // Re-set Plus flags for ZA Pokémon after all mutations (level bump, move fixes, etc.).
+        // ApplySetDetails set them at set.Level; any subsequent CurrentLevel increase leaves
+        // moves at the new higher levels without their Plus flags set.
+        if (pk is PA9 pa9Rebuild && pk.PersonalInfo is IPermitPlus plusPermitRebuild)
+        {
+            pa9Rebuild.SetPlusFlags(plusPermitRebuild, PlusRecordApplicatorOption.LegalSeedTM);
+        }
+
         // Suggest legal ball.
         BallApplicator.ApplyBallLegalByColor(pk);
 
@@ -1156,6 +1164,13 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         if (pk.MetLevel > pk.CurrentLevel)
         {
             pk.MetLevel = pk.CurrentLevel;
+        }
+
+        // MetLevel below enc.LevelMin causes EncounterSlot9a.IsMatchExact to reject the
+        // encounter via IsLevelWithinRange. Clamp up so the encounter can match.
+        if (pk.MetLevel < enc.LevelMin)
+        {
+            pk.MetLevel = enc.LevelMin;
         }
 
         if (pk is IObedienceLevel ob && ob.ObedienceLevel > pk.CurrentLevel)
@@ -1253,6 +1268,16 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                     changed = true;
                     break;
             }
+        }
+
+        // Plus flags (Legends: Z-A mastery flags). LegendsZAVerifier reports these under
+        // CheckIdentifier.RelearnMove. Re-set after moves/relearn are fixed so the flags
+        // reflect the final moveset and level.
+        if (pk is PA9 pa9Preserve && pk.PersonalInfo is IPermitPlus plusPermitPreserve &&
+            la.Results.Any(r => r.Judgement == PKHeX.Core.Severity.Invalid && r.Identifier == CheckIdentifier.RelearnMove))
+        {
+            pa9Preserve.SetPlusFlags(plusPermitPreserve, PlusRecordApplicatorOption.LegalSeedTM);
+            changed = true;
         }
 
         return changed;
