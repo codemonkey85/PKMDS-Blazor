@@ -71,18 +71,23 @@ async function onActivate(event) {
 }
 
 async function onFetch(event) {
-    // Cache-first strategy for PokeAPI sprites — separate long-lived cache that survives app updates
+    // Cache-first strategy for PokeAPI sprites — separate long-lived cache that survives app updates.
+    // Return the promise rather than calling event.respondWith() here: the outer 'fetch' listener
+    // already wraps onFetch(event) in respondWith, and double-calling it throws InvalidStateError
+    // (and on iOS Safari surfaces as `FetchEvent.respondWith received an error: TypeError: ...`).
     if (event.request.method === 'GET' && event.request.url.startsWith(spriteOrigin)) {
-        event.respondWith(
-            caches.open(spriteCacheName).then(async cache => {
-                const cached = await cache.match(event.request);
-                if (cached) return cached;
-                const response = await fetch(event.request);
-                if (response.ok) cache.put(event.request, response.clone());
-                return response;
-            })
-        );
-        return;
+        const cache = await caches.open(spriteCacheName);
+        const cached = await cache.match(event.request);
+        if (cached) return cached;
+        try {
+            const response = await fetch(event.request);
+            if (response.ok) cache.put(event.request, response.clone());
+            return response;
+        } catch {
+            // Sprite fetch failed offline — return a synthetic empty response so respondWith
+            // resolves cleanly. Callers tolerate a missing sprite image.
+            return new Response('', {status: 504, statusText: 'Sprite fetch failed (offline)'});
+        }
     }
 
     let cachedResponse = null;
@@ -98,5 +103,19 @@ async function onFetch(event) {
         cachedResponse = await cache.match(request);
     }
 
-    return cachedResponse || fetch(event.request);
+    if (cachedResponse) return cachedResponse;
+
+    // Network fallback — catch the rejection so respondWith doesn't surface
+    // `TypeError: Load failed` on iOS Safari when the request fails mid-boot.
+    // For navigations, fall back to cached index.html so the SPA shell still loads offline.
+    try {
+        return await fetch(event.request);
+    } catch {
+        if (event.request.mode === 'navigate') {
+            const cache = await caches.open(cacheName);
+            const shellResponse = await cache.match('index.html');
+            if (shellResponse) return shellResponse;
+        }
+        return new Response('', {status: 504, statusText: 'Network unavailable'});
+    }
 }
