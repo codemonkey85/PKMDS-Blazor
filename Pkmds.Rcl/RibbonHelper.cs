@@ -46,6 +46,8 @@ public static class RibbonHelper
     /// Gets all ribbon info entries for the given Pokémon, or an empty list if <paramref name="pokemon" /> is
     /// <see langword="null" />.
     /// </summary>
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026",
+        Justification = "All PKM types and their members are preserved via PreservePkmTypes.xml.")]
     public static List<RibbonInfo> GetAllRibbonInfo(PKM? pokemon) =>
         pokemon is not null
             ? RibbonInfo.GetRibbonInfo(pokemon)

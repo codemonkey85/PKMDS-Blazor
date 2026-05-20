@@ -2,17 +2,23 @@
 <!--
   Trimmer root descriptor: preserve PKM type hierarchy in PKHeX.Core.
 
-  EntityBatchEditor (consumed by Pkmds.Rcl/Services/BatchEditorService.cs
-  for the Batch Editor tab) extends BatchEditingBase<PKM, BatchInfo> and
-  reflects over the 18 concrete PKM types listed below, caching their
-  PropertyInfo for batch property-name lookups. Under TrimMode=full the
-  trimmer otherwise strips PKM members it doesn't see static references
-  to, causing batch editor property lookups to silently return null.
+  Two reflection paths in PKHeX.Core depend on all PKM members surviving
+  the linker, both annotated [RequiresUnreferencedCode] (PKHeX ≥ 26.5.x):
 
-  PKHeX.Core has no [DynamicDependency] annotations on this reflection
-  path because the BatchEditingBase API surface is annotated
-  [RequiresUnreferencedCode]; the caller (us) is responsible for
-  rooting the reflected-over types.
+  1. EntityBatchEditor (Pkmds.Rcl/Services/BatchEditorService.cs) —
+     extends BatchEditingBase<PKM, BatchInfo> and reflects over the types
+     below, caching their PropertyInfo for batch property-name lookups.
+     Without rooting, the trimmer strips PKM members it doesn't see static
+     references to, causing lookups to silently return null.
+
+  2. RibbonInfo.GetRibbonInfo (Pkmds.Rcl/RibbonHelper.cs and
+     Pkmds.Rcl/Services/PkmDiffer.cs) — walks every property starting with
+     "Ribbon" on the actual PKM subtype via reflection. Call sites carry
+     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026")] because
+     this rooting makes those reflective lookups safe.
+
+  PKHeX.Core has no [DynamicDependency] annotations on either path;
+  the caller (us) is responsible for rooting the reflected-over types.
 
   Source: EntityBatchEditor.EntityTypes in PKHeX.Core. Keep this list
   in sync if PKHeX adds a new PKM subclass to that array.
