@@ -11,7 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="bUnit" Version="2.7.2" />
-    <PackageVersion Include="coverlet.collector" Version="10.0.0" />
+    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="FluentAssertions" Version="8.10.0" />
     <PackageVersion Include="Humanizer" Version="3.0.10" />
     <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="4.0.0" />
