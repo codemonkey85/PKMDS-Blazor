@@ -139,6 +139,8 @@ public partial class RibbonsTab : IDisposable
     private List<RibbonInfo> GetAllRibbonInfo() =>
         RibbonHelper.GetAllRibbonInfo(Pokemon);
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026",
+        Justification = "All PKM types and their members are preserved via PreservePkmTypes.xml.")]
     private void ToggleRibbon(string propertyName)
     {
         if (Pokemon is null)
@@ -151,6 +153,8 @@ public partial class RibbonsTab : IDisposable
         StateHasChanged();
     }
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026",
+        Justification = "All PKM types and their members are preserved via PreservePkmTypes.xml.")]
     private void SetRibbonCount(string propertyName, int count)
     {
         if (Pokemon is null)
@@ -190,6 +194,8 @@ public partial class RibbonsTab : IDisposable
         StateHasChanged();
     }
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026",
+        Justification = "All PKM types and their members are preserved via PreservePkmTypes.xml.")]
     private void GiveAllRibbons()
     {
         if (Pokemon is null)
@@ -209,6 +215,8 @@ public partial class RibbonsTab : IDisposable
         StateHasChanged();
     }
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026",
+        Justification = "All PKM types and their members are preserved via PreservePkmTypes.xml.")]
     private void ClearAllRibbons()
     {
         if (Pokemon is null)

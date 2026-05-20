@@ -410,6 +410,8 @@ public static class PkmDiffer
         }
     }
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026",
+        Justification = "All PKM types and their members are preserved via PreservePkmTypes.xml.")]
     private static void AddRibbonDelta(PKM b, PKM a, List<LegalizationChange> changes)
     {
         // Collapse to a single "added / removed" entry. Listing each ribbon would
