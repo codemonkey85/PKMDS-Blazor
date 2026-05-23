@@ -33,7 +33,9 @@
         @* Box selector — Let's Go saves only have a single 1000-slot storage; gate behind BoxCount > 0 *@
         @if (saveFile.BoxCount > 0)
         {
-            var currentBox = SelectedBox ?? saveFile.CurrentBox;
+            // Clamp to [0, BoxCount-1] so a stale SelectedBox from a previous save
+            // with more boxes (or a corrupted CurrentBox byte) cannot crash GetBoxSlotAtIndex.
+            var currentBox = Math.Clamp(SelectedBox ?? saveFile.CurrentBox, 0, saveFile.BoxCount - 1);
             <div class="flex items-center gap-1">
                 <MudIconButton OnClick="@(() => SelectBox((currentBox - 1 + saveFile.BoxCount) % saveFile.BoxCount))"
                                title="Previous Box"
