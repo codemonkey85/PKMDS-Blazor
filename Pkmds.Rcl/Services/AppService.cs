@@ -628,6 +628,17 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                 return Task.CompletedTask;
             }
 
+            // SAV8BS (BDSP) does not implement IMysteryGiftStorageProvider — its mystery gift
+            // history lives in MysteryBlock8b (RecvData8b slots + received flags), which is
+            // structurally different from the Gen 4–7 wonder-card album.
+            // WB8 Pokemon gifts are already handled by the entity flow in the caller; here we
+            // handle item gifts (add directly to bag) and other types (populate a RecvData8b
+            // slot so the in-game Pokémon Delivery Man can grant the gift).
+            if (saveFile is SAV8BS sav8bs && gift is WB8 wb8)
+            {
+                return ImportWB8ToBDSP(sav8bs, wb8, out isSuccessful, out resultsMessage);
+            }
+
             var cards = GetMysteryGiftProvider(saveFile);
             var album = LoadMysteryGifts(saveFile, cards);
             var flags = cards as IMysteryGiftFlags;
@@ -793,6 +804,69 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             if (cards is MysteryBlock5 s5)
             {
                 s5.EndAccess(); // need to encrypt the at-rest data with the seed.
+            }
+        }
+    }
+
+    private static Task ImportWB8ToBDSP(SAV8BS saveFile, WB8 gift, out bool isSuccessful, out string resultsMessage)
+    {
+        switch (gift.CardType)
+        {
+            case WB8.GiftType.Pokemon:
+                // Pokemon gifts are handled by the entity flow in the caller (LoadMysteryGiftFile).
+                // ConvertToPKM produces the Pokémon — nothing extra to store in the save here.
+                isSuccessful = true;
+                resultsMessage = "The Mystery Gift has been successfully received.";
+                return Task.CompletedTask;
+
+            case WB8.GiftType.Item:
+            {
+                var items = saveFile.Items;
+                var addedAny = false;
+                for (var i = 0; i < 7; i++)
+                {
+                    var itemId = (ushort)gift.GetItem(i);
+                    var quantity = gift.GetQuantity(i);
+                    if (itemId == 0)
+                        break;
+                    items.SetItemQuantity(itemId, items.GetItemQuantity(itemId) + quantity);
+                    addedAny = true;
+                }
+                isSuccessful = addedAny;
+                resultsMessage = addedAny
+                    ? "The Mystery Gift items have been added to your bag."
+                    : "No items found in this Mystery Gift.";
+                return Task.CompletedTask;
+            }
+
+            default:
+            {
+                // For Clothing, Money, BP, etc.: populate a RecvData8b slot in MysteryBlock8b.
+                // The in-game Pokémon Delivery Man reads these slots to grant gifts.
+                var records = saveFile.MysteryRecords;
+                var emptySlot = -1;
+                for (var i = 0; i < MysteryBlock8b.RecvDataMax; i++)
+                {
+                    if (records.GetReceived(i).Ticks == 0)
+                    {
+                        emptySlot = i;
+                        break;
+                    }
+                }
+                if (emptySlot == -1)
+                {
+                    isSuccessful = false;
+                    resultsMessage = "No empty Mystery Gift slots available in the save file.";
+                    return Task.CompletedTask;
+                }
+                var slot = records.GetReceived(emptySlot);
+                slot.Timestamp = DateTime.UtcNow;
+                slot.DeliveryID = (ushort)gift.CardID;
+                slot.DataType = (byte)gift.CardType;
+                slot.TextID = (ushort)gift.CardTitleIndex;
+                isSuccessful = true;
+                resultsMessage = "The Mystery Gift has been queued. Visit the Pokémon Delivery Man to claim it.";
+                return Task.CompletedTask;
             }
         }
     }

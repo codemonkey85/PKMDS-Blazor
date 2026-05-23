@@ -953,14 +953,14 @@ public partial class MainLayout : IDisposable
 
             if (albumImportSuccessful)
             {
-                Logger.LogInformation("Mystery Gift card imported to album successfully");
-                Snackbar.Add("Mystery Gift card added to Wonder Cards album.", Severity.Success);
+                Logger.LogInformation("Mystery Gift imported successfully: {Message}", albumImportMessage);
+                Snackbar.Add(albumImportMessage, Severity.Success);
                 // Notify subscribers (e.g. the Wonder Cards tab) that save state changed.
                 RefreshService.Refresh();
             }
             else
             {
-                Logger.LogWarning("Mystery Gift album import: {Message}", albumImportMessage);
+                Logger.LogWarning("Mystery Gift import failed: {Message}", albumImportMessage);
                 Snackbar.Add(albumImportMessage, Severity.Warning);
             }
 
