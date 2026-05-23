@@ -43,6 +43,12 @@ public record AppState : IAppState
                 ManicEmuSaveContext = null;
             }
 
+            // Clear slot-A selections so a stale SelectedBoxNumber from a previous
+            // save with more boxes cannot cause ArgumentOutOfRangeException in TradePane
+            // when the new save has fewer boxes.
+            SelectedBoxNumber = null;
+            SelectedBoxSlotNumber = null;
+            SelectedPartySlotNumber = null;
             PinnedBoxNumber = null;
         }
     }
