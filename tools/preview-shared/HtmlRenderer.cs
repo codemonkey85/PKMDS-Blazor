@@ -4,9 +4,9 @@ using PKHeX.Core;
 using Pkmds.Core.Extensions;
 using Pkmds.Core.Utilities;
 
-namespace Pkmds.Native;
+namespace Pkmds.Preview;
 
-internal static class HtmlRenderer
+public static class HtmlRenderer
 {
     // Final fallback when even the base-species URL can't be built (invalid species).
     private const string PlaceholderSpriteUrl =
@@ -221,7 +221,10 @@ internal static class HtmlRenderer
 
     private static void AppendDocStart(StringBuilder sb, string title)
     {
-        sb.Append("<!doctype html><html><head><meta charset=\"utf-8\"><title>")
+        // viewport meta is required for WKWebView on iOS — harmless on macOS/Windows WebViews.
+        sb.Append("<!doctype html><html><head><meta charset=\"utf-8\">")
+            .Append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">")
+            .Append("<title>")
             .Append(Escape(title))
             .Append("</title><style>")
             .Append(Css)
@@ -256,33 +259,44 @@ internal static class HtmlRenderer
         return sb.ToString();
     }
 
+    // Responsive CSS: stacks vertically on narrow viewports (phone/small QL panels),
+    // switches to side-by-side at 600px+ (desktop/tablet). The 17px base works well
+    // at normal reading distance on all three platforms (macOS/iOS/Windows).
     private const string Css = """
         :root { color-scheme: light dark; }
         body {
-            font: 13px -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-            margin: 0; padding: 16px;
+            font: 17px -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+            margin: 0; padding: 20px;
             background: Canvas; color: CanvasText;
         }
-        h1 { font-size: 18px; margin: 0 0 4px; font-weight: 600; }
-        h2 { font-size: 14px; margin: 16px 0 8px; font-weight: 600; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.04em; }
-        .pkm { display: grid; grid-template-columns: 128px 1fr; gap: 16px; align-items: start; }
-        .sprite img { width: 128px; height: 128px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
-        .sprite-sm { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
-        .meta { opacity: 0.7; margin-bottom: 12px; }
+        h1 { font-size: 24px; margin: 0 0 4px; font-weight: 600; }
+        h2 { font-size: 17px; margin: 20px 0 10px; font-weight: 600; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.04em; }
+        .pkm { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+        .sprite { text-align: center; }
+        .sprite img { width: 140px; height: 140px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
+        @media (min-width: 600px) {
+            .pkm { grid-template-columns: 160px 1fr; gap: 20px; }
+            .sprite { text-align: left; }
+            .sprite img { width: 160px; height: 160px; }
+        }
+        .sprite-sm { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+        .meta { opacity: 0.7; margin-bottom: 14px; }
         .muted { opacity: 0.6; font-weight: normal; }
         .shiny { color: #d4a017; }
-        dl.details { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0 0 12px; }
+        dl.details { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0 0 14px; }
         dl.details dt { font-weight: 600; opacity: 0.7; }
         dl.details dd { margin: 0; }
-        table { border-collapse: collapse; margin: 8px 0; }
-        table.stats th, table.stats td { padding: 4px 8px; text-align: center; font-variant-numeric: tabular-nums; }
-        table.stats thead th { font-weight: 600; opacity: 0.6; font-size: 11px; }
-        table.moves { width: 100%; max-width: 320px; }
-        table.moves th, table.moves td { padding: 4px 8px; text-align: left; }
-        table.moves thead th { font-weight: 600; opacity: 0.6; font-size: 11px; border-bottom: 1px solid color-mix(in srgb, CanvasText 15%, transparent); }
+        table { border-collapse: collapse; margin: 10px 0; }
+        table.stats { width: 100%; }
+        table.stats th, table.stats td { padding: 4px 4px; text-align: center; font-variant-numeric: tabular-nums; }
+        table.stats thead th { font-weight: 600; opacity: 0.6; font-size: 13px; }
+        table.moves { width: 100%; max-width: 480px; }
+        table.moves th, table.moves td { padding: 5px 10px; text-align: left; }
+        table.moves thead th { font-weight: 600; opacity: 0.6; font-size: 13px; border-bottom: 1px solid color-mix(in srgb, CanvasText 15%, transparent); }
         table.moves td:last-child { text-align: right; font-variant-numeric: tabular-nums; opacity: 0.7; }
-        .party { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .party-slot { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); border-radius: 6px; }
-        .party-name { font-weight: 600; }
+        .party { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        @media (min-width: 600px) { .party { grid-template-columns: repeat(2, 1fr); } }
+        .party-slot { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); border-radius: 8px; }
+        .party-name { font-weight: 600; font-size: 17px; }
         """;
 }

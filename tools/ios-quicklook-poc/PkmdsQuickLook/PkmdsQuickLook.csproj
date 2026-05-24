@@ -38,6 +38,7 @@
     <ItemGroup>
         <PackageReference Include="PKHeX.Core"/>
         <ProjectReference Include="..\..\..\Pkmds.Core\Pkmds.Core.csproj"/>
+        <ProjectReference Include="..\..\preview-shared\Pkmds.Preview.csproj"/>
     </ItemGroup>
 
 </Project>

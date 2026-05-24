@@ -10,8 +10,7 @@ This POC validates that the planned approach is viable end-to-end — from binar
 tools/macos-quicklook-poc/
 ├── PkmdsNative/                 # C# NativeAOT library (PKHeX.Core wrapper)
 │   ├── Exports.cs               # C-exported pkmds_* entry points
-│   ├── HtmlRenderer.cs          # Self-contained HTML preview generator
-│   └── PkmdsNative.csproj       # PublishAot=true, references Pkmds.Core
+│   └── PkmdsNative.csproj       # PublishAot=true, references Pkmds.Preview + Pkmds.Core
 ├── swift-cli/                   # Standalone CLI driver (kept for quick smoke-tests)
 │   └── main.swift               # dlopen + dlsym invocation of the dylib
 ├── xcode/
@@ -24,6 +23,8 @@ tools/macos-quicklook-poc/
 ├── build-and-run.sh             # CLI smoke test (no Xcode involved)
 └── build-extension.sh           # Full pipeline: dotnet → xcode → install → qlmanage
 ```
+
+`HtmlRenderer` lives in `tools/preview-shared/` and is shared with the iOS (and future Windows) PoC — see [`../preview-shared/`](../preview-shared/).
 
 ## Prerequisites
 
