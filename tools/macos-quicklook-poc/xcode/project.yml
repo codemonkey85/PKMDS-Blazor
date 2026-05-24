@@ -54,8 +54,14 @@ targets:
                 - pk8
                 - pk9
                 - pa8
+                - pa9
                 - pb7
                 - pb8
+                - sk2
+                - ck3
+                - xk3
+                - bk4
+                - rk4
           - UTTypeIdentifier: com.bondcodes.pkmds.save-file
             UTTypeDescription: Pokémon Save File
             UTTypeConformsTo:
@@ -63,6 +69,35 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - sav
+                - dat
+                - gci
+                - dsv
+                - srm
+                - fla
+          - UTTypeIdentifier: com.bondcodes.pkmds.wonder-card
+            UTTypeDescription: Pokémon Wonder Card
+            UTTypeConformsTo:
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - pgt
+                - pcd
+                - wc4
+                - pgf
+                - wc5full
+                - wc6
+                - wc6full
+                - wc7
+                - wc7full
+                - wr7
+                - wb7
+                - wb7full
+                - wc8
+                - wc8full
+                - wb8
+                - wa8
+                - wc9
+                - wa9
         CFBundleDocumentTypes:
           - CFBundleTypeName: Pokémon Entity File
             CFBundleTypeRole: Viewer
@@ -73,6 +108,11 @@ targets:
             CFBundleTypeRole: Viewer
             LSItemContentTypes:
               - com.bondcodes.pkmds.save-file
+            LSHandlerRank: Alternate
+          - CFBundleTypeName: Pokémon Wonder Card
+            CFBundleTypeRole: Viewer
+            LSItemContentTypes:
+              - com.bondcodes.pkmds.wonder-card
             LSHandlerRank: Alternate
     dependencies:
       - target: PkmdsQuickLook
@@ -106,6 +146,7 @@ targets:
             QLSupportedContentTypes:
               - com.bondcodes.pkmds.pkm-file
               - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.wonder-card
             QLSupportsSearchableItems: false
     dependencies:
       - framework: ../build-resources/PkmdsNative.dylib
