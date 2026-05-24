@@ -75,6 +75,10 @@ public static class HtmlRenderer
             ? "." + fileExtension
             : fileExtension;
 
+        // WonderCard3 (.wc3) is not a DataMysteryGift — MysteryGift.GetMysteryGift won't handle it.
+        if (ext.Equals(".wc3", StringComparison.OrdinalIgnoreCase))
+            return RenderWc3File(data);
+
         if (SaveUtil.TryGetSaveFile(data, out var sav))
             return RenderSave(sav);
         if (MysteryGift.GetMysteryGift(data, ext.AsSpan()) is { } gift)
@@ -82,6 +86,70 @@ public static class HtmlRenderer
         if (EntityFormat.GetFromBytes(data) is { } pkm)
             return RenderPkm(pkm);
         return ErrorHtml("Unrecognized file format.");
+    }
+
+    private static string RenderWc3File(byte[] data)
+    {
+        // Full .wc3 file layout: WonderCard3 | WonderCard3Extra × 2 | MysteryEvent3
+        // Japanese: 168 + 80 + 1004 = 1252 bytes
+        // International: 336 + 80 + 1004 = 1420 bytes
+        // Card-only and card+extras variants are also accepted.
+        const int extrasSize = WonderCard3Extra.SIZE * 2;
+        const int eventSize = MysteryEvent3.SIZE;
+        int cardSize = data.Length switch
+        {
+            WonderCard3.SIZE_JAP => WonderCard3.SIZE_JAP,
+            WonderCard3.SIZE_JAP + extrasSize => WonderCard3.SIZE_JAP,
+            WonderCard3.SIZE_JAP + extrasSize + eventSize => WonderCard3.SIZE_JAP,
+            WonderCard3.SIZE => WonderCard3.SIZE,
+            WonderCard3.SIZE + extrasSize => WonderCard3.SIZE,
+            WonderCard3.SIZE + extrasSize + eventSize => WonderCard3.SIZE,
+            _ => -1,
+        };
+        if (cardSize < 0)
+            return ErrorHtml($"Unrecognized WC3 file size ({data.Length} bytes).");
+        try
+        {
+            var card = new WonderCard3(new Memory<byte>(data, 0, cardSize));
+            return RenderWonderCard3(card);
+        }
+        catch (Exception ex)
+        {
+            return ErrorHtml($"Failed to read WC3 card: {ex.Message}");
+        }
+    }
+
+    public static string RenderWonderCard3(WonderCard3 card)
+    {
+        var sb = new StringBuilder(1024);
+        var title = card.Title.Trim();
+        var displayTitle = string.IsNullOrEmpty(title) ? "Wonder Card" : title;
+        AppendDocStart(sb, displayTitle);
+
+        sb.Append("<div class=\"pkm\">");
+        sb.Append("<div class=\"info\">");
+        sb.Append("<h1>").Append(Escape(displayTitle)).Append("</h1>");
+
+        var subtitle = card.Subtitle.Trim();
+        if (!string.IsNullOrEmpty(subtitle))
+            sb.Append("<div class=\"meta\">").Append(Escape(subtitle)).Append("</div>");
+
+        sb.Append("<dl class=\"details\">");
+        AppendDt(sb, "Card ID", card.CardID.ToString(CultureInfo.InvariantCulture));
+        AppendDt(sb, "Type", card.Type switch
+        {
+            0 => "Pokémon",
+            1 => "Item",
+            2 => "Link Stats",
+            _ => card.Type.ToString(CultureInfo.InvariantCulture),
+        });
+        AppendDt(sb, "Locale", card.Japanese ? "Japanese" : "International");
+        sb.Append("</dl>");
+
+        sb.Append("</div>"); // .info
+        sb.Append("</div>"); // .pkm
+        AppendDocEnd(sb);
+        return sb.ToString();
     }
 
     public static string RenderMysteryGift(DataMysteryGift gift)
