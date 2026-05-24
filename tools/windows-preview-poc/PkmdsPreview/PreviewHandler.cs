@@ -1,7 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using Microsoft.Win32;
-using PKHeX.Core;
 
 // TODO: Uncomment once Microsoft.Web.WebView2 is added to Directory.Packages.props
 // using Microsoft.Web.WebView2.WinForms;
@@ -104,24 +103,13 @@ public sealed class PkmdsPreviewHandler : IPreviewHandler, IInitializeWithFile, 
         if (_filePath is null)
             return;
 
-        var ext = Path.GetExtension(_filePath).ToLowerInvariant();
+        var ext = Path.GetExtension(_filePath);
         var bytes = File.ReadAllBytes(_filePath);
-
-        var html = ext == ".sav"
-            ? SaveUtil.TryGetSaveFile(bytes, out var sav)
-                ? HtmlRenderer.RenderSave(sav)
-                : ErrorHtml("Unable to read save file.")
-            : EntityFormat.GetFromBytes(bytes) is { } pkm
-                ? HtmlRenderer.RenderPkm(pkm)
-                : ErrorHtml("Unable to read entity file.");
+        var html = HtmlRenderer.RenderFile(bytes, ext);
 
         // TODO: _webView!.CoreWebView2.NavigateToString(html);
         _ = html; // suppress unused-variable warning until WebView2 is wired up
     }
-
-    private static string ErrorHtml(string message) =>
-        $"<!doctype html><html><body style=\"font:13px Segoe UI,sans-serif;padding:16px\">" +
-        $"<p>{System.Net.WebUtility.HtmlEncode(message)}</p></body></html>";
 
     // ── IDisposable ───────────────────────────────────────────────────────────────
 
@@ -147,10 +135,22 @@ public sealed class PkmdsPreviewHandler : IPreviewHandler, IInitializeWithFile, 
     // IPreviewHandler shell-extension IID — fixed by Windows, do not change.
     private const string PreviewHandlerIid = "{8895b1c6-b41f-4c1c-a562-0d564250836f}";
 
-    // Extensions to register. Expand as more formats are validated.
+    // Extensions to register — mirrors the UTType declarations in the macOS/iOS Info.plist files.
     private static readonly string[] Extensions =
-        [".pk1", ".pk2", ".pk3", ".pk4", ".pk5", ".pk6", ".pk7", ".pk8", ".pk9",
-         ".pa8", ".pb7", ".pb8", ".sav"];
+    [
+        // PKM entity files
+        ".pk1", ".pk2", ".pk3", ".pk4", ".pk5", ".pk6", ".pk7", ".pk8", ".pk9",
+        ".pa8", ".pa9", ".pb7", ".pb8",
+        ".sk2", ".ck3", ".xk3", ".bk4", ".rk4",
+        // Save files
+        ".sav", ".dat", ".gci", ".dsv", ".srm", ".fla",
+        // Wonder cards / mystery gifts
+        ".pgt", ".pcd", ".wc4", ".pgf",
+        ".wc5full", ".wc6", ".wc6full", ".wc7", ".wc7full",
+        ".wr7", ".wb7", ".wb7full",
+        ".wc8", ".wc8full", ".wb8", ".wa8",
+        ".wc9", ".wa9",
+    ];
 
     public static void RegisterShellExtension()
     {

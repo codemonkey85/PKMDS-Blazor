@@ -63,6 +63,67 @@ public static class HtmlRenderer
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Auto-dispatches to the appropriate renderer based on file content and extension.
+    /// Tries save → mystery gift (extension-guided) → PKM entity → error page.
+    /// </summary>
+    /// <param name="data">Raw file bytes.</param>
+    /// <param name="fileExtension">File extension with or without leading dot (e.g. "wb8" or ".wb8").</param>
+    public static string RenderFile(byte[] data, string fileExtension)
+    {
+        var ext = fileExtension.Length > 0 && fileExtension[0] != '.'
+            ? "." + fileExtension
+            : fileExtension;
+
+        if (SaveUtil.TryGetSaveFile(data, out var sav))
+            return RenderSave(sav);
+        if (MysteryGift.GetMysteryGift(data, ext.AsSpan()) is { } gift)
+            return RenderMysteryGift(gift);
+        if (EntityFormat.GetFromBytes(data) is { } pkm)
+            return RenderPkm(pkm);
+        return ErrorHtml("Unrecognized file format.");
+    }
+
+    public static string RenderMysteryGift(DataMysteryGift gift)
+    {
+        var s = GameInfo.Strings;
+        var sb = new StringBuilder(2048);
+        var cardName = string.IsNullOrWhiteSpace(gift.CardHeader) ? "Mystery Gift" : gift.CardHeader;
+        AppendDocStart(sb, cardName);
+
+        sb.Append("<div class=\"pkm\">");
+        if (gift.Species > 0)
+        {
+            var url = PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(gift.Species, gift.Form, 0, false, 0)
+                      ?? PlaceholderSpriteUrl;
+            sb.Append("<div class=\"sprite\"><img alt=\"\" src=\"").Append(url).Append("\"></div>");
+        }
+
+        sb.Append("<div class=\"info\">");
+        sb.Append("<h1>").Append(Escape(cardName)).Append("</h1>");
+        sb.Append("<div class=\"meta\">")
+            .Append(Escape(gift.GetType().Name))
+            .Append(" &middot; Gen ").Append(gift.Generation)
+            .Append(" &middot; ").Append(Escape(gift.Version.ToString()))
+            .Append("</div>");
+
+        sb.Append("<dl class=\"details\">");
+        if (gift.Species > 0)
+        {
+            AppendDt(sb, "Species", Escape(Lookup(s.specieslist, gift.Species)));
+            if (gift.Form > 0)
+                AppendDt(sb, "Form", gift.Form.ToString(CultureInfo.InvariantCulture));
+            AppendDt(sb, "Level", gift.Level.ToString(CultureInfo.InvariantCulture));
+            if (gift.IsEgg)
+                AppendDt(sb, "Egg", "Yes");
+        }
+        sb.Append("</dl>");
+        sb.Append("</div>"); // .info
+        sb.Append("</div>"); // .pkm
+        AppendDocEnd(sb);
+        return sb.ToString();
+    }
+
     public static string RenderSave(SaveFile sav)
     {
         var s = GameInfo.Strings;
@@ -235,6 +296,10 @@ public static class HtmlRenderer
     {
         sb.Append("</body></html>");
     }
+
+    public static string ErrorHtml(string message) =>
+        $"<!doctype html><html><head><meta charset=\"utf-8\"><style>{Css}</style></head>" +
+        $"<body><p style=\"opacity:0.6\">{System.Net.WebUtility.HtmlEncode(message)}</p></body></html>";
 
     private static string Escape(string value)
     {

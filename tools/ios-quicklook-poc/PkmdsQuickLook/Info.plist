@@ -20,6 +20,7 @@
             <array>
                 <string>com.bondcodes.pkmds.pkm-file</string>
                 <string>com.bondcodes.pkmds.save-file</string>
+                <string>com.bondcodes.pkmds.wonder-card</string>
             </array>
             <key>QLSupportsSearchableItems</key>
             <false/>

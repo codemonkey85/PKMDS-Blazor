@@ -37,6 +37,8 @@ if [[ -n "$PKM_FIXTURE" && -f "$PKM_FIXTURE" ]]; then
     "$SWIFT_BIN" "$DYLIB" pkm "$PKM_FIXTURE"
     echo "==> pkm html: $PKM_FIXTURE -> /tmp/pkmds-poc-pkm.html"
     "$SWIFT_BIN" "$DYLIB" pkm-html "$PKM_FIXTURE" > /tmp/pkmds-poc-pkm.html
+    echo "==> file-html (pkm): $PKM_FIXTURE -> /tmp/pkmds-poc-file-pkm.html"
+    "$SWIFT_BIN" "$DYLIB" file-html "$PKM_FIXTURE" > /tmp/pkmds-poc-file-pkm.html
 fi
 
 if [[ -n "$SAV_FIXTURE" && -f "$SAV_FIXTURE" ]]; then
@@ -44,4 +46,6 @@ if [[ -n "$SAV_FIXTURE" && -f "$SAV_FIXTURE" ]]; then
     "$SWIFT_BIN" "$DYLIB" save "$SAV_FIXTURE"
     echo "==> save html: $SAV_FIXTURE -> /tmp/pkmds-poc-save.html"
     "$SWIFT_BIN" "$DYLIB" save-html "$SAV_FIXTURE" > /tmp/pkmds-poc-save.html
+    echo "==> file-html (save): $SAV_FIXTURE -> /tmp/pkmds-poc-file-save.html"
+    "$SWIFT_BIN" "$DYLIB" file-html "$SAV_FIXTURE" > /tmp/pkmds-poc-file-save.html
 fi
