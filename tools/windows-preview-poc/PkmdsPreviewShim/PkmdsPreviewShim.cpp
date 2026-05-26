@@ -278,9 +278,39 @@ static HRESULT LoadPngAsHBitmap(const std::wstring& path, HBITMAP* phbmp)
     return hr;
 }
 
+// Spill an IStream to a file so the worker (which reads a path) can process it.
+static bool WriteStreamToFile(IStream* stream, const std::wstring& path)
+{
+    const LARGE_INTEGER zero{};
+    stream->Seek(zero, STREAM_SEEK_SET, nullptr);
+    HANDLE h = CreateFileW(path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (h == INVALID_HANDLE_VALUE)
+        return false;
+
+    BYTE buf[8192];
+    ULONG read = 0;
+    bool ok = true;
+    for (;;)
+    {
+        const HRESULT hr = stream->Read(buf, sizeof(buf), &read);
+        if (FAILED(hr)) { ok = false; break; }
+        if (read == 0) break;
+        DWORD written = 0;
+        if (!WriteFile(h, buf, read, &written, nullptr) || written != read) { ok = false; break; }
+    }
+    CloseHandle(h);
+    return ok;
+}
+
 // Thumbnail provider loaded into dllhost.exe. Spawns the worker in --thumbnail mode to draw the
 // file's representative bundled sprite to a temp PNG, then decodes it into the returned HBITMAP.
+//
+// The thumbnail cache initializes handlers via IInitializeWithStream (a file-only handler is
+// ignored), so we implement that as the primary init and keep IInitializeWithFile as a fallback.
+// A stream has no extension, so the worker content-detects entities/saves (gifts, which need the
+// extension, fall back to the placeholder sprite in that path).
 class ThumbnailHandler :
+    public IInitializeWithStream,
     public IInitializeWithFile,
     public IThumbnailProvider
 {
@@ -291,6 +321,7 @@ public:
     {
         static const QITAB qit[] = {
             QITABENT(ThumbnailHandler, IThumbnailProvider),
+            QITABENT(ThumbnailHandler, IInitializeWithStream),
             QITABENT(ThumbnailHandler, IInitializeWithFile),
             { 0 },
         };
@@ -305,6 +336,18 @@ public:
         return r;
     }
 
+    // IInitializeWithStream
+    IFACEMETHODIMP Initialize(IStream* pstream, DWORD)
+    {
+        if (m_stream)
+            m_stream->Release();
+        m_stream = pstream;
+        if (m_stream)
+            m_stream->AddRef();
+        return S_OK;
+    }
+
+    // IInitializeWithFile
     IFACEMETHODIMP Initialize(LPCWSTR pszFilePath, DWORD) { m_filePath = pszFilePath; return S_OK; }
 
     IFACEMETHODIMP GetThumbnail(UINT cx, HBITMAP* phbmp, WTS_ALPHATYPE* pdwAlpha)
@@ -313,17 +356,29 @@ public:
             return E_INVALIDARG;
         *phbmp = nullptr;
         *pdwAlpha = WTSAT_ARGB;
-        if (m_filePath.empty() || cx == 0)
+        if (cx == 0)
             return E_FAIL;
 
         wchar_t tempDir[MAX_PATH]{};
         GetTempPathW(MAX_PATH, tempDir);
-        const std::wstring outPng = std::wstring(tempDir) + L"pkmds_thumb_" +
-            std::to_wstring(GetCurrentProcessId()) + L"_" +
-            std::to_wstring(InterlockedIncrement(&g_instanceCounter)) + L".png";
+        const std::wstring stamp = std::to_wstring(GetCurrentProcessId()) + L"_" +
+            std::to_wstring(InterlockedIncrement(&g_instanceCounter));
+        const std::wstring outPng = std::wstring(tempDir) + L"pkmds_thumb_" + stamp + L".png";
+
+        // Input for the worker: a real path (file init) or a temp file spilled from the stream.
+        std::wstring inputFile = m_filePath;
+        std::wstring tempInput;
+        if (inputFile.empty() && m_stream)
+        {
+            tempInput = std::wstring(tempDir) + L"pkmds_thumbin_" + stamp + L".bin";
+            if (WriteStreamToFile(m_stream, tempInput))
+                inputFile = tempInput;
+        }
+        if (inputFile.empty())
+            return E_FAIL;
 
         std::wostringstream params;
-        params << L"--thumbnail \"" << outPng << L"\" " << cx << L" \"" << m_filePath << L"\"";
+        params << L"--thumbnail \"" << outPng << L"\" " << cx << L" \"" << inputFile << L"\"";
         const std::wstring app = WorkerExePath();
         const std::wstring p = params.str();
 
@@ -344,13 +399,21 @@ public:
                 DeleteFileW(outPng.c_str());
             }
         }
+        if (!tempInput.empty())
+            DeleteFileW(tempInput.c_str());
         return (SUCCEEDED(hr) && *phbmp) ? S_OK : E_FAIL;
     }
 
 private:
-    ~ThumbnailHandler() { InterlockedDecrement(&g_cDllRef); }
+    ~ThumbnailHandler()
+    {
+        if (m_stream)
+            m_stream->Release();
+        InterlockedDecrement(&g_cDllRef);
+    }
     long m_cRef;
     std::wstring m_filePath;
+    IStream* m_stream = nullptr;
 };
 
 template <class THandler>
