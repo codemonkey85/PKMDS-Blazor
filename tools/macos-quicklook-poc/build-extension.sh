@@ -131,10 +131,11 @@ qlmanage -r cache >/dev/null 2>&1 || true
 # qlmanage -p opens an interactive window; run it with a 10-second timeout so the script doesn't
 # block waiting for the user to close the window.
 echo "==> qlmanage -p (preview): $FIXTURE"
-timeout 10 qlmanage -p "$FIXTURE" 2>&1 | tail -10 || true
+# `timeout` is GNU coreutils and not available on stock macOS; use a background-kill workaround.
+( qlmanage -p "$FIXTURE" 2>&1 & QLP=$! ; sleep 10 ; kill "$QLP" 2>/dev/null ; true ) | tail -10 || true
 
 echo "==> qlmanage -t (thumbnail, 256px): $FIXTURE"
-qlmanage -t -s 256 -o /tmp "$FIXTURE" 2>&1 | tail -10 || true
+( qlmanage -t -s 256 -o /tmp "$FIXTURE" 2>&1 & QLT=$! ; sleep 15 ; kill "$QLT" 2>/dev/null ; true ) | tail -10 || true
 if [[ -n "$(ls /tmp/"$(basename "$FIXTURE")"*.png 2>/dev/null)" ]]; then
     echo "    thumbnail PNG written to /tmp"
 fi
@@ -152,7 +153,7 @@ if [[ ! -f "$GCI_FIXTURE" ]]; then
 fi
 if [[ -f "$GCI_FIXTURE" ]]; then
     echo "==> qlmanage -t (thumbnail, 256px): $(basename "$GCI_FIXTURE")"
-    qlmanage -t -s 256 -o /tmp "$GCI_FIXTURE" 2>&1 | tail -10 || true
+    ( qlmanage -t -s 256 -o /tmp "$GCI_FIXTURE" 2>&1 & QLT=$! ; sleep 15 ; kill "$QLT" 2>/dev/null ; true ) | tail -10 || true
 fi
 
 echo

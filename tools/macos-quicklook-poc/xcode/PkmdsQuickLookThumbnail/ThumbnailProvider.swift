@@ -55,9 +55,16 @@ final class ThumbnailProvider: QLThumbnailProvider {
             let size     = request.maximumSize
             let ext      = request.fileURL.pathExtension.lowercased()
             let saveInfo = parseSave(fileData)
-            let rel      = saveInfo == nil
-                ? (spritePath(data: fileData, ext: ext) ?? "a/a_unknown.png")
-                : nil
+
+            // Pre-compute everything that touches NSImage / CGImage here, on our controlled
+            // background queue. The QLThumbnailReply drawing closure runs on a system-managed
+            // thread where calling image.cgImage() can deadlock with AppKit internals.
+            struct SpriteData { let image: NSImage; let src: NSRect }
+            let spriteData: SpriteData? = saveInfo == nil ? {
+                let rel = spritePath(data: fileData, ext: ext) ?? "a/a_unknown.png"
+                guard let img = loadBundledSprite(rel) else { return nil }
+                return SpriteData(image: img, src: opaqueSourceRect(img))
+            }() : nil
 
             // QLThumbnailReply(contextSize:drawing:) is available on macOS 10.15+.
             // The system calls the block with an already-configured CGContext. We wrap it in
@@ -69,8 +76,17 @@ final class ThumbnailProvider: QLThumbnailProvider {
 
                 if let info = saveInfo {
                     drawTrainerCard(size: size, info: info)
-                } else {
-                    drawSprite(relativePath: rel!, size: size)
+                } else if let sd = spriteData, sd.src.width > 0, sd.src.height > 0 {
+                    let fill: CGFloat = 0.90
+                    let scale    = min(size.width * fill / sd.src.width,
+                                      size.height * fill / sd.src.height)
+                    let drawSize = NSSize(width: sd.src.width * scale, height: sd.src.height * scale)
+                    let origin   = NSPoint(x: (size.width  - drawSize.width)  / 2,
+                                          y: (size.height - drawSize.height) / 2)
+                    sd.image.draw(in:    NSRect(origin: origin, size: drawSize),
+                                  from:  sd.src,
+                                  operation: .sourceOver,
+                                  fraction:  1.0)
                 }
                 return true
             }
@@ -132,21 +148,57 @@ private func parseSave(_ data: Data) -> SaveInfo? {
 // MARK: - Sprite drawing ────────────────────────────────────────────────────────────────────────
 //
 // Sprites are copied into the extension bundle at Resources/sprites/ by build-extension.sh.
+// The PNG files include significant transparent padding; opaqueSourceRect trims it so the
+// visible Pokémon fills the thumbnail rather than appearing tiny in a sea of transparency.
+// Sprite loading and opaque-rect computation happen on our background queue (before the
+// QLThumbnailReply drawing closure) because image.cgImage() can deadlock on AppKit's internal
+// cache lock when called from the system-managed thread that invokes the drawing closure.
 
-private func drawSprite(relativePath: String, size: CGSize) {
-    guard let sprite = loadBundledSprite(relativePath) else { return }
-    let imgSize = sprite.size
-    guard imgSize.width > 0, imgSize.height > 0 else { return }
+// Returns the tight bounding box of non-transparent pixels in NSImage (bottom-left) coords.
+// Falls back to the full image rect when pixel data is unavailable.
+private func opaqueSourceRect(_ image: NSImage) -> NSRect {
+    let imgSize = image.size
+    let full = NSRect(origin: .zero, size: imgSize)
+    guard let cgImg = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return full }
+    let pw = cgImg.width, ph = cgImg.height
+    guard pw > 0, ph > 0 else { return full }
 
-    let scale    = min(size.width / imgSize.width, size.height / imgSize.height)
-    let drawSize = NSSize(width: imgSize.width * scale, height: imgSize.height * scale)
-    let origin   = NSPoint(x: (size.width  - drawSize.width)  / 2,
-                           y: (size.height - drawSize.height) / 2)
+    // Let CGContext own its backing store (data: nil) so storage lifetime is managed by Core Graphics.
+    // BGRA/premultipliedFirst is the native format on ARM; alpha lands at byte offset +3.
+    let stride = pw * 4
+    guard let ctx = CGContext(
+        data: nil, width: pw, height: ph,
+        bitsPerComponent: 8, bytesPerRow: stride,
+        space: CGColorSpaceCreateDeviceRGB(),
+        bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+    ) else { return full }
+    // No flip: CGContext y=0 is at the bottom, so row 0 = visual bottom = NSImage y=0.
+    ctx.draw(cgImg, in: CGRect(x: 0, y: 0, width: pw, height: ph))
+    guard let rawData = ctx.data else { return full }
+    let bytes = rawData.assumingMemoryBound(to: UInt8.self)
 
-    sprite.draw(in:    NSRect(origin: origin, size: drawSize),
-                from:  .zero,
-                operation: .sourceOver,
-                fraction:  1.0)
+    var left = pw, right = 0, minRow = ph, maxRow = 0
+    for row in 0..<ph {
+        for col in 0..<pw {
+            if bytes[row * stride + col * 4 + 3] > 10 {
+                if col < left   { left   = col }
+                if col > right  { right  = col }
+                if row < minRow { minRow = row }
+                if row > maxRow { maxRow = row }
+            }
+        }
+    }
+    guard right >= left, maxRow >= minRow else { return full }
+
+    // Buffer row r → NSImage y = r * sy (row 0 = bottom, row ph-1 = top).
+    let sx = imgSize.width  / CGFloat(pw)
+    let sy = imgSize.height / CGFloat(ph)
+    return NSRect(
+        x:      CGFloat(left)              * sx,
+        y:      CGFloat(minRow)            * sy,
+        width:  CGFloat(right - left + 1)  * sx,
+        height: CGFloat(maxRow - minRow + 1) * sy
+    )
 }
 
 private func loadBundledSprite(_ relativePath: String) -> NSImage? {
