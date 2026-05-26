@@ -80,7 +80,7 @@ internal static class Program
             default:
                 MessageBox.Show(
                     "Usage:\n" +
-                    "  PkmdsPreviewWorker \"<file>\" <hwnd-hex> <left> <right> <top> <bottom>\n" +
+                    "  PkmdsPreviewWorker \"<file>\" <hwnd-hex> <left> <right> <top> <bottom> <resize-event>\n" +
                     "  PkmdsPreviewWorker --window \"<file>\"\n" +
                     "  PkmdsPreviewWorker --capture \"<out.png>\" \"<file>\"",
                     "PkmdsPreviewWorker");
