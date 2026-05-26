@@ -32,10 +32,10 @@
 			</array>
 			<key>QLThumbnailMinimumSize</key>
 			<dict>
-				<key>width</key>
-				<real>17</real>
 				<key>height</key>
-				<real>17</real>
+				<integer>17</integer>
+				<key>width</key>
+				<integer>17</integer>
 			</dict>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>

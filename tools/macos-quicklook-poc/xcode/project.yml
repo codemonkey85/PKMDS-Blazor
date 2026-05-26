@@ -68,12 +68,9 @@ targets:
               - public.data
             UTTypeTagSpecification:
               public.filename-extension:
-                - sav
-                - dat
                 - gci
                 - dsv
                 - srm
-                - fla
           - UTTypeIdentifier: com.bondcodes.pkmds.wonder-card
             UTTypeDescription: Pokémon Wonder Card
             UTTypeConformsTo:
@@ -179,6 +176,17 @@ targets:
         CFBundleDisplayName: PKMDS Quick Look Thumbnail
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.quicklook.thumbnail
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ThumbnailProvider
+          NSExtensionAttributes:
+            QLSupportedContentTypes:
+              - com.bondcodes.pkmds.pkm-file
+              - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.wonder-card
+            QLThumbnailMinimumSize:
+              width: 17
+              height: 17
     dependencies:
       - framework: ../build-resources/PkmdsNative.dylib
         embed: true

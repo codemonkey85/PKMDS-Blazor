@@ -23,35 +23,59 @@ private let kJsonCap = 64 * 1024
 
 final class ThumbnailProvider: QLThumbnailProvider {
 
+    // NativeAOT runtime startup costs 2–4 s on the first call. Pre-warm it in a background
+    // queue as soon as the extension process spawns so the budget is available for processing.
+    private static let warmupGroup: DispatchGroup = {
+        let g = DispatchGroup()
+        g.enter()
+        DispatchQueue.global(qos: .userInitiated).async {
+            _ = pkmds_get_sprite_path(nil, 0, nil, 0, nil, 0)  // no-op; initialises the runtime
+            g.leave()
+        }
+        return g
+    }()
+
+    override init() {
+        super.init()
+        _ = ThumbnailProvider.warmupGroup  // trigger the lazy static init immediately
+    }
+
     override func provideThumbnail(for request: QLFileThumbnailRequest,
                                    _ handler: @escaping (QLThumbnailReply?, Error?) -> Void) {
-        guard let fileData = try? Data(contentsOf: request.fileURL) else {
-            handler(nil, nil); return
-        }
-
-        let size     = request.maximumSize
-        let ext      = request.fileURL.pathExtension.lowercased()
-        let saveInfo = parseSave(fileData)
-        let rel      = saveInfo == nil
-            ? (spritePath(data: fileData, ext: ext) ?? "a/a_unknown.png")
-            : nil
-
-        // QLThumbnailReply(contextSize:drawing:) is available on macOS 10.15+.
-        // The system calls the block with an already-configured CGContext. We wrap it in
-        // NSGraphicsContext so we can use AppKit drawing (NSBezierPath, NSAttributedString, etc.).
-        let reply = QLThumbnailReply(contextSize: size) { (ctx: CGContext) -> Bool in
-            NSGraphicsContext.saveGraphicsState()
-            defer { NSGraphicsContext.restoreGraphicsState() }
-            NSGraphicsContext.current = NSGraphicsContext(cgContext: ctx, flipped: false)
-
-            if let info = saveInfo {
-                drawTrainerCard(size: size, info: info)
-            } else {
-                drawSprite(relativePath: rel!, size: size)
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Wait for the NativeAOT warmup (≤4 s), leaving ≥1 s for processing.
+            guard ThumbnailProvider.warmupGroup.wait(timeout: .now() + 4) == .success else {
+                handler(nil, nil); return
             }
-            return true
+
+            guard let fileData = try? Data(contentsOf: request.fileURL) else {
+                handler(nil, nil); return
+            }
+
+            let size     = request.maximumSize
+            let ext      = request.fileURL.pathExtension.lowercased()
+            let saveInfo = parseSave(fileData)
+            let rel      = saveInfo == nil
+                ? (spritePath(data: fileData, ext: ext) ?? "a/a_unknown.png")
+                : nil
+
+            // QLThumbnailReply(contextSize:drawing:) is available on macOS 10.15+.
+            // The system calls the block with an already-configured CGContext. We wrap it in
+            // NSGraphicsContext so we can use AppKit drawing (NSBezierPath, NSAttributedString, etc.).
+            let reply = QLThumbnailReply(contextSize: size) { (ctx: CGContext) -> Bool in
+                NSGraphicsContext.saveGraphicsState()
+                defer { NSGraphicsContext.restoreGraphicsState() }
+                NSGraphicsContext.current = NSGraphicsContext(cgContext: ctx, flipped: false)
+
+                if let info = saveInfo {
+                    drawTrainerCard(size: size, info: info)
+                } else {
+                    drawSprite(relativePath: rel!, size: size)
+                }
+                return true
+            }
+            handler(reply, nil)
         }
-        handler(reply, nil)
     }
 }
 
