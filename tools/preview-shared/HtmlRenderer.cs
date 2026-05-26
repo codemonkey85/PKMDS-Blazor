@@ -15,6 +15,7 @@ public static class HtmlRenderer
     public static string RenderPkm(PKM pkm)
     {
         var s = GameInfo.Strings;
+        var la = TryAnalyze(pkm);
         var sb = new StringBuilder(4096);
         AppendDocStart(sb, $"{Lookup(s.specieslist, pkm.Species)} (Lv. {pkm.CurrentLevel})");
         sb.Append("<div class=\"pkm\">");
@@ -42,6 +43,11 @@ public static class HtmlRenderer
         {
             sb.Append(" &middot; Form ").Append(pkm.Form);
         }
+        if (la is not null)
+        {
+            var (label, css) = GetLegalityStatus(la);
+            sb.Append(" &middot; <span class=\"badge ").Append(css).Append("\">").Append(label).Append("</span>");
+        }
         sb.Append("</div>");
 
         sb.Append("<dl class=\"details\">");
@@ -59,6 +65,13 @@ public static class HtmlRenderer
 
         sb.Append("</div>"); // .info
         sb.Append("</div>"); // .pkm
+
+        if (la is not null)
+        {
+            AppendLegalityIssues(sb, la);
+        }
+        AppendShowdownSet(sb, pkm);
+
         AppendDocEnd(sb);
         return sb.ToString();
     }
@@ -210,7 +223,17 @@ public static class HtmlRenderer
         sb.Append("<dl class=\"details\">");
         AppendDt(sb, "Save type", Escape(sav.GetType().Name));
         AppendDt(sb, "Language", LanguageName(sav.Language));
-        AppendDt(sb, "Boxes", $"{sav.BoxCount} × {sav.BoxSlotCount}");
+        // Playtime is more interesting than box capacity (which is near-constant per game).
+        // Fall back to box capacity for save types that don't track playtime.
+        var played = FormatPlaytime(sav);
+        if (played is not null)
+        {
+            AppendDt(sb, "Played", played);
+        }
+        else
+        {
+            AppendDt(sb, "Boxes", $"{sav.BoxCount} × {sav.BoxSlotCount}");
+        }
         AppendDt(sb, "Party", (sav.HasParty ? sav.PartyCount : 0).ToString(CultureInfo.InvariantCulture));
         sb.Append("</dl>");
 
@@ -229,6 +252,12 @@ public static class HtmlRenderer
                 if (pkm.IsShiny)
                 {
                     sb.Append(" <span class=\"shiny\" title=\"Shiny\">★</span>");
+                }
+                var partyLegality = TryAnalyze(pkm);
+                if (partyLegality is not null)
+                {
+                    var (plabel, pcss) = GetLegalityStatus(partyLegality);
+                    sb.Append(" <span class=\"badge ").Append(pcss).Append("\">").Append(plabel).Append("</span>");
                 }
                 sb.Append("</div>");
                 sb.Append("<div class=\"muted\">Lv. ").Append(pkm.CurrentLevel);
@@ -345,8 +374,93 @@ public static class HtmlRenderer
         8 => "Korean",
         9 => "Chinese (Simplified)",
         10 => "Chinese (Traditional)",
-        _ => language.ToString(CultureInfo.InvariantCulture)
+        _ => "Unknown"
     };
+
+    private static LegalityAnalysis? TryAnalyze(PKM pkm)
+    {
+        try
+        {
+            return new LegalityAnalysis(pkm);
+        }
+        catch
+        {
+            // Legality is best-effort in a preview — never let it break rendering.
+            return null;
+        }
+    }
+
+    // Overall status for the badge. la.Valid is false only when something is Invalid; Fishy
+    // results keep Valid == true, so check for them separately.
+    private static (string Label, string Css) GetLegalityStatus(LegalityAnalysis la)
+    {
+        if (!la.Valid)
+        {
+            return ("Illegal", "illegal");
+        }
+        foreach (var result in la.Results)
+        {
+            if (result.Judgement == Severity.Fishy)
+            {
+                return ("Fishy", "fishy");
+            }
+        }
+        return ("Legal", "legal");
+    }
+
+    private static void AppendLegalityIssues(StringBuilder sb, LegalityAnalysis la)
+    {
+        var ctx = LegalityLocalizationContext.Create(la);
+        var open = false;
+        foreach (var result in la.Results)
+        {
+            if (result.Judgement == Severity.Valid)
+            {
+                continue;
+            }
+            if (!open)
+            {
+                sb.Append("<h2>Legality</h2><ul class=\"issues\">");
+                open = true;
+            }
+            var r = result;
+            var cls = result.Judgement == Severity.Fishy ? "fishy" : "invalid";
+            sb.Append("<li class=\"").Append(cls).Append("\">").Append(Escape(ctx.Humanize(in r))).Append("</li>");
+        }
+        if (open)
+        {
+            sb.Append("</ul>");
+        }
+    }
+
+    private static void AppendShowdownSet(StringBuilder sb, PKM pkm)
+    {
+        string text;
+        try
+        {
+            text = new ShowdownSet(pkm).Text;
+        }
+        catch
+        {
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+        sb.Append("<h2>Showdown set</h2><pre class=\"set\">").Append(Escape(text)).Append("</pre>");
+    }
+
+    // Playtime, or null for save types that don't track it (so the caller can fall back).
+    private static string? FormatPlaytime(SaveFile sav)
+    {
+        int hours = sav.PlayedHours, minutes = sav.PlayedMinutes, seconds = sav.PlayedSeconds;
+        if (hours == 0 && minutes == 0 && seconds == 0)
+        {
+            return null;
+        }
+        return $"{hours}:{minutes:00}:{seconds:00}";
+    }
 
     private static void AppendDocStart(StringBuilder sb, string title)
     {
@@ -431,5 +545,25 @@ public static class HtmlRenderer
         @media (min-width: 600px) { .party { grid-template-columns: repeat(2, 1fr); } }
         .party-slot { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); border-radius: 8px; }
         .party-name { font-weight: 600; font-size: 17px; }
+        .badge { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 13px; font-weight: 600; vertical-align: middle; }
+        .badge.legal { color: #1a7f37; background: color-mix(in srgb, #1a7f37 16%, transparent); }
+        .badge.fishy { color: #9a6700; background: color-mix(in srgb, #9a6700 18%, transparent); }
+        .badge.illegal { color: #cf222e; background: color-mix(in srgb, #cf222e 16%, transparent); }
+        ul.issues { margin: 6px 0 14px; padding-left: 20px; }
+        ul.issues li { margin: 3px 0; }
+        ul.issues li.invalid { color: #cf222e; }
+        ul.issues li.fishy { color: #9a6700; }
+        pre.set {
+            font: 13px ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+            background: color-mix(in srgb, CanvasText 7%, transparent);
+            padding: 12px 14px; border-radius: 8px; overflow-x: auto; white-space: pre; margin: 6px 0 16px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .badge.legal { color: #3fb950; background: color-mix(in srgb, #3fb950 20%, transparent); }
+            .badge.fishy { color: #d29922; background: color-mix(in srgb, #d29922 22%, transparent); }
+            .badge.illegal { color: #f85149; background: color-mix(in srgb, #f85149 22%, transparent); }
+            ul.issues li.invalid { color: #f85149; }
+            ul.issues li.fishy { color: #d29922; }
+        }
         """;
 }

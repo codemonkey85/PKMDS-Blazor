@@ -22,7 +22,7 @@ internal static class Capture
             ShowInTaskbar = false,
             StartPosition = FormStartPosition.Manual,
             Location = new Point(-3000, -3000),
-            ClientSize = new Size(560, 680),
+            ClientSize = new Size(480, 1100),
         };
         var webView = new WebView2
         {
