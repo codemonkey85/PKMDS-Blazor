@@ -1,207 +1,176 @@
-# Windows Shell Preview Handler POC
+# Windows Shell Preview Handler PoC
 
-Proof-of-concept stub for a Windows Explorer Preview Pane handler that previews PKHeX-compatible files using the shared `HtmlRenderer` from [`tools/preview-shared/`](../preview-shared/). The registered extensions cover:
+Previews PKHeX-compatible files in the Windows Explorer **Preview Pane**, using the shared
+`HtmlRenderer` from [`tools/preview-shared/`](../preview-shared/) — the exact same rendering code
+the [macOS](../macos-quicklook-poc/) and [iOS](../ios-quicklook-poc/) Quick Look PoCs use. All
+parsing and HTML generation is shared; only the platform host differs.
+
+**Status: working.** Pokémon entities, save files, and wonder cards render in the pane, and the
+preview re-fits and reflows live when you resize the pane.
+
+![preview pane showing a rendered Pokémon](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/448.png)
+
+## Architecture: native shim + .NET worker
+
+Unlike macOS/iOS (where Quick Look loads a NativeAOT **dylib** — statically-linked native code),
+a Windows preview handler is loaded into `prevhost.exe`, which runs handlers in a **Low-integrity
+sandbox**. A framework-dependent .NET **comhost** cannot start CoreCLR in that sandbox, so the
+managed code never runs (see [Why not a pure-.NET handler](#why-not-a-pure-net-comhost-handler)).
+
+The solution — mirroring how [PowerToys](https://github.com/microsoft/PowerToys/tree/main/src/modules/previewpane)
+ships working .NET preview handlers — is a **two-part split**:
+
+```
+Explorer Preview Pane
+        │  loads (COM IPreviewHandler)
+        ▼
+PkmdsPreviewShim.dll   ← native C++, runs fine at Low IL (no runtime to host)
+        │  DoPreview(): ShellExecuteEx with  "<file>" <hwnd-hex> <left> <right> <top> <bottom>
+        ▼
+PkmdsPreviewWorker.exe ← self-contained .NET WinExe (normal process: CoreCLR + WebView2 work)
+        │  reparents its WebView2 window into <hwnd>, sizes to the rect
+        ▼
+HtmlRenderer.RenderFile(bytes, ext)   ← shared with macOS/iOS
+```
+
+- **`PkmdsPreviewShim`** (C++ DLL) is the registered COM `IPreviewHandler`. On `DoPreview` it
+  `ShellExecuteEx`'s the worker, passing the file path, parent `HWND`, and bounds on the command
+  line; on `Unload` it `TerminateProcess`'s the worker. It's a thin shim — no rendering logic.
+- **`PkmdsPreviewWorker`** (.NET `WinExe`, WinForms, **self-contained**) runs as an ordinary
+  full-trust process. `Program.Main` parses the args, reparents its `WebView2` into the supplied
+  `HWND` (`WS_CHILD` + `SetParent`), and renders the shared `HtmlRenderer` output via
+  `NavigateToString`.
+
+### Single source of truth for extensions
+
+The authoritative extension list is [`Pkmds.Preview.PreviewFileTypes`](../preview-shared/PreviewFileTypes.cs)
+(shared project), grouped into the three categories that map 1:1 to the macOS/iOS UTType
+declarations (`pkm-file`, `save-file`, `wonder-card`). `register.cs` reads it directly; the
+macOS/iOS `Info.plist` `UTTypeTagSpecification` arrays mirror it. Coverage:
 
 - **Pokémon entity files**: `.pk1`–`.pk9`, `.pa8`, `.pa9`, `.pb7`, `.pb8`, `.sk2`, `.ck3`, `.xk3`, `.bk4`, `.rk4`
 - **Save files**: `.sav`, `.dat`, `.gci`, `.dsv`, `.srm`, `.fla`
 - **Wonder cards / mystery gifts**: `.pgt`, `.pcd`, `.pgf`, `.wc3`–`.wc9` and their `*full` / `.wb*` / `.wa*` variants
 
-The authoritative list is the `Extensions` array in [`PreviewHandler.cs`](PkmdsPreview/PreviewHandler.cs) — keep this section in sync with it (it mirrors the UTType declarations in the macOS/iOS `Info.plist` files).
-
-The macOS and iOS equivalents are in [`tools/macos-quicklook-poc/`](../macos-quicklook-poc/) and [`tools/ios-quicklook-poc/`](../ios-quicklook-poc/).
-
 ## What's in here
 
 ```
 tools/windows-preview-poc/
-├── PkmdsPreview/
-│   ├── PreviewHandler.cs    # COM shell extension stub (IPreviewHandler + WebView2 TODOs)
-│   └── PkmdsPreview.csproj  # net10.0-windows + EnableComHosting + UseWindowsForms
+├── PkmdsPreviewShim/          # native C++ COM IPreviewHandler (loads into prevhost)
+│   ├── PkmdsPreviewShim.cpp
+│   ├── PkmdsPreviewShim.def   # exports DllGetClassObject + DllCanUnloadNow
+│   └── PkmdsPreviewShim.vcxproj
+├── PkmdsPreviewWorker/        # self-contained .NET WinExe worker (renders)
+│   ├── Program.cs             # arg parsing + mode dispatch (child / --window / --capture)
+│   ├── PreviewForm.cs         # WebView2 host, reparents into the pane HWND
+│   ├── Capture.cs             # headless render-to-PNG (dev verification)
+│   └── Diag.cs                # opt-in file tracing
+├── build-shim.ps1            # build the C++ shim via vcvars + cl
+├── register.cs              # dotnet-run registrar (reads shared PreviewFileTypes)
+├── install.ps1 / uninstall.ps1
 └── README.md
 ```
 
-`HtmlRenderer` (the actual rendering logic) lives in `tools/preview-shared/Pkmds.Preview.csproj` and is shared across all three platform PoCs.
-
 ## Prerequisites
 
-- **Windows 10/11** with .NET SDK 10 installed.
-- **Visual Studio 2022** (or VS Build Tools 2022) with the `.NET desktop development` workload.
-- **WebView2 Runtime** — ships with Windows 11 and recent Windows 10 updates; otherwise install from [aka.ms/webview2](https://developer.microsoft.com/microsoft-edge/webview2/).
+- **Windows 10/11**, .NET SDK from `global.json` (net10.0).
+- **MSVC / C++ toolchain** — Visual Studio (or Build Tools) with the **"Desktop development with
+  C++"** workload, to build the shim. `build-shim.ps1` locates it via `vswhere`.
+- **WebView2 Runtime** — ships with Windows 11 / recent Windows 10; else [aka.ms/webview2](https://developer.microsoft.com/microsoft-edge/webview2/).
 
-## Before building: one-time setup
+## Build & install
 
-### 1. Add `Microsoft.Web.WebView2` to central package management
-
-In `Directory.Packages.props` (repo root), add:
-
-```xml
-<PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3296.44" />
-```
-
-Check [nuget.org/packages/Microsoft.Web.WebView2](https://www.nuget.org/packages/Microsoft.Web.WebView2) for the latest stable version before pinning.
-
-### 2. Uncomment the PackageReference in the csproj
-
-In `PkmdsPreview/PkmdsPreview.csproj`, uncomment:
-
-```xml
-<PackageReference Include="Microsoft.Web.WebView2"/>
-```
-
-### 3. Generate a real handler GUID
-
-The stub ships a placeholder GUID. Replace it with a freshly generated one in **both** places it appears in `PreviewHandler.cs` (the `[Guid(...)]` attribute and `HandlerGuid`):
+Registration writes machine-wide keys (`HKLM`), so install from an **elevated** PowerShell:
 
 ```powershell
-[guid]::NewGuid()   # PowerShell
-# or Tools > Create GUID in Visual Studio
+./tools/windows-preview-poc/install.ps1            # build shim + publish worker + register + restart Explorer
+./tools/windows-preview-poc/uninstall.ps1          # remove all keys + restart Explorer
 ```
 
-## Build
+`install.ps1` (1) builds `PkmdsPreviewShim.dll`, (2) publishes the worker self-contained into
+`dist\`, (3) co-locates the shim there, (4) registers `InprocServer32` → `dist\PkmdsPreviewShim.dll`,
+(5) restarts Explorer. Then select a PKHeX file with the Preview Pane on (`Alt+P`).
+
+Build pieces individually if needed:
 
 ```powershell
-dotnet build tools/windows-preview-poc/PkmdsPreview/PkmdsPreview.csproj -c Debug
+./tools/windows-preview-poc/build-shim.ps1                         # -> PkmdsPreviewShim\bin\PkmdsPreviewShim.dll
+dotnet publish tools/windows-preview-poc/PkmdsPreviewWorker/PkmdsPreviewWorker.csproj -c Release -r win-x64 --self-contained -o tools/windows-preview-poc/dist
+dotnet run tools/windows-preview-poc/register.cs -- --list         # print registered extensions (no admin)
 ```
 
-The output directory will contain:
-
-```
-PkmdsPreview.dll           # managed assembly
-PkmdsPreview.comhost.dll   # native COM host (the file regsvr32 registers)
-Pkmds.Preview.dll          # shared HTML renderer
-Pkmds.Core.dll             # PKHeX utilities
-PKHeX.Core.dll             # PKHeX library
-```
-
-## Wiring up WebView2 (the main TODO)
-
-`PreviewHandler.cs` has four marked TODO sites to complete:
-
-1. **`SetWindow`** — create the `WebView2` WinForms control as a child of the `hwnd` passed in, and call `EnsureCoreWebView2Async()`. WebView2 init is async; set a `_webViewReady` flag in the `CoreWebView2InitializationCompleted` handler.
-
-2. **`SetRect` / `SetWindow`** — call `_webView.SetBounds(prc.ToRectangle())` to resize the control when the preview pane resizes.
-
-3. **`DoPreview`** — trigger the render once `_webViewReady` is true. If `SetWindow` fires before `DoPreview`, queue a render; if `DoPreview` fires first, let `CoreWebView2InitializationCompleted` trigger it.
-
-4. **`Unload`** — dispose the `WebView2` control.
-
-The actual HTML comes from `HtmlRenderer.RenderPkm` / `HtmlRenderer.RenderSave` (already wired in `RenderIfReady()`); pass it to `_webView.CoreWebView2.NavigateToString(html)`.
-
-### WebView2 async pattern sketch
-
-```csharp
-public void SetWindow(nint hwnd, ref RECT prc)
-{
-    _parentHwnd = hwnd;
-    _previewRect = prc;
-
-    _webView = new WebView2();
-    _webView.SetBounds(prc.ToRectangle());
-    _webView.CoreWebView2InitializationCompleted += (_, _) =>
-    {
-        _webViewReady = true;
-        RenderIfReady();
-    };
-    NativeMethods.SetParent(_webView.Handle, hwnd);
-    _ = _webView.EnsureCoreWebView2Async();
-}
-
-public void DoPreview()
-{
-    if (_webViewReady)
-        RenderIfReady();
-    // else: CoreWebView2InitializationCompleted will call RenderIfReady() when ready
-}
-```
-
-## Registration
-
-The build emits `PkmdsPreview.comhost.dll` — this is the in-process COM server that Explorer's `prevhost.exe` loads.
-
-### Register (admin PowerShell, from the build output directory)
+The worker also has standalone modes for development (no shell needed):
 
 ```powershell
-# 1. Register the COM class (writes HKCR\CLSID\{guid}\...)
-regsvr32 PkmdsPreview.comhost.dll
-
-# 2. Register the shell extension for each file extension
-#    (writes HKCR\.pk5\ShellEx\{8895b1c6-...} = {your-guid})
-#    Call via dotnet-script or a small host EXE — or run manually:
-dotnet-script -e "[Pkmds.Preview.Windows.PkmdsPreviewHandler]::RegisterShellExtension()"
+PkmdsPreviewWorker.exe --window "C:\path\file.pk9"            # show in a normal window
+PkmdsPreviewWorker.exe --capture "out.png" "C:\path\file.pk9" # headless render to PNG
 ```
 
-### Unregister
+### Registration keys
 
-```powershell
-dotnet-script -e "[Pkmds.Preview.Windows.PkmdsPreviewHandler]::UnregisterShellExtension()"
-regsvr32 /u PkmdsPreview.comhost.dll
-```
-
-### What the registry keys look like
+`register.cs` writes (matching the built-in TXT/PDF handlers):
 
 ```
-HKCR
-└── .pk5
-│   └── ShellEx
-│       └── {8895b1c6-b41f-4c1c-a562-0d564250836f}   ← IPreviewHandler IID (fixed)
-│           └── (Default) = {your-handler-GUID}
-└── CLSID
-    └── {your-handler-GUID}                           ← written by regsvr32
-        ├── (Default) = "PKMDS Preview Handler"
-        └── InprocServer32
-            └── (Default) = C:\...\PkmdsPreview.comhost.dll
+HKLM\SOFTWARE\Classes\CLSID\{e528b90b-…}
+├── (Default)        = "PKMDS Preview Handler"
+├── AppID            = {6d2b5079-…}            ← 64-bit Preview Handler Surrogate Host
+└── InprocServer32
+    ├── (Default)    = …\dist\PkmdsPreviewShim.dll
+    └── ThreadingModel = "Apartment"
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PreviewHandlers\{e528b90b-…} = "PKMDS Preview Handler"
+HKLM\SOFTWARE\Classes\.pk5\ShellEx\{8895b1c6-…} = {e528b90b-…}     ← per extension
 ```
 
-Repeat the `.pk5` entry for each registered extension (the full set lives in `PreviewHandler.Extensions` — see the list at the top of this README). `RegisterShellExtension()` handles all of them in one call.
+## How it works (details)
 
-## Architecture decisions
+Explorer calls the shim roughly: `Initialize`(file) → `SetWindow`(hwnd, rect) → `SetRect` →
+`DoPreview`. The shim launches the worker on the first real (non-empty) rect.
 
-### Why an in-process COM server, not a subprocess
+**Resize.** A child window reparented via `SetParent` doesn't get its parent's resize
+notifications, so the shim creates a per-instance named auto-reset event and passes its name to
+the worker (the 7th command-line arg). On later `SetRect` calls (the pane was resized) the shim
+`SetEvent`s it; the worker waits on the event and, when signaled, re-fits to the parent's current
+`GetClientRect` on the UI thread — WebView2 then reflows the responsive CSS. (Same mechanism as
+PowerToys.)
 
-Explorer's Preview Pane calls `IPreviewHandler::DoPreview()` synchronously on a deadline. An out-of-process helper (subprocess + IPC) adds latency and complexity. `EnableComHosting=true` gives us a native COM host (comhost.dll) that loads into `prevhost.exe` directly — same pattern as macOS NativeAOT loading into `quicklookd`.
+**Offline sprites.** Sprites come from the bundled PKHeX set (`Pkmds.Rcl/wwwroot/sprites/`, the
+`a` / `ai` / `bi` categories), copied next to the worker and embedded as `data:` URIs — so previews
+make **no web requests**. The path logic is shared in `Pkmds.Core.SpritePaths`; the renderer's
+`SpriteResolver` hook reads the bundled file (PokeAPI URLs remain only as a fallback if a sprite is
+missing or no resolver is set). Item-distributing gifts get the bundled item sprite for free.
 
-### Why WebView2 instead of WinForms `WebBrowser`
+Two environment details the worker must respect:
 
-The legacy `WebBrowser` control is IE-based (Trident engine) and can't render modern CSS (`color-scheme`, `color-mix`, CSS Grid, `@media`). WebView2 is Edge/Chromium and renders `HtmlRenderer`'s output identically to macOS/iOS `WKWebView`.
+- **LocalLow paths.** The worker can inherit Low integrity from `prevhost`, where `%LOCALAPPDATA%`
+  and `%TEMP%` aren't writable. WebView2's user-data folder (and the optional trace log) live under
+  `%USERPROFILE%\AppData\LocalLow\PkmdsPreview` instead.
+- **PerMonitorV2 DPI.** The worker sets `<ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>`
+  to match `prevhost`. Without it the reparented child window is bitmap-scaled by the display
+  factor (e.g. 1.5× at 150%), clipping content off the right edge.
 
-### Why `IInitializeWithFile` not `IInitializeWithStream`
+Also note: `SetParent` returns the *previous* parent (NULL for a top-level form even on success),
+so the worker checks `GetLastError`, not the return value, to detect failure.
 
-`IInitializeWithFile` is simpler and sufficient for local files. `IInitializeWithStream` would be needed for files accessed through a virtual filesystem (e.g. inside a ZIP opened in Explorer). For the PoC, file-based init covers all real-world cases.
+### Why not a pure-.NET (comhost) handler?
 
-### Why shared `HtmlRenderer` not the Blazor components
+The first attempt registered a .NET assembly via `EnableComHosting` (a `comhost.dll`) directly as
+the `IPreviewHandler`. It built and registered correctly but **never rendered** — diagnosis showed
+the managed code never ran. A framework-dependent **CoreCLR comhost cannot be activated inside the
+Low-integrity `prevhost` sandbox**; `DisableLowILProcessIsolation` was ignored, and self-contained
+deployment is unsupported for COM hosting (`NETSDK1128`). That's why the registered object must be
+native (the shim) and the .NET code must run as a separate process (the worker).
 
-See the [macOS PoC README](../macos-quicklook-poc/README.md#why-we-dont-reuse-the-razor-components) — same reasoning applies here.
+### Diagnostics
 
-## COM interfaces vs. CsWin32
+The worker traces only if a sentinel exists: create an empty
+`%USERPROFILE%\AppData\LocalLow\PkmdsPreview\worker.trace`, reproduce, then read `worker.log` in the
+same folder (start args, reparent result + DPI, WebView2 init, render size). Delete the sentinel to
+turn it off.
 
-`PreviewHandler.cs` defines `IPreviewHandler`, `IInitializeWithFile`, `RECT`, and `MSG` manually. For production code, consider replacing them with CsWin32-generated types:
+## Known limitations / future work
 
-1. Add to `Directory.Packages.props`:
-   ```xml
-   <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.x" />
-   <PackageVersion Include="Microsoft.Windows.SDK.Win32Metadata" Version="..." />
-   ```
-2. Add to `PkmdsPreview.csproj`:
-   ```xml
-   <PackageReference Include="Microsoft.Windows.CsWin32" PrivateAssets="all"/>
-   ```
-3. Create `NativeMethods.txt` with:
-   ```
-   IPreviewHandler
-   IInitializeWithFile
-   SetParent
-   GetFocus
-   ```
-4. Delete the manual `[ComImport]` interface declarations in `PreviewHandler.cs`.
-
-CsWin32 generates the correct vtable layout, marshaling attributes, and struct sizes from the official Win32 metadata — less error-prone than hand-authoring interop.
-
-## Open work
-
-- [ ] Implement `SetWindow` / `SetRect` / `DoPreview` / `Unload` with a real `WebView2` control (see TODO sketch above).
-- [ ] Replace the placeholder GUID with a real one.
-- [ ] Uncomment `PackageReference` for `Microsoft.Web.WebView2` (after adding to `Directory.Packages.props`).
-- [ ] Write a small install script or MSI that runs `regsvr32` + `RegisterShellExtension()` — users shouldn't need to do this manually.
-- [ ] Test against the same fixtures used by the macOS/iOS PoCs.
-- [ ] Verify the 120 MB memory ceiling (prevhost.exe's default) against a full-box save file.
-- [ ] Consider `IInitializeWithStream` for future virtual-filesystem support.
+- [ ] Replace the manual C++ COM with WIL/wrl helpers, or generate the shim via NativeAOT C#
+      (would keep everything in .NET, but still needs the MSVC linker).
+- [ ] Package as an MSI/MSIX so end users don't run scripts elevated.
+- [ ] Verify the `prevhost` memory ceiling against a full-box save file.
+- [ ] `IInitializeWithStream` for files inside virtual filesystems (ZIP, etc.).

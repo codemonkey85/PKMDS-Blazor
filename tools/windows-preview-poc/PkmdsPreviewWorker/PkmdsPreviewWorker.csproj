@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!--
+            The worker is the .NET half of the PowerToys-style split: a normal full-trust
+            WinExe spawned by the native C++ shim (PkmdsPreviewShim) that loads into prevhost.
+            Because it's a separate process (not a runtime hosted in-proc by the Low-IL
+            prevhost), CoreCLR + WebView2 start fine. It reparents its WebView2 window into the
+            HWND the shim passes on the command line and renders via the shared HtmlRenderer.
+        -->
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <OutputType>WinExe</OutputType>
+        <RootNamespace>Pkmds.Preview.Windows.Worker</RootNamespace>
+        <AssemblyName>PkmdsPreviewWorker</AssemblyName>
+        <UseWindowsForms>true</UseWindowsForms>
+        <!--
+            Match prevhost's PerMonitorV2 DPI awareness. Without this the worker defaults to
+            SystemAware; the mismatch makes Windows bitmap-scale our reparented child window by
+            the display scale factor (e.g. 1.5x at 150%), clipping content off the right edge.
+        -->
+        <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <!-- WebView2's unused WPF assembly drags WindowsBase 5.0.0.0; benign (see PkmdsPreview). -->
+        <MSBuildWarningsAsMessages>MSB3277</MSBuildWarningsAsMessages>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Web.WebView2"/>
+        <ProjectReference Include="..\..\..\Pkmds.Core\Pkmds.Core.csproj"/>
+        <ProjectReference Include="..\..\preview-shared\Pkmds.Preview.csproj"/>
+    </ItemGroup>
+
+    <!--
+        Bundle the sprite categories the previews need (Pokémon art + item sprites) next to the
+        worker so HtmlRenderer can embed them as data: URIs offline. Mirrors the relative paths
+        SpritePaths produces (a/, ai/, bi/). Includes the a_unknown / bitem_unk fallbacks.
+    -->
+    <ItemGroup>
+        <Content Include="..\..\..\Pkmds.Rcl\wwwroot\sprites\a\**\*.png" Link="sprites\a\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+        <Content Include="..\..\..\Pkmds.Rcl\wwwroot\sprites\ai\**\*.png" Link="sprites\ai\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+        <Content Include="..\..\..\Pkmds.Rcl\wwwroot\sprites\bi\**\*.png" Link="sprites\bi\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+    </ItemGroup>
+
+</Project>
