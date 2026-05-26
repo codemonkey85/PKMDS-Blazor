@@ -7,9 +7,21 @@
 // perfectly. When opened directly as a local file (file://), default to the
 // standard dev-server address. Override either case with ?pkmds=<url>.
 var pkmdsParam = new URLSearchParams(location.search).get('pkmds');
-var pkmdsOrigin = pkmdsParam ||
-    (location.protocol !== 'file:' ? location.origin : 'http://localhost:5283');
-document.getElementById('pkmds-frame').src = pkmdsOrigin + '/?host=poc';
+var pkmdsOrigin = location.protocol !== 'file:' ? location.origin : 'http://localhost:5283';
+if (pkmdsParam) {
+    // Validate the override before it reaches the iframe src: only accept an
+    // http(s) URL and use just its origin, so a crafted value like
+    // ?pkmds=javascript:… can't be injected (CodeQL js/xss,
+    // js/client-side-unvalidated-url-redirection).
+    try {
+        var overrideUrl = new URL(pkmdsParam, location.href);
+        if (overrideUrl.protocol === 'http:' || overrideUrl.protocol === 'https:') {
+            pkmdsOrigin = overrideUrl.origin;
+        }
+    } catch (e) {
+        // Ignore an unparseable override and keep the default origin.
+    }
+}
 
 // ── DOM references ─────────────────────────────────────────────────────────
 
@@ -21,6 +33,9 @@ var fileInput = document.getElementById('file-input');
 var statusEl  = document.getElementById('status');
 var logEl     = document.getElementById('log-entries');
 var logClear  = document.getElementById('log-clear');
+
+// Point the embedded PKMDS frame at the (validated) origin computed above.
+frame.src = pkmdsOrigin + '/?host=poc';
 
 // ── State ──────────────────────────────────────────────────────────────────
 

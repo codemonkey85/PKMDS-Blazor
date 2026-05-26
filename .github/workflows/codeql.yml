@@ -32,17 +32,24 @@ jobs:
           build-mode: manual
         - language: javascript-typescript
           build-mode: none
+        - language: actions
+          build-mode: none
+        - language: python
+          build-mode: none
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6.0.2
 
-      # sets up .NET SDK
+      # .NET SDK + WASM workload are only needed for the csharp manual build;
+      # the buildless analyses (js, actions, python) skip them.
     - name: Setup .NET Core SDK
+      if: matrix.language == 'csharp'
       uses: actions/setup-dotnet@v5.2.0
       with:
         global-json-file: ./global.json
 
     - name: Install WASM workload
+      if: matrix.language == 'csharp'
       run: dotnet workload install wasm-tools
 
     # Initializes the CodeQL tools for scanning.
@@ -51,14 +58,18 @@ jobs:
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
+        config-file: ./.github/codeql/codeql-config.yml
 
     - name: Dotnet Restore
       if: matrix.build-mode == 'manual' && matrix.language == 'csharp'
       run: dotnet restore Pkmds.Web/Pkmds.Web.csproj
 
+    # Build in Release: Debug builds set TreatWarningsAsErrors (see
+    # Directory.Build.props), so a single warning would fail the build and
+    # leave CodeQL's manual build-mode extractor with no C# to analyze.
     - name: Dotnet Build
       if: matrix.build-mode == 'manual' && matrix.language == 'csharp'
-      run: dotnet build Pkmds.Web/Pkmds.Web.csproj
+      run: dotnet build Pkmds.Web/Pkmds.Web.csproj -c Release
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4

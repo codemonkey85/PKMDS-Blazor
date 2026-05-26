@@ -16,6 +16,10 @@ on:
     branches: [ main ]
     types: [opened, synchronize, reopened, ready_for_review]  # Also run when PR is marked ready for review
 
+# Least-privilege GITHUB_TOKEN: this workflow only checks out and builds/tests.
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build and Test
