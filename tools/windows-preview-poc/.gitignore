@@ -1,0 +1,6 @@
+# Build output
+bin/
+obj/
+
+# Deployed handler (regenerate with install.ps1 — ~137 MB, self-contained runtime)
+dist/
