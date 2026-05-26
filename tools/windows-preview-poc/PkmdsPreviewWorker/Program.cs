@@ -77,12 +77,18 @@ internal static class Program
                 Capture.RenderToPng(file, outPng);
                 break;
 
+            // Thumbnail: draw the file's representative sprite to a square PNG (for IThumbnailProvider).
+            case ["--thumbnail", var outPng, var sizeStr, var file]:
+                Thumbnail.Render(file, int.Parse(sizeStr, CultureInfo.InvariantCulture), outPng);
+                break;
+
             default:
                 MessageBox.Show(
                     "Usage:\n" +
                     "  PkmdsPreviewWorker \"<file>\" <hwnd-hex> <left> <right> <top> <bottom> <resize-event>\n" +
                     "  PkmdsPreviewWorker --window \"<file>\"\n" +
-                    "  PkmdsPreviewWorker --capture \"<out.png>\" \"<file>\"",
+                    "  PkmdsPreviewWorker --capture \"<out.png>\" \"<file>\"\n" +
+                    "  PkmdsPreviewWorker --thumbnail \"<out.png>\" <size> \"<file>\"",
                     "PkmdsPreviewWorker");
                 break;
         }

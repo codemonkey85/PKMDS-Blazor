@@ -11,8 +11,10 @@
 
 #include <windows.h>
 #include <shlobj.h>      // IInitializeWithFile, IPreviewHandler, IObjectWithSite, IPreviewHandlerFrame
-#include <shlwapi.h>     // QISearch / QITAB
+#include <shlwapi.h>     // QISearch / QITAB, PathFileExists
 #include <shellapi.h>    // ShellExecuteEx
+#include <thumbcache.h>  // IThumbnailProvider, WTS_ALPHATYPE
+#include <wincodec.h>    // WIC — decode the worker's PNG into an HBITMAP
 #include <new>
 #include <string>
 #include <sstream>
@@ -21,10 +23,16 @@
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "user32.lib")
+#pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "windowscodecs.lib")
 
-// {e528b90b-bba4-4870-92fe-d8ee781d86c5} — matches the registration tooling (register.cs).
+// {e528b90b-bba4-4870-92fe-d8ee781d86c5} — preview handler; matches register.cs.
 static const GUID CLSID_PkmdsPreviewHandler =
     { 0xe528b90b, 0xbba4, 0x4870, { 0x92, 0xfe, 0xd8, 0xee, 0x78, 0x1d, 0x86, 0xc5 } };
+
+// {b98dbf6e-6efb-43c0-acb3-cc807131359a} — thumbnail provider; matches register.cs.
+static const GUID CLSID_PkmdsThumbnailProvider =
+    { 0xb98dbf6e, 0x6efb, 0x43c0, { 0xac, 0xb3, 0xcc, 0x80, 0x71, 0x31, 0x35, 0x9a } };
 
 static HINSTANCE g_hInst = nullptr;
 static long g_cDllRef = 0;
@@ -217,6 +225,135 @@ private:
     std::wstring m_eventName;
 };
 
+// Decode a PNG file into a 32-bpp premultiplied-BGRA top-down HBITMAP (preserves transparency).
+static HRESULT LoadPngAsHBitmap(const std::wstring& path, HBITMAP* phbmp)
+{
+    *phbmp = nullptr;
+    IWICImagingFactory* factory = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory));
+    if (FAILED(hr))
+        return hr;
+
+    IWICBitmapDecoder* decoder = nullptr;
+    IWICBitmapFrameDecode* frame = nullptr;
+    IWICFormatConverter* converter = nullptr;
+
+    hr = factory->CreateDecoderFromFilename(path.c_str(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, &decoder);
+    if (SUCCEEDED(hr)) hr = decoder->GetFrame(0, &frame);
+    if (SUCCEEDED(hr)) hr = factory->CreateFormatConverter(&converter);
+    if (SUCCEEDED(hr)) hr = converter->Initialize(frame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom);
+
+    UINT w = 0, h = 0;
+    if (SUCCEEDED(hr)) hr = converter->GetSize(&w, &h);
+    if (SUCCEEDED(hr) && w > 0 && h > 0)
+    {
+        BITMAPINFO bmi{};
+        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bmi.bmiHeader.biWidth = static_cast<LONG>(w);
+        bmi.bmiHeader.biHeight = -static_cast<LONG>(h);   // top-down
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;
+        bmi.bmiHeader.biCompression = BI_RGB;
+
+        void* bits = nullptr;
+        HBITMAP hbmp = CreateDIBSection(nullptr, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
+        if (hbmp && bits)
+        {
+            hr = converter->CopyPixels(nullptr, w * 4, w * h * 4, static_cast<BYTE*>(bits));
+            if (SUCCEEDED(hr))
+                *phbmp = hbmp;
+            else
+                DeleteObject(hbmp);
+        }
+        else
+        {
+            hr = E_FAIL;
+        }
+    }
+
+    if (converter) converter->Release();
+    if (frame) frame->Release();
+    if (decoder) decoder->Release();
+    if (factory) factory->Release();
+    return hr;
+}
+
+// Thumbnail provider loaded into dllhost.exe. Spawns the worker in --thumbnail mode to draw the
+// file's representative bundled sprite to a temp PNG, then decodes it into the returned HBITMAP.
+class ThumbnailHandler :
+    public IInitializeWithFile,
+    public IThumbnailProvider
+{
+public:
+    ThumbnailHandler() : m_cRef(1) { InterlockedIncrement(&g_cDllRef); }
+
+    IFACEMETHODIMP QueryInterface(REFIID riid, void** ppv)
+    {
+        static const QITAB qit[] = {
+            QITABENT(ThumbnailHandler, IThumbnailProvider),
+            QITABENT(ThumbnailHandler, IInitializeWithFile),
+            { 0 },
+        };
+        return QISearch(this, qit, riid, ppv);
+    }
+    IFACEMETHODIMP_(ULONG) AddRef() { return InterlockedIncrement(&m_cRef); }
+    IFACEMETHODIMP_(ULONG) Release()
+    {
+        const ULONG r = InterlockedDecrement(&m_cRef);
+        if (r == 0)
+            delete this;
+        return r;
+    }
+
+    IFACEMETHODIMP Initialize(LPCWSTR pszFilePath, DWORD) { m_filePath = pszFilePath; return S_OK; }
+
+    IFACEMETHODIMP GetThumbnail(UINT cx, HBITMAP* phbmp, WTS_ALPHATYPE* pdwAlpha)
+    {
+        if (!phbmp || !pdwAlpha)
+            return E_INVALIDARG;
+        *phbmp = nullptr;
+        *pdwAlpha = WTSAT_ARGB;
+        if (m_filePath.empty() || cx == 0)
+            return E_FAIL;
+
+        wchar_t tempDir[MAX_PATH]{};
+        GetTempPathW(MAX_PATH, tempDir);
+        const std::wstring outPng = std::wstring(tempDir) + L"pkmds_thumb_" +
+            std::to_wstring(GetCurrentProcessId()) + L"_" +
+            std::to_wstring(InterlockedIncrement(&g_instanceCounter)) + L".png";
+
+        std::wostringstream params;
+        params << L"--thumbnail \"" << outPng << L"\" " << cx << L" \"" << m_filePath << L"\"";
+        const std::wstring app = WorkerExePath();
+        const std::wstring p = params.str();
+
+        SHELLEXECUTEINFOW sei{ sizeof(sei) };
+        sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+        sei.lpFile = app.c_str();
+        sei.lpParameters = p.c_str();
+        sei.nShow = SW_HIDE;
+
+        HRESULT hr = E_FAIL;
+        if (ShellExecuteExW(&sei) && sei.hProcess)
+        {
+            WaitForSingleObject(sei.hProcess, 15000);
+            CloseHandle(sei.hProcess);
+            if (PathFileExistsW(outPng.c_str()))
+            {
+                hr = LoadPngAsHBitmap(outPng, phbmp);
+                DeleteFileW(outPng.c_str());
+            }
+        }
+        return (SUCCEEDED(hr) && *phbmp) ? S_OK : E_FAIL;
+    }
+
+private:
+    ~ThumbnailHandler() { InterlockedDecrement(&g_cDllRef); }
+    long m_cRef;
+    std::wstring m_filePath;
+};
+
+template <class THandler>
 class ClassFactory : public IClassFactory
 {
 public:
@@ -240,7 +377,7 @@ public:
     {
         if (pUnkOuter)
             return CLASS_E_NOAGGREGATION;
-        auto* h = new (std::nothrow) PreviewHandler();
+        auto* h = new (std::nothrow) THandler();
         if (!h)
             return E_OUTOFMEMORY;
         const HRESULT hr = h->QueryInterface(riid, ppv);
@@ -273,10 +410,14 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID)
 
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void** ppv)
 {
-    if (!IsEqualCLSID(CLSID_PkmdsPreviewHandler, rclsid))
+    IClassFactory* cf = nullptr;
+    if (IsEqualCLSID(CLSID_PkmdsPreviewHandler, rclsid))
+        cf = new (std::nothrow) ClassFactory<PreviewHandler>();
+    else if (IsEqualCLSID(CLSID_PkmdsThumbnailProvider, rclsid))
+        cf = new (std::nothrow) ClassFactory<ThumbnailHandler>();
+    else
         return CLASS_E_CLASSNOTAVAILABLE;
 
-    auto* cf = new (std::nothrow) ClassFactory();
     if (!cf)
         return E_OUTOFMEMORY;
     const HRESULT hr = cf->QueryInterface(riid, ppv);
