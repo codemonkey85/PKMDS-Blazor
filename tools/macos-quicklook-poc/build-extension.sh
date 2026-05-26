@@ -12,7 +12,9 @@ REPO_ROOT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 RID="osx-arm64"
 
 FIXTURE="${1:-$REPO_ROOT/TestFiles/Lucario_B06DDFAD.pk5}"
-SAV_FIXTURE="$REPO_ROOT/TestFiles/Test-Save-Scarlet.sav"
+# .gci is a non-prohibited extension mapped to com.bondcodes.pkmds.save-file; qlmanage uses it
+# for the thumbnail smoke test because qlmanage cannot dispatch to sandboxed extensions via .sav.
+GCI_FIXTURE="$REPO_ROOT/TestFiles/Test-Save-Moon.gci"
 
 CSPROJ="$SCRIPT_DIR/PkmdsNative/PkmdsNative.csproj"
 PUBLISH_DIR="$SCRIPT_DIR/PkmdsNative/bin/Release/net10.0/$RID/publish"
@@ -91,8 +93,19 @@ INSTALLED=/Applications/PkmdsHost.app
 osascript -e 'quit app "PkmdsHost"' 2>/dev/null || true
 sleep 1
 
+# Unregister all known stale copies before installing. Xcode DerivedData and iOS/simulator POC
+# builds can linger in the LS database with old UTI declarations (e.g. prohibited .sav/.dat/.fla
+# extensions), causing ThumbnailsAgent to block the thumbnail extension at startup. Unregister
+# proactively to avoid this; lsregister -u is a no-op for paths that aren't registered.
 "$LSREGISTER" -u "$APP_PATH"  2>/dev/null || true
 "$LSREGISTER" -u "$INSTALLED" 2>/dev/null || true
+for STALE_PATH in \
+    "$SCRIPT_DIR/../embedded-host-ios-poc/xcode/build/Build/Products/Debug-iphonesimulator/PkmdsHost.app" \
+    "$SCRIPT_DIR/../ios-quicklook-poc/xcode/build/Build/Products/Debug-iphonesimulator/PkmdsHost.app" \
+    "$HOME/Library/Developer/Xcode/DerivedData/PkmdsQuickLook-"*/Build/Products/Release/PkmdsHost.app
+do
+    "$LSREGISTER" -u "$STALE_PATH" 2>/dev/null || true
+done
 rm -rf "$INSTALLED"
 cp -R "$APP_PATH" "$INSTALLED"
 "$LSREGISTER" -f "$INSTALLED"
@@ -105,27 +118,45 @@ pluginkit -e use -i com.bondcodes.pkmds.host.quicklook
 pluginkit -a "$INSTALLED/Contents/PlugIns/PkmdsQuickLookThumbnail.appex"
 pluginkit -e use -i com.bondcodes.pkmds.host.quicklook.thumbnail
 
+# Kill quicklookd and ThumbnailsAgent so they restart with the clean LS registration.
+# ThumbnailsAgent caches extension-to-UTI mappings at startup; it must restart after
+# the LS database is updated to pick up the corrected UTI declarations.
 killall pkd quicklookd 2>/dev/null || true
+killall -9 "com.apple.quicklook.ThumbnailsAgent" 2>/dev/null || true
 sleep 1
 qlmanage -r >/dev/null 2>&1 || true
 qlmanage -r cache >/dev/null 2>&1 || true
 
 # ── Smoke tests ─────────────────────────────────────────────────────────────────────────────────
+# qlmanage -p opens an interactive window; run it with a 10-second timeout so the script doesn't
+# block waiting for the user to close the window.
 echo "==> qlmanage -p (preview): $FIXTURE"
-qlmanage -p "$FIXTURE" 2>&1 | tail -10 || true
+timeout 10 qlmanage -p "$FIXTURE" 2>&1 | tail -10 || true
 
 echo "==> qlmanage -t (thumbnail, 256px): $FIXTURE"
 qlmanage -t -s 256 -o /tmp "$FIXTURE" 2>&1 | tail -10 || true
-if [[ -f "/tmp/TestFiles" || -n "$(ls /tmp/"$(basename "$FIXTURE")"*.png 2>/dev/null)" ]]; then
+if [[ -n "$(ls /tmp/"$(basename "$FIXTURE")"*.png 2>/dev/null)" ]]; then
     echo "    thumbnail PNG written to /tmp"
 fi
 
-if [[ -f "$SAV_FIXTURE" ]]; then
-    echo "==> qlmanage -t (thumbnail, 256px): $(basename "$SAV_FIXTURE")"
-    qlmanage -t -s 256 -o /tmp "$SAV_FIXTURE" 2>&1 | tail -10 || true
+# Save-file thumbnail smoke test uses .gci because qlmanage cannot dispatch to sandboxed
+# extensions for prohibited extensions like .sav. In Finder, .sav files need a Spotlight
+# MDImporter to assign the com.bondcodes.pkmds.save-file UTI; .gci/.dsv/.srm work automatically.
+if [[ ! -f "$GCI_FIXTURE" ]]; then
+    SRC_SAV="$REPO_ROOT/TestFiles/moon.sav"
+    if [[ -f "$SRC_SAV" ]]; then
+        cp "$SRC_SAV" "$GCI_FIXTURE"
+        mdimport "$GCI_FIXTURE" 2>/dev/null || true
+        echo "    created $GCI_FIXTURE for save thumbnail test"
+    fi
+fi
+if [[ -f "$GCI_FIXTURE" ]]; then
+    echo "==> qlmanage -t (thumbnail, 256px): $(basename "$GCI_FIXTURE")"
+    qlmanage -t -s 256 -o /tmp "$GCI_FIXTURE" 2>&1 | tail -10 || true
 fi
 
 echo
 echo "Built and installed: $INSTALLED"
-echo "Press Space on a .pk*/.sav file in Finder to preview."
+echo "Press Space on a .pk*/.gci file in Finder to preview/thumbnail."
 echo "Thumbnail icons appear in Finder's icon or gallery view (may need qlmanage -r cache)."
+echo "Note: .sav thumbnails in Finder require a Spotlight MDImporter to assign the save-file UTI."

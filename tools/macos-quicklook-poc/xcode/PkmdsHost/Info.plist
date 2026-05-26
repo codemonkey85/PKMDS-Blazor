@@ -110,12 +110,9 @@
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>sav</string>
-					<string>dat</string>
 					<string>gci</string>
 					<string>dsv</string>
 					<string>srm</string>
-					<string>fla</string>
 				</array>
 			</dict>
 		</dict>
