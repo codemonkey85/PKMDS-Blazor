@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using PKHeX.Core;
+using Pkmds.Preview;
 
 namespace Pkmds.Native;
 
@@ -81,6 +82,26 @@ public static unsafe class Exports
                 return -2;
 
             return WriteJson(HtmlRenderer.RenderSave(sav), outHtml, outCap);
+        }
+        catch
+        {
+            return -99;
+        }
+    }
+
+    // Auto-dispatching renderer: save → mystery gift (extension-guided) → PKM entity.
+    // ext/extLen: UTF-8 file extension without leading dot (e.g. "wb8"), no NUL terminator needed.
+    [UnmanagedCallersOnly(EntryPoint = "pkmds_render_file_html")]
+    public static int RenderFileHtml(byte* data, int length, byte* ext, int extLen, byte* outHtml, int outCap)
+    {
+        try
+        {
+            if (data is null || outHtml is null || length <= 0 || outCap <= 0)
+                return -1;
+
+            var bytes = CopyIn(data, length);
+            var extStr = ext is null || extLen <= 0 ? "" : Encoding.UTF8.GetString(ext, extLen);
+            return WriteJson(HtmlRenderer.RenderFile(bytes, extStr), outHtml, outCap);
         }
         catch
         {

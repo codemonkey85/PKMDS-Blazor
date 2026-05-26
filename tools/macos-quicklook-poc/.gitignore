@@ -3,5 +3,3 @@ swift-cli/*.dSYM/
 build-resources/PkmdsNative.dylib
 xcode/PkmdsQuickLook.xcodeproj/
 xcode/build/
-xcode/PkmdsHost/Info.plist
-xcode/PkmdsQuickLook/Info.plist

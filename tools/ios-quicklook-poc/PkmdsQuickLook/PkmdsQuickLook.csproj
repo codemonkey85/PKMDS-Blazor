@@ -36,8 +36,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="PKHeX.Core"/>
-        <ProjectReference Include="..\..\..\Pkmds.Core\Pkmds.Core.csproj"/>
+        <!--
+            No direct PKHeX.Core reference: the extension only calls
+            HtmlRenderer.RenderFile, and PKHeX.Core flows in transitively through
+            the Pkmds.Preview project reference (which references both PKHeX.Core
+            and Pkmds.Core). Keeps the iOS extension's surface minimal.
+        -->
+        <ProjectReference Include="..\..\preview-shared\Pkmds.Preview.csproj"/>
     </ItemGroup>
 
 </Project>

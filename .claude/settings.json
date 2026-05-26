@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/regen-data.py",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.claude/regen-data.py\"",
             "timeout": 120,
             "statusMessage": "Regenerating data files..."
           }

@@ -10,7 +10,6 @@ This is the iOS companion to [`tools/macos-quicklook-poc/`](../macos-quicklook-p
 tools/ios-quicklook-poc/
 ├── PkmdsQuickLook/                           # C# iOS app extension (Microsoft.iOS.Sdk)
 │   ├── PreviewViewController.cs              # UIViewController + IQLPreviewingController + WKWebView
-│   ├── HtmlRenderer.cs                       # Verbatim from macos-quicklook-poc
 │   ├── Info.plist                            # NSExtension dict + QL principal class
 │   └── PkmdsQuickLook.csproj                 # net10.0-ios + IsAppExtension=true + PublishAot=true
 ├── xcode/
@@ -19,6 +18,8 @@ tools/ios-quicklook-poc/
 ├── build-extension.sh                        # dotnet → xcodegen → xcodebuild → embed .appex into PlugIns/
 └── README.md
 ```
+
+`HtmlRenderer` lives in `tools/preview-shared/` and is shared with the macOS (and future Windows) PoC — see [`../preview-shared/`](../preview-shared/).
 
 ## Prerequisites
 
@@ -63,7 +64,7 @@ The macOS POC uses Swift `PreviewViewController` calling into a standalone Nativ
 Instead of two languages and an FFI:
 - The extension is a single `Microsoft.iOS.Sdk` project with `IsAppExtension=true` and `PublishAot=true`.
 - `PreviewViewController` is C# — `UIViewController` + `IQLPreviewingController` + `WKWebView` from the `Microsoft.iOS` bindings.
-- `HtmlRenderer.cs` is reused **verbatim** from the macOS POC — pure C#, no platform dependencies.
+- `HtmlRenderer` is in `tools/preview-shared/Pkmds.Preview` — pure C#, no platform dependencies, shared with the macOS POC.
 - The Xcode project is host-only (SwiftUI). `build-extension.sh` runs `dotnet publish`, then `xcodebuild`, then copies the `.appex` into `PkmdsHost.app/PlugIns/`.
 
 It's actually a *cleaner* iOS architecture (one toolchain, no FFI ABI to maintain) — but the deviation from the macOS POC was driven by .NET 10's iOS SDK behaviour, not preference.

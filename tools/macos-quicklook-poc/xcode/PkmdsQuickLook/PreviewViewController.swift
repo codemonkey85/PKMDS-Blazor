@@ -14,6 +14,14 @@ private func pkmds_render_save_html(
     _ outHtml: UnsafeMutablePointer<UInt8>?, _ outCap: Int32
 ) -> Int32
 
+// Auto-dispatching renderer: ext is the file extension without the leading dot (e.g. "wb8").
+@_silgen_name("pkmds_render_file_html")
+private func pkmds_render_file_html(
+    _ data: UnsafePointer<UInt8>?, _ length: Int32,
+    _ ext: UnsafePointer<UInt8>?, _ extLen: Int32,
+    _ outHtml: UnsafeMutablePointer<UInt8>?, _ outCap: Int32
+) -> Int32
+
 private let outputCapacity = 256 * 1024
 
 final class PreviewViewController: NSViewController, QLPreviewingController {
@@ -41,15 +49,18 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
 
     private func render(data: Data, url: URL) throws -> String {
         let ext = url.pathExtension.lowercased()
-        let isSave = ext == "sav"
-        let renderer: (UnsafePointer<UInt8>?, Int32, UnsafeMutablePointer<UInt8>?, Int32) -> Int32 =
-            isSave ? pkmds_render_save_html : pkmds_render_pkm_html
+        let extBytes = Array(ext.utf8)
 
         var outBuf = [UInt8](repeating: 0, count: outputCapacity)
         let written = data.withUnsafeBytes { (raw: UnsafeRawBufferPointer) -> Int32 in
             let ptr = raw.bindMemory(to: UInt8.self).baseAddress
-            return outBuf.withUnsafeMutableBufferPointer { dst in
-                renderer(ptr, Int32(data.count), dst.baseAddress, Int32(outputCapacity))
+            return extBytes.withUnsafeBufferPointer { extBuf in
+                outBuf.withUnsafeMutableBufferPointer { dst in
+                    pkmds_render_file_html(
+                        ptr, Int32(data.count),
+                        extBuf.baseAddress, Int32(extBytes.count),
+                        dst.baseAddress, Int32(outputCapacity))
+                }
             }
         }
 

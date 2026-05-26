@@ -4,9 +4,9 @@ using PKHeX.Core;
 using Pkmds.Core.Extensions;
 using Pkmds.Core.Utilities;
 
-namespace Pkmds.Native;
+namespace Pkmds.Preview;
 
-internal static class HtmlRenderer
+public static class HtmlRenderer
 {
     // Final fallback when even the base-species URL can't be built (invalid species).
     private const string PlaceholderSpriteUrl =
@@ -57,6 +57,135 @@ internal static class HtmlRenderer
         AppendStatsTable(sb, pkm);
         AppendMovesTable(sb, pkm, s);
 
+        sb.Append("</div>"); // .info
+        sb.Append("</div>"); // .pkm
+        AppendDocEnd(sb);
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Auto-dispatches to the appropriate renderer based on file content and extension.
+    /// Tries save → mystery gift (extension-guided) → PKM entity → error page.
+    /// </summary>
+    /// <param name="data">Raw file bytes.</param>
+    /// <param name="fileExtension">File extension with or without leading dot (e.g. "wb8" or ".wb8").</param>
+    public static string RenderFile(byte[] data, string fileExtension)
+    {
+        var ext = fileExtension.Length > 0 && fileExtension[0] != '.'
+            ? "." + fileExtension
+            : fileExtension;
+
+        // WonderCard3 (.wc3) is not a DataMysteryGift — MysteryGift.GetMysteryGift won't handle it.
+        if (ext.Equals(".wc3", StringComparison.OrdinalIgnoreCase))
+            return RenderWc3File(data);
+
+        if (SaveUtil.TryGetSaveFile(data, out var sav))
+            return RenderSave(sav);
+        if (MysteryGift.GetMysteryGift(data, ext.AsSpan()) is { } gift)
+            return RenderMysteryGift(gift);
+        if (EntityFormat.GetFromBytes(data) is { } pkm)
+            return RenderPkm(pkm);
+        return ErrorHtml("Unrecognized file format.");
+    }
+
+    private static string RenderWc3File(byte[] data)
+    {
+        // Full .wc3 file layout: WonderCard3 | WonderCard3Extra × 2 | MysteryEvent3
+        // Japanese: 168 + 80 + 1004 = 1252 bytes
+        // International: 336 + 80 + 1004 = 1420 bytes
+        // Card-only and card+extras variants are also accepted.
+        const int extrasSize = WonderCard3Extra.SIZE * 2;
+        const int eventSize = MysteryEvent3.SIZE;
+        int cardSize = data.Length switch
+        {
+            WonderCard3.SIZE_JAP => WonderCard3.SIZE_JAP,
+            WonderCard3.SIZE_JAP + extrasSize => WonderCard3.SIZE_JAP,
+            WonderCard3.SIZE_JAP + extrasSize + eventSize => WonderCard3.SIZE_JAP,
+            WonderCard3.SIZE => WonderCard3.SIZE,
+            WonderCard3.SIZE + extrasSize => WonderCard3.SIZE,
+            WonderCard3.SIZE + extrasSize + eventSize => WonderCard3.SIZE,
+            _ => -1,
+        };
+        if (cardSize < 0)
+            return ErrorHtml($"Unrecognized WC3 file size ({data.Length} bytes).");
+        try
+        {
+            var card = new WonderCard3(new Memory<byte>(data, 0, cardSize));
+            return RenderWonderCard3(card);
+        }
+        catch (Exception ex)
+        {
+            return ErrorHtml($"Failed to read WC3 card: {ex.Message}");
+        }
+    }
+
+    public static string RenderWonderCard3(WonderCard3 card)
+    {
+        var sb = new StringBuilder(1024);
+        var title = card.Title.Trim();
+        var displayTitle = string.IsNullOrEmpty(title) ? "Wonder Card" : title;
+        AppendDocStart(sb, displayTitle);
+
+        sb.Append("<div class=\"pkm\">");
+        sb.Append("<div class=\"info\">");
+        sb.Append("<h1>").Append(Escape(displayTitle)).Append("</h1>");
+
+        var subtitle = card.Subtitle.Trim();
+        if (!string.IsNullOrEmpty(subtitle))
+            sb.Append("<div class=\"meta\">").Append(Escape(subtitle)).Append("</div>");
+
+        sb.Append("<dl class=\"details\">");
+        AppendDt(sb, "Card ID", card.CardID.ToString(CultureInfo.InvariantCulture));
+        AppendDt(sb, "Type", card.Type switch
+        {
+            0 => "Pokémon",
+            1 => "Item",
+            2 => "Link Stats",
+            _ => card.Type.ToString(CultureInfo.InvariantCulture),
+        });
+        AppendDt(sb, "Locale", card.Japanese ? "Japanese" : "International");
+        sb.Append("</dl>");
+
+        sb.Append("</div>"); // .info
+        sb.Append("</div>"); // .pkm
+        AppendDocEnd(sb);
+        return sb.ToString();
+    }
+
+    public static string RenderMysteryGift(DataMysteryGift gift)
+    {
+        var s = GameInfo.Strings;
+        var sb = new StringBuilder(2048);
+        var cardName = string.IsNullOrWhiteSpace(gift.CardHeader) ? "Mystery Gift" : gift.CardHeader;
+        AppendDocStart(sb, cardName);
+
+        sb.Append("<div class=\"pkm\">");
+        if (gift.Species > 0)
+        {
+            var url = PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(gift.Species, gift.Form, 0, false, 0)
+                      ?? PlaceholderSpriteUrl;
+            sb.Append("<div class=\"sprite\"><img alt=\"\" src=\"").Append(url).Append("\"></div>");
+        }
+
+        sb.Append("<div class=\"info\">");
+        sb.Append("<h1>").Append(Escape(cardName)).Append("</h1>");
+        sb.Append("<div class=\"meta\">")
+            .Append(Escape(gift.GetType().Name))
+            .Append(" &middot; Gen ").Append(gift.Generation)
+            .Append(" &middot; ").Append(Escape(gift.Version.ToString()))
+            .Append("</div>");
+
+        sb.Append("<dl class=\"details\">");
+        if (gift.Species > 0)
+        {
+            AppendDt(sb, "Species", Escape(Lookup(s.specieslist, gift.Species)));
+            if (gift.Form > 0)
+                AppendDt(sb, "Form", gift.Form.ToString(CultureInfo.InvariantCulture));
+            AppendDt(sb, "Level", gift.Level.ToString(CultureInfo.InvariantCulture));
+            if (gift.IsEgg)
+                AppendDt(sb, "Egg", "Yes");
+        }
+        sb.Append("</dl>");
         sb.Append("</div>"); // .info
         sb.Append("</div>"); // .pkm
         AppendDocEnd(sb);
@@ -221,7 +350,10 @@ internal static class HtmlRenderer
 
     private static void AppendDocStart(StringBuilder sb, string title)
     {
-        sb.Append("<!doctype html><html><head><meta charset=\"utf-8\"><title>")
+        // viewport meta is required for WKWebView on iOS — harmless on macOS/Windows WebViews.
+        sb.Append("<!doctype html><html><head><meta charset=\"utf-8\">")
+            .Append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">")
+            .Append("<title>")
             .Append(Escape(title))
             .Append("</title><style>")
             .Append(Css)
@@ -232,6 +364,10 @@ internal static class HtmlRenderer
     {
         sb.Append("</body></html>");
     }
+
+    public static string ErrorHtml(string message) =>
+        $"<!doctype html><html><head><meta charset=\"utf-8\"><style>{Css}</style></head>" +
+        $"<body><p style=\"opacity:0.6\">{System.Net.WebUtility.HtmlEncode(message)}</p></body></html>";
 
     private static string Escape(string value)
     {
@@ -256,33 +392,44 @@ internal static class HtmlRenderer
         return sb.ToString();
     }
 
+    // Responsive CSS: stacks vertically on narrow viewports (phone/small QL panels),
+    // switches to side-by-side at 600px+ (desktop/tablet). The 17px base works well
+    // at normal reading distance on all three platforms (macOS/iOS/Windows).
     private const string Css = """
         :root { color-scheme: light dark; }
         body {
-            font: 13px -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-            margin: 0; padding: 16px;
+            font: 17px -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+            margin: 0; padding: 20px;
             background: Canvas; color: CanvasText;
         }
-        h1 { font-size: 18px; margin: 0 0 4px; font-weight: 600; }
-        h2 { font-size: 14px; margin: 16px 0 8px; font-weight: 600; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.04em; }
-        .pkm { display: grid; grid-template-columns: 128px 1fr; gap: 16px; align-items: start; }
-        .sprite img { width: 128px; height: 128px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
-        .sprite-sm { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
-        .meta { opacity: 0.7; margin-bottom: 12px; }
+        h1 { font-size: 24px; margin: 0 0 4px; font-weight: 600; }
+        h2 { font-size: 17px; margin: 20px 0 10px; font-weight: 600; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.04em; }
+        .pkm { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+        .sprite { text-align: center; }
+        .sprite img { width: 140px; height: 140px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
+        @media (min-width: 600px) {
+            .pkm { grid-template-columns: 160px 1fr; gap: 20px; }
+            .sprite { text-align: left; }
+            .sprite img { width: 160px; height: 160px; }
+        }
+        .sprite-sm { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+        .meta { opacity: 0.7; margin-bottom: 14px; }
         .muted { opacity: 0.6; font-weight: normal; }
         .shiny { color: #d4a017; }
-        dl.details { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0 0 12px; }
+        dl.details { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0 0 14px; }
         dl.details dt { font-weight: 600; opacity: 0.7; }
         dl.details dd { margin: 0; }
-        table { border-collapse: collapse; margin: 8px 0; }
-        table.stats th, table.stats td { padding: 4px 8px; text-align: center; font-variant-numeric: tabular-nums; }
-        table.stats thead th { font-weight: 600; opacity: 0.6; font-size: 11px; }
-        table.moves { width: 100%; max-width: 320px; }
-        table.moves th, table.moves td { padding: 4px 8px; text-align: left; }
-        table.moves thead th { font-weight: 600; opacity: 0.6; font-size: 11px; border-bottom: 1px solid color-mix(in srgb, CanvasText 15%, transparent); }
+        table { border-collapse: collapse; margin: 10px 0; }
+        table.stats { width: 100%; }
+        table.stats th, table.stats td { padding: 4px 4px; text-align: center; font-variant-numeric: tabular-nums; }
+        table.stats thead th { font-weight: 600; opacity: 0.6; font-size: 13px; }
+        table.moves { width: 100%; max-width: 480px; }
+        table.moves th, table.moves td { padding: 5px 10px; text-align: left; }
+        table.moves thead th { font-weight: 600; opacity: 0.6; font-size: 13px; border-bottom: 1px solid color-mix(in srgb, CanvasText 15%, transparent); }
         table.moves td:last-child { text-align: right; font-variant-numeric: tabular-nums; opacity: 0.7; }
-        .party { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .party-slot { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); border-radius: 6px; }
-        .party-name { font-weight: 600; }
+        .party { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        @media (min-width: 600px) { .party { grid-template-columns: repeat(2, 1fr); } }
+        .party-slot { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid color-mix(in srgb, CanvasText 12%, transparent); border-radius: 8px; }
+        .party-name { font-weight: 600; font-size: 17px; }
         """;
 }

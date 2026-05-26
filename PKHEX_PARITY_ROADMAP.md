@@ -736,7 +736,9 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 **Tasks:**
 - [ ] Entralink editor
 - [ ] Medals editor
+  - **PKHeX.Core API** (landed upstream after the `26.5.5` tag — PKHeX `master`, May 2026; reaches PKMDS on the next `PKHeX.Core` NuGet bump): `SaveBlockAccessor5B2W2.Medals` → `MedalList5` (block 68), in `PKHeX.Core/Saves/Substructures/Gen5/MedalList5.cs` (+ `Medal5.cs`). WinForms UI reference: `SAV_Medals5`. Upstream commit `2fb38b368`.
 - [ ] Join Avenue editor
+  - **PKHeX.Core API** (landed upstream after the `26.5.5` tag — PKHeX `master`, May 2026; reaches PKMDS on the next `PKHeX.Core` NuGet bump): `SAV5B2W2.JoinAvenue` → `JoinAvenue5` (block 67), in `PKHeX.Core/Saves/Substructures/Gen5/Join Avenue/` (`JoinAvenue5`, `JoinAvenueVisitor5`, `JoinAvenueAssistant5`, `JoinAvenueFan5`, `JoinAvenueSettings5`, `IJoinAvenueEntity5`). WinForms UI reference: `SAV_JoinAvenue`. Upstream commit `934ec2afe`.
 - [ ] Musical props editor
 - [ ] C-Gear skin editor (SAV_CGearSkin, CGearImage)
 - [ ] Dream World data
@@ -759,7 +761,9 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
   - [ ] Flags captured
 - [ ] Pokétch app unlocks
 - [ ] Safari Zone editor (HGSS)
-- [ ] Pokéathlon stats
+- [x] **Pokéathlon Points** (currency) — already implemented in the trainer-tab currency section (PR #872); distinct from the performance records below
+- [ ] **Pokéathlon stats** (performance records — best score per event, per-event course records, athlete medals; distinct from the Pokéathlon Points currency above)
+  - **PKHeX.Core API** (landed upstream after the `26.5.5` tag — PKHeX `master`, May 2026; reaches PKMDS on the next `PKHeX.Core` NuGet bump): `SAV4HGSS.Pokeathlon` → `Pokeathlon4`, in `PKHeX.Core/Saves/Pokeathlon4.cs` — `GetBestScore`/`SetBestScore` over `PokeathlonEvent4` (10 events), `GetCourseRecord` over `PokeathlonStat4`, `Medals` (`PokeathlonMedalManager4`), and `GlobalCounters`. (`Pokeathlon4.Points` is the currency value already surfaced above.) WinForms UI reference: the `Pokeathlon*4Editor` controls. Upstream commits `300953128`, `5cbc796ad`.
 - [ ] Battle Frontier progress
 - [ ] Seal/Ball Capsule editor
 - [ ] Villa furniture (Platinum)

@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!--
+            Override the global net10.0 TF from Directory.Build.props.
+            net10.0-windows unlocks WinForms APIs (needed for WebView2 WinForms host)
+            and Windows-specific COM interop support.
+        -->
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Pkmds.Preview.Windows</RootNamespace>
+        <AssemblyName>PkmdsPreview</AssemblyName>
+        <!--
+            EnableComHosting=true makes the SDK emit PkmdsPreview.comhost.dll alongside
+            PkmdsPreview.dll. comhost.dll is the in-process COM server that prevhost.exe
+            loads; register it with regsvr32 (admin) to activate the shell extension.
+        -->
+        <EnableComHosting>true</EnableComHosting>
+        <!--
+            UseWindowsForms=true brings in the WinForms runtime, required by the
+            Microsoft.Web.WebView2.WinForms assembly (WebView2 WinForms control).
+        -->
+        <UseWindowsForms>true</UseWindowsForms>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <IsPackable>false</IsPackable>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--
+            Add this entry to Directory.Packages.props before building:
+                <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3296.44" />
+            Then uncomment the PackageReference below.
+            Latest stable: https://www.nuget.org/packages/Microsoft.Web.WebView2
+        -->
+        <!-- <PackageReference Include="Microsoft.Web.WebView2"/> -->
+
+        <ProjectReference Include="..\..\..\Pkmds.Core\Pkmds.Core.csproj"/>
+        <ProjectReference Include="..\..\preview-shared\Pkmds.Preview.csproj"/>
+    </ItemGroup>
+
+</Project>
