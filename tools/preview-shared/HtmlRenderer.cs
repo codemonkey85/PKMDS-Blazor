@@ -232,17 +232,7 @@ public static class HtmlRenderer
         sb.Append("<dl class=\"details\">");
         AppendDt(sb, "Save type", Escape(sav.GetType().Name));
         AppendDt(sb, "Language", LanguageName(sav.Language));
-        // Playtime is more interesting than box capacity (which is near-constant per game).
-        // Fall back to box capacity for save types that don't track playtime.
-        var played = FormatPlaytime(sav);
-        if (played is not null)
-        {
-            AppendDt(sb, "Played", played);
-        }
-        else
-        {
-            AppendDt(sb, "Boxes", $"{sav.BoxCount} × {sav.BoxSlotCount}");
-        }
+        AppendDt(sb, "Played", FormatPlaytime(sav));
         AppendDt(sb, "Party", (sav.HasParty ? sav.PartyCount : 0).ToString(CultureInfo.InvariantCulture));
         sb.Append("</dl>");
 
@@ -387,7 +377,7 @@ public static class HtmlRenderer
         8 => "Korean",
         9 => "Chinese (Simplified)",
         10 => "Chinese (Traditional)",
-        _ => "Unknown"
+        _ => $"Unknown ({language})"
     };
 
     private static LegalityAnalysis? TryAnalyze(PKM pkm)
@@ -464,16 +454,8 @@ public static class HtmlRenderer
         sb.Append("<h2>Showdown set</h2><pre class=\"set\">").Append(Escape(text)).Append("</pre>");
     }
 
-    // Playtime, or null for save types that don't track it (so the caller can fall back).
-    private static string? FormatPlaytime(SaveFile sav)
-    {
-        int hours = sav.PlayedHours, minutes = sav.PlayedMinutes, seconds = sav.PlayedSeconds;
-        if (hours == 0 && minutes == 0 && seconds == 0)
-        {
-            return null;
-        }
-        return $"{hours}:{minutes:00}:{seconds:00}";
-    }
+    private static string FormatPlaytime(SaveFile sav) =>
+        $"{sav.PlayedHours}:{sav.PlayedMinutes:00}:{sav.PlayedSeconds:00}";
 
     private static void AppendDocStart(StringBuilder sb, string title)
     {
