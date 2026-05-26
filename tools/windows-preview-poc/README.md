@@ -41,6 +41,18 @@ HtmlRenderer.RenderFile(bytes, ext)   ← shared with macOS/iOS
   `HWND` (`WS_CHILD` + `SetParent`), and renders the shared `HtmlRenderer` output via
   `NavigateToString`.
 
+### Thumbnail provider
+
+The shim DLL also hosts a second COM class — a native **`IThumbnailProvider`** (separate CLSID,
+loaded into `dllhost.exe`). `GetThumbnail(cx)` runs the worker in `--thumbnail` mode (which picks
+the file's representative sprite via the shared `Pkmds.Preview.FileSprite` — entity → species,
+save → lead party Pokémon, gift → species/item — and draws the **bundled** sprite to a square PNG),
+then decodes that PNG into an alpha HBITMAP via WIC. Fully offline. Registered against the
+`IThumbnailProvider` IID `{e357fccd-…}` per extension; coexists with the preview handler.
+
+> macOS/iOS thumbnails (`QLThumbnailProvider`) are **not** in this PoC yet — tracked in #935 to do
+> on a Mac. The shared `FileSprite`/`SpritePaths` logic is ready for them to reuse.
+
 ### Single source of truth for extensions
 
 The authoritative extension list is [`Pkmds.Preview.PreviewFileTypes`](../preview-shared/PreviewFileTypes.cs)
@@ -56,19 +68,22 @@ macOS/iOS `Info.plist` `UTTypeTagSpecification` arrays mirror it. Coverage:
 
 ```
 tools/windows-preview-poc/
-├── PkmdsPreviewShim/          # native C++ COM IPreviewHandler (loads into prevhost)
-│   ├── PkmdsPreviewShim.cpp
+├── PkmdsPreviewShim/          # native C++ COM shim (loads into prevhost / dllhost)
+│   ├── PkmdsPreviewShim.cpp   # IPreviewHandler + IThumbnailProvider (two CLSIDs)
 │   ├── PkmdsPreviewShim.def   # exports DllGetClassObject + DllCanUnloadNow
 │   └── PkmdsPreviewShim.vcxproj
-├── PkmdsPreviewWorker/        # self-contained .NET WinExe worker (renders)
-│   ├── Program.cs             # arg parsing + mode dispatch (child / --window / --capture)
+├── PkmdsPreviewWorker/        # self-contained .NET WinExe worker
+│   ├── Program.cs             # mode dispatch (child / --window / --capture / --thumbnail)
 │   ├── PreviewForm.cs         # WebView2 host, reparents into the pane HWND
+│   ├── Thumbnail.cs           # --thumbnail: draw the file's sprite to a square PNG
 │   ├── Capture.cs             # headless render-to-PNG (dev verification)
 │   └── Diag.cs                # opt-in file tracing
 ├── build-shim.ps1            # build the C++ shim via vcvars + cl
-├── register.cs              # dotnet-run registrar (reads shared PreviewFileTypes)
+├── register.cs              # dotnet-run registrar (preview + thumbnail; reads PreviewFileTypes)
 ├── install.ps1 / uninstall.ps1
 └── README.md
+
+(plus tools/preview-shared/FileSprite.cs — "representative sprite for a file", shared)
 ```
 
 ## Prerequisites
