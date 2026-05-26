@@ -23,6 +23,11 @@ jobs:
   build_and_deploy:
     name: Build and Deploy UAT
     runs-on: ubuntu-latest
+    # contents: read for checkout; pull-requests: write so the Static Web Apps
+    # action can post/update the preview-URL comment on the PR via GITHUB_TOKEN.
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v6.0.2
@@ -63,6 +68,9 @@ jobs:
   deploy_functions:
     name: Deploy Azure Functions
     runs-on: ubuntu-latest
+    # Least-privilege: deploys via the AZURE_CREDENTIALS secret, not GITHUB_TOKEN.
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v6.0.2
