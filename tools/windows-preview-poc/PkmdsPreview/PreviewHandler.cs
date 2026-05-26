@@ -145,7 +145,7 @@ public sealed class PkmdsPreviewHandler : IPreviewHandler, IInitializeWithFile, 
         // Save files
         ".sav", ".dat", ".gci", ".dsv", ".srm", ".fla",
         // Wonder cards / mystery gifts
-        ".pgt", ".pcd", ".wc4", ".pgf",
+        ".pgt", ".pcd", ".wc3", ".wc4", ".pgf",
         ".wc5full", ".wc6", ".wc6full", ".wc7", ".wc7full",
         ".wr7", ".wb7", ".wb7full",
         ".wc8", ".wc8full", ".wb8", ".wa8",

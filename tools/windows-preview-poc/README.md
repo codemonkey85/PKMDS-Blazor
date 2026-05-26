@@ -1,6 +1,12 @@
 # Windows Shell Preview Handler POC
 
-Proof-of-concept stub for a Windows Explorer Preview Pane handler that previews PKHeX-compatible files (`.pk1`–`.pk9`, `.pa8`, `.pb7`, `.pb8`, `.sav`) using the shared `HtmlRenderer` from [`tools/preview-shared/`](../preview-shared/).
+Proof-of-concept stub for a Windows Explorer Preview Pane handler that previews PKHeX-compatible files using the shared `HtmlRenderer` from [`tools/preview-shared/`](../preview-shared/). The registered extensions cover:
+
+- **Pokémon entity files**: `.pk1`–`.pk9`, `.pa8`, `.pa9`, `.pb7`, `.pb8`, `.sk2`, `.ck3`, `.xk3`, `.bk4`, `.rk4`
+- **Save files**: `.sav`, `.dat`, `.gci`, `.dsv`, `.srm`, `.fla`
+- **Wonder cards / mystery gifts**: `.pgt`, `.pcd`, `.pgf`, `.wc3`–`.wc9` and their `*full` / `.wb*` / `.wa*` variants
+
+The authoritative list is the `Extensions` array in [`PreviewHandler.cs`](PkmdsPreview/PreviewHandler.cs) — keep this section in sync with it (it mirrors the UTType declarations in the macOS/iOS `Info.plist` files).
 
 The macOS and iOS equivalents are in [`tools/macos-quicklook-poc/`](../macos-quicklook-poc/) and [`tools/ios-quicklook-poc/`](../ios-quicklook-poc/).
 
@@ -146,7 +152,7 @@ HKCR
             └── (Default) = C:\...\PkmdsPreview.comhost.dll
 ```
 
-Repeat the `.pk5` entry for each extension (`.pk1`–`.pk9`, `.pa8`, `.pb7`, `.pb8`, `.sav`). `RegisterShellExtension()` handles all of them in one call.
+Repeat the `.pk5` entry for each registered extension (the full set lives in `PreviewHandler.Extensions` — see the list at the top of this README). `RegisterShellExtension()` handles all of them in one call.
 
 ## Architecture decisions
 
