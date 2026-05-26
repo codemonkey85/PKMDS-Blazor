@@ -34,6 +34,12 @@ $root = $PSScriptRoot
 $worker = Join-Path $root 'PkmdsPreviewWorker\PkmdsPreviewWorker.csproj'
 $dist = Join-Path $root 'dist'
 
+# Stop the handler hosts first — prevhost (preview) / dllhost (thumbnail) and any lingering worker
+# keep the DLLs in dist\ locked, which would fail the clean+republish below.
+Write-Host "Stopping handler hosts (prevhost / dllhost / worker)..." -ForegroundColor DarkGray
+Stop-Process -Name prevhost, dllhost, PkmdsPreviewWorker -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 600
+
 Write-Host "[1/5] Building native shim (PkmdsPreviewShim.dll)..." -ForegroundColor Cyan
 & (Join-Path $root 'build-shim.ps1')
 $shim = Join-Path $root 'PkmdsPreviewShim\bin\PkmdsPreviewShim.dll'
