@@ -7,8 +7,21 @@
 // perfectly. When opened directly as a local file (file://), default to the
 // standard dev-server address. Override either case with ?pkmds=<url>.
 var pkmdsParam = new URLSearchParams(location.search).get('pkmds');
-var pkmdsOrigin = pkmdsParam ||
-    (location.protocol !== 'file:' ? location.origin : 'http://localhost:5283');
+var pkmdsOrigin = location.protocol !== 'file:' ? location.origin : 'http://localhost:5283';
+if (pkmdsParam) {
+    // Validate the override before it reaches the iframe src: only accept an
+    // http(s) URL and use just its origin, so a crafted value like
+    // ?pkmds=javascript:… can't be injected (CodeQL js/xss,
+    // js/client-side-unvalidated-url-redirection).
+    try {
+        var overrideUrl = new URL(pkmdsParam, location.href);
+        if (overrideUrl.protocol === 'http:' || overrideUrl.protocol === 'https:') {
+            pkmdsOrigin = overrideUrl.origin;
+        }
+    } catch (e) {
+        // Ignore an unparseable override and keep the default origin.
+    }
+}
 document.getElementById('pkmds-frame').src = pkmdsOrigin + '/?host=poc';
 
 // ── DOM references ─────────────────────────────────────────────────────────

@@ -62,8 +62,12 @@ const server = createServer(async (req, res) => {
         res.writeHead(200, { 'content-type': mime, 'cache-control': 'no-store' });
         res.end(data);
     } catch (err) {
+        // Log full detail (incl. stack) to the console, but return a generic
+        // message to the client so a stack trace isn't exposed in the HTTP
+        // response (CodeQL js/stack-trace-exposure).
+        console.error(err);
         res.writeHead(500, { 'content-type': 'text/plain' });
-        res.end(String(err));
+        res.end('Internal server error');
     }
 });
 
