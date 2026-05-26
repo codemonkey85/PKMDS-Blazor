@@ -32,17 +32,24 @@ jobs:
           build-mode: manual
         - language: javascript-typescript
           build-mode: none
+        - language: actions
+          build-mode: none
+        - language: python
+          build-mode: none
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6.0.2
 
-      # sets up .NET SDK
+      # .NET SDK + WASM workload are only needed for the csharp manual build;
+      # the buildless analyses (js, actions, python) skip them.
     - name: Setup .NET Core SDK
+      if: matrix.language == 'csharp'
       uses: actions/setup-dotnet@v5.2.0
       with:
         global-json-file: ./global.json
 
     - name: Install WASM workload
+      if: matrix.language == 'csharp'
       run: dotnet workload install wasm-tools
 
     # Initializes the CodeQL tools for scanning.
