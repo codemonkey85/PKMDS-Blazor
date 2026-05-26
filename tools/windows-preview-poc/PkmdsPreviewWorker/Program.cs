@@ -21,6 +21,7 @@ internal static class Program
     private static void Main(string[] args)
     {
         Diag.Log($"worker start: {args.Length} args = [{string.Join(" | ", args)}]");
+        Sprites.UseBundled();
         try
         {
             ApplicationConfiguration.Initialize();

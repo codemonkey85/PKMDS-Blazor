@@ -12,6 +12,15 @@ public static class HtmlRenderer
     private const string PlaceholderSpriteUrl =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/0.png";
 
+    /// <summary>
+    /// Optional hook that resolves a bundled sprite (a relative path from <see cref="SpritePaths"/>)
+    /// to an <c>&lt;img src&gt;</c> value — typically a <c>data:</c> URI read from a local sprite
+    /// bundle. When set and it returns non-null, the renderer uses it instead of a remote PokeAPI
+    /// URL, making previews fully offline. Hosts that don't bundle sprites leave it null (or return
+    /// null for a missing file) to fall back to PokeAPI.
+    /// </summary>
+    public static Func<string, string?>? SpriteResolver { get; set; }
+
     public static string RenderPkm(PKM pkm)
     {
         var s = GameInfo.Strings;
@@ -173,12 +182,12 @@ public static class HtmlRenderer
         AppendDocStart(sb, cardName);
 
         sb.Append("<div class=\"pkm\">");
-        if (gift.Species > 0)
-        {
-            var url = PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(gift.Species, gift.Form, 0, false, 0)
-                      ?? PlaceholderSpriteUrl;
-            sb.Append("<div class=\"sprite\"><img alt=\"\" src=\"").Append(url).Append("\"></div>");
-        }
+        // Bundled sprite first (covers item gifts too via SpritePaths); else PokeAPI for species gifts.
+        var giftSrc = SpriteResolver?.Invoke(SpritePaths.GetMysteryGiftSprite(gift))
+            ?? (gift.Species > 0
+                ? PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(gift.Species, gift.Form, 0, false, 0) ?? PlaceholderSpriteUrl
+                : PlaceholderSpriteUrl);
+        sb.Append("<div class=\"sprite\"><img alt=\"\" src=\"").Append(giftSrc).Append("\"></div>");
 
         sb.Append("<div class=\"info\">");
         sb.Append("<h1>").Append(Escape(cardName)).Append("</h1>");
@@ -281,16 +290,20 @@ public static class HtmlRenderer
     private static void AppendSprite(StringBuilder sb, PKM pkm)
     {
         sb.Append("<div class=\"sprite\"><img alt=\"\" src=\"")
-            .Append(BuildHomeSpriteUrl(pkm))
+            .Append(ResolveSprite(pkm))
             .Append("\"></div>");
     }
 
     private static void AppendSpriteSmall(StringBuilder sb, PKM pkm)
     {
         sb.Append("<img class=\"sprite-sm\" alt=\"\" src=\"")
-            .Append(BuildHomeSpriteUrl(pkm))
+            .Append(ResolveSprite(pkm))
             .Append("\">");
     }
+
+    // Prefer a bundled sprite (offline, via SpriteResolver); fall back to the PokeAPI home sprite.
+    private static string ResolveSprite(PKM pkm) =>
+        SpriteResolver?.Invoke(SpritePaths.GetPokemonSprite(pkm)) ?? BuildHomeSpriteUrl(pkm);
 
     // Full PokeAPI home-sprite lookup — handles Mega/regional/gender/Alcremie/Vivillon/etc.
     // For rare forms with no PokeAPI home sprite (Sinistea-Antique, Rockruff-Own-Tempo, GMax, …)

@@ -133,6 +133,12 @@ the worker (the 7th command-line arg). On later `SetRect` calls (the pane was re
 `GetClientRect` on the UI thread — WebView2 then reflows the responsive CSS. (Same mechanism as
 PowerToys.)
 
+**Offline sprites.** Sprites come from the bundled PKHeX set (`Pkmds.Rcl/wwwroot/sprites/`, the
+`a` / `ai` / `bi` categories), copied next to the worker and embedded as `data:` URIs — so previews
+make **no web requests**. The path logic is shared in `Pkmds.Core.SpritePaths`; the renderer's
+`SpriteResolver` hook reads the bundled file (PokeAPI URLs remain only as a fallback if a sprite is
+missing or no resolver is set). Item-distributing gifts get the bundled item sprite for free.
+
 Two environment details the worker must respect:
 
 - **LocalLow paths.** The worker can inherit Low integrity from `prevhost`, where `%LOCALAPPDATA%`

@@ -33,4 +33,15 @@
         <ProjectReference Include="..\..\preview-shared\Pkmds.Preview.csproj"/>
     </ItemGroup>
 
+    <!--
+        Bundle the sprite categories the previews need (Pokémon art + item sprites) next to the
+        worker so HtmlRenderer can embed them as data: URIs offline. Mirrors the relative paths
+        SpritePaths produces (a/, ai/, bi/). Includes the a_unknown / bitem_unk fallbacks.
+    -->
+    <ItemGroup>
+        <Content Include="..\..\..\Pkmds.Rcl\wwwroot\sprites\a\**\*.png" Link="sprites\a\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+        <Content Include="..\..\..\Pkmds.Rcl\wwwroot\sprites\ai\**\*.png" Link="sprites\ai\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+        <Content Include="..\..\..\Pkmds.Rcl\wwwroot\sprites\bi\**\*.png" Link="sprites\bi\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+    </ItemGroup>
+
 </Project>
