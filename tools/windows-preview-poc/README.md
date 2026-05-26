@@ -5,9 +5,8 @@ Previews PKHeX-compatible files in the Windows Explorer **Preview Pane**, using 
 the [macOS](../macos-quicklook-poc/) and [iOS](../ios-quicklook-poc/) Quick Look PoCs use. All
 parsing and HTML generation is shared; only the platform host differs.
 
-**Status: working.** Pokémon entities, save files, and wonder cards render in the pane. Known
-limitation: the preview is rendered once at the initial pane size and does **not** reflow when
-you drag the pane wider/narrower (see [Known limitations](#known-limitations--future-work)).
+**Status: working.** Pokémon entities, save files, and wonder cards render in the pane, and the
+preview re-fits and reflows live when you resize the pane.
 
 ![preview pane showing a rendered Pokémon](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/448.png)
 
@@ -127,6 +126,13 @@ HKLM\SOFTWARE\Classes\.pk5\ShellEx\{8895b1c6-…} = {e528b90b-…}     ← per e
 Explorer calls the shim roughly: `Initialize`(file) → `SetWindow`(hwnd, rect) → `SetRect` →
 `DoPreview`. The shim launches the worker on the first real (non-empty) rect.
 
+**Resize.** A child window reparented via `SetParent` doesn't get its parent's resize
+notifications, so the shim creates a per-instance named auto-reset event and passes its name to
+the worker (the 7th command-line arg). On later `SetRect` calls (the pane was resized) the shim
+`SetEvent`s it; the worker waits on the event and, when signaled, re-fits to the parent's current
+`GetClientRect` on the UI thread — WebView2 then reflows the responsive CSS. (Same mechanism as
+PowerToys.)
+
 Two environment details the worker must respect:
 
 - **LocalLow paths.** The worker can inherit Low integrity from `prevhost`, where `%LOCALAPPDATA%`
@@ -157,8 +163,6 @@ turn it off.
 
 ## Known limitations / future work
 
-- [ ] **Resize/reflow.** The preview renders once at the initial pane size; dragging the pane
-      doesn't re-layout. PowerToys signals the worker via a named event on `SetRect` — port that.
 - [ ] Replace the manual C++ COM with WIL/wrl helpers, or generate the shim via NativeAOT C#
       (would keep everything in .NET, but still needs the MSVC linker).
 - [ ] Package as an MSI/MSIX so end users don't run scripts elevated.

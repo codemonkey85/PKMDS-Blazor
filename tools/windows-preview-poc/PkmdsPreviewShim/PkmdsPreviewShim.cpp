@@ -28,6 +28,7 @@ static const GUID CLSID_PkmdsPreviewHandler =
 
 static HINSTANCE g_hInst = nullptr;
 static long g_cDllRef = 0;
+static long g_instanceCounter = 0;
 
 // Full path to the worker exe, which is deployed next to this DLL.
 static std::wstring WorkerExePath()
@@ -51,8 +52,14 @@ class PreviewHandler :
 {
 public:
     PreviewHandler() :
-        m_cRef(1), m_hwndParent(nullptr), m_rcParent{}, m_punkSite(nullptr), m_process(nullptr)
+        m_cRef(1), m_hwndParent(nullptr), m_rcParent{}, m_punkSite(nullptr), m_process(nullptr),
+        m_resizeEvent(nullptr)
     {
+        // Per-instance auto-reset event the worker waits on to learn the pane was resized.
+        // Unique name (PID + counter) so concurrent preview panes don't cross-signal.
+        m_eventName = L"PkmdsPreviewResize_" + std::to_wstring(GetCurrentProcessId()) +
+                      L"_" + std::to_wstring(InterlockedIncrement(&g_instanceCounter));
+        m_resizeEvent = CreateEventW(nullptr, FALSE, FALSE, m_eventName.c_str());
         InterlockedIncrement(&g_cDllRef);
     }
 
@@ -93,9 +100,12 @@ public:
             return E_INVALIDARG;
         const bool wasEmpty = !m_rcParent.left && !m_rcParent.top && !m_rcParent.right && !m_rcParent.bottom;
         const bool nowSet = prc->left || prc->top || prc->right || prc->bottom;
+        const bool changed = !EqualRect(&m_rcParent, prc);
         m_rcParent = *prc;
         if (wasEmpty && nowSet)
-            DoPreview();   // first real rect arrived after an empty SetWindow — render now
+            DoPreview();                  // first real rect after an empty SetWindow — render now
+        else if (changed && nowSet && m_resizeEvent)
+            SetEvent(m_resizeEvent);      // pane resized — tell the worker to re-fit to the parent
         return S_OK;
     }
     IFACEMETHODIMP DoPreview()
@@ -109,7 +119,8 @@ public:
         cmd << L"\"" << m_filePath << L"\" "
             << std::hex << reinterpret_cast<size_t>(m_hwndParent) << std::dec << L" "
             << m_rcParent.left << L" " << m_rcParent.right << L" "
-            << m_rcParent.top << L" " << m_rcParent.bottom;
+            << m_rcParent.top << L" " << m_rcParent.bottom << L" "
+            << m_eventName;   // worker waits on this named event to learn about resizes
         const std::wstring params = cmd.str();
         const std::wstring app = WorkerExePath();
 
@@ -194,6 +205,8 @@ private:
     {
         if (m_process)
             CloseHandle(m_process);
+        if (m_resizeEvent)
+            CloseHandle(m_resizeEvent);
         if (m_punkSite)
             m_punkSite->Release();
         InterlockedDecrement(&g_cDllRef);
@@ -205,6 +218,8 @@ private:
     RECT m_rcParent;
     IUnknown* m_punkSite;
     HANDLE m_process;
+    HANDLE m_resizeEvent;
+    std::wstring m_eventName;
 };
 
 class ClassFactory : public IClassFactory

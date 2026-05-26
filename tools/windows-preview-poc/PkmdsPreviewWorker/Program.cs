@@ -5,8 +5,9 @@ namespace Pkmds.Preview.Windows.Worker;
 /// <summary>
 /// Entry point for the preview worker. Three modes:
 ///
-///   PkmdsPreviewWorker.exe "&lt;file&gt;" &lt;hwnd-hex&gt; &lt;left&gt; &lt;right&gt; &lt;top&gt; &lt;bottom&gt;
-///       Child mode — how the C++ shim invokes us. Reparents into &lt;hwnd&gt; and renders.
+///   PkmdsPreviewWorker.exe "&lt;file&gt;" &lt;hwnd-hex&gt; &lt;left&gt; &lt;right&gt; &lt;top&gt; &lt;bottom&gt; &lt;resize-event&gt;
+///       Child mode — how the C++ shim invokes us. Reparents into &lt;hwnd&gt;, renders, and
+///       watches the named &lt;resize-event&gt; to re-fit when the pane is resized.
 ///
 ///   PkmdsPreviewWorker.exe --window "&lt;file&gt;"
 ///       Standalone top-level window. Handy for eyeballing a render without the shell.
@@ -31,8 +32,8 @@ internal static class Program
 
         switch (args)
         {
-            // Child mode: "<file>" <hwnd-hex> <left> <right> <top> <bottom>
-            case [var file, var hwndHex, var l, var r, var t, var b]:
+            // Child mode: "<file>" <hwnd-hex> <left> <right> <top> <bottom> <resize-event-name>
+            case [var file, var hwndHex, var l, var r, var t, var b, var resizeEvent]:
                 {
                     try
                     {
@@ -51,6 +52,7 @@ internal static class Program
                             return;
                         }
                         form.Render(file);
+                        form.WatchForResize(resizeEvent);
                         Application.Run(form);
                     }
                     catch (Exception ex)

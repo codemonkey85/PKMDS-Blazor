@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
@@ -23,6 +24,7 @@ internal sealed class PreviewForm : Form
     private readonly WebView2 _webView;
     private string? _pendingFile;
     private bool _ready;
+    private nint _parentHwnd;
 
     public PreviewForm()
     {
@@ -51,6 +53,8 @@ internal sealed class PreviewForm : Form
     {
         if (parent == 0 || !NativeMethods.IsWindow(parent))
             return false;
+
+        _parentHwnd = parent;
 
         var style = NativeMethods.GetWindowLong(Handle, GwlStyle);
         if ((style & WsChild) == 0)
@@ -89,6 +93,60 @@ internal sealed class PreviewForm : Form
     {
         _pendingFile = filePath;
         RenderIfReady();
+    }
+
+    /// <summary>
+    /// Watch the shim's named auto-reset event; when signaled (the pane was resized), re-fit to
+    /// the parent's current client rect on the UI thread. WebView2 reflows the responsive CSS.
+    /// </summary>
+    public void WatchForResize(string eventName)
+    {
+        if (string.IsNullOrEmpty(eventName) || !EventWaitHandle.TryOpenExisting(eventName, out var evt))
+        {
+            Diag.Log($"resize event '{eventName}' unavailable; resize disabled");
+            return;
+        }
+
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                while (evt.WaitOne())
+                {
+                    if (IsDisposed)
+                        return;
+                    BeginInvoke((Action)UpdateBoundsFromParent);
+                }
+            }
+            catch
+            {
+                // form closed / handle gone — stop watching
+            }
+            finally
+            {
+                evt.Dispose();
+            }
+        })
+        {
+            IsBackground = true,
+            Name = "pkmds-resize-watcher",
+        };
+        thread.Start();
+    }
+
+    private void UpdateBoundsFromParent()
+    {
+        if (_parentHwnd == 0 || !NativeMethods.IsWindow(_parentHwnd))
+        {
+            Application.Exit();   // the preview pane is gone
+            return;
+        }
+        if (NativeMethods.GetClientRect(_parentHwnd, out var rc))
+        {
+            var bounds = Rectangle.FromLTRB(rc.Left, rc.Top, rc.Right, rc.Bottom);
+            if (bounds != Bounds)
+                Bounds = bounds;
+        }
     }
 
     private void OnCoreWebView2Ready(object? sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -155,4 +213,14 @@ internal static class NativeMethods
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool IsWindow(nint hWnd);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetClientRect(nint hWnd, out RECT lpRect);
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct RECT
+    {
+        public int Left, Top, Right, Bottom;
+    }
 }
