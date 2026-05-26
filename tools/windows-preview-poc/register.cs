@@ -57,12 +57,17 @@ switch (mode)
 // Machine-wide registration (HKLM via HKCR). Mirrors how the built-in preview handlers are
 // registered: a plain in-proc COM server (InprocServer32 -> the shim DLL, Apartment threading),
 // the surrogate AppID, an entry in the approved PreviewHandlers list, and a per-extension ShellEx.
+// Write under HKLM\SOFTWARE\Classes in the explicit 64-bit view. (HKCR is a merged HKCU+HKLM view
+// and is registry-view dependent, so it could land per-user or in the wrong bitness; the 64-bit
+// surrogate this handler uses requires the 64-bit machine view.)
 void Register(string shimDllPath)
 {
     if (!File.Exists(shimDllPath))
         throw new FileNotFoundException("Shim DLL not found — build it first (build-shim.ps1).", shimDllPath);
 
-    using (var clsid = Registry.ClassesRoot.CreateSubKey($@"CLSID\{HandlerClsid}"))
+    using var hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+
+    using (var clsid = hklm.CreateSubKey($@"SOFTWARE\Classes\CLSID\{HandlerClsid}"))
     {
         clsid.SetValue(null, FriendlyName);
         clsid.SetValue("AppID", SurrogateAppId);
@@ -71,23 +76,25 @@ void Register(string shimDllPath)
         inproc.SetValue("ThreadingModel", "Apartment");
     }
 
-    using (var list = Registry.LocalMachine.CreateSubKey(PreviewHandlersKey))
+    using (var list = hklm.CreateSubKey(PreviewHandlersKey))
         list.SetValue(HandlerClsid, FriendlyName);
 
     foreach (var ext in PreviewFileTypes.Extensions)
     {
-        using var shellEx = Registry.ClassesRoot.CreateSubKey($@"{ext}\ShellEx\{PreviewHandlerIid}");
+        using var shellEx = hklm.CreateSubKey($@"SOFTWARE\Classes\{ext}\ShellEx\{PreviewHandlerIid}");
         shellEx.SetValue(null, HandlerClsid);
     }
 }
 
 void Unregister()
 {
-    foreach (var ext in PreviewFileTypes.Extensions)
-        Registry.ClassesRoot.DeleteSubKeyTree($@"{ext}\ShellEx\{PreviewHandlerIid}", throwOnMissingSubKey: false);
+    using var hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
 
-    using (var list = Registry.LocalMachine.OpenSubKey(PreviewHandlersKey, writable: true))
+    foreach (var ext in PreviewFileTypes.Extensions)
+        hklm.DeleteSubKeyTree($@"SOFTWARE\Classes\{ext}\ShellEx\{PreviewHandlerIid}", throwOnMissingSubKey: false);
+
+    using (var list = hklm.OpenSubKey(PreviewHandlersKey, writable: true))
         list?.DeleteValue(HandlerClsid, throwOnMissingValue: false);
 
-    Registry.ClassesRoot.DeleteSubKeyTree($@"CLSID\{HandlerClsid}", throwOnMissingSubKey: false);
+    hklm.DeleteSubKeyTree($@"SOFTWARE\Classes\CLSID\{HandlerClsid}", throwOnMissingSubKey: false);
 }

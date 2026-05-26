@@ -43,7 +43,7 @@ $bat = @"
 call "$vcvars" >nul
 cl /nologo /W3 /EHsc /std:c++17 /MT /O2 /DUNICODE /D_UNICODE /LD "$cpp" /Fo"$OutDir\PkmdsPreviewShim.obj" /Fe"$OutDir\PkmdsPreviewShim.dll" /link /DEF:"$def"
 "@
-$tmp = Join-Path $env:TEMP 'build-pkmds-shim.bat'
+$tmp = Join-Path $env:TEMP "build-pkmds-shim-$([guid]::NewGuid().ToString('N')).bat"
 Set-Content -Path $tmp -Value $bat -Encoding ascii
 try { cmd /c "`"$tmp`"" } finally { Remove-Item $tmp -ErrorAction SilentlyContinue }
 if ($LASTEXITCODE -ne 0) { throw "Shim build failed (exit $LASTEXITCODE)." }

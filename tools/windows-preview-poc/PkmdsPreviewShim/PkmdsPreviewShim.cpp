@@ -114,6 +114,9 @@ public:
             return S_OK;
         if (!m_rcParent.left && !m_rcParent.top && !m_rcParent.right && !m_rcParent.bottom)
             return S_OK;   // position not known yet; SetRect will trigger the render
+        if (m_process)
+            return S_OK;   // worker already launched for this preview — Explorer calls DoPreview
+                           // again after the SetRect-triggered first render (and on minimize/restore)
 
         std::wostringstream cmd;
         cmd << L"\"" << m_filePath << L"\" "
@@ -130,15 +133,7 @@ public:
         sei.lpParameters = params.c_str();
         sei.nShow = SW_SHOWDEFAULT;
         if (ShellExecuteExW(&sei))
-        {
-            // Preview is invoked repeatedly (e.g. minimize/restore); don't leak workers.
-            if (m_process)
-            {
-                TerminateProcess(m_process, 0);
-                CloseHandle(m_process);
-            }
-            m_process = sei.hProcess;
-        }
+            m_process = sei.hProcess;   // Unload terminates it; the guard above prevents relaunch
         return S_OK;
     }
     IFACEMETHODIMP SetFocus() { return S_FALSE; }

@@ -52,8 +52,8 @@ Write-Host "[4/5] Registering -> $shimDeployed" -ForegroundColor Cyan
 dotnet run (Join-Path $root 'register.cs') -- --register $shimDeployed
 if ($LASTEXITCODE -ne 0) { throw "Registration failed." }
 
-Write-Host "[5/5] Restarting Explorer..." -ForegroundColor Cyan
 if (-not $NoRestartExplorer) {
+    Write-Host "[5/5] Restarting Explorer..." -ForegroundColor Cyan
     Stop-Process -Name prevhost -Force -ErrorAction SilentlyContinue
     Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
     Start-Sleep -Milliseconds 800

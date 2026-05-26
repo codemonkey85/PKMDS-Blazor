@@ -26,8 +26,11 @@ if ($LASTEXITCODE -ne 0) { throw "Unregistration failed." }
 
 if (-not $NoRestartExplorer) {
     Write-Host "Restarting Explorer..." -ForegroundColor Cyan
+    # Stop prevhost too — it hosts the preview handler, so the DLL stays loaded until it exits.
+    Stop-Process -Name prevhost -Force -ErrorAction SilentlyContinue
     Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-    Start-Process explorer.exe
+    Start-Sleep -Milliseconds 800
+    if (-not (Get-Process explorer -ErrorAction SilentlyContinue)) { Start-Process explorer.exe }
 }
 
 Write-Host "Done." -ForegroundColor Green
