@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Builds the AOT dylib + Xcode host app + Quick Look extension, signs ad-hoc,
-# registers with Launch Services, and runs qlmanage on a fixture.
+# Builds the AOT dylib + Xcode host app + Quick Look extensions (preview + thumbnail), signs
+# ad-hoc, bundles sprites, registers with Launch Services / PluginKit, and smoke-tests both.
 #
 #   ./build-extension.sh                                  # default fixture
 #   ./build-extension.sh path/to/file.pk5
@@ -12,6 +12,7 @@ REPO_ROOT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 RID="osx-arm64"
 
 FIXTURE="${1:-$REPO_ROOT/TestFiles/Lucario_B06DDFAD.pk5}"
+SAV_FIXTURE="$REPO_ROOT/TestFiles/Test-Save-Scarlet.sav"
 
 CSPROJ="$SCRIPT_DIR/PkmdsNative/PkmdsNative.csproj"
 PUBLISH_DIR="$SCRIPT_DIR/PkmdsNative/bin/Release/net10.0/$RID/publish"
@@ -22,6 +23,12 @@ XCODE_DIR="$SCRIPT_DIR/xcode"
 PROJECT="$XCODE_DIR/PkmdsQuickLook.xcodeproj"
 DERIVED="$SCRIPT_DIR/xcode/build"
 APP_PATH="$DERIVED/Build/Products/Release/PkmdsHost.app"
+
+PREVIEW_APPEX="$APP_PATH/Contents/PlugIns/PkmdsQuickLook.appex"
+THUMBNAIL_APPEX="$APP_PATH/Contents/PlugIns/PkmdsQuickLookThumbnail.appex"
+
+PREVIEW_ENTITLEMENTS="$XCODE_DIR/PkmdsQuickLook/PkmdsQuickLook.entitlements"
+THUMBNAIL_ENTITLEMENTS="$XCODE_DIR/PkmdsQuickLookThumbnail/PkmdsQuickLookThumbnail.entitlements"
 
 echo "==> dotnet publish ($RID, AOT)"
 dotnet publish "$CSPROJ" -c Release -r "$RID" --nologo
@@ -48,33 +55,77 @@ xcodebuild \
 
 [[ -d "$APP_PATH" ]] || { echo "missing built app at $APP_PATH" >&2; exit 1; }
 
-echo "==> codesign extension with entitlements + bundle ad-hoc"
-ENTITLEMENTS="$XCODE_DIR/PkmdsQuickLook/PkmdsQuickLook.entitlements"
-APPEX="$APP_PATH/Contents/PlugIns/PkmdsQuickLook.appex"
-codesign --force --sign - --timestamp=none "$APPEX/Contents/Frameworks/PkmdsNative.dylib"
-codesign --force --sign - --timestamp=none --options runtime --entitlements "$ENTITLEMENTS" "$APPEX"
+# ── Bundle sprites into the thumbnail extension ─────────────────────────────────────────────────
+# Sprites are NOT checked into the repo (they live in Pkmds.Rcl/wwwroot/sprites/).
+# Copy the three categories the thumbnail provider needs after xcodebuild and before re-signing.
+echo "==> bundle sprites into thumbnail extension"
+SPRITES_SRC="$REPO_ROOT/Pkmds.Rcl/wwwroot/sprites"
+SPRITES_DST="$THUMBNAIL_APPEX/Contents/Resources/sprites"
+rm -rf "$SPRITES_DST"
+mkdir -p "$SPRITES_DST"
+cp -r "$SPRITES_SRC/a"  "$SPRITES_DST/"
+cp -r "$SPRITES_SRC/ai" "$SPRITES_DST/"
+cp -r "$SPRITES_SRC/bi" "$SPRITES_DST/"
+
+# ── Sign ────────────────────────────────────────────────────────────────────────────────────────
+# Sign inner → outer (dylib → appex → host app). The sprite copy above invalidates the thumbnail
+# appex signature that xcodebuild already applied, so we must re-sign it here.
+echo "==> codesign extensions and host app (ad-hoc)"
+codesign --force --sign - --timestamp=none \
+    "$PREVIEW_APPEX/Contents/Frameworks/PkmdsNative.dylib"
+codesign --force --sign - --timestamp=none --options runtime \
+    --entitlements "$PREVIEW_ENTITLEMENTS" "$PREVIEW_APPEX"
+
+codesign --force --sign - --timestamp=none \
+    "$THUMBNAIL_APPEX/Contents/Frameworks/PkmdsNative.dylib"
+codesign --force --sign - --timestamp=none --options runtime \
+    --entitlements "$THUMBNAIL_ENTITLEMENTS" "$THUMBNAIL_APPEX"
+
 codesign --force --sign - --timestamp=none "$APP_PATH"
 
+# ── Deploy ──────────────────────────────────────────────────────────────────────────────────────
 echo "==> deploy to /Applications and register only that copy"
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 INSTALLED=/Applications/PkmdsHost.app
+
 osascript -e 'quit app "PkmdsHost"' 2>/dev/null || true
 sleep 1
-"$LSREGISTER" -u "$APP_PATH" 2>/dev/null || true   # unregister the build-dir copy
+
+"$LSREGISTER" -u "$APP_PATH"  2>/dev/null || true
 "$LSREGISTER" -u "$INSTALLED" 2>/dev/null || true
 rm -rf "$INSTALLED"
 cp -R "$APP_PATH" "$INSTALLED"
 "$LSREGISTER" -f "$INSTALLED"
+
+# Register both extensions with PluginKit; the thumbnail provider needs separate registration
+# because com.apple.quicklook.preview and com.apple.quicklook.thumbnail are different plug-in
+# point databases that lsregister alone does not always update.
 pluginkit -a "$INSTALLED/Contents/PlugIns/PkmdsQuickLook.appex"
 pluginkit -e use -i com.bondcodes.pkmds.host.quicklook
+pluginkit -a "$INSTALLED/Contents/PlugIns/PkmdsQuickLookThumbnail.appex"
+pluginkit -e use -i com.bondcodes.pkmds.host.quicklook.thumbnail
+
 killall pkd quicklookd 2>/dev/null || true
 sleep 1
 qlmanage -r >/dev/null 2>&1 || true
 qlmanage -r cache >/dev/null 2>&1 || true
 
-echo "==> qlmanage -p $FIXTURE"
-qlmanage -p "$FIXTURE" 2>&1 | tail -20 || true
+# ── Smoke tests ─────────────────────────────────────────────────────────────────────────────────
+echo "==> qlmanage -p (preview): $FIXTURE"
+qlmanage -p "$FIXTURE" 2>&1 | tail -10 || true
+
+echo "==> qlmanage -t (thumbnail, 256px): $FIXTURE"
+qlmanage -t -s 256 -o /tmp "$FIXTURE" 2>&1 | tail -10 || true
+if [[ -f "/tmp/TestFiles" || -n "$(ls /tmp/"$(basename "$FIXTURE")"*.png 2>/dev/null)" ]]; then
+    echo "    thumbnail PNG written to /tmp"
+fi
+
+if [[ -f "$SAV_FIXTURE" ]]; then
+    echo "==> qlmanage -t (thumbnail, 256px): $(basename "$SAV_FIXTURE")"
+    qlmanage -t -s 256 -o /tmp "$SAV_FIXTURE" 2>&1 | tail -10 || true
+fi
 
 echo
 echo "Built and installed: $INSTALLED"
-echo "Press Space on a .pk5/.sav in Finder to preview."
+echo "Press Space on a .pk*/.sav file in Finder to preview."
+echo "Thumbnail icons appear in Finder's icon or gallery view (may need qlmanage -r cache)."
