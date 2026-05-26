@@ -22,7 +22,6 @@ if (pkmdsParam) {
         // Ignore an unparseable override and keep the default origin.
     }
 }
-document.getElementById('pkmds-frame').src = pkmdsOrigin + '/?host=poc';
 
 // ── DOM references ─────────────────────────────────────────────────────────
 
@@ -34,6 +33,9 @@ var fileInput = document.getElementById('file-input');
 var statusEl  = document.getElementById('status');
 var logEl     = document.getElementById('log-entries');
 var logClear  = document.getElementById('log-clear');
+
+// Point the embedded PKMDS frame at the (validated) origin computed above.
+frame.src = pkmdsOrigin + '/?host=poc';
 
 // ── State ──────────────────────────────────────────────────────────────────
 
