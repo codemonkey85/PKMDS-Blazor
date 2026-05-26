@@ -370,7 +370,19 @@ public:
         std::wstring tempInput;
         if (inputFile.empty() && m_stream)
         {
-            tempInput = std::wstring(tempDir) + L"pkmds_thumbin_" + stamp + L".bin";
+            // Recover the original extension from the stream's name so the worker can detect gifts
+            // (.wc*, .pgf, …), which are identified by extension; fall back to .bin otherwise.
+            std::wstring ext = L".bin";
+            STATSTG stat{};
+            if (SUCCEEDED(m_stream->Stat(&stat, STATFLAG_DEFAULT)) && stat.pwcsName)
+            {
+                const std::wstring name = stat.pwcsName;
+                CoTaskMemFree(stat.pwcsName);
+                const auto dot = name.find_last_of(L'.');
+                if (dot != std::wstring::npos && dot + 1 < name.size())
+                    ext = name.substr(dot);
+            }
+            tempInput = std::wstring(tempDir) + L"pkmds_thumbin_" + stamp + ext;
             if (WriteStreamToFile(m_stream, tempInput))
                 inputFile = tempInput;
         }
