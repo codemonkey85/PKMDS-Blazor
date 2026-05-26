@@ -89,6 +89,27 @@ public static unsafe class Exports
         }
     }
 
+    // Returns the relative bundled-sprite path for a file (e.g. "a/a_448.png").
+    // ext/extLen: UTF-8 file extension without leading dot (e.g. "pk5"), no NUL terminator needed.
+    // Used by macOS/iOS QLThumbnailProvider to pick a sprite without re-rendering HTML.
+    [UnmanagedCallersOnly(EntryPoint = "pkmds_get_sprite_path")]
+    public static int GetSpritePath(byte* data, int length, byte* ext, int extLen, byte* outPath, int outCap)
+    {
+        try
+        {
+            if (data is null || outPath is null || length <= 0 || outCap <= 0)
+                return -1;
+
+            var bytes = CopyIn(data, length);
+            var extStr = ext is null || extLen <= 0 ? "" : Encoding.UTF8.GetString(ext, extLen);
+            return WriteJson(FileSprite.GetRelativeSpritePath(bytes, extStr), outPath, outCap);
+        }
+        catch
+        {
+            return -99;
+        }
+    }
+
     // Auto-dispatching renderer: save → mystery gift (extension-guided) → PKM entity.
     // ext/extLen: UTF-8 file extension without leading dot (e.g. "wb8"), no NUL terminator needed.
     [UnmanagedCallersOnly(EntryPoint = "pkmds_render_file_html")]
@@ -172,6 +193,8 @@ public static unsafe class Exports
         AppendInt(sb, "boxCount", sav.BoxCount); sb.Append(',');
         AppendInt(sb, "boxSlotCount", sav.BoxSlotCount); sb.Append(',');
         AppendInt(sb, "partyCount", sav.HasParty ? sav.PartyCount : 0); sb.Append(',');
+        AppendInt(sb, "playedHours", sav.PlayedHours); sb.Append(',');
+        AppendInt(sb, "playedMinutes", sav.PlayedMinutes); sb.Append(',');
         sb.Append("\"party\":[");
         if (sav.HasParty)
         {

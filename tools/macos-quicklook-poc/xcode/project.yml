@@ -119,6 +119,9 @@ targets:
       - target: PkmdsQuickLook
         embed: true
         codeSign: true
+      - target: PkmdsQuickLookThumbnail
+        embed: true
+        codeSign: true
 
   PkmdsQuickLook:
     type: app-extension
@@ -155,3 +158,29 @@ targets:
         codeSign: true
       - sdk: QuickLookUI.framework
       - sdk: WebKit.framework
+
+  PkmdsQuickLookThumbnail:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: PkmdsQuickLookThumbnail
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bondcodes.pkmds.host.quicklook.thumbnail
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
+        SKIP_INSTALL: YES
+        MARKETING_VERSION: "0.0.1"
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: PkmdsQuickLookThumbnail/PkmdsQuickLookThumbnail.entitlements
+    info:
+      path: PkmdsQuickLookThumbnail/Info.plist
+      properties:
+        CFBundleDisplayName: PKMDS Quick Look Thumbnail
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+    dependencies:
+      - framework: ../build-resources/PkmdsNative.dylib
+        embed: true
+        codeSign: true
+      - sdk: QuickLookThumbnailing.framework

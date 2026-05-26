@@ -14,14 +14,17 @@ tools/macos-quicklook-poc/
 ├── swift-cli/                   # Standalone CLI driver (kept for quick smoke-tests)
 │   └── main.swift               # dlopen + dlsym invocation of the dylib
 ├── xcode/
-│   ├── project.yml              # xcodegen spec — host app + .appex extension
+│   ├── project.yml              # xcodegen spec — host app + preview + thumbnail extensions
 │   ├── PkmdsHost/
 │   │   └── PkmdsHostApp.swift   # Minimal SwiftUI placeholder
-│   └── PkmdsQuickLook/
-│       ├── PreviewViewController.swift   # QLPreviewingController + WKWebView
-│       └── PkmdsQuickLook.entitlements   # Sandbox + library validation off
+│   ├── PkmdsQuickLook/          # Preview extension (com.apple.quicklook.preview)
+│   │   ├── PreviewViewController.swift   # QLPreviewingController + WKWebView
+│   │   └── PkmdsQuickLook.entitlements
+│   └── PkmdsQuickLookThumbnail/ # Thumbnail extension (com.apple.quicklook.thumbnail)
+│       ├── ThumbnailProvider.swift       # QLThumbnailProvider (sprite + trainer card)
+│       └── PkmdsQuickLookThumbnail.entitlements
 ├── build-and-run.sh             # CLI smoke test (no Xcode involved)
-└── build-extension.sh           # Full pipeline: dotnet → xcode → install → qlmanage
+└── build-extension.sh           # Full pipeline: dotnet → xcode → sprites → install → qlmanage
 ```
 
 `HtmlRenderer` lives in `tools/preview-shared/` and is shared with the iOS (and future Windows) PoC — see [`../preview-shared/`](../preview-shared/).
@@ -46,19 +49,25 @@ Builds the AOT dylib and a Swift CLI that loads it via `dlopen`. Useful when ite
 # Outputs JSON + writes /tmp/pkmds-poc-pkm.html and /tmp/pkmds-poc-save.html
 ```
 
-### Full Quick Look extension
+### Full Quick Look extension (preview + thumbnail)
 
-Builds the dylib, generates the Xcode project, builds + signs the host app, deploys to `/Applications`, registers with Launch Services + PluginKit, and runs `qlmanage -p` as a smoke test.
+Builds the dylib, generates the Xcode project, builds + signs both extensions, copies bundled sprites into the thumbnail extension, deploys to `/Applications`, registers with Launch Services + PluginKit, and smoke-tests both.
 
 ```sh
 ./build-extension.sh
-# Then in Finder, press Space on a .pk5/.sav file to preview.
+# Then in Finder, press Space on a .pk*/.sav file to preview.
+# Thumbnail icons appear in icon/gallery view (may need qlmanage -r cache to flush).
 ```
 
-After the first install, you can verify with:
+After the first install, you can verify individually:
 
 ```sh
+# Preview (full card in Quick Look panel)
 qlmanage -p ../../TestFiles/Lucario_B06DDFAD.pk5
+
+# Thumbnail (Finder icon-view thumbnail, 256px square → /tmp)
+qlmanage -t -s 256 -o /tmp ../../TestFiles/Lucario_B06DDFAD.pk5
+qlmanage -t -s 256 -o /tmp ../../TestFiles/Test-Save-Scarlet.sav
 ```
 
 ## Architecture decisions
@@ -157,15 +166,18 @@ Note: `/usr/bin/log` rather than bare `log` — zsh has a builtin that intercept
 ## Known POC limitations
 
 - **Ad-hoc signing only** — works for local install. Distribution (Mac App Store or Developer ID + notarization) requires a real signing identity and Team ID; once that's in place, drop `cs.disable-library-validation`.
-- **Trim warnings from PKHeX.Core** — IL2070 on `EntityBlank.GetBlank` and `ReflectUtil.GetAllProperties`, plus three "always throw" notes on `SaveBlock3*.PrintMembers`. Carried over from the original AOT POC findings; none affect the read-only decode path we exercise.
+- **Trim warnings from PKHeX.Core** — IL2070 on `EntityBlank.GetBlank` and `ReflectUtil.GetAllProperties`, plus three "always throw" notes on `SaveBlock3*.PrintMembers`. None affect the read-only decode path.
 - **POC outputs only the host display name** — `PkmdsHost` (literally), not branded. Cosmetic; address before any user-facing release.
-- **dylib is 17 MB** — includes resource string tables for all PKHeX-supported games. Acceptable for an extension bundled with a desktop app; would benefit from string-table trimming if size matters.
+- **dylib is 17 MB per extension** — each of the two extensions embeds its own copy (~34 MB total). Production would share a single copy from the host app's `Contents/Frameworks/` via `@loader_path/../../../../Frameworks`. Drop `cs.disable-library-validation` too once both are signed with the same Team ID.
+- **Thumbnail trainer card border is single-colour** — `RB` (Red/Blue) and `GS` (Gold/Silver) get a gradient version code (per-character colour interpolation) but still a single-accent border. `SaveCard.cs` on Windows draws a true `LinearGradientBrush` border; replicating that in CoreGraphics requires clipping to the stroke region and filling with a gradient — doable but skipped for the POC.
+- **Sprites are copied post-build by the shell script** — `build-extension.sh` runs `cp -r` after `xcodebuild` and re-signs. An Xcode Run Script build phase would be cleaner but adds xcodegen complexity.
 
 ## Macros for next session
 
 If this POC graduates to a real `tools/macos-quicklook/` (no `-poc` suffix):
 
-1. Set up Developer ID signing (drop `disable-library-validation`).
-2. Set up notarization in CI.
-3. Decide distribution channel (DMG / Homebrew cask / Mac App Store).
-4. Consider an iOS share extension using the same dylib and `HtmlRenderer`.
+1. **Shared dylib** — move `PkmdsNative.dylib` to `PkmdsHost.app/Contents/Frameworks/` and update both extensions' `LD_RUNPATH_SEARCH_PATHS` to `@loader_path/../../../../Frameworks`. Drop the per-extension copy (saves ~17 MB).
+2. **Developer ID signing + notarization** — once both extensions and the dylib share the same Team ID, drop `cs.disable-library-validation`. Add notarization to CI.
+3. **Distribution channel** — DMG / Homebrew cask / Mac App Store.
+4. **Gradient border for RB/GS trainer cards** — clip CGContext to the stroke region, then fill with a `CGGradient` diagonal. Mirrors the `LinearGradientBrush` approach in Windows `SaveCard.cs`.
+5. **iOS share extension** — same dylib + `HtmlRenderer`; `QLPreviewingController` on iOS uses the same `QLPreviewingController` protocol. `ThumbnailProvider.swift` won't compile for iOS directly (uses `NSColor`/`NSBezierPath`) but the logic ports cleanly to `UIColor`/`UIBezierPath`.
