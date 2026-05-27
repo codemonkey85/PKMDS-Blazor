@@ -68,11 +68,17 @@ targets:
               - public.data
             UTTypeTagSpecification:
               public.filename-extension:
-                - sav
-                - dat
                 - gci
                 - dsv
                 - srm
+          - UTTypeIdentifier: com.bondcodes.pkmds.save-file-restricted
+            UTTypeDescription: Pokémon Save File (restricted extensions)
+            UTTypeConformsTo:
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - sav
+                - dat
                 - fla
           - UTTypeIdentifier: com.bondcodes.pkmds.wonder-card
             UTTypeDescription: Pokémon Wonder Card
@@ -109,6 +115,7 @@ targets:
             CFBundleTypeRole: Viewer
             LSItemContentTypes:
               - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.save-file-restricted
             LSHandlerRank: Alternate
           - CFBundleTypeName: Pokémon Wonder Card
             CFBundleTypeRole: Viewer
@@ -117,6 +124,9 @@ targets:
             LSHandlerRank: Alternate
     dependencies:
       - target: PkmdsQuickLook
+        embed: true
+        codeSign: true
+      - target: PkmdsQuickLookThumbnail
         embed: true
         codeSign: true
 
@@ -147,6 +157,7 @@ targets:
             QLSupportedContentTypes:
               - com.bondcodes.pkmds.pkm-file
               - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.save-file-restricted
               - com.bondcodes.pkmds.wonder-card
             QLSupportsSearchableItems: false
     dependencies:
@@ -155,3 +166,38 @@ targets:
         codeSign: true
       - sdk: QuickLookUI.framework
       - sdk: WebKit.framework
+
+  PkmdsQuickLookThumbnail:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: PkmdsQuickLookThumbnail
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bondcodes.pkmds.host.quicklook.thumbnail
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
+        SKIP_INSTALL: YES
+        MARKETING_VERSION: "0.0.1"
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: PkmdsQuickLookThumbnail/PkmdsQuickLookThumbnail.entitlements
+    info:
+      path: PkmdsQuickLookThumbnail/Info.plist
+      properties:
+        CFBundleDisplayName: PKMDS Quick Look Thumbnail
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.quicklook.thumbnail
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ThumbnailProvider
+          NSExtensionAttributes:
+            QLSupportedContentTypes:
+              - com.bondcodes.pkmds.pkm-file
+              - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.wonder-card
+            QLThumbnailMinimumDimension: 0
+    dependencies:
+      - framework: ../build-resources/PkmdsNative.dylib
+        embed: true
+        codeSign: true
+      - sdk: QuickLookThumbnailing.framework

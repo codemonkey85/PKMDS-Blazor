@@ -14,14 +14,17 @@ tools/macos-quicklook-poc/
 ├── swift-cli/                   # Standalone CLI driver (kept for quick smoke-tests)
 │   └── main.swift               # dlopen + dlsym invocation of the dylib
 ├── xcode/
-│   ├── project.yml              # xcodegen spec — host app + .appex extension
+│   ├── project.yml              # xcodegen spec — host app + preview + thumbnail extensions
 │   ├── PkmdsHost/
 │   │   └── PkmdsHostApp.swift   # Minimal SwiftUI placeholder
-│   └── PkmdsQuickLook/
-│       ├── PreviewViewController.swift   # QLPreviewingController + WKWebView
-│       └── PkmdsQuickLook.entitlements   # Sandbox + library validation off
+│   ├── PkmdsQuickLook/          # Preview extension (com.apple.quicklook.preview)
+│   │   ├── PreviewViewController.swift   # QLPreviewingController + WKWebView
+│   │   └── PkmdsQuickLook.entitlements
+│   └── PkmdsQuickLookThumbnail/ # Thumbnail extension (com.apple.quicklook.thumbnail)
+│       ├── ThumbnailProvider.swift       # QLThumbnailProvider (sprite + trainer card)
+│       └── PkmdsQuickLookThumbnail.entitlements
 ├── build-and-run.sh             # CLI smoke test (no Xcode involved)
-└── build-extension.sh           # Full pipeline: dotnet → xcode → install → qlmanage
+└── build-extension.sh           # Full pipeline: dotnet → xcode → sprites → install → qlmanage
 ```
 
 `HtmlRenderer` lives in `tools/preview-shared/` and is shared with the iOS (and future Windows) PoC — see [`../preview-shared/`](../preview-shared/).
@@ -46,19 +49,25 @@ Builds the AOT dylib and a Swift CLI that loads it via `dlopen`. Useful when ite
 # Outputs JSON + writes /tmp/pkmds-poc-pkm.html and /tmp/pkmds-poc-save.html
 ```
 
-### Full Quick Look extension
+### Full Quick Look extension (preview + thumbnail)
 
-Builds the dylib, generates the Xcode project, builds + signs the host app, deploys to `/Applications`, registers with Launch Services + PluginKit, and runs `qlmanage -p` as a smoke test.
+Builds the dylib, generates the Xcode project, builds + signs both extensions, copies bundled sprites into the thumbnail extension, deploys to `/Applications`, registers with Launch Services + PluginKit, and smoke-tests both.
 
 ```sh
 ./build-extension.sh
-# Then in Finder, press Space on a .pk5/.sav file to preview.
+# Then in Finder, press Space on a .pk*/.sav file to preview.
+# Thumbnail icons appear in icon/gallery view (may need qlmanage -r cache to flush).
 ```
 
-After the first install, you can verify with:
+After the first install, you can verify individually:
 
 ```sh
+# Preview (full card in Quick Look panel)
 qlmanage -p ../../TestFiles/Lucario_B06DDFAD.pk5
+
+# Thumbnail (Finder icon-view thumbnail, 256px square → /tmp)
+qlmanage -t -s 256 -o /tmp ../../TestFiles/Lucario_B06DDFAD.pk5
+qlmanage -t -s 256 -o /tmp ../../TestFiles/Test-Save-Scarlet.sav
 ```
 
 ## Architecture decisions
@@ -111,6 +120,7 @@ These are in roughly the order we hit them.
 
 ### 5. Library validation rejects the AOT dylib
 
+
 **Symptom:** Extension crashes immediately (`~/Library/Logs/DiagnosticReports/PkmdsQuickLook-*.ips`) with:
 ```
 Library not loaded: @rpath/PkmdsNative.dylib
@@ -120,6 +130,46 @@ Reason: ... mapping process and mapped file (non-platform) have different Team I
 **Cause:** Hardened runtime + ad-hoc-signed extension + ad-hoc-signed dylib. Each ad-hoc signature counts as its own "team", so amfid (Apple Mobile File Integrity Daemon) rejects loading the dylib into the extension's process.
 
 **Fix:** Add `com.apple.security.cs.disable-library-validation` to the extension's entitlements. **For Mac App Store / Developer ID distribution this entitlement isn't needed** — sign both the extension and the dylib with the same Team ID and library validation passes.
+
+### 6. Prohibited extensions block ThumbnailsAgent dispatch for the _entire_ UTI
+
+**Symptom:** `.gci` files (which are declared in `com.bondcodes.pkmds.save-file` alongside `.sav`/`.dat`/`.fla`) never get thumbnails. `qlmanage -t` hangs silently. pkd logs show the extension candidate but it is never dispatched.
+
+**Cause:** macOS has a hard-coded list of "prohibited" filename extensions (`.sav`, `.dat`, `.fla` are three of them). If **any** extension in a UTI's `UTTypeTagSpecification` is prohibited, ThumbnailsAgent refuses to dispatch that UTI to a sandboxed extension — blocking every extension in the UTI, not just the prohibited ones.
+
+**Fix:** Split into two UTIs. Keep non-prohibited extensions (`.gci`, `.dsv`, `.srm`) in `com.bondcodes.pkmds.save-file` and declare it in both the preview _and_ thumbnail extensions. Add a separate `com.bondcodes.pkmds.save-file-restricted` UTI for `.sav`/`.dat`/`.fla` and register it **only** with the preview extension — never with the thumbnail extension. ThumbnailsAgent never sees the prohibited extensions; quicklookd dispatches both UTIs fine.
+
+**Verification:** `pluginkit -mAvvv -p com.apple.quicklook.thumbnail` — the thumbnail extension should list only UTIs without prohibited extensions.
+
+### 7. Spotlight MDImporter dispatch path doesn't grant sandbox file access
+
+**Background:** We tried adding a Spotlight metadata importer (`PkmdsSpotlight.mdimporter`) that wrote `kMDItemContentType = com.bondcodes.pkmds.save-file` into the Spotlight database for `.sav`/`.dat`/`.fla` files, hoping Finder would use the database value (our UTI) instead of the raw extension when dispatching Quick Look.
+
+**What actually happened:** quicklookd did dispatch our preview extension via the Spotlight metadata path, but `com.apple.security.files.user-selected.read-only` does **not** receive a security-scoped access grant on this dispatch path. `Data(contentsOf: url)` threw a permissions error, producing a blank page-curl animation instead of our HTML preview. The UTI-database dispatch path (used for `.gci` etc.) grants file access correctly.
+
+**Conclusion:** The MDImporter adds complexity and breaks the preview for the files it was supposed to help. The split-UTI approach (finding #6) is the correct solution. MDImporter files were removed.
+
+### 8. Finder doesn't request thumbnails at the default 64 px icon size
+
+**Symptom:** After a clean install, `.pk*` and `.gci` files show the generic document icon in Finder's icon view even though `qlmanage -t -x` produces correct thumbnails.
+
+**Cause:** Finder's default icon size is 64 × 64 px. At that size the system renders the file icon itself without asking Quick Look extensions for a thumbnail. The threshold where Finder starts dispatching thumbnail requests is around 100 px.
+
+**Fix:** Drag the Finder icon size slider to ≥ 100 px, or switch to Gallery view. After the first request, the result is cached and persists across size changes. If thumbnails still don't appear after increasing the size: `qlmanage -r && qlmanage -r cache`.
+
+**Note on `qlmanage -t`:** Without the `-x` flag, `qlmanage -t` drives ThumbnailsAgent directly — it hung indefinitely in all our tests. Use `qlmanage -t -x <file>` to drive via quicklookd instead, which works reliably and writes the PNG to the output directory.
+
+### 9. `QLThumbnailMinimumDimension` must be a plain integer, not a size dict
+
+**Symptom:** `qlmanage -t` always returns "no matching extension" regardless of icon size, even though PluginKit reports the extension as registered.
+
+**Cause:** iOS Quick Look uses `QLThumbnailMinimumSize: {width: N, height: N}` (a dict). macOS uses `QLThumbnailMinimumDimension: 0` (a plain integer). In xcodegen `project.yml`, using the dict form generates a malformed `Info.plist` value that the system either rejects or interprets as a very large minimum size, causing the extension to be filtered out for all practical thumbnail sizes.
+
+**Fix:** In `project.yml` under the thumbnail extension's `NSExtensionAttributes`:
+```yaml
+QLThumbnailMinimumDimension: 0
+```
+Not `QLThumbnailMinimumSize`, not a dict. Confirm the generated `Info.plist` contains `<integer>0</integer>`.
 
 ## Diagnostic toolbox
 
@@ -135,10 +185,16 @@ Commands that earned their keep during this POC.
 | `otool -L <executable>` | Linked frameworks/dylibs and their install names |
 | `otool -D <dylib>` | The dylib's own install name (e.g. `@rpath/...`) |
 | `qlmanage -p <file>` | Trigger a preview without Finder; useful for repeatable tests |
+| `qlmanage -p -x <file>` | Preview via quicklookd (remote mode) — needed for prohibited-extension files |
+| `qlmanage -t -x -s 256 -o /tmp <file>` | Thumbnail via quicklookd — use `-x`; plain `-t` drives ThumbnailsAgent and tends to hang |
 | `qlmanage -r && qlmanage -r cache` | Reset quicklookd and clear thumbnail cache |
 | `killall pkd quicklookd` | Force PluginKit + Quick Look daemons to restart |
+| `killall -9 "com.apple.quicklook.ThumbnailsAgent"` | Force ThumbnailsAgent restart (re-reads UTI→extension mapping from LS database) |
+| `pluginkit -mAvvv -p com.apple.quicklook.thumbnail` | All thumbnail extensions and their registered UTIs |
+| `mdls -name kMDItemContentType <file>` | What content type Spotlight has indexed for a file |
 | `ls -t ~/Library/Logs/DiagnosticReports/PkmdsQuickLook*` | Extension crash reports (`.ips` files) |
 | `/usr/bin/log show --last 30s --predicate 'process == "pkd"'` | PluginKit dispatch decisions in real time |
+| `/usr/bin/log show --last 30s --predicate 'process == "ThumbnailsAgent"'` | ThumbnailsAgent UTI-lookup and dispatch decisions |
 
 The two log filters that broke this POC open:
 
@@ -157,15 +213,18 @@ Note: `/usr/bin/log` rather than bare `log` — zsh has a builtin that intercept
 ## Known POC limitations
 
 - **Ad-hoc signing only** — works for local install. Distribution (Mac App Store or Developer ID + notarization) requires a real signing identity and Team ID; once that's in place, drop `cs.disable-library-validation`.
-- **Trim warnings from PKHeX.Core** — IL2070 on `EntityBlank.GetBlank` and `ReflectUtil.GetAllProperties`, plus three "always throw" notes on `SaveBlock3*.PrintMembers`. Carried over from the original AOT POC findings; none affect the read-only decode path we exercise.
+- **Trim warnings from PKHeX.Core** — IL2070 on `EntityBlank.GetBlank` and `ReflectUtil.GetAllProperties`, plus three "always throw" notes on `SaveBlock3*.PrintMembers`. None affect the read-only decode path.
 - **POC outputs only the host display name** — `PkmdsHost` (literally), not branded. Cosmetic; address before any user-facing release.
-- **dylib is 17 MB** — includes resource string tables for all PKHeX-supported games. Acceptable for an extension bundled with a desktop app; would benefit from string-table trimming if size matters.
+- **dylib is 17 MB per extension** — each of the two extensions embeds its own copy (~34 MB total). Production would share a single copy from the host app's `Contents/Frameworks/` via `@loader_path/../../../../Frameworks`. Drop `cs.disable-library-validation` too once both are signed with the same Team ID.
+- **Thumbnail trainer card border is single-colour** — `RB` (Red/Blue) and `GS` (Gold/Silver) get a gradient version code (per-character colour interpolation) but still a single-accent border. `SaveCard.cs` on Windows draws a true `LinearGradientBrush` border; replicating that in CoreGraphics requires clipping to the stroke region and filling with a gradient — doable but skipped for the POC.
+- **Sprites are copied post-build by the shell script** — `build-extension.sh` runs `cp -r` after `xcodebuild` and re-signs. An Xcode Run Script build phase would be cleaner but adds xcodegen complexity.
 
 ## Macros for next session
 
 If this POC graduates to a real `tools/macos-quicklook/` (no `-poc` suffix):
 
-1. Set up Developer ID signing (drop `disable-library-validation`).
-2. Set up notarization in CI.
-3. Decide distribution channel (DMG / Homebrew cask / Mac App Store).
-4. Consider an iOS share extension using the same dylib and `HtmlRenderer`.
+1. **Shared dylib** — move `PkmdsNative.dylib` to `PkmdsHost.app/Contents/Frameworks/` and update both extensions' `LD_RUNPATH_SEARCH_PATHS` to `@loader_path/../../../../Frameworks`. Drop the per-extension copy (saves ~17 MB).
+2. **Developer ID signing + notarization** — once both extensions and the dylib share the same Team ID, drop `cs.disable-library-validation`. Add notarization to CI.
+3. **Distribution channel** — DMG / Homebrew cask / Mac App Store.
+4. **Gradient border for RB/GS trainer cards** — clip CGContext to the stroke region, then fill with a `CGGradient` diagonal. Mirrors the `LinearGradientBrush` approach in Windows `SaveCard.cs`.
+5. **iOS share extension** — same dylib + `HtmlRenderer`; `QLPreviewingController` on iOS uses the same `QLPreviewingController` protocol. `ThumbnailProvider.swift` won't compile for iOS directly (uses `NSColor`/`NSBezierPath`) but the logic ports cleanly to `UIColor`/`UIBezierPath`.

@@ -23,6 +23,11 @@ const string SurrogateAppId = "{6d2b5079-2f0b-48dd-ab7f-97cec514d30b}";
 const string PreviewHandlerIid = "{8895b1c6-b41f-4c1c-a562-0d564250836f}";
 const string PreviewHandlersKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\PreviewHandlers";
 
+// Thumbnail provider — same shim DLL, separate CLSID, associated via the IThumbnailProvider IID.
+const string ThumbnailClsid = "{b98dbf6e-6efb-43c0-acb3-cc807131359a}";
+const string ThumbnailFriendlyName = "PKMDS Thumbnail Provider";
+const string ThumbnailProviderIid = "{e357fccd-a995-4576-b01f-234630154e96}";
+
 var mode = args.Length > 0 ? args[0].ToLowerInvariant() : "--help";
 
 switch (mode)
@@ -34,8 +39,8 @@ switch (mode)
             Environment.Exit(2);
         }
         Register(Path.GetFullPath(args[1]));
-        Console.WriteLine($"Registered PKMDS preview handler for {PreviewFileTypes.Extensions.Length} extensions.");
-        Console.WriteLine("Restart Explorer (or sign out/in) for the handler to load.");
+        Console.WriteLine($"Registered PKMDS preview handler + thumbnail provider for {PreviewFileTypes.Extensions.Length} extensions.");
+        Console.WriteLine("Restart Explorer (or sign out/in) for them to load.");
         break;
 
     case "--unregister":
@@ -84,6 +89,21 @@ void Register(string shimDllPath)
         using var shellEx = hklm.CreateSubKey($@"SOFTWARE\Classes\{ext}\ShellEx\{PreviewHandlerIid}");
         shellEx.SetValue(null, HandlerClsid);
     }
+
+    // Thumbnail provider (same shim DLL, separate CLSID + IThumbnailProvider association).
+    using (var tclsid = hklm.CreateSubKey($@"SOFTWARE\Classes\CLSID\{ThumbnailClsid}"))
+    {
+        tclsid.SetValue(null, ThumbnailFriendlyName);
+        using var tinproc = tclsid.CreateSubKey("InprocServer32");
+        tinproc.SetValue(null, shimDllPath);
+        tinproc.SetValue("ThreadingModel", "Apartment");
+    }
+
+    foreach (var ext in PreviewFileTypes.Extensions)
+    {
+        using var thumbEx = hklm.CreateSubKey($@"SOFTWARE\Classes\{ext}\ShellEx\{ThumbnailProviderIid}");
+        thumbEx.SetValue(null, ThumbnailClsid);
+    }
 }
 
 void Unregister()
@@ -91,10 +111,14 @@ void Unregister()
     using var hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
 
     foreach (var ext in PreviewFileTypes.Extensions)
+    {
         hklm.DeleteSubKeyTree($@"SOFTWARE\Classes\{ext}\ShellEx\{PreviewHandlerIid}", throwOnMissingSubKey: false);
+        hklm.DeleteSubKeyTree($@"SOFTWARE\Classes\{ext}\ShellEx\{ThumbnailProviderIid}", throwOnMissingSubKey: false);
+    }
 
     using (var list = hklm.OpenSubKey(PreviewHandlersKey, writable: true))
         list?.DeleteValue(HandlerClsid, throwOnMissingValue: false);
 
     hklm.DeleteSubKeyTree($@"SOFTWARE\Classes\CLSID\{HandlerClsid}", throwOnMissingSubKey: false);
+    hklm.DeleteSubKeyTree($@"SOFTWARE\Classes\CLSID\{ThumbnailClsid}", throwOnMissingSubKey: false);
 }

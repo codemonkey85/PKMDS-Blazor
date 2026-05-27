@@ -34,6 +34,20 @@ $root = $PSScriptRoot
 $worker = Join-Path $root 'PkmdsPreviewWorker\PkmdsPreviewWorker.csproj'
 $dist = Join-Path $root 'dist'
 
+# Stop the handler hosts first — prevhost (preview) and any lingering worker keep the DLLs in
+# dist\ locked, which would fail the clean+republish below.  For dllhost (COM surrogate that
+# hosts the thumbnail provider), only kill instances that have our shim loaded; killing all
+# dllhost processes would disrupt unrelated shell extensions.
+Write-Host "Stopping handler hosts (prevhost / dllhost[shim] / worker)..." -ForegroundColor DarkGray
+Stop-Process -Name prevhost, PkmdsPreviewWorker -Force -ErrorAction SilentlyContinue
+$shimInDist = Join-Path $dist 'PkmdsPreviewShim.dll'
+if (Test-Path $shimInDist) {
+    Get-Process dllhost -ErrorAction SilentlyContinue | ForEach-Object {
+        try { if ($_.Modules.FileName -contains $shimInDist) { Stop-Process $_ -Force } } catch { }
+    }
+}
+Start-Sleep -Milliseconds 600
+
 Write-Host "[1/5] Building native shim (PkmdsPreviewShim.dll)..." -ForegroundColor Cyan
 & (Join-Path $root 'build-shim.ps1')
 $shim = Join-Path $root 'PkmdsPreviewShim\bin\PkmdsPreviewShim.dll'
