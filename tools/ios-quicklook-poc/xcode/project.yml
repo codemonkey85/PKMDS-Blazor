@@ -71,8 +71,14 @@ targets:
                 - pk8
                 - pk9
                 - pa8
+                - pa9
                 - pb7
                 - pb8
+                - sk2
+                - ck3
+                - xk3
+                - bk4
+                - rk4
           - UTTypeIdentifier: com.bondcodes.pkmds.save-file
             UTTypeDescription: Pokémon Save File
             UTTypeConformsTo:
@@ -81,6 +87,49 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - sav
+                - gci
+                - dsv
+                - srm
+          # dat / bin / fla are common extensions that iOS resolves to system UTTypes
+          # (public.data, com.apple.macbinary-archive, etc.). Declaring them in the same
+          # UTType as sav/gci would poison the whole type and block QL dispatch for all
+          # of its extensions. Split them out — same fix as the macOS POC.
+          - UTTypeIdentifier: com.bondcodes.pkmds.save-file-restricted
+            UTTypeDescription: Pokémon Save File (restricted extensions)
+            UTTypeConformsTo:
+              - public.data
+              - public.composite-content
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - dat
+                - bin
+                - fla
+          - UTTypeIdentifier: com.bondcodes.pkmds.wonder-card
+            UTTypeDescription: Pokémon Wonder Card
+            UTTypeConformsTo:
+              - public.data
+              - public.composite-content
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - wc3
+                - wc4
+                - wc5full
+                - wc6
+                - wc6full
+                - wc7
+                - wc7full
+                - wr7
+                - wb7
+                - wb7full
+                - wc8
+                - wc8full
+                - wb8
+                - wa8
+                - wc9
+                - wa9
+                - pcd
+                - pgt
+                - pgf
         CFBundleDocumentTypes:
           - CFBundleTypeName: Pokémon Entity File
             CFBundleTypeRole: Viewer
@@ -91,4 +140,10 @@ targets:
             CFBundleTypeRole: Viewer
             LSItemContentTypes:
               - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.save-file-restricted
+            LSHandlerRank: Alternate
+          - CFBundleTypeName: Pokémon Wonder Card
+            CFBundleTypeRole: Viewer
+            LSItemContentTypes:
+              - com.bondcodes.pkmds.wonder-card
             LSHandlerRank: Alternate

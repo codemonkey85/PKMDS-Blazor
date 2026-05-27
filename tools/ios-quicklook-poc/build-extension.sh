@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Builds the C# Quick Look extension (.appex) and the SwiftUI host app, then
-# embeds the .appex into the host app's PlugIns/. Defaults to the iOS Simulator
+# Builds the C# Quick Look preview + thumbnail extensions (.appex) and the SwiftUI host app,
+# then embeds both .appex bundles into the host app's PlugIns/. Defaults to the iOS Simulator
 # (no signing required); use --device for an AOT'd ios-arm64 build.
 #
 #   ./build-extension.sh                          # iOS Simulator (Mono, no AOT)
@@ -9,6 +9,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 
 # Ad-hoc signs every Mach-O inside an .appex (main binary + every embedded
 # .dylib), then signs the bundle itself. iOS extensions on the simulator
@@ -31,20 +32,24 @@ fi
 # build` (Microsoft.iOS.Sdk's Publish target rejects simulator RIDs); device
 # uses ios-arm64 + NativeAOT via `dotnet publish`.
 CSPROJ="$SCRIPT_DIR/PkmdsQuickLook/PkmdsQuickLook.csproj"
+THUMB_CSPROJ="$SCRIPT_DIR/PkmdsQuickLookThumbnail/PkmdsQuickLookThumbnail.csproj"
 if [[ "$TARGET_DEVICE" -eq 1 ]]; then
     DOTNET_CMD=(publish -c Release -r ios-arm64)
     DOTNET_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLook/bin/Release/net10.0-ios/ios-arm64"
+    THUMB_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLookThumbnail/bin/Release/net10.0-ios/ios-arm64"
     XCODE_DEST="generic/platform=iOS"
     XCODE_PRODUCTS_DIR="Release-iphoneos"
     XCODE_CONFIG="Release"
 else
     DOTNET_CMD=(build -c Debug -r iossimulator-arm64)
     DOTNET_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLook/bin/Debug/net10.0-ios/iossimulator-arm64"
+    THUMB_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLookThumbnail/bin/Debug/net10.0-ios/iossimulator-arm64"
     XCODE_PRODUCTS_DIR="Debug-iphonesimulator"
     XCODE_CONFIG="Debug"
 fi
 
 APPEX_SRC="$DOTNET_OUT_DIR/PkmdsQuickLook.appex"
+THUMB_APPEX_SRC="$THUMB_OUT_DIR/PkmdsQuickLookThumbnail.appex"
 
 XCODE_DIR="$SCRIPT_DIR/xcode"
 PROJECT="$XCODE_DIR/PkmdsHost.xcodeproj"
@@ -61,10 +66,21 @@ EOF
     exit 1
 fi
 
-echo "==> dotnet ${DOTNET_CMD[*]}"
+# Delete the SDK's intermediate AppManifest.plist before each build so that
+# Info.plist-only changes (no .cs edits) are never skipped by incremental build.
+# Microsoft.iOS.Sdk caches the merged plist in obj/; cleaning bin/ alone is not enough.
+rm -f "${DOTNET_OUT_DIR/\/bin\//\/obj\/}/AppManifest.plist"
+rm -f "${THUMB_OUT_DIR/\/bin\//\/obj\/}/AppManifest.plist"
+
+echo "==> dotnet ${DOTNET_CMD[*]} (preview extension)"
 dotnet "${DOTNET_CMD[@]}" "$CSPROJ" --nologo
 
 [[ -d "$APPEX_SRC" ]] || { echo "missing .appex at $APPEX_SRC" >&2; exit 1; }
+
+echo "==> dotnet ${DOTNET_CMD[*]} (thumbnail extension)"
+dotnet "${DOTNET_CMD[@]}" "$THUMB_CSPROJ" --nologo
+
+[[ -d "$THUMB_APPEX_SRC" ]] || { echo "missing thumbnail .appex at $THUMB_APPEX_SRC" >&2; exit 1; }
 
 echo "==> xcodegen generate"
 ( cd "$XCODE_DIR" && xcodegen generate --quiet )
@@ -83,21 +99,34 @@ if [[ "$TARGET_DEVICE" -eq 1 ]]; then
 
     [[ -d "$APP_PATH" ]] || { echo "missing host app at $APP_PATH" >&2; exit 1; }
 
-    echo "==> embed .appex into host app"
+    echo "==> embed .appex bundles into host app"
     mkdir -p "$APP_PATH/PlugIns"
     rm -rf "$APP_PATH/PlugIns/PkmdsQuickLook.appex"
     cp -R "$APPEX_SRC" "$APP_PATH/PlugIns/"
+    rm -rf "$APP_PATH/PlugIns/PkmdsQuickLookThumbnail.appex"
+    cp -R "$THUMB_APPEX_SRC" "$APP_PATH/PlugIns/"
+
+    # Copy bundled sprites into the thumbnail extension.
+    echo "==> bundle sprites into thumbnail extension"
+    SPRITES_SRC="$REPO_ROOT/Pkmds.Rcl/wwwroot/sprites"
+    SPRITES_DST="$APP_PATH/PlugIns/PkmdsQuickLookThumbnail.appex/sprites"
+    rm -rf "$SPRITES_DST"
+    mkdir -p "$SPRITES_DST"
+    cp -r "$SPRITES_SRC/a"  "$SPRITES_DST/"
+    cp -r "$SPRITES_SRC/ai" "$SPRITES_DST/"
+    cp -r "$SPRITES_SRC/bi" "$SPRITES_DST/"
 
     # Even on the simulator, iOS extensions must carry a valid code signature —
     # the host app gets a pass without one, but amfid SIGKILLs unsigned .appex
     # bundles on launch ("Code Signature Invalid" / dyld __LINKEDIT page fault).
     # Ad-hoc signing covers the simulator path; real-device deployment needs a
     # full Developer ID via Xcode.
-    echo "==> ad-hoc sign embedded .appex"
+    echo "==> ad-hoc sign embedded .appex bundles"
     sign_appex "$APP_PATH/PlugIns/PkmdsQuickLook.appex"
+    sign_appex "$APP_PATH/PlugIns/PkmdsQuickLookThumbnail.appex"
 
     echo
-    echo "Built unsigned host app with embedded extension: $APP_PATH"
+    echo "Built unsigned host app with embedded extensions: $APP_PATH"
     echo "Deploy to a real device by opening the project in Xcode, setting your"
     echo "Team / signing identity, and running on a connected device."
     exit 0
@@ -140,13 +169,25 @@ xcodebuild \
 
 [[ -d "$APP_PATH" ]] || { echo "missing host app at $APP_PATH" >&2; exit 1; }
 
-echo "==> embed .appex into host app"
+echo "==> embed .appex bundles into host app"
 mkdir -p "$APP_PATH/PlugIns"
 rm -rf "$APP_PATH/PlugIns/PkmdsQuickLook.appex"
 cp -R "$APPEX_SRC" "$APP_PATH/PlugIns/"
+rm -rf "$APP_PATH/PlugIns/PkmdsQuickLookThumbnail.appex"
+cp -R "$THUMB_APPEX_SRC" "$APP_PATH/PlugIns/"
 
-echo "==> ad-hoc sign embedded .appex"
+echo "==> bundle sprites into thumbnail extension"
+SPRITES_SRC="$REPO_ROOT/Pkmds.Rcl/wwwroot/sprites"
+SPRITES_DST="$APP_PATH/PlugIns/PkmdsQuickLookThumbnail.appex/sprites"
+rm -rf "$SPRITES_DST"
+mkdir -p "$SPRITES_DST"
+cp -r "$SPRITES_SRC/a"  "$SPRITES_DST/"
+cp -r "$SPRITES_SRC/ai" "$SPRITES_DST/"
+cp -r "$SPRITES_SRC/bi" "$SPRITES_DST/"
+
+echo "==> ad-hoc sign embedded .appex bundles"
 sign_appex "$APP_PATH/PlugIns/PkmdsQuickLook.appex"
+sign_appex "$APP_PATH/PlugIns/PkmdsQuickLookThumbnail.appex"
 
 echo "==> install + launch"
 xcrun simctl uninstall "$SIM_UUID" com.bondcodes.pkmds.host.ios 2>/dev/null || true
@@ -155,4 +196,6 @@ xcrun simctl launch "$SIM_UUID" com.bondcodes.pkmds.host.ios
 
 echo
 echo "Launched PkmdsHost on $SIM_NAME."
-echo "Drag a .pk*/.sav from Finder onto the Simulator window, then long-press the file in Files.app to preview."
+echo "Drag a .pk*/.sav from Finder onto the Simulator window, then:"
+echo "  - Long-press a file in Files.app → Quick Look → HTML preview."
+echo "  - Switch to grid/column view with large icons → thumbnail extension renders trainer cards + sprites."

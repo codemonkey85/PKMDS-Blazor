@@ -21,14 +21,15 @@ struct ContentView: View {
 
                 Divider()
 
-                Text("This host app exists so iOS will register the bundled Quick Look extension. Once installed, long-press a `.pk*` or `.sav` file in **Files** (or any other Quick Look surface — Mail attachments, AirDrop received files) to preview it.")
+                Text("This host app exists so iOS will register the bundled Quick Look extensions. Once installed, long-press any supported file in **Files** (or any other Quick Look surface — Mail attachments, AirDrop received files) to preview it. In grid or column view, supported files also show custom thumbnails.")
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text("Supported types")
                     .font(.headline)
                     .padding(.top, 8)
-                Text("• `.pk1`–`.pk9`, `.pa8`, `.pb7`, `.pb8` — Pokémon entity files")
-                Text("• `.sav` — Pokémon save files")
+                Text("• `.pk1`–`.pk9`, `.pa8`, `.pa9`, `.pb7`, `.pb8`, `.sk2`, `.ck3`, `.xk3`, `.bk4`, `.rk4` — Pokémon entity files")
+                Text("• `.sav`, `.gci`, `.dsv`, `.srm`, `.dat`, `.bin`, `.fla` — Pokémon save files")
+                Text("• `.wc3`–`.wc9`, `.wa8`, `.wa9`, `.wb7`, `.wb8`, `.wr7`, `.pcd`, `.pgt`, `.pgf` — Wonder Cards / Mystery Gifts")
             }
             .padding(24)
             .frame(maxWidth: .infinity, alignment: .leading)

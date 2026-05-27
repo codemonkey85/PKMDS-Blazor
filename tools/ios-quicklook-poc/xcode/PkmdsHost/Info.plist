@@ -30,6 +30,7 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.bondcodes.pkmds.save-file</string>
+				<string>com.bondcodes.pkmds.save-file-restricted</string>
 			</array>
 		</dict>
 		<dict>
@@ -133,10 +134,28 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>sav</string>
-					<string>dat</string>
 					<string>gci</string>
 					<string>dsv</string>
 					<string>srm</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.composite-content</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Pokémon Save File (restricted extensions)</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.bondcodes.pkmds.save-file-restricted</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>dat</string>
+					<string>bin</string>
 					<string>fla</string>
 				</array>
 			</dict>
@@ -155,11 +174,8 @@
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>pgt</string>
-					<string>pcd</string>
 					<string>wc3</string>
 					<string>wc4</string>
-					<string>pgf</string>
 					<string>wc5full</string>
 					<string>wc6</string>
 					<string>wc6full</string>
@@ -174,6 +190,9 @@
 					<string>wa8</string>
 					<string>wc9</string>
 					<string>wa9</string>
+					<string>pcd</string>
+					<string>pgt</string>
+					<string>pgf</string>
 				</array>
 			</dict>
 		</dict>
