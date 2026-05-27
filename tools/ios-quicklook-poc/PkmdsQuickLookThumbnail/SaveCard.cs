@@ -1,5 +1,4 @@
 using CoreGraphics;
-using CoreText;
 using Foundation;
 using PKHeX.Core;
 using UIKit;
@@ -24,8 +23,8 @@ internal static class SaveCard
     }
 
     // Draws a trainer card into the QL CGContext.
-    // iOS QL context origin: top-left, y-down — same as UIKit's drawing coordinate system
-    // when entered via UIGraphics.PushContext. All y offsets are measured from the top.
+    // iOS QL context origin: top-left, y-down — same as UIKit drawing when entered via
+    // UIGraphics.PushContext. All y offsets are measured from the top.
     internal static void Draw(CGContext ctx, CGSize size, Info info)
     {
         var margin   = (nfloat)(size.Width * 0.05);
@@ -37,8 +36,6 @@ internal static class SaveCard
 
         var (accent, accent2) = AccentColors(info.Version);
 
-        // Card background — use CGContext directly since UIBezierPath fills go through
-        // UIGraphics.GetCurrentContext(), which is set by PushContext.
         var cardPath = UIBezierPath.FromRoundedRect(cardRect, radius);
         UIColor.White.SetFill();
         cardPath.Fill();
@@ -56,9 +53,9 @@ internal static class SaveCard
             DrawFittedText(info.Version, codeRect, (nfloat)(size.Height * 0.40), bold: true, color: accent);
 
         // OT name
-        var otH    = (nfloat)(size.Height * 0.15);
-        var otY    = margin + (nfloat)(size.Height * 0.43);
-        var otPad  = (nfloat)(cardRect.Width * 0.05);
+        var otH   = (nfloat)(size.Height * 0.15);
+        var otY   = margin + (nfloat)(size.Height * 0.43);
+        var otPad = (nfloat)(cardRect.Width * 0.05);
         DrawFittedText(info.Ot.Length > 0 ? info.Ot : "Trainer",
                        new CGRect(cardRect.X + otPad, otY, cardRect.Width - 2 * otPad, otH),
                        (nfloat)(size.Height * 0.135), bold: true,
@@ -84,22 +81,20 @@ internal static class SaveCard
     // Shrinks the font until text fits inside rect, then draws it horizontally centred.
     private static void DrawFittedText(string text, CGRect rect, nfloat maxEm, bool bold, UIColor color)
     {
-        var style = new NSMutableParagraphStyle { Alignment = UITextAlignment.Center };
         var em = maxEm;
         while (em > 6)
         {
-            var attrs = MakeAttrs(em, bold, color, style);
-            var sz    = MeasureText(text, rect.Width, attrs);
+            var attrStr = MakeAttrStr(text, em, bold, color, centerAligned: true);
+            var sz      = Measure(attrStr, rect.Width);
             if (sz.Width <= rect.Width && sz.Height <= rect.Height)
             {
-                DrawText(text, VertCentred(sz, rect), attrs);
+                attrStr.DrawString(VertCentred(sz, rect));
                 return;
             }
             em -= 1;
         }
-        var fallbackAttrs = MakeAttrs(6, bold, color, style);
-        var fallbackSz    = MeasureText(text, rect.Width, fallbackAttrs);
-        DrawText(text, VertCentred(fallbackSz, rect), fallbackAttrs);
+        var fallback = MakeAttrStr(text, 6, bold, color, centerAligned: true);
+        fallback.DrawString(VertCentred(Measure(fallback, rect.Width), rect));
     }
 
     // Per-character gradient text for the ambiguous RB / GS groups.
@@ -111,56 +106,47 @@ internal static class SaveCard
         var em    = maxEm;
         while (em > 6)
         {
-            var attrs = MakeAttrs(em, bold, a1, style: null);
-            var sz    = MeasureText(text, rect.Width, attrs);
+            var sz = Measure(MakeAttrStr(text, em, bold, a1, centerAligned: false), rect.Width);
             if (sz.Width <= rect.Width && sz.Height <= rect.Height) break;
             em -= 1;
         }
 
-        var baseAttrs = MakeAttrs(em, bold, a1, style: null);
-        var totalW    = MeasureText(text, rect.Width, baseAttrs).Width;
-        var curX      = (nfloat)(rect.MidX - totalW / 2);
+        var totalW = Measure(MakeAttrStr(text, em, bold, a1, centerAligned: false), rect.Width).Width;
+        // rect.X + rect.Width / 2 = horizontal centre of rect (MidX)
+        var curX = rect.X + rect.Width / 2 - totalW / 2;
+        // rect.Y + rect.Height / 2 = vertical centre (MidY)
+        var midY = rect.Y + rect.Height / 2;
 
         for (var i = 0; i < chars.Length; i++)
         {
             var t     = chars.Length > 1 ? (nfloat)i / (chars.Length - 1) : (nfloat)0;
             var color = Interpolate(a1, a2, t);
-            var attrs = MakeAttrs(em, bold, color, style: null);
-            var ch    = chars[i].ToString();
-            var sz    = MeasureText(ch, rect.Width, attrs);
-            DrawText(ch, new CGRect(curX, rect.MidY - sz.Height / 2, sz.Width, sz.Height), attrs);
+            var attrStr = MakeAttrStr(chars[i].ToString(), em, bold, color, centerAligned: false);
+            var sz      = Measure(attrStr, rect.Width);
+            attrStr.DrawString(new CGRect(curX, midY - sz.Height / 2, sz.Width, sz.Height));
             curX += sz.Width;
         }
     }
 
-    private static NSDictionary MakeAttrs(nfloat em, bool bold, UIColor color, NSParagraphStyle? style)
+    private static NSAttributedString MakeAttrStr(string text, nfloat em, bool bold,
+                                                   UIColor color, bool centerAligned)
     {
-        var font = bold ? UIFont.BoldSystemFontOfSize(em) : UIFont.SystemFontOfSize(em);
-        var keys   = new NSObject[] { UIStringAttributeKey.Font, UIStringAttributeKey.ForegroundColor };
-        var values = new NSObject[] { font, color };
-        if (style is not null)
-        {
-            keys   = [.. keys,   UIStringAttributeKey.ParagraphStyle];
-            values = [.. values, style];
-        }
-        return NSDictionary.FromObjectsAndKeys(values, keys);
+        var font  = bold ? UIFont.BoldSystemFontOfSize(em) : UIFont.SystemFontOfSize(em);
+        var attrs = new UIStringAttributes { Font = font, ForegroundColor = color };
+        if (centerAligned)
+            attrs.ParagraphStyle = new NSMutableParagraphStyle { Alignment = UITextAlignment.Center };
+        return new NSAttributedString(text, attrs.Dictionary);
     }
 
-    private static CGSize MeasureText(string text, nfloat maxWidth, NSDictionary attrs)
-    {
-        var ns  = new NSString(text);
-        var opt = NSStringDrawingOptions.UsesLineFragmentOrigin;
-        return ns.GetBoundingRect(new CGSize(maxWidth, nfloat.MaxValue), opt, attrs, null).Size;
-    }
+    private static CGSize Measure(NSAttributedString attrStr, nfloat maxWidth) =>
+        attrStr.GetBoundingRect(
+            new CGSize(maxWidth, nfloat.MaxValue),
+            NSStringDrawingOptions.UsesLineFragmentOrigin,
+            null).Size;
 
-    private static void DrawText(string text, CGRect rect, NSDictionary attrs)
-    {
-        var ns = new NSString(text);
-        ns.DrawString(rect, attrs);
-    }
-
+    // rect.Y + rect.Height / 2 - sz.Height / 2 = vertically centred inside rect (MidY - half height)
     private static CGRect VertCentred(CGSize sz, CGRect rect) =>
-        new(rect.X, rect.MidY - sz.Height / 2, rect.Width, sz.Height);
+        new(rect.X, rect.Y + rect.Height / 2 - sz.Height / 2, rect.Width, sz.Height);
 
     // ── Accent colours — mirrors macOS ThumbnailProvider.swift accentColors ──────────────────────
 
