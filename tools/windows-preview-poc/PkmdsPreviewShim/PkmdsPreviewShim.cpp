@@ -403,7 +403,8 @@ public:
         HRESULT hr = E_FAIL;
         if (ShellExecuteExW(&sei) && sei.hProcess)
         {
-            WaitForSingleObject(sei.hProcess, 15000);
+            if (WaitForSingleObject(sei.hProcess, 15000) != WAIT_OBJECT_0)
+                TerminateProcess(sei.hProcess, 1);
             CloseHandle(sei.hProcess);
             if (PathFileExistsW(outPng.c_str()))
             {
