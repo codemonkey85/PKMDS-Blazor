@@ -30,6 +30,7 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.bondcodes.pkmds.save-file</string>
+				<string>com.bondcodes.pkmds.save-file-restricted</string>
 			</array>
 		</dict>
 		<dict>
@@ -136,8 +137,26 @@
 					<string>gci</string>
 					<string>dsv</string>
 					<string>srm</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.composite-content</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Pokémon Save File (restricted extensions)</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.bondcodes.pkmds.save-file-restricted</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
 					<string>dat</string>
 					<string>bin</string>
+					<string>fla</string>
 				</array>
 			</dict>
 		</dict>

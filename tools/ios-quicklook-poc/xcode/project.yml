@@ -90,8 +90,20 @@ targets:
                 - gci
                 - dsv
                 - srm
+          # dat / bin / fla are common extensions that iOS resolves to system UTTypes
+          # (public.data, com.apple.macbinary-archive, etc.). Declaring them in the same
+          # UTType as sav/gci would poison the whole type and block QL dispatch for all
+          # of its extensions. Split them out — same fix as the macOS POC.
+          - UTTypeIdentifier: com.bondcodes.pkmds.save-file-restricted
+            UTTypeDescription: Pokémon Save File (restricted extensions)
+            UTTypeConformsTo:
+              - public.data
+              - public.composite-content
+            UTTypeTagSpecification:
+              public.filename-extension:
                 - dat
                 - bin
+                - fla
           - UTTypeIdentifier: com.bondcodes.pkmds.wonder-card
             UTTypeDescription: Pokémon Wonder Card
             UTTypeConformsTo:
@@ -128,6 +140,7 @@ targets:
             CFBundleTypeRole: Viewer
             LSItemContentTypes:
               - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.save-file-restricted
             LSHandlerRank: Alternate
           - CFBundleTypeName: Pokémon Wonder Card
             CFBundleTypeRole: Viewer
