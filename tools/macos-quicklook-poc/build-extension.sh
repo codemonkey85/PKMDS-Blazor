@@ -28,6 +28,7 @@ APP_PATH="$DERIVED/Build/Products/Release/PkmdsHost.app"
 
 PREVIEW_APPEX="$APP_PATH/Contents/PlugIns/PkmdsQuickLook.appex"
 THUMBNAIL_APPEX="$APP_PATH/Contents/PlugIns/PkmdsQuickLookThumbnail.appex"
+SPOTLIGHT_APPEX="$APP_PATH/Contents/Resources/PkmdsSpotlight.mdimporter"
 
 PREVIEW_ENTITLEMENTS="$XCODE_DIR/PkmdsQuickLook/PkmdsQuickLook.entitlements"
 THUMBNAIL_ENTITLEMENTS="$XCODE_DIR/PkmdsQuickLookThumbnail/PkmdsQuickLookThumbnail.entitlements"
@@ -85,6 +86,18 @@ codesign --force --sign - --timestamp=none --options runtime \
 
 codesign --force --sign - --timestamp=none "$APP_PATH"
 
+# ── Deploy Spotlight MDImporter ─────────────────────────────────────────────────────────────────
+# The MDImporter teaches Spotlight to assign com.bondcodes.pkmds.save-file to .sav/.dat/.fla files.
+# Once indexed, Finder dispatches our Quick Look extension instead of treating them as opaque data.
+# We install into ~/Library/Spotlight (user-level) rather than /Library/Spotlight to avoid sudo.
+echo "==> install Spotlight MDImporter"
+SPOTLIGHT_DST="$HOME/Library/Spotlight/PkmdsSpotlight.mdimporter"
+rm -rf "$SPOTLIGHT_DST"
+cp -R "$SPOTLIGHT_APPEX" "$SPOTLIGHT_DST"
+codesign --force --sign - --timestamp=none "$SPOTLIGHT_DST"
+# Reload the importer and re-index any PKHeX save files already on disk.
+mdimport -r "$SPOTLIGHT_DST" 2>/dev/null || true
+
 # ── Deploy ──────────────────────────────────────────────────────────────────────────────────────
 echo "==> deploy to /Applications and register only that copy"
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
@@ -128,6 +141,11 @@ qlmanage -r >/dev/null 2>&1 || true
 qlmanage -r cache >/dev/null 2>&1 || true
 
 # ── Smoke tests ─────────────────────────────────────────────────────────────────────────────────
+# Re-index test .sav files so Finder picks up the new MDImporter metadata immediately.
+echo "==> mdimport test save files"
+find "$REPO_ROOT/TestFiles" -maxdepth 1 \( -name "*.sav" -o -name "*.dat" -o -name "*.fla" \) \
+    -exec mdimport {} \; 2>/dev/null || true
+sleep 1
 # qlmanage -p opens an interactive window; run it with a 10-second timeout so the script doesn't
 # block waiting for the user to close the window.
 echo "==> qlmanage -p (preview): $FIXTURE"
@@ -158,6 +176,6 @@ fi
 
 echo
 echo "Built and installed: $INSTALLED"
-echo "Press Space on a .pk*/.gci file in Finder to preview/thumbnail."
+echo "Press Space on a .pk*/.gci/.sav file in Finder to preview/thumbnail."
 echo "Thumbnail icons appear in Finder's icon or gallery view (may need qlmanage -r cache)."
-echo "Note: .sav thumbnails in Finder require a Spotlight MDImporter to assign the save-file UTI."
+echo ".sav/.dat/.fla files are re-indexed by mdimport automatically; new files need 'mdimport <file>' or a Spotlight index pass."
