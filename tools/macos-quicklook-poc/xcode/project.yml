@@ -119,26 +119,6 @@ targets:
       - target: PkmdsQuickLookThumbnail
         embed: true
         codeSign: true
-      - target: PkmdsSpotlight
-        embed: true
-        codeSign: true
-
-  PkmdsSpotlight:
-    type: bundle
-    platform: macOS
-    sources:
-      - path: PkmdsSpotlight
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.bondcodes.pkmds.spotlight
-        WRAPPER_EXTENSION: mdimporter
-        SKIP_INSTALL: YES
-        MARKETING_VERSION: "0.0.1"
-        CURRENT_PROJECT_VERSION: "1"
-        INFOPLIST_FILE: PkmdsSpotlight/Info.plist
-    dependencies:
-      - sdk: CoreFoundation.framework
-      - sdk: CoreServices.framework
 
   PkmdsQuickLook:
     type: app-extension

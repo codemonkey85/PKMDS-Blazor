@@ -12,8 +12,8 @@ REPO_ROOT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 RID="osx-arm64"
 
 FIXTURE="${1:-$REPO_ROOT/TestFiles/Lucario_B06DDFAD.pk5}"
-# .gci is a non-prohibited extension mapped to com.bondcodes.pkmds.save-file; qlmanage uses it
-# for the thumbnail smoke test because qlmanage cannot dispatch to sandboxed extensions via .sav.
+# .gci is declared in the host app's save-file UTI and dispatches correctly without needing
+# Spotlight metadata — used for the save-file thumbnail smoke test.
 GCI_FIXTURE="$REPO_ROOT/TestFiles/Test-Save-Moon.gci"
 
 CSPROJ="$SCRIPT_DIR/PkmdsNative/PkmdsNative.csproj"
@@ -28,7 +28,6 @@ APP_PATH="$DERIVED/Build/Products/Release/PkmdsHost.app"
 
 PREVIEW_APPEX="$APP_PATH/Contents/PlugIns/PkmdsQuickLook.appex"
 THUMBNAIL_APPEX="$APP_PATH/Contents/PlugIns/PkmdsQuickLookThumbnail.appex"
-SPOTLIGHT_APPEX="$APP_PATH/Contents/Resources/PkmdsSpotlight.mdimporter"
 
 PREVIEW_ENTITLEMENTS="$XCODE_DIR/PkmdsQuickLook/PkmdsQuickLook.entitlements"
 THUMBNAIL_ENTITLEMENTS="$XCODE_DIR/PkmdsQuickLookThumbnail/PkmdsQuickLookThumbnail.entitlements"
@@ -86,18 +85,6 @@ codesign --force --sign - --timestamp=none --options runtime \
 
 codesign --force --sign - --timestamp=none "$APP_PATH"
 
-# ── Deploy Spotlight MDImporter ─────────────────────────────────────────────────────────────────
-# The MDImporter teaches Spotlight to assign com.bondcodes.pkmds.save-file to .sav/.dat/.fla files.
-# Once indexed, Finder dispatches our Quick Look extension instead of treating them as opaque data.
-# We install into ~/Library/Spotlight (user-level) rather than /Library/Spotlight to avoid sudo.
-echo "==> install Spotlight MDImporter"
-SPOTLIGHT_DST="$HOME/Library/Spotlight/PkmdsSpotlight.mdimporter"
-rm -rf "$SPOTLIGHT_DST"
-cp -R "$SPOTLIGHT_APPEX" "$SPOTLIGHT_DST"
-codesign --force --sign - --timestamp=none "$SPOTLIGHT_DST"
-# Reload the importer and re-index any PKHeX save files already on disk.
-mdimport -r "$SPOTLIGHT_DST" 2>/dev/null || true
-
 # ── Deploy ──────────────────────────────────────────────────────────────────────────────────────
 echo "==> deploy to /Applications and register only that copy"
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
@@ -141,11 +128,6 @@ qlmanage -r >/dev/null 2>&1 || true
 qlmanage -r cache >/dev/null 2>&1 || true
 
 # ── Smoke tests ─────────────────────────────────────────────────────────────────────────────────
-# Re-index test .sav files so Finder picks up the new MDImporter metadata immediately.
-echo "==> mdimport test save files"
-find "$REPO_ROOT/TestFiles" -maxdepth 1 \( -name "*.sav" -o -name "*.dat" -o -name "*.fla" \) \
-    -exec mdimport {} \; 2>/dev/null || true
-sleep 1
 # qlmanage -p opens an interactive window; run it with a 10-second timeout so the script doesn't
 # block waiting for the user to close the window.
 echo "==> qlmanage -p (preview): $FIXTURE"
@@ -159,16 +141,8 @@ if [[ -n "$(ls /tmp/"$(basename "$FIXTURE")"*.png 2>/dev/null)" ]]; then
 fi
 
 # Save-file thumbnail smoke test uses .gci because qlmanage cannot dispatch to sandboxed
-# extensions for prohibited extensions like .sav. In Finder, .sav files need a Spotlight
-# MDImporter to assign the com.bondcodes.pkmds.save-file UTI; .gci/.dsv/.srm work automatically.
-if [[ ! -f "$GCI_FIXTURE" ]]; then
-    SRC_SAV="$REPO_ROOT/TestFiles/moon.sav"
-    if [[ -f "$SRC_SAV" ]]; then
-        cp "$SRC_SAV" "$GCI_FIXTURE"
-        mdimport "$GCI_FIXTURE" 2>/dev/null || true
-        echo "    created $GCI_FIXTURE for save thumbnail test"
-    fi
-fi
+# extensions for extensions (.sav/.dat/.fla) not declared in the host app UTI.
+# Those extensions would need special handling to get thumbnails; .gci/.dsv/.srm work directly.
 if [[ -f "$GCI_FIXTURE" ]]; then
     echo "==> qlmanage -t (thumbnail, 256px): $(basename "$GCI_FIXTURE")"
     ( qlmanage -t -s 256 -o /tmp "$GCI_FIXTURE" 2>&1 & QLT=$! ; sleep 15 ; kill "$QLT" 2>/dev/null ; true ) | tail -10 || true
@@ -176,6 +150,7 @@ fi
 
 echo
 echo "Built and installed: $INSTALLED"
-echo "Press Space on a .pk*/.gci/.sav file in Finder to preview/thumbnail."
-echo "Thumbnail icons appear in Finder's icon or gallery view (may need qlmanage -r cache)."
-echo ".sav/.dat/.fla files are re-indexed by mdimport automatically; new files need 'mdimport <file>' or a Spotlight index pass."
+echo "Press Space on a .pk*/.gci/.wc6 file in Finder to preview/thumbnail."
+echo "Thumbnail icons appear in Finder's icon or gallery view at sizes >= ~100px (may need qlmanage -r cache)."
+echo "Note: .sav/.dat/.fla files are not declared in the host UTI to avoid prohibited-extension dispatch blocking."
+echo "      They do not get thumbnails or custom previews. Use .gci/.dsv/.srm for save-file coverage."
