@@ -71,8 +71,14 @@ targets:
                 - pk8
                 - pk9
                 - pa8
+                - pa9
                 - pb7
                 - pb8
+                - sk2
+                - ck3
+                - xk3
+                - bk4
+                - rk4
           - UTTypeIdentifier: com.bondcodes.pkmds.save-file
             UTTypeDescription: Pokémon Save File
             UTTypeConformsTo:
@@ -81,6 +87,11 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - sav
+                - gci
+                - dsv
+                - srm
+                - dat
+                - bin
           - UTTypeIdentifier: com.bondcodes.pkmds.wonder-card
             UTTypeDescription: Pokémon Wonder Card
             UTTypeConformsTo:
@@ -88,15 +99,22 @@ targets:
               - public.composite-content
             UTTypeTagSpecification:
               public.filename-extension:
+                - wc3
                 - wc4
                 - wc5full
                 - wc6
                 - wc6full
                 - wc7
                 - wc7full
+                - wr7
+                - wb7
+                - wb7full
                 - wc8
                 - wc8full
+                - wb8
+                - wa8
                 - wc9
+                - wa9
                 - pcd
                 - pgt
                 - pgf
