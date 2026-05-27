@@ -25,7 +25,7 @@ public static class PreviewFileTypes
     /// <summary>Save files — UTType <c>com.bondcodes.pkmds.save-file</c>.</summary>
     public static readonly string[] SaveFiles =
     [
-        ".sav", ".dat", ".gci", ".dsv", ".srm", ".fla",
+        ".sav", ".dat", ".bin", ".gci", ".dsv", ".srm", ".fla",
     ];
 
     /// <summary>Wonder cards / mystery gifts — UTType <c>com.bondcodes.pkmds.wonder-card</c>.</summary>
