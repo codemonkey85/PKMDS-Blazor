@@ -12,8 +12,8 @@ REPO_ROOT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 RID="osx-arm64"
 
 FIXTURE="${1:-$REPO_ROOT/TestFiles/Lucario_B06DDFAD.pk5}"
-# .gci is declared in the host app's save-file UTI and dispatches correctly without needing
-# Spotlight metadata — used for the save-file thumbnail smoke test.
+# .gci is a non-prohibited extension declared in save-file UTI — ThumbnailsAgent dispatches it correctly.
+# .sav/.dat/.fla cannot get thumbnails (ThumbnailsAgent blocks UTIs that list prohibited extensions).
 GCI_FIXTURE="$REPO_ROOT/TestFiles/Test-Save-Moon.gci"
 
 CSPROJ="$SCRIPT_DIR/PkmdsNative/PkmdsNative.csproj"
@@ -140,9 +140,9 @@ if [[ -n "$(ls /tmp/"$(basename "$FIXTURE")"*.png 2>/dev/null)" ]]; then
     echo "    thumbnail PNG written to /tmp"
 fi
 
-# Save-file thumbnail smoke test uses .gci because qlmanage cannot dispatch to sandboxed
-# extensions for extensions (.sav/.dat/.fla) not declared in the host app UTI.
-# Those extensions would need special handling to get thumbnails; .gci/.dsv/.srm work directly.
+# Save-file thumbnail smoke test uses .gci — prohibited extensions (.sav/.dat/.fla) cannot get
+# thumbnails from sandboxed extensions (ThumbnailsAgent blocks entire UTIs that list them).
+# .gci/.dsv/.srm are safe and dispatch correctly.
 if [[ -f "$GCI_FIXTURE" ]]; then
     echo "==> qlmanage -t (thumbnail, 256px): $(basename "$GCI_FIXTURE")"
     ( qlmanage -t -s 256 -o /tmp "$GCI_FIXTURE" 2>&1 & QLT=$! ; sleep 15 ; kill "$QLT" 2>/dev/null ; true ) | tail -10 || true
@@ -150,7 +150,8 @@ fi
 
 echo
 echo "Built and installed: $INSTALLED"
-echo "Press Space on a .pk*/.gci/.wc6 file in Finder to preview/thumbnail."
+echo "Press Space on a .pk*/.gci/.sav/.dat/.wc6 file in Finder to preview/thumbnail."
 echo "Thumbnail icons appear in Finder's icon or gallery view at sizes >= ~100px (may need qlmanage -r cache)."
-echo "Note: .sav/.dat/.fla files are not declared in the host UTI to avoid prohibited-extension dispatch blocking."
-echo "      They do not get thumbnails or custom previews. Use .gci/.dsv/.srm for save-file coverage."
+echo "Note: .sav/.dat/.fla files get Quick Look previews (via save-file-restricted UTI) but NOT thumbnails."
+echo "      ThumbnailsAgent blocks thumbnail dispatch for any UTI containing prohibited extensions."
+echo "      Use .gci/.dsv/.srm for save-file thumbnail coverage."

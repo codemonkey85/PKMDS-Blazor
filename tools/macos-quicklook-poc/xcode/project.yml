@@ -71,6 +71,15 @@ targets:
                 - gci
                 - dsv
                 - srm
+          - UTTypeIdentifier: com.bondcodes.pkmds.save-file-restricted
+            UTTypeDescription: Pokémon Save File (restricted extensions)
+            UTTypeConformsTo:
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - sav
+                - dat
+                - fla
           - UTTypeIdentifier: com.bondcodes.pkmds.wonder-card
             UTTypeDescription: Pokémon Wonder Card
             UTTypeConformsTo:
@@ -106,6 +115,7 @@ targets:
             CFBundleTypeRole: Viewer
             LSItemContentTypes:
               - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.save-file-restricted
             LSHandlerRank: Alternate
           - CFBundleTypeName: Pokémon Wonder Card
             CFBundleTypeRole: Viewer
@@ -147,6 +157,7 @@ targets:
             QLSupportedContentTypes:
               - com.bondcodes.pkmds.pkm-file
               - com.bondcodes.pkmds.save-file
+              - com.bondcodes.pkmds.save-file-restricted
               - com.bondcodes.pkmds.wonder-card
             QLSupportsSearchableItems: false
     dependencies:
