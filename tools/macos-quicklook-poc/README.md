@@ -120,6 +120,7 @@ These are in roughly the order we hit them.
 
 ### 5. Library validation rejects the AOT dylib
 
+
 **Symptom:** Extension crashes immediately (`~/Library/Logs/DiagnosticReports/PkmdsQuickLook-*.ips`) with:
 ```
 Library not loaded: @rpath/PkmdsNative.dylib
@@ -129,6 +130,46 @@ Reason: ... mapping process and mapped file (non-platform) have different Team I
 **Cause:** Hardened runtime + ad-hoc-signed extension + ad-hoc-signed dylib. Each ad-hoc signature counts as its own "team", so amfid (Apple Mobile File Integrity Daemon) rejects loading the dylib into the extension's process.
 
 **Fix:** Add `com.apple.security.cs.disable-library-validation` to the extension's entitlements. **For Mac App Store / Developer ID distribution this entitlement isn't needed** — sign both the extension and the dylib with the same Team ID and library validation passes.
+
+### 6. Prohibited extensions block ThumbnailsAgent dispatch for the _entire_ UTI
+
+**Symptom:** `.gci` files (which are declared in `com.bondcodes.pkmds.save-file` alongside `.sav`/`.dat`/`.fla`) never get thumbnails. `qlmanage -t` hangs silently. pkd logs show the extension candidate but it is never dispatched.
+
+**Cause:** macOS has a hard-coded list of "prohibited" filename extensions (`.sav`, `.dat`, `.fla` are three of them). If **any** extension in a UTI's `UTTypeTagSpecification` is prohibited, ThumbnailsAgent refuses to dispatch that UTI to a sandboxed extension — blocking every extension in the UTI, not just the prohibited ones.
+
+**Fix:** Split into two UTIs. Keep non-prohibited extensions (`.gci`, `.dsv`, `.srm`) in `com.bondcodes.pkmds.save-file` and declare it in both the preview _and_ thumbnail extensions. Add a separate `com.bondcodes.pkmds.save-file-restricted` UTI for `.sav`/`.dat`/`.fla` and register it **only** with the preview extension — never with the thumbnail extension. ThumbnailsAgent never sees the prohibited extensions; quicklookd dispatches both UTIs fine.
+
+**Verification:** `pluginkit -mAvvv -p com.apple.quicklook.thumbnail` — the thumbnail extension should list only UTIs without prohibited extensions.
+
+### 7. Spotlight MDImporter dispatch path doesn't grant sandbox file access
+
+**Background:** We tried adding a Spotlight metadata importer (`PkmdsSpotlight.mdimporter`) that wrote `kMDItemContentType = com.bondcodes.pkmds.save-file` into the Spotlight database for `.sav`/`.dat`/`.fla` files, hoping Finder would use the database value (our UTI) instead of the raw extension when dispatching Quick Look.
+
+**What actually happened:** quicklookd did dispatch our preview extension via the Spotlight metadata path, but `com.apple.security.files.user-selected.read-only` does **not** receive a security-scoped access grant on this dispatch path. `Data(contentsOf: url)` threw a permissions error, producing a blank page-curl animation instead of our HTML preview. The UTI-database dispatch path (used for `.gci` etc.) grants file access correctly.
+
+**Conclusion:** The MDImporter adds complexity and breaks the preview for the files it was supposed to help. The split-UTI approach (finding #6) is the correct solution. MDImporter files were removed.
+
+### 8. Finder doesn't request thumbnails at the default 64 px icon size
+
+**Symptom:** After a clean install, `.pk*` and `.gci` files show the generic document icon in Finder's icon view even though `qlmanage -t -x` produces correct thumbnails.
+
+**Cause:** Finder's default icon size is 64 × 64 px. At that size the system renders the file icon itself without asking Quick Look extensions for a thumbnail. The threshold where Finder starts dispatching thumbnail requests is around 100 px.
+
+**Fix:** Drag the Finder icon size slider to ≥ 100 px, or switch to Gallery view. After the first request, the result is cached and persists across size changes. If thumbnails still don't appear after increasing the size: `qlmanage -r && qlmanage -r cache`.
+
+**Note on `qlmanage -t`:** Without the `-x` flag, `qlmanage -t` drives ThumbnailsAgent directly — it hung indefinitely in all our tests. Use `qlmanage -t -x <file>` to drive via quicklookd instead, which works reliably and writes the PNG to the output directory.
+
+### 9. `QLThumbnailMinimumDimension` must be a plain integer, not a size dict
+
+**Symptom:** `qlmanage -t` always returns "no matching extension" regardless of icon size, even though PluginKit reports the extension as registered.
+
+**Cause:** iOS Quick Look uses `QLThumbnailMinimumSize: {width: N, height: N}` (a dict). macOS uses `QLThumbnailMinimumDimension: 0` (a plain integer). In xcodegen `project.yml`, using the dict form generates a malformed `Info.plist` value that the system either rejects or interprets as a very large minimum size, causing the extension to be filtered out for all practical thumbnail sizes.
+
+**Fix:** In `project.yml` under the thumbnail extension's `NSExtensionAttributes`:
+```yaml
+QLThumbnailMinimumDimension: 0
+```
+Not `QLThumbnailMinimumSize`, not a dict. Confirm the generated `Info.plist` contains `<integer>0</integer>`.
 
 ## Diagnostic toolbox
 
@@ -144,10 +185,16 @@ Commands that earned their keep during this POC.
 | `otool -L <executable>` | Linked frameworks/dylibs and their install names |
 | `otool -D <dylib>` | The dylib's own install name (e.g. `@rpath/...`) |
 | `qlmanage -p <file>` | Trigger a preview without Finder; useful for repeatable tests |
+| `qlmanage -p -x <file>` | Preview via quicklookd (remote mode) — needed for prohibited-extension files |
+| `qlmanage -t -x -s 256 -o /tmp <file>` | Thumbnail via quicklookd — use `-x`; plain `-t` drives ThumbnailsAgent and tends to hang |
 | `qlmanage -r && qlmanage -r cache` | Reset quicklookd and clear thumbnail cache |
 | `killall pkd quicklookd` | Force PluginKit + Quick Look daemons to restart |
+| `killall -9 "com.apple.quicklook.ThumbnailsAgent"` | Force ThumbnailsAgent restart (re-reads UTI→extension mapping from LS database) |
+| `pluginkit -mAvvv -p com.apple.quicklook.thumbnail` | All thumbnail extensions and their registered UTIs |
+| `mdls -name kMDItemContentType <file>` | What content type Spotlight has indexed for a file |
 | `ls -t ~/Library/Logs/DiagnosticReports/PkmdsQuickLook*` | Extension crash reports (`.ips` files) |
 | `/usr/bin/log show --last 30s --predicate 'process == "pkd"'` | PluginKit dispatch decisions in real time |
+| `/usr/bin/log show --last 30s --predicate 'process == "ThumbnailsAgent"'` | ThumbnailsAgent UTI-lookup and dispatch decisions |
 
 The two log filters that broke this POC open:
 
