@@ -95,6 +95,9 @@ jobs:
   deploy_functions:
     name: Deploy Azure Functions
     runs-on: ubuntu-latest
+    # Least-privilege: deploys via the AZURE_CREDENTIALS secret, not GITHUB_TOKEN.
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v6.0.2

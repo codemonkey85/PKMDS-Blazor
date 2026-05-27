@@ -1,0 +1,16 @@
+name: "PKMDS CodeQL config"
+
+# Uses the default query suite for each analyzed language (no override),
+# with the filter below applied on top.
+query-filters:
+  # AES-ECB is mandated by the Pokémon save-file / entity format that
+  # PKHeX.Core reads and writes. The games themselves encrypt save blocks
+  # and Pokémon data with AES in ECB mode, so this is a wire-format
+  # requirement, not a security design choice — switching to CBC (or any
+  # other mode) would make the app unable to read or write real save files.
+  # The only ECB usage in this repository is the PKHeX crypto bridge in
+  # Pkmds.Web/Services/BlazorAesProvider.cs (mirrored by the crypto-js bridge
+  # in Pkmds.Rcl/wwwroot/js/crypto.js), so excluding this rule does not hide
+  # any genuinely avoidable insecure encryption.
+  - exclude:
+      id: cs/ecb-encryption
