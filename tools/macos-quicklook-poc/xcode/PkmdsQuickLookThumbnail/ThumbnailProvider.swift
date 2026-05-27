@@ -74,15 +74,18 @@ final class ThumbnailProvider: QLThumbnailProvider {
                 defer { NSGraphicsContext.restoreGraphicsState() }
                 NSGraphicsContext.current = NSGraphicsContext(cgContext: ctx, flipped: false)
 
+                // ctx dimensions are in pixels (2× the point size on Retina); use them for layout.
+                let ctxSize = CGSize(width: CGFloat(ctx.width), height: CGFloat(ctx.height))
+
                 if let info = saveInfo {
-                    drawTrainerCard(size: size, info: info)
+                    drawTrainerCard(size: ctxSize, info: info)
                 } else if let sd = spriteData, sd.src.width > 0, sd.src.height > 0 {
                     let fill: CGFloat = 0.90
-                    let scale    = min(size.width * fill / sd.src.width,
-                                      size.height * fill / sd.src.height)
+                    let scale    = min(ctxSize.width * fill / sd.src.width,
+                                      ctxSize.height * fill / sd.src.height)
                     let drawSize = NSSize(width: sd.src.width * scale, height: sd.src.height * scale)
-                    let origin   = NSPoint(x: (size.width  - drawSize.width)  / 2,
-                                          y: (size.height - drawSize.height) / 2)
+                    let origin   = NSPoint(x: (ctxSize.width  - drawSize.width)  / 2,
+                                          y: (ctxSize.height - drawSize.height) / 2)
                     sd.image.draw(in:    NSRect(origin: origin, size: drawSize),
                                   from:  sd.src,
                                   operation: .sourceOver,
@@ -172,7 +175,8 @@ private func opaqueSourceRect(_ image: NSImage) -> NSRect {
         space: CGColorSpaceCreateDeviceRGB(),
         bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
     ) else { return full }
-    // No flip: CGContext y=0 is at the bottom, so row 0 = visual bottom = NSImage y=0.
+    // CGBitmapContext stores rows in raster order: row 0 = visual TOP (same as CGImage).
+    // This is the opposite of NSImage's coordinate system (y=0 at bottom).
     ctx.draw(cgImg, in: CGRect(x: 0, y: 0, width: pw, height: ph))
     guard let rawData = ctx.data else { return full }
     let bytes = rawData.assumingMemoryBound(to: UInt8.self)
@@ -190,12 +194,14 @@ private func opaqueSourceRect(_ image: NSImage) -> NSRect {
     }
     guard right >= left, maxRow >= minRow else { return full }
 
-    // Buffer row r → NSImage y = r * sy (row 0 = bottom, row ph-1 = top).
+    // CGBitmapContext row 0 is the visual BOTTOM (y=0 in NSImage coords).
+    // minRow = smallest buffer row with opaque pixels = visual top of content.
+    // NSImage y of the bottom edge of content = (ph - maxRow - 1) * sy.
     let sx = imgSize.width  / CGFloat(pw)
     let sy = imgSize.height / CGFloat(ph)
     return NSRect(
         x:      CGFloat(left)              * sx,
-        y:      CGFloat(minRow)            * sy,
+        y:      CGFloat(ph - maxRow - 1)   * sy,
         width:  CGFloat(right - left + 1)  * sx,
         height: CGFloat(maxRow - minRow + 1) * sy
     )
