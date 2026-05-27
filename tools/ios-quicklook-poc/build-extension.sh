@@ -66,6 +66,12 @@ EOF
     exit 1
 fi
 
+# Delete the SDK's intermediate AppManifest.plist before each build so that
+# Info.plist-only changes (no .cs edits) are never skipped by incremental build.
+# Microsoft.iOS.Sdk caches the merged plist in obj/; cleaning bin/ alone is not enough.
+rm -f "${DOTNET_OUT_DIR/\/bin\//\/obj\/}/AppManifest.plist"
+rm -f "${THUMB_OUT_DIR/\/bin\//\/obj\/}/AppManifest.plist"
+
 echo "==> dotnet ${DOTNET_CMD[*]} (preview extension)"
 dotnet "${DOTNET_CMD[@]}" "$CSPROJ" --nologo
 
