@@ -820,54 +820,54 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                 return Task.CompletedTask;
 
             case WB8.GiftType.Item:
-            {
-                var items = saveFile.Items;
-                var addedAny = false;
-                for (var i = 0; i < 7; i++)
                 {
-                    var itemId = (ushort)gift.GetItem(i);
-                    var quantity = gift.GetQuantity(i);
-                    if (itemId == 0)
-                        break;
-                    items.SetItemQuantity(itemId, items.GetItemQuantity(itemId) + quantity);
-                    addedAny = true;
-                }
-                isSuccessful = addedAny;
-                resultsMessage = addedAny
-                    ? "The Mystery Gift items have been added to your bag."
-                    : "No items found in this Mystery Gift.";
-                return Task.CompletedTask;
-            }
-
-            default:
-            {
-                // For Clothing, Money, BP, etc.: populate a RecvData8b slot in MysteryBlock8b.
-                // The in-game Pokémon Delivery Man reads these slots to grant gifts.
-                var records = saveFile.MysteryRecords;
-                var emptySlot = -1;
-                for (var i = 0; i < MysteryBlock8b.RecvDataMax; i++)
-                {
-                    if (records.GetReceived(i).Ticks == 0)
+                    var items = saveFile.Items;
+                    var addedAny = false;
+                    for (var i = 0; i < 7; i++)
                     {
-                        emptySlot = i;
-                        break;
+                        var itemId = (ushort)gift.GetItem(i);
+                        var quantity = gift.GetQuantity(i);
+                        if (itemId == 0)
+                            break;
+                        items.SetItemQuantity(itemId, items.GetItemQuantity(itemId) + quantity);
+                        addedAny = true;
                     }
-                }
-                if (emptySlot == -1)
-                {
-                    isSuccessful = false;
-                    resultsMessage = "No empty Mystery Gift slots available in the save file.";
+                    isSuccessful = addedAny;
+                    resultsMessage = addedAny
+                        ? "The Mystery Gift items have been added to your bag."
+                        : "No items found in this Mystery Gift.";
                     return Task.CompletedTask;
                 }
-                var slot = records.GetReceived(emptySlot);
-                slot.Timestamp = DateTime.UtcNow;
-                slot.DeliveryID = (ushort)gift.CardID;
-                slot.DataType = (byte)gift.CardType;
-                slot.TextID = (ushort)gift.CardTitleIndex;
-                isSuccessful = true;
-                resultsMessage = "The Mystery Gift has been queued. Visit the Pokémon Delivery Man to claim it.";
-                return Task.CompletedTask;
-            }
+
+            default:
+                {
+                    // For Clothing, Money, BP, etc.: populate a RecvData8b slot in MysteryBlock8b.
+                    // The in-game Pokémon Delivery Man reads these slots to grant gifts.
+                    var records = saveFile.MysteryRecords;
+                    var emptySlot = -1;
+                    for (var i = 0; i < MysteryBlock8b.RecvDataMax; i++)
+                    {
+                        if (records.GetReceived(i).Ticks == 0)
+                        {
+                            emptySlot = i;
+                            break;
+                        }
+                    }
+                    if (emptySlot == -1)
+                    {
+                        isSuccessful = false;
+                        resultsMessage = "No empty Mystery Gift slots available in the save file.";
+                        return Task.CompletedTask;
+                    }
+                    var slot = records.GetReceived(emptySlot);
+                    slot.Timestamp = DateTime.UtcNow;
+                    slot.DeliveryID = (ushort)gift.CardID;
+                    slot.DataType = (byte)gift.CardType;
+                    slot.TextID = (ushort)gift.CardTitleIndex;
+                    isSuccessful = true;
+                    resultsMessage = "The Mystery Gift has been queued. Visit the Pokémon Delivery Man to claim it.";
+                    return Task.CompletedTask;
+                }
         }
     }
 
