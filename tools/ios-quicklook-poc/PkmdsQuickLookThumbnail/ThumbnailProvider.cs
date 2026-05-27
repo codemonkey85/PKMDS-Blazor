@@ -51,18 +51,31 @@ public sealed class ThumbnailProvider : QLThumbnailProvider
                     srcRect = SpriteDrawer.OpaqueSourceRect(sprite);
             }
 
-            // UIGraphicsImageRenderer sets up a UIKit context so UIBezierPath /
-            // NSAttributedString drawing works without manually pushing a CGContext.
             var contextSize = new CGSize(maxSize.Width * scale, maxSize.Height * scale);
-            var renderer    = new UIGraphicsImageRenderer(contextSize);
-            var image       = renderer.CreateImage(rendCtx =>
+
+            // UIKit drawing (UIBezierPath, NSAttributedString, UIGraphicsImageRenderer)
+            // requires the main thread — UIGraphicsRendererContext.CGContext calls
+            // UIApplication.EnsureUIThread() and throws on background threads.
+            // InvokeOnMainThread dispatches synchronously to the extension's main run loop.
+            UIImage? image = null;
+            InvokeOnMainThread(() =>
             {
-                var ctx = rendCtx.CGContext;
-                if (saveInfo is not null)
-                    SaveCard.Draw(ctx, contextSize, saveInfo);
-                else if (sprite is not null && srcRect.Width > 0)
-                    SpriteDrawer.DrawCentered(ctx, contextSize, sprite, srcRect);
+                var renderer = new UIGraphicsImageRenderer(contextSize);
+                image = renderer.CreateImage(rendCtx =>
+                {
+                    var ctx = rendCtx.CGContext;
+                    if (saveInfo is not null)
+                        SaveCard.Draw(ctx, contextSize, saveInfo);
+                    else if (sprite is not null && srcRect.Width > 0)
+                        SpriteDrawer.DrawCentered(ctx, contextSize, sprite, srcRect);
+                });
             });
+
+            if (image is null)
+            {
+                handler(null!, null!);
+                return;
+            }
 
             // Write to a temp PNG. The QL system reads this file when it consumes the
             // reply; leave it in the temp directory for the OS to clean up.

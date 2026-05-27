@@ -107,14 +107,8 @@
 					<string>pk8</string>
 					<string>pk9</string>
 					<string>pa8</string>
-					<string>pa9</string>
 					<string>pb7</string>
 					<string>pb8</string>
-					<string>sk2</string>
-					<string>ck3</string>
-					<string>xk3</string>
-					<string>bk4</string>
-					<string>rk4</string>
 				</array>
 			</dict>
 		</dict>
@@ -133,11 +127,6 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>sav</string>
-					<string>dat</string>
-					<string>gci</string>
-					<string>dsv</string>
-					<string>srm</string>
-					<string>fla</string>
 				</array>
 			</dict>
 		</dict>
@@ -155,25 +144,18 @@
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>pgt</string>
-					<string>pcd</string>
-					<string>wc3</string>
 					<string>wc4</string>
-					<string>pgf</string>
 					<string>wc5full</string>
 					<string>wc6</string>
 					<string>wc6full</string>
 					<string>wc7</string>
 					<string>wc7full</string>
-					<string>wr7</string>
-					<string>wb7</string>
-					<string>wb7full</string>
 					<string>wc8</string>
 					<string>wc8full</string>
-					<string>wb8</string>
-					<string>wa8</string>
 					<string>wc9</string>
-					<string>wa9</string>
+					<string>pcd</string>
+					<string>pgt</string>
+					<string>pgf</string>
 				</array>
 			</dict>
 		</dict>
