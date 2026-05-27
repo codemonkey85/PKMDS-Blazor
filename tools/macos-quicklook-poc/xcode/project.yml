@@ -204,9 +204,7 @@ targets:
               - com.bondcodes.pkmds.pkm-file
               - com.bondcodes.pkmds.save-file
               - com.bondcodes.pkmds.wonder-card
-            QLThumbnailMinimumSize:
-              width: 17
-              height: 17
+            QLThumbnailMinimumDimension: 0
     dependencies:
       - framework: ../build-resources/PkmdsNative.dylib
         embed: true
