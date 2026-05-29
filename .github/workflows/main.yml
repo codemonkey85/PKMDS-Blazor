@@ -38,7 +38,7 @@ jobs:
 
       # sets up .NET SDK
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5.2.0
+        uses: actions/setup-dotnet@v5.3.0
         with:
           global-json-file: ./global.json
 
@@ -103,7 +103,7 @@ jobs:
         uses: actions/checkout@v6.0.2
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5.2.0
+        uses: actions/setup-dotnet@v5.3.0
         with:
           global-json-file: ./global.json
 
