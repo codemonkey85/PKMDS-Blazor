@@ -265,9 +265,17 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         switch (selectedPokemonType)
         {
             case SelectedPokemonType.Party:
-                AppState.SaveFile.SetPartySlotAtIndex(pokemon, partySlot);
+                // TrySetPartySlot returns false for an unwritable LGPE (SAV7b) slot — one whose
+                // pointer is the SLOT_EMPTY sentinel because the save over-reports its party count
+                // (issues #944–#948). Writing there throws in PKHeX, so skip rather than crash.
+                if (!AppState.SaveFile.TrySetPartySlot(pokemon, partySlot))
+                {
+                    break;
+                }
+
                 // If the edited slot was past PartyCount (e.g. HaX mode editing an empty slot)
-                // the write would leave a gap; party is always a packed list, so compact.
+                // the write would leave a gap; party is always a packed list, so compact
+                // (no-op for LGPE).
                 AppState.SaveFile.CompactParty();
 
                 // Let's Go games store Pokémon in a unified storage system

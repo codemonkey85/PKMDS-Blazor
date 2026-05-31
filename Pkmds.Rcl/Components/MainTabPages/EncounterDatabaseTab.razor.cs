@@ -180,12 +180,16 @@ public partial class EncounterDatabaseTab : RefreshAwareComponent
 
         if (hasSelectedSlot)
         {
-            if (AppService.EditFormPokemon?.Species == 0)
+            // No occupant loaded (null) or an empty slot (Species 0) means there's nothing to
+            // overwrite — proceed without prompting. Guarding the null case fixes a
+            // NullReferenceException when generating into a slot with no loaded occupant, e.g. the
+            // first generate after loading a save with nothing selected (issue #949).
+            if (AppService.EditFormPokemon is not { Species: > 0 } occupant)
             {
                 return true;
             }
 
-            var occupantName = SafeNameLookup.Species(AppService.EditFormPokemon!.Species);
+            var occupantName = SafeNameLookup.Species(occupant.Species);
             var confirmed = await DialogService.ShowMessageBoxAsync(
                 "Overwrite Pokémon?",
                 $"The selected slot contains {occupantName}. Overwrite it?",

@@ -8,8 +8,10 @@
             @for (var i = 0; i < 6; i++)
             {
                 var slotNum = i;
+                @* LGPE (SAV7b) saves can report more party slots than are populated; reading a
+                   phantom slot throws (issues #942–#948). TryGetPartySlot returns null instead. *@
                 var pkm = i < saveFile.PartyCount
-                    ? saveFile.PartyData[slotNum]
+                    ? saveFile.TryGetPartySlot(slotNum)
                     : null;
                 <MudItem xs="2">
                     <PokemonSlotComponent Pokemon="@pkm"

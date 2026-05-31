@@ -19,6 +19,16 @@ public static class SaveFileExtensions
     /// </remarks>
     public static void CompactParty(this SaveFile sav)
     {
+        // LGPE (SAV7b) stores the party as a pointer list into unified storage, maintained by
+        // PKHeX itself — there are no interstitial gaps to remove. Such saves can also report a
+        // PartyCount larger than the number of populated pointers; reading or writing a slot whose
+        // pointer is the SLOT_EMPTY sentinel throws ArgumentOutOfRangeException (issues #942–#948).
+        // Nothing to compact, so leave it alone.
+        if (sav is SAV7b)
+        {
+            return;
+        }
+
         var nonBlank = new List<PKM>(PartySize);
         for (var i = 0; i < PartySize; i++)
         {
@@ -38,6 +48,83 @@ public static class SaveFileExtensions
         {
             sav.SetPartySlotAtIndex(sav.BlankPKM, i);
         }
+    }
+
+    /// <summary>
+    /// Reads a party slot, returning <see langword="null" /> instead of throwing when the slot
+    /// cannot be read. Mainline saves return a blank Pokémon for empty slots, but LGPE (SAV7b)
+    /// stores the party as a pointer list and throws <see cref="ArgumentOutOfRangeException" />
+    /// when the pointer is the SLOT_EMPTY sentinel — which happens on saves whose party-count
+    /// field over-reports the number of populated slots (issues #942–#948).
+    /// </summary>
+    public static PKM? TryGetPartySlot(this SaveFile sav, int index)
+    {
+        if (index < 0 || index >= PartySize)
+        {
+            return null;
+        }
+
+        try
+        {
+            return sav.GetPartySlotAtIndex(index);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            // LGPE pointer-list slot points at the SLOT_EMPTY sentinel; treat as no Pokémon.
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// The number of leading party slots that can actually be read without throwing. For most
+    /// saves this equals <see cref="SaveFile.PartyCount"/>. For LGPE (SAV7b) the stored count can
+    /// exceed the number of populated pointers, so this walks the reported slots and stops at the
+    /// first one that is unreadable or empty.
+    /// </summary>
+    public static int GetSafePartyCount(this SaveFile sav)
+    {
+        var reported = sav.PartyCount;
+        if (sav is not SAV7b)
+        {
+            return reported;
+        }
+
+        var count = 0;
+        for (var i = 0; i < reported && i < PartySize; i++)
+        {
+            if (sav.TryGetPartySlot(i) is not { Species: > 0 })
+            {
+                break;
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Writes a Pokémon to a party slot, returning <see langword="false" /> instead of throwing
+    /// when the slot cannot be written. On LGPE (SAV7b) a slot whose pointer is the SLOT_EMPTY
+    /// sentinel cannot be written through the index API (PKHeX dereferences the pointer first and
+    /// throws), so callers should treat <see langword="false" /> as "this slot is not writable".
+    /// </summary>
+    public static bool TrySetPartySlot(this SaveFile sav, PKM pokemon, int index)
+    {
+        if (index < 0 || index >= PartySize)
+        {
+            return false;
+        }
+
+        // On LGPE the slot must already point at a real storage entry; an empty pointer can't be
+        // written via SetPartySlotAtIndex (it throws while resolving the offset).
+        if (sav is SAV7b && sav.TryGetPartySlot(index) is not { Species: > 0 })
+        {
+            return false;
+        }
+
+        sav.SetPartySlotAtIndex(pokemon, index);
+        return true;
     }
 
     /// <summary>

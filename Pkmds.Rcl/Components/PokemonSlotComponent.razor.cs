@@ -327,7 +327,8 @@ public partial class PokemonSlotComponent : IDisposable
         var count = 0;
         for (var i = 0; i < partyCount; i++)
         {
-            var partyMon = saveFile.GetPartySlotAtIndex(i);
+            // TryGetPartySlot tolerates LGPE (SAV7b) phantom slots that throw on read (issues #942–#948).
+            var partyMon = saveFile.TryGetPartySlot(i);
             if (partyMon is { Species: > 0, IsEgg: false })
             {
                 count++;
@@ -519,9 +520,21 @@ public partial class PokemonSlotComponent : IDisposable
             // leaving a gap.
             if (IsPartySlot)
             {
-                saveFile.SetPartySlotAtIndex(pokemon, SlotNumber);
-                saveFile.CompactParty();
-                RefreshService.RefreshPartyState();
+                // TrySetPartySlot returns false for an LGPE (SAV7b) party slot whose pointer is the
+                // SLOT_EMPTY sentinel — writing there throws in PKHeX and corrupts the in-memory
+                // party count (issues #942–#948). Let's Go has no standalone party buffer, so an
+                // empty party slot can't be written through the index API.
+                if (saveFile.TrySetPartySlot(pokemon, SlotNumber))
+                {
+                    saveFile.CompactParty();
+                    RefreshService.RefreshPartyState();
+                }
+                else
+                {
+                    Snackbar.Add(
+                        "That party slot can't be edited for Let's Go saves. Use the box instead.",
+                        Severity.Warning);
+                }
             }
             else if (BoxNumber.HasValue)
             {
