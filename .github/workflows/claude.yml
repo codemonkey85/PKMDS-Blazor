@@ -131,6 +131,8 @@ jobs:
 
             Omit: dependency bumps, CI/CD changes, code formatting, internal refactors with no user-visible effect.
 
+            IMPORTANT — scope and attribution: "PKMDS" is the Blazor WebAssembly web app, and that is the product this changelog is about. The repo also contains separate native companion tools — the Windows Explorer preview/thumbnail handlers and the macOS/iOS Quick Look preview/thumbnail extensions. Those read PKHeX files from the filesystem and do NOT integrate with the web app. Do not describe their changes as features of PKMDS or imply they are part of the web app. If you mention them at all, clearly frame them as separate native/desktop companion tools (e.g. "Separately, the Windows file preview tool…"). When in doubt about whether a change affects the web app, leave it out.
+
             Use plain language. Avoid jargon. Group related changes if it helps readability. Keep it concise.
 
             Format the body as Markdown. Start with a brief intro line, then a bulleted list of changes.
