@@ -268,9 +268,11 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                 // TrySetPartySlot returns false for an unwritable LGPE (SAV7b) slot — one whose
                 // pointer is the SLOT_EMPTY sentinel because the save over-reports its party count
                 // (issues #944–#948). Writing there throws in PKHeX, so skip rather than crash.
+                // Return early so we don't snapshot a "saved" baseline for a write that never
+                // happened — that would hide the user's unsaved changes.
                 if (!AppState.SaveFile.TrySetPartySlot(pokemon, partySlot))
                 {
-                    break;
+                    return;
                 }
 
                 // If the edited slot was past PartyCount (e.g. HaX mode editing an empty slot)

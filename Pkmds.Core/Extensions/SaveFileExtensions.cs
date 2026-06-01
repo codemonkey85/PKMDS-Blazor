@@ -123,8 +123,17 @@ public static class SaveFileExtensions
             return false;
         }
 
-        sav.SetPartySlotAtIndex(pokemon, index);
-        return true;
+        try
+        {
+            sav.SetPartySlotAtIndex(pokemon, index);
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            // Defensive: a malformed pointer list could still resolve to an out-of-range offset
+            // even after the guard above. Honor the "never throw" contract and report failure.
+            return false;
+        }
     }
 
     /// <summary>
