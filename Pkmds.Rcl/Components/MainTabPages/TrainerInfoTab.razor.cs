@@ -538,8 +538,8 @@ public partial class TrainerInfoTab : IDisposable
                     uint.MaxValue);
                 break;
 
-            // Gen 9 SV / ZA currencies live inside their respective TrainerInfoSav9*Section
-            // components so they sit next to the rest of the gen-specific fields.
+                // Gen 9 SV / ZA currencies live inside their respective TrainerInfoSav9*Section
+                // components so they sit next to the rest of the gen-specific fields.
         }
     }
 
