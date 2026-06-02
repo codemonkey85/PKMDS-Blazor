@@ -4,6 +4,9 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
 {
     private const long MaxSaveFileSizeBytes = 8 * 1024 * 1024; // 8 MB
 
+    // Mirror the dialog's client-side minimum so direct callers can't bypass it with a one-word report.
+    private const int MinPrimaryTextLength = 20;
+
     [Function("SubmitBugReport")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "SubmitBugReport")]
@@ -52,9 +55,17 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             ? FirstNonEmpty(actual, form["description"].ToString().Trim())
             : details;
 
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(primaryText))
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
         {
-            return new BadRequestObjectResult(new { error = "name, email, and a description are required." });
+            return new BadRequestObjectResult(new { error = "name and email are required." });
+        }
+
+        // primaryText is already trimmed at assignment (the source fields are .Trim()'d). A length
+        // check below the minimum also catches the empty case. The message is category-agnostic
+        // since the primary text is "what happened" for bugs and "details" for feature/feedback.
+        if (primaryText.Length < MinPrimaryTextLength)
+        {
+            return new BadRequestObjectResult(new { error = $"Please provide at least {MinPrimaryTextLength} characters describing your report." });
         }
 
         var (titlePrefix, issueLabel) = category.ToLowerInvariant() switch
