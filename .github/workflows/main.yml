@@ -18,6 +18,11 @@ jobs:
     name: Deploy to GitHub Pages
     # use ubuntu-latest image to run steps on
     runs-on: ubuntu-latest
+    # Deploy the Azure Function first and gate the front-end on its success. The function is
+    # backward-compatible with older (cached PWA) front-ends, but an old function is NOT forward-
+    # compatible with a new front-end — so the new front-end must never go live ahead of the
+    # function it depends on. If the function deploy fails, the front-end is held back too.
+    needs: deploy_functions
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

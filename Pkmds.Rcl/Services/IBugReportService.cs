@@ -1,11 +1,26 @@
 namespace Pkmds.Rcl.Services;
 
+public enum BugReportCategory
+{
+    Bug,
+    Feature,
+    Feedback,
+}
+
 public sealed record BugReportRequest(
     string Name,
     string Email,
-    string Description,
+    BugReportCategory Category,
     string AppVersion,
     string UserAgent,
+    // Bug category — structured fields. Actual is the one required field (and also carries the
+    // pre-filled dump on the crash path); the rest are optional context.
+    string? Actual = null,
+    string? Steps = null,
+    string? Expected = null,
+    string? ReportedSaveSource = null,
+    // Feature / Feedback categories — single free-text field.
+    string? Details = null,
     string? PkhexVersion = null,
     byte[]? SaveFileBytes = null,
     string? SaveFileName = null,
