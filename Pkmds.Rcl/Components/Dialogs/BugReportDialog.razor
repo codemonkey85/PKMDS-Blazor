@@ -25,6 +25,7 @@
             else
             {
                 <MudSelect @bind-Value="@category"
+                           @bind-Value:after="OnCategoryChanged"
                            Label="What kind of report is this?"
                            Variant="@Variant.Outlined"
                            Dense="true">

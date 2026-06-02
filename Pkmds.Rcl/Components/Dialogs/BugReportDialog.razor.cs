@@ -41,8 +41,10 @@ public partial class BugReportDialog
 
     private string PrimaryText => category == BugReportCategory.Bug ? actual : details;
 
-    private bool IsPrimaryValid =>
-        CapturedException is not null || PrimaryText.Trim().Length >= MinPrimaryLength;
+    // No crash short-circuit: the crash path pre-fills `actual` with a template well over the
+    // minimum, so crash reports start valid — but if the user clears it, Submit must disable
+    // rather than POST whitespace that the function would reject as missing primary text.
+    private bool IsPrimaryValid => PrimaryText.Trim().Length >= MinPrimaryLength;
 
     private bool IsFormValid => IsPrimaryValid && IsEmailValid && !string.IsNullOrWhiteSpace(name);
 
@@ -129,6 +131,18 @@ public partial class BugReportDialog
         uploadedFileName = null;
     }
 
+    private void OnCategoryChanged()
+    {
+        // Save attachment only applies to bug reports. When the user switches to a category that
+        // hides the attach controls, drop any attached file so it can't be silently uploaded on a
+        // non-bug report (and isn't stranded in the UI with no way to remove it).
+        if (!ShowSaveAttach)
+        {
+            ClearUploadedFile();
+            attachSaveFile = false;
+        }
+    }
+
     private void Cancel() => MudDialog.Close(DialogResult.Cancel());
 
     private async Task Submit()
@@ -171,8 +185,10 @@ public partial class BugReportDialog
             }
 
             // A manually-attached file takes precedence; it covers the load-failure case where no
-            // save is loaded at all (the whole reason the user is reporting).
-            if (uploadedBytes is { Length: > 0 })
+            // save is loaded at all (the whole reason the user is reporting). Gated on
+            // ShowSaveAttach so a file attached as a Bug can't ride along after switching to a
+            // Feature/Feedback report (where the attach controls are hidden).
+            if (ShowSaveAttach && uploadedBytes is { Length: > 0 })
             {
                 saveBytes = uploadedBytes;
                 saveFileName = uploadedFileName ?? "save.bin";
