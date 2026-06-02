@@ -16,10 +16,11 @@ public class GitHubService(IConfiguration configuration) : IGitHubService
 
     public async Task<(int IssueNumber, string IssueUrl)> CreateIssueAsync(
         string title,
-        string body)
+        string body,
+        string label)
     {
         var newIssue = new NewIssue(title) { Body = body };
-        newIssue.Labels.Add("bug");
+        newIssue.Labels.Add(label);
 
         var issue = await client.Issue.Create(owner, repo, newIssue);
         return (issue.Number, issue.HtmlUrl);

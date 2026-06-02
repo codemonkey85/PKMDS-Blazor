@@ -302,7 +302,7 @@ public partial class MainLayout : IDisposable
     {
         var parameters = new DialogParameters { { nameof(BugReportDialog.HasSaveFile), AppState.SaveFile is not null }, { nameof(BugReportDialog.AppVersion), AppState.AppVersion ?? string.Empty } };
         var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
-        var dialog = await DialogService.ShowAsync<BugReportDialog>("Report a Bug", parameters, options);
+        var dialog = await DialogService.ShowAsync<BugReportDialog>("Send a Report", parameters, options);
         var result = await dialog.Result;
         if (result is { Data: string issueUrl })
         {

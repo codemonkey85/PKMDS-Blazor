@@ -19,9 +19,34 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(request.Name), "name");
             content.Add(new StringContent(request.Email), "email");
-            content.Add(new StringContent(request.Description), "description");
+            content.Add(new StringContent(request.Category.ToString()), "category");
             content.Add(new StringContent(request.AppVersion), "appVersion");
             content.Add(new StringContent(request.UserAgent), "userAgent");
+
+            if (!string.IsNullOrWhiteSpace(request.Actual))
+            {
+                content.Add(new StringContent(request.Actual), "actual");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Steps))
+            {
+                content.Add(new StringContent(request.Steps), "steps");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Expected))
+            {
+                content.Add(new StringContent(request.Expected), "expected");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.ReportedSaveSource))
+            {
+                content.Add(new StringContent(request.ReportedSaveSource), "reportedSaveSource");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Details))
+            {
+                content.Add(new StringContent(request.Details), "details");
+            }
 
             if (!string.IsNullOrWhiteSpace(request.PkhexVersion))
             {
