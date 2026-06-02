@@ -28,25 +28,46 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
 
         var name = form["name"].ToString().Trim();
         var email = form["email"].ToString().Trim();
-        var description = form["description"].ToString().Trim();
+        var category = form["category"].ToString().Trim();
         var appVersion = form["appVersion"].ToString().Trim();
         var pkhexVersion = form["pkhexVersion"].ToString().Trim();
         var userAgent = form["userAgent"].ToString().Trim();
+        // Bug-category structured fields.
+        var actual = form["actual"].ToString().Trim();
+        var steps = form["steps"].ToString().Trim();
+        var expected = form["expected"].ToString().Trim();
+        var reportedSaveSource = form["reportedSaveSource"].ToString().Trim();
+        // Feature / Feedback free-text field.
+        var details = form["details"].ToString().Trim();
         var saveGameName = form["saveGameName"].ToString().Trim();
         var saveRevision = form["saveRevision"].ToString().Trim();
         var saveFileName = form["saveFileName"].ToString().Trim();
         var saveFileSource = form["saveFileSource"].ToString().Trim();
         var saveFileType = form["saveFileType"].ToString().Trim();
 
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(description))
+        // The primary text is the bug's "what happened" or the feature/feedback details, depending
+        // on category. Older clients (pre-structured) sent a single "description" field — fall back
+        // to it so the endpoint stays backward compatible.
+        var primaryText = category.Equals("Bug", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(category)
+            ? FirstNonEmpty(actual, form["description"].ToString().Trim())
+            : details;
+
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(primaryText))
         {
-            return new BadRequestObjectResult(new { error = "name, email, and description are required." });
+            return new BadRequestObjectResult(new { error = "name, email, and a description are required." });
         }
 
-        var shortTitle = description.Length > 72
-            ? $"{description[..72]}…"
-            : description;
-        var issueTitle = $"[Bug] {shortTitle}";
+        var (titlePrefix, issueLabel) = category.ToLowerInvariant() switch
+        {
+            "feature" => ("[Feature]", "enhancement"),
+            "feedback" => ("[Feedback]", "feedback"),
+            _ => ("[Bug]", "bug"),
+        };
+
+        var shortTitle = primaryText.Length > 72
+            ? $"{primaryText[..72]}…"
+            : primaryText;
+        var issueTitle = $"{titlePrefix} {shortTitle}";
 
         var saveFileSection = new StringBuilder();
         if (!string.IsNullOrWhiteSpace(saveGameName) ||
@@ -81,6 +102,32 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             }
         }
 
+        var detailsSection = new StringBuilder();
+        if (category.Equals("Feature", StringComparison.OrdinalIgnoreCase) ||
+            category.Equals("Feedback", StringComparison.OrdinalIgnoreCase))
+        {
+            detailsSection.Append($"\n\n## Details\n\n{primaryText}");
+        }
+        else
+        {
+            // Bug: assemble the structured sections, omitting any the reporter left blank.
+            detailsSection.Append($"\n\n## What happened\n\n{primaryText}");
+            if (!string.IsNullOrWhiteSpace(steps))
+            {
+                detailsSection.Append($"\n\n## Steps\n\n{steps}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(expected))
+            {
+                detailsSection.Append($"\n\n## Expected\n\n{expected}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(reportedSaveSource))
+            {
+                detailsSection.Append($"\n\n## Where the save came from\n\n{reportedSaveSource}");
+            }
+        }
+
         var issueBody =
             $"**Reporter:** {name} ({email})\n" +
             $"**App version:** {appVersion}\n" +
@@ -89,13 +136,13 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
                 : $"**PKHeX.Core version:** {pkhexVersion}\n") +
             $"**User agent:** {userAgent}" +
             saveFileSection +
-            $"\n\n## Description\n\n{description}";
+            detailsSection;
 
         int issueNumber;
         string issueUrl;
         try
         {
-            (issueNumber, issueUrl) = await gitHubService.CreateIssueAsync(issueTitle, issueBody);
+            (issueNumber, issueUrl) = await gitHubService.CreateIssueAsync(issueTitle, issueBody, issueLabel);
             logger.LogInformation("Created GitHub issue #{IssueNumber} for bug report from {Email}", issueNumber, email);
         }
         catch (Exception ex)
@@ -140,6 +187,9 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
 
         return new ObjectResult(new { issueNumber, issueUrl }) { StatusCode = StatusCodes.Status201Created };
     }
+
+    private static string FirstNonEmpty(params string[] values) =>
+        Array.Find(values, v => !string.IsNullOrWhiteSpace(v)) ?? string.Empty;
 
     private static string SanitizeFileName(string fileName)
     {

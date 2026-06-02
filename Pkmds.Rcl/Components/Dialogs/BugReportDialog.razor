@@ -8,7 +8,7 @@
                      Style="vertical-align: middle;"/>
             @(CapturedException is not null
                 ? "Report this crash"
-                : "Report a Bug")
+                : "Send a Report")
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -22,29 +22,76 @@
                     email, and any additional context about what you were doing before the crash.
                 </MudAlert>
             }
-            else if (!HasSaveFile)
+            else
             {
-                <MudAlert Severity="@Severity.Info"
-                          Dense="true">
-                    If your issue is that a file failed to load, make sure you are uploading a
-                    <strong>save file</strong> (.sav, .dsv, .bin, etc.) — not a save state (.state)
-                    or ROM file. Save states are emulator snapshots and cannot be edited here.
-                </MudAlert>
+                <MudSelect @bind-Value="@category"
+                           Label="What kind of report is this?"
+                           Variant="@Variant.Outlined"
+                           Dense="true">
+                    <MudSelectItem Value="@BugReportCategory.Bug">Bug — something isn't working</MudSelectItem>
+                    <MudSelectItem Value="@BugReportCategory.Feature">Feature request</MudSelectItem>
+                    <MudSelectItem Value="@BugReportCategory.Feedback">Feedback / other</MudSelectItem>
+                </MudSelect>
             }
-            <MudTextField @bind-Value="@description"
-                          Label="What went wrong?"
-                          Lines="@(CapturedException is not null
-                                     ? 10
-                                     : 5)"
-                          Required="@(CapturedException is null)"
-                          Placeholder="Describe the issue in detail. Include: what you were doing, what happened, and what you expected to happen. Mention the game title and any specific Pokémon or field involved."
-                          HelperText="@(CapturedException is null
-                                          ? $"Minimum {MinDescriptionLength} characters. {description.Length} entered."
-                                          : "Crash details pre-filled. Add any extra context below the divider.")"
-                          Validation="@((string v) => CapturedException is not null || (v?.Length ?? 0) >= MinDescriptionLength
-                                          ? null
-                                          : $"Please provide at least {MinDescriptionLength} characters of detail.")"
-                          Variant="@Variant.Outlined"/>
+
+            @if (CapturedException is not null)
+            {
+                <MudTextField @bind-Value="@actual"
+                              Label="Crash details &amp; what you were doing"
+                              Lines="10"
+                              HelperText="Crash details pre-filled. Add any extra context below the divider."
+                              Variant="@Variant.Outlined"/>
+            }
+            else if (category == BugReportCategory.Bug)
+            {
+                @if (!HasSaveFile)
+                {
+                    <MudAlert Severity="@Severity.Info"
+                              Dense="true">
+                        If your issue is that a file failed to load, make sure you are uploading a
+                        <strong>save file</strong> (.sav, .dsv, .bin, etc.) — not a save state (.state)
+                        or ROM file. Save states are emulator snapshots and cannot be edited here.
+                    </MudAlert>
+                }
+                <MudTextField @bind-Value="@actual"
+                              Label="What actually happened?"
+                              Lines="3"
+                              Required
+                              Placeholder="Describe what went wrong. Include the game title and any specific Pokémon or field involved."
+                              HelperText="@($"Minimum {MinPrimaryLength} characters. {actual.Length} entered.")"
+                              Validation="@PrimaryValidation"
+                              Variant="@Variant.Outlined"/>
+                <MudTextField @bind-Value="@steps"
+                              Label="What did you do? (optional)"
+                              Lines="2"
+                              Placeholder="The steps that led to the problem, so we can reproduce it."
+                              Variant="@Variant.Outlined"/>
+                <MudTextField @bind-Value="@expected"
+                              Label="What did you expect to happen? (optional)"
+                              Lines="2"
+                              Variant="@Variant.Outlined"/>
+                <MudTextField @bind-Value="@reportedSaveSource"
+                              Label="Where did the save come from? (optional)"
+                              Lines="2"
+                              Placeholder="e.g. exported from an emulator (which one?), a real cartridge, or a download — plus the filename and extension."
+                              Variant="@Variant.Outlined"/>
+            }
+            else
+            {
+                <MudTextField @bind-Value="@details"
+                              Label="@(category == BugReportCategory.Feature
+                                         ? "Describe the feature you'd like"
+                                         : "Your feedback")"
+                              Lines="5"
+                              Required
+                              Placeholder="@(category == BugReportCategory.Feature
+                                              ? "What would you like the app to do, and why would it help?"
+                                              : "Tell us what's on your mind.")"
+                              HelperText="@($"Minimum {MinPrimaryLength} characters. {details.Length} entered.")"
+                              Validation="@PrimaryValidation"
+                              Variant="@Variant.Outlined"/>
+            }
+
             <MudTextField @bind-Value="@email"
                           Label="Email"
                           InputType="@InputType.Email"
@@ -57,10 +104,41 @@
                           Label="Name"
                           Required
                           Variant="@Variant.Outlined"/>
-            <MudSwitch @bind-Value="@attachSaveFile"
-                       Label="Attach current save file"
-                       Disabled="@(!HasSaveFile)"
-                       Color="@Color.Primary"/>
+
+            @if (ShowSaveAttach)
+            {
+                <MudSwitch @bind-Value="@attachSaveFile"
+                           Label="Attach current save file"
+                           Disabled="@(!HasSaveFile || uploadedBytes is not null)"
+                           Color="@Color.Primary"/>
+                <MudFileUpload T="IBrowserFile"
+                               Accept=".sav,.dsv,.bin,.dat,.srm,.3ds.sav,.3ds.save"
+                               @bind-Files="uploadedFile"
+                               @bind-Files:after="OnUploadFileChangedAsync">
+                    <CustomContent>
+                        <MudButton Variant="@Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.AttachFile"
+                                   OnClick="@context.OpenFilePickerAsync">
+                            Attach a save file manually
+                        </MudButton>
+                    </CustomContent>
+                </MudFileUpload>
+                @if (uploadedFileName is not null)
+                {
+                    <MudStack Row="true"
+                              AlignItems="@AlignItems.Center"
+                              Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.AttachFile"
+                                 Size="@Size.Small"/>
+                        <MudText Typo="@Typo.body2">@uploadedFileName</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                       Size="@Size.Small"
+                                       OnClick="@ClearUploadedFile"
+                                       aria-label="Remove attached file"/>
+                    </MudStack>
+                }
+            }
+
             @if (submitError is not null)
             {
                 <MudAlert Severity="@Severity.Error"
@@ -71,7 +149,7 @@
             <MudText Typo="@Typo.caption"
                      Color="@Color.Secondary">
                 Reports are submitted as GitHub issues to help improve the app.
-                @if (HasSaveFile)
+                @if (ShowSaveAttach && HasSaveFile)
                 {
                     @:Your current save file can be attached to help diagnose the issue.
                 }
@@ -88,7 +166,7 @@
         <MudButton OnClick="@Submit"
                    Color="@Color.Primary"
                    Variant="@Variant.Filled"
-                   Disabled="@(isSubmitting || CapturedException is null && description.Length < MinDescriptionLength || !IsEmailValid || string.IsNullOrWhiteSpace(name))">
+                   Disabled="@(isSubmitting || !IsFormValid)">
             @if (isSubmitting)
             {
                 <MudProgressCircular Size="@Size.Small"
