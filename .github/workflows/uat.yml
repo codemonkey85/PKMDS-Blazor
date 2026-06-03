@@ -30,7 +30,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5.3.0
@@ -73,7 +73,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5.3.0
