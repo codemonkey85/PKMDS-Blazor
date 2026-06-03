@@ -25,8 +25,8 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: anthropics/claude-code-action@v1.0.133
+      - uses: actions/checkout@v6.0.3
+      - uses: anthropics/claude-code-action@v1.0.134
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--model claude-opus-4-7"
@@ -42,7 +42,7 @@ jobs:
   #     issues: write
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: anthropics/claude-code-action@v1.0.133
+  #     - uses: anthropics/claude-code-action@v1.0.134
   #       with:
   #         claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
   #         settings: |
@@ -95,10 +95,10 @@ jobs:
       discussions: write
       id-token: write
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0
-      - uses: anthropics/claude-code-action@v1.0.133
+      - uses: anthropics/claude-code-action@v1.0.134
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           settings: |
