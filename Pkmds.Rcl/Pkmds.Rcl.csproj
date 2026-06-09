@@ -16,6 +16,7 @@
 
     <ItemGroup>
         <PackageReference Include="Humanizer"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" VersionOverride="10.0.9" />
         <PackageReference Include="MudBlazor"/>
         <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess"/>
         <PackageReference Include="Serilog.Extensions.Logging"/>
