@@ -11,7 +11,12 @@
       "Glob",
       "Grep",
       "WebFetch",
-      "mcp__*"
+      "mcp__claude_ai_Gmail__*",
+      "mcp__claude_ai_Google_Calendar__*",
+      "mcp__claude_ai_Google_Drive__*",
+      "mcp__claude_ai_Todoist__*",
+      "mcp__playwright__*",
+      "mcp__plugin_claude-video-vision_claude-video-vision__*"
     ],
     "deny": []
   },
