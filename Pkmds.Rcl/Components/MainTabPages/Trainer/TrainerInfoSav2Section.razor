@@ -1,0 +1,21 @@
+@inherits BasePkmdsComponent
+
+@* Gen 2 (GSC) trainer misc/events. Renders inside the parent .form-grid; sub-sections
+   are separated by full-width .form-section-header rows. Mirrors PKHeX WinForms SAV_Misc2.
+   The parent only renders this for Crystal today (the GS Ball event is Crystal-exclusive).
+   When GSC-wide features (#341) are added, widen the parent gate to all SAV2 and gate any
+   Crystal-only sub-sections here. *@
+
+<div class="form-section-header">Events</div>
+
+<div class="form-field">
+    <MudTooltip Text="Unlocks the Crystal GS Ball event: collect the GS Ball at a Pokémon Center, then place it on the Ilex Forest shrine to encounter Celebi.">
+        <MudButton Variant="@Variant.Filled"
+                   Color="@Color.Primary"
+                   StartIcon="@Icons.Material.Filled.CardGiftcard"
+                   Disabled="@SaveFile.IsEnabledGSBallMobileEvent"
+                   OnClick="@EnableGSBallEvent">
+            @(SaveFile.IsEnabledGSBallMobileEvent ? "GS Ball Event Enabled" : "Enable GS Ball Event")
+        </MudButton>
+    </MudTooltip>
+</div>
