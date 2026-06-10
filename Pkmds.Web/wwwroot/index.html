@@ -139,7 +139,61 @@
     })();
 
     if (webassemblySupported) {
-        Blazor.start({});
+        // Retry boot-resource fetches with exponential backoff. Blazor does not
+        // retry boot resources by default, so a single transient network blip
+        // during startup (common on mobile connections, especially first load
+        // before the service worker controls the page) kills the whole
+        // bootstrap and surfaces as `TypeError: Failed to fetch` (issue #978).
+        // Retrying turns that one-off failure into a brief stall instead.
+        function retryFetchBootResource(defaultUri, integrity) {
+            var maxAttempts = 3;
+            var baseDelayMs = 500;
+            function attempt(n) {
+                // Mirror Blazor's default boot fetch: revalidate via no-cache and
+                // enforce SRI when an integrity hash is supplied.
+                var init = integrity
+                    ? {cache: 'no-cache', integrity: integrity}
+                    : {cache: 'no-cache'};
+                return fetch(defaultUri, init).then(function (response) {
+                    // Retry transient server-side failures; let other statuses
+                    // flow through, including 4xx and the SW's synthetic 504.
+                    // 504 is excluded deliberately: service-worker.published.js
+                    // returns it precisely when the network is already down, so
+                    // retrying can't recover and only adds startup delay.
+                    if (!response.ok && n < maxAttempts
+                        && ((response.status >= 500 && response.status !== 504)
+                            || response.status === 429)) {
+                        return backoffThenRetry(n);
+                    }
+                    return response;
+                }).catch(function (err) {
+                    // Network-layer rejection ("Failed to fetch") — retry.
+                    if (n >= maxAttempts) throw err;
+                    return backoffThenRetry(n);
+                });
+            }
+            function backoffThenRetry(n) {
+                var delay = baseDelayMs * Math.pow(2, n - 1);
+                return new Promise(function (resolve) {
+                    setTimeout(resolve, delay);
+                }).then(function () {
+                    return attempt(n + 1);
+                });
+            }
+            return attempt(1);
+        }
+
+        Blazor.start({
+            loadBootResource: function (type, name, defaultUri, integrity) {
+                // The 'dotnetjs' module is imported as a script and must be
+                // returned as a URL string, not a Response — leave it to the
+                // default loader.
+                if (type === 'dotnetjs') {
+                    return undefined;
+                }
+                return retryFetchBootResource(defaultUri, integrity);
+            }
+        });
     } else {
         // Resolve against document.baseURI so the redirect lands on the
         // fallback regardless of the current path / query / hash. Coercing
