@@ -10,8 +10,7 @@
       "Write",
       "Glob",
       "Grep",
-      "WebFetch",
-      "mcp__*"
+      "WebFetch"
     ],
     "deny": []
   },
