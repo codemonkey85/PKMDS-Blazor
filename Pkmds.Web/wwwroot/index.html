@@ -156,9 +156,13 @@
                     : {cache: 'no-cache'};
                 return fetch(defaultUri, init).then(function (response) {
                     // Retry transient server-side failures; let other statuses
-                    // (incl. 4xx and the SW's synthetic 504) flow through.
+                    // flow through, including 4xx and the SW's synthetic 504.
+                    // 504 is excluded deliberately: service-worker.published.js
+                    // returns it precisely when the network is already down, so
+                    // retrying can't recover and only adds startup delay.
                     if (!response.ok && n < maxAttempts
-                        && (response.status >= 500 || response.status === 429)) {
+                        && ((response.status >= 500 && response.status !== 504)
+                            || response.status === 429)) {
                         return backoffThenRetry(n);
                     }
                     return response;
