@@ -369,7 +369,9 @@ public partial class TrainerInfoTab : IDisposable
     /// Trainer Shiny Value — the read-only value PKHeX surfaces on its TID/SID control.
     /// Only meaningful for Gen 3+, where a Secret ID exists; returns <see langword="null" />
     /// otherwise. Mirrors PKHeX's <c>TrainerID.GetTSV</c>: the xor of the 16-bit IDs shifted
-    /// right by 3 for Gen 1–5 (8-value shiny range) and by 4 for Gen 6+ (16-value range).
+    /// right by 3 for Gen 3–5 (8-value shiny range) and by 4 for Gen 6+ (16-value range).
+    /// (PKHeX's <c>GetTSV</c> uses the same shift for all of Gen 1–5, but the Gen 1–2 case
+    /// is unreachable here because of the early return above.)
     /// </summary>
     private static uint? GetTrainerShinyValue(SaveFile saveFile)
     {

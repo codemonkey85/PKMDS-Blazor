@@ -1132,7 +1132,7 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 - [x] Gen 6 Trainer Card Sayings viewer — read-only display (free-form text is view-only to avoid abuse vectors)
 - [x] Gen 3 Game Corner Joyful Records editor — closes #870
 - [x] Gen 4 HGSS NSparkle (National Park Sparkle) flag
-- [x] TSV (Trainer Shiny Value) read-only readout — Gen 3+; mirrors PKHeX's `TrainerID.GetTSV` (`(SID16 ^ TID16) >> 3` for Gen 1–5, `>> 4` for Gen 6+)
+- [x] TSV (Trainer Shiny Value) read-only readout — Gen 3+; mirrors PKHeX's `TrainerID.GetTSV` (`(SID16 ^ TID16) >> 3` for Gen 3–5, `>> 4` for Gen 6+)
 - [ ] Add trainer memo/notes
 
 ### 6.2 Box Viewer Enhancements
