@@ -365,6 +365,25 @@ public partial class TrainerInfoTab : IDisposable
         // Gen 3 does not store OT gender on the PKM, so skip the gender check for those.
         (pkm.Format <= 3 || pkm.OriginalTrainerGender == gender);
 
+    /// <summary>
+    /// Trainer Shiny Value — the read-only value PKHeX surfaces on its TID/SID control.
+    /// Only meaningful for Gen 3+, where a Secret ID exists; returns <see langword="null" />
+    /// otherwise. Mirrors PKHeX's <c>TrainerID.GetTSV</c>: the xor of the 16-bit IDs shifted
+    /// right by 3 for Gen 3–5 (8-value shiny range) and by 4 for Gen 6+ (16-value range).
+    /// (PKHeX's <c>GetTSV</c> uses the same shift for all of Gen 1–5, but the Gen 1–2 case
+    /// is unreachable here because of the early return above.)
+    /// </summary>
+    private static uint? GetTrainerShinyValue(SaveFile saveFile)
+    {
+        if (saveFile.Generation < 3)
+        {
+            return null;
+        }
+
+        var xor = (uint)(saveFile.SID16 ^ saveFile.TID16);
+        return saveFile.Generation <= 5 ? xor >> 3 : xor >> 4;
+    }
+
     private static string FormatPlaytime(SaveFile saveFile) =>
         $"{saveFile.PlayedHours}:{saveFile.PlayedMinutes:D2}:{saveFile.PlayedSeconds:D2}";
 
