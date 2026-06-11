@@ -372,11 +372,11 @@
             <TrainerInfoSav9ZaSection SaveFile="@za9Gen9"/>
         }
 
-        @* Crystal-only for now (the only Gen 2 feature here, the GS Ball event, is
-           Crystal-exclusive). When GSC-wide features are added, widen this to `is SAV2`. *@
-        @if (saveFile is SAV2 { Version: GameVersion.C } sav2Crystal)
+        @* All Gen 2 (GSC): the RTC clock reset applies to every GSC save. The GS Ball
+           event sub-section inside is gated to Crystal, where it is exclusive. *@
+        @if (saveFile is SAV2 sav2Misc)
         {
-            <TrainerInfoSav2Section SaveFile="@sav2Crystal"/>
+            <TrainerInfoSav2Section SaveFile="@sav2Misc"/>
         }
 
         @if (saveFile is SAV6 sav6Sayings)
