@@ -85,6 +85,17 @@
                 break;
         }
 
+        @if (saveGeneration >= 3 && GetTrainerShinyValue(saveFile) is { } tsv)
+        {
+            <div class="form-field">
+                <MudTextField Label="TSV (Shiny Value)"
+                              Variant="@Variant.Outlined"
+                              Value="@($"{tsv:D4}")"
+                              ReadOnly="true"
+                              HelperText="Trainer Shiny Value (read-only)"/>
+            </div>
+        }
+
         @if (saveGeneration >= 2)
         {
             <div class="form-field">
