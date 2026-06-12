@@ -82,6 +82,21 @@
             ui.insertBefore(details, msgEl.nextSibling);
         }
 
+        // For network-layer startup failures, add a reload hint before the
+        // button row so users know what to try before filing a bug.
+        var isNetworkError = (
+            message === 'Load failed' ||
+            message.indexOf('Failed to fetch') !== -1 ||
+            message.indexOf('NetworkError') !== -1
+        );
+        if (isNetworkError) {
+            var hint = document.createElement('p');
+            hint.style.cssText = 'margin: 0.4rem 0 0; font-size: 0.8rem; color: #555;';
+            hint.textContent = 'This is usually a temporary network problem or an app update in progress — reloading typically fixes it.';
+            var insertHintAfter = stack ? details : msgEl;
+            ui.insertBefore(hint, insertHintAfter.nextSibling);
+        }
+
         // Button row.
         var row = document.createElement('div');
         row.style.cssText = 'margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;';

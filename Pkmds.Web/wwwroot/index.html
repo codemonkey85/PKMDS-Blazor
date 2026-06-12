@@ -185,11 +185,15 @@
 
         Blazor.start({
             loadBootResource: function (type, name, defaultUri, integrity) {
-                // The 'dotnetjs' module is imported as a script and must be
-                // returned as a URL string, not a Response — leave it to the
-                // default loader.
                 if (type === 'dotnetjs') {
-                    return undefined;
+                    // dotnetjs must be returned as a URL string (or Promise<string>),
+                    // not a Response. Pre-fetch with retry to give transient failures
+                    // a chance to recover; discard the Response and return the URL
+                    // for Blazor's script import. If all retries fail the rejected
+                    // Promise propagates to Blazor's bootstrap (issue #991).
+                    return retryFetchBootResource(defaultUri, null).then(function () {
+                        return defaultUri;
+                    });
                 }
                 return retryFetchBootResource(defaultUri, integrity);
             }
