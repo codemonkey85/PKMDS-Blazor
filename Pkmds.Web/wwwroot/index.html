@@ -185,19 +185,15 @@
 
         Blazor.start({
             loadBootResource: function (type, name, defaultUri, integrity) {
+                // The 'dotnetjs' module is imported as a script and must be
+                // returned as a synchronous URI string — Blazor rejects a
+                // Promise here ("For a dotnetjs resource, custom loaders must
+                // supply a URI string"), which aborts startup entirely
+                // (issues #991, #994). Leave it to the default loader; the
+                // retry-on-transient-failure below still covers every other
+                // boot resource (.wasm/.dll/etc.).
                 if (type === 'dotnetjs') {
-                    // dotnetjs must be returned as a URL string (or Promise<string>),
-                    // not a Response. Pre-fetch with retry (and SRI when integrity is
-                    // supplied) so a transient failure gets multiple attempts; reject
-                    // explicitly on non-OK so bootstrap fails with a clear error rather
-                    // than silently returning the URL and letting the script import fail
-                    // generically later (issue #991).
-                    return retryFetchBootResource(defaultUri, integrity).then(function (response) {
-                        if (!response.ok) {
-                            throw new TypeError('dotnetjs load failed: HTTP ' + response.status);
-                        }
-                        return defaultUri;
-                    });
+                    return undefined;
                 }
                 return retryFetchBootResource(defaultUri, integrity);
             }
