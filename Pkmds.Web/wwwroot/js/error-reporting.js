@@ -93,11 +93,10 @@
             var hint = document.createElement('p');
             hint.style.cssText = 'margin: 0.4rem 0 0; font-size: 0.8rem; color: #555;';
             hint.textContent = 'This is usually a temporary network problem or an app update in progress — reloading typically fixes it.';
-            var insertHintAfter = stack ? details : msgEl;
-            ui.insertBefore(hint, insertHintAfter.nextSibling);
+            ui.insertBefore(hint, (stack ? details : msgEl).nextSibling);
         }
 
-        // Button row.
+        // Button row — anchor after hint when present (var-hoisted as undefined otherwise).
         var row = document.createElement('div');
         row.style.cssText = 'margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;';
 
@@ -135,7 +134,7 @@
         row.appendChild(copyBtn);
         row.appendChild(reportLink);
 
-        var insertAfter = stack ? details : msgEl;
+        var insertAfter = hint || (stack ? details : msgEl);
         ui.insertBefore(row, insertAfter.nextSibling);
     }
 
