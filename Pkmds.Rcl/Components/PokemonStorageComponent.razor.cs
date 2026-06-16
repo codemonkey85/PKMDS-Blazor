@@ -136,9 +136,13 @@ public partial class PokemonStorageComponent : RefreshAwareComponent
             return false;
         }
 
-        for (var i = 0; i < sav.PartyCount; i++)
+        // Don't trust the reported party count: ROM hacks (e.g. SAV3-based Pokémon Unbound) write
+        // garbage into the single-byte party-count field, which drives GetPartySlotAtIndex past the
+        // party buffer and throws (issue #1003). GetSafePartyCount clamps to the 6-slot maximum.
+        var partyCount = sav.GetSafePartyCount();
+        for (var i = 0; i < partyCount; i++)
         {
-            if (sav.GetPartySlotAtIndex(i).Species != 0)
+            if (sav.TryGetPartySlot(i) is { Species: > 0 })
             {
                 return true;
             }

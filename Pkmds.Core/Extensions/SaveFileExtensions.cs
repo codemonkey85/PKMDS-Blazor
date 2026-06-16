@@ -76,21 +76,25 @@ public static class SaveFileExtensions
     }
 
     /// <summary>
-    /// The number of leading party slots that can actually be read without throwing. For most
-    /// saves this equals <see cref="SaveFile.PartyCount"/>. For LGPE (SAV7b) the stored count can
-    /// exceed the number of populated pointers, so this walks the reported slots and stops at the
-    /// first one that is unreadable or empty.
+    /// The number of leading party slots that can actually be read without throwing. The stored
+    /// party count is never trusted as-is: it is clamped to the 6-slot physical maximum first.
+    /// On mainline saves the count cannot legitimately exceed 6, but ROM hacks (e.g. SAV3-based
+    /// Pokémon Unbound) write garbage into the single-byte party-count field, which would otherwise
+    /// drive <see cref="SaveFile.GetPartySlotAtIndex"/> past the party buffer and throw
+    /// <see cref="ArgumentOutOfRangeException"/> (issue #1003). For LGPE (SAV7b) the stored count can
+    /// also exceed the number of populated pointers, so there this additionally walks the reported
+    /// slots and stops at the first one that is unreadable or empty (issues #942–#948).
     /// </summary>
     public static int GetSafePartyCount(this SaveFile sav)
     {
-        var reported = sav.PartyCount;
+        var reported = Math.Min(sav.PartyCount, PartySize);
         if (sav is not SAV7b)
         {
             return reported;
         }
 
         var count = 0;
-        for (var i = 0; i < reported && i < PartySize; i++)
+        for (var i = 0; i < reported; i++)
         {
             if (sav.TryGetPartySlot(i) is not { Species: > 0 })
             {
