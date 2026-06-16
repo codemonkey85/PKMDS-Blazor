@@ -435,11 +435,10 @@ public partial class MainLayout : IDisposable
 
             if (SaveFileLoader.TryLoad(data, fileName, out var saveFile, out var manicContext))
             {
-                if (!saveFile.State.Exportable)
+                if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
-                    Logger.LogWarning("Backup save file is not exportable (unsupported format/ROM hack): {FileName}", fileName);
-                    await DialogService.ShowMessageBoxAsync("Unsupported save file",
-                        "This backup cannot be restored — it may be from an unsupported ROM hack or format.");
+                    Logger.LogWarning("Backup save file rejected (unsupported format/ROM hack): {FileName}", fileName);
+                    await DialogService.ShowMessageBoxAsync("Unsupported save file", unsupportedReason);
                     AppState.ShowProgressIndicator = false;
                     return;
                 }
@@ -563,11 +562,10 @@ public partial class MainLayout : IDisposable
             // raw bytes that Manic EMU rejects on re-import (see issue #750).
             if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out var manicContext))
             {
-                if (!saveFile.State.Exportable)
+                if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
-                    Logger.LogWarning("Save file is not exportable (unsupported format/ROM hack): {FileName}", selectedFile.Name);
-                    await DialogService.ShowMessageBoxAsync("Unsupported save file",
-                        "This save file cannot be loaded — it may be from an unsupported ROM hack or format.");
+                    Logger.LogWarning("Save file rejected (unsupported format/ROM hack): {FileName}", selectedFile.Name);
+                    await DialogService.ShowMessageBoxAsync("Unsupported save file", unsupportedReason);
                     AppState.ShowProgressIndicator = false;
                     return;
                 }

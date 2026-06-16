@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Pkmds.Core.Extensions;
 
 /// <summary>
@@ -6,6 +8,41 @@ namespace Pkmds.Core.Extensions;
 public static class SaveFileExtensions
 {
     private const int PartySize = 6;
+
+    /// <summary>
+    /// Validates that a freshly parsed save satisfies the core invariants the editor relies on,
+    /// returning <see langword="false"/> with a user-facing <paramref name="reason"/> for saves that
+    /// parse structurally but are unsafe to edit. This catches two cases the bare
+    /// <see cref="SaveState.Exportable"/> flag misses:
+    /// <list type="bullet">
+    /// <item>Unsupported / unexportable formats (the existing <see cref="SaveState.Exportable"/> check).</item>
+    /// <item>ROM hacks that reuse a vanilla save layout but corrupt fixed-size invariants. The
+    /// SAV3-based Pokémon Unbound, for example, is detected as a valid <c>SAV3E</c>
+    /// (<see cref="SaveState.Exportable"/> is <see langword="true"/>) yet writes an out-of-range value
+    /// into the single-byte party-count field; reading the phantom party slots throws and crashes
+    /// the editor (issue #1003).</item>
+    /// </list>
+    /// </summary>
+    public static bool IsSupportedForEditing(this SaveFile sav, [NotNullWhen(false)] out string? reason)
+    {
+        if (!sav.State.Exportable)
+        {
+            reason = "This save file cannot be loaded — it may be from an unsupported ROM hack or format.";
+            return false;
+        }
+
+        // A legitimate party can never exceed the 6-slot physical maximum (vanilla saves store the
+        // count in a field whose value is always 0–6). A larger value means the save isn't laid out
+        // the way the editor expects — in practice a ROM hack — and every read past slot 6 throws.
+        if (sav.PartyCount > PartySize)
+        {
+            reason = "This save file appears to be from an unsupported ROM hack — its party data is not in the expected format, so it can't be edited safely.";
+            return false;
+        }
+
+        reason = null;
+        return true;
+    }
 
     /// <summary>
     /// Rewrites the party so all non-blank members are contiguous at indices 0..N-1, with the

@@ -96,9 +96,9 @@ public sealed partial class EmbeddedHostBridge
                 return false;
             }
 
-            if (!saveFile.State.Exportable)
+            if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
             {
-                _logger.LogWarning("Host save load rejected: not exportable ({FileName})", fileName);
+                _logger.LogWarning("Host save load rejected ({FileName}): {Reason}", fileName, unsupportedReason);
                 return false;
             }
 
