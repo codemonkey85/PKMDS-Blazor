@@ -116,41 +116,71 @@ window.checkForUpdates = async () => {
         return 'found';
     }
 
-    let updated;
+    // Subscribe BEFORE calling update(): browsers populate registration.installing and fire
+    // 'updatefound' asynchronously, often a task or two AFTER the update() promise resolves —
+    // especially on slower mobile devices. Checking registration.installing immediately after
+    // update() can therefore miss a real update, making this function return 'none' ("You're
+    // up to date") moments before the global onupdatefound handler announces "An update is
+    // available" — two contradictory snackbars for the same check (issue seen mostly on mobile).
+    let signalUpdateFound;
+    const updateFoundPromise = new Promise(resolve => { signalUpdateFound = resolve; });
+    registration.addEventListener('updatefound', signalUpdateFound);
+
     try {
-        updated = await registration.update();
-    } catch (err) {
-        if (!(err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null')))) {
-            console.warn('Manual update check failed:', err);
-        }
-        return 'error';
-    }
-
-    if (updated.waiting) {
-        window.dispatchEvent(new CustomEvent('updateAvailable'));
-        return 'found';
-    }
-
-    if (!updated.installing) {
-        return 'none';
-    }
-
-    // New SW is installing — wait for it to fully succeed or fail before returning.
-    // This prevents a silent no-feedback state when the install errors (e.g. SRI hash mismatch
-    // during a fresh deployment before CDN has fully propagated the new asset files).
-    const installing = updated.installing;
-    return new Promise((resolve) => {
-        const timeoutId = setTimeout(() => resolve('error'), 30000);
-        installing.addEventListener('statechange', function () {
-            if (installing.state === 'installed') {
-                clearTimeout(timeoutId);
-                window.dispatchEvent(new CustomEvent('updateAvailable'));
-                resolve('found');
-            } else if (installing.state === 'redundant') {
-                clearTimeout(timeoutId);
-                resolve('error');
+        try {
+            await registration.update();
+        } catch (err) {
+            if (!(err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null')))) {
+                console.warn('Manual update check failed:', err);
             }
+            return 'error';
+        }
+
+        // No new worker visible yet — give the async 'updatefound' event a grace window
+        // before declaring "up to date". The persistent "Checking for updates…" snackbar
+        // covers this delay, so the up-to-date case just resolves ~1.5s later.
+        if (!registration.installing && !registration.waiting) {
+            await Promise.race([
+                updateFoundPromise,
+                new Promise(resolve => setTimeout(resolve, 1500)),
+            ]);
+        }
+
+        // A fast install may have already moved the new worker to the waiting slot.
+        if (registration.waiting) {
+            window.dispatchEvent(new CustomEvent('updateAvailable'));
+            return 'found';
+        }
+
+        const installing = registration.installing;
+        if (!installing) {
+            return 'none';
+        }
+
+        // New SW is installing — wait for it to fully succeed or fail before returning.
+        // This prevents a silent no-feedback state when the install errors (e.g. SRI hash mismatch
+        // during a fresh deployment before CDN has fully propagated the new asset files).
+        return await new Promise((resolve) => {
+            const timeoutId = setTimeout(() => resolve('error'), 30000);
+            installing.addEventListener('statechange', function () {
+                if (installing.state === 'installed') {
+                    clearTimeout(timeoutId);
+                    // Mirror the controller check in the global onupdatefound handler: with no
+                    // controller this is the page's very first SW install, not an update.
+                    if (navigator.serviceWorker.controller) {
+                        window.dispatchEvent(new CustomEvent('updateAvailable'));
+                        resolve('found');
+                    } else {
+                        resolve('none');
+                    }
+                } else if (installing.state === 'redundant') {
+                    clearTimeout(timeoutId);
+                    resolve('error');
+                }
+            });
         });
-    });
+    } finally {
+        registration.removeEventListener('updatefound', signalUpdateFound);
+    }
 };
 

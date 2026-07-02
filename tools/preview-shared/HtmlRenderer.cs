@@ -9,15 +9,15 @@ namespace Pkmds.Preview;
 public static class HtmlRenderer
 {
     // Final fallback when even the base-species URL can't be built (invalid species).
-    private const string PlaceholderSpriteUrl =
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/0.png";
+    // Transport is centralized in SpriteSource; this is a local alias.
+    private const string PlaceholderSpriteUrl = SpriteSource.PlaceholderSpriteUrl;
 
     /// <summary>
     /// Optional hook that resolves a bundled sprite (a relative path from <see cref="SpritePaths"/>)
     /// to an <c>&lt;img src&gt;</c> value — typically a <c>data:</c> URI read from a local sprite
-    /// bundle. When set and it returns non-null, the renderer uses it instead of a remote PokeAPI
+    /// bundle. When set and it returns non-null, the renderer uses it instead of a remote CDN
     /// URL, making previews fully offline. Hosts that don't bundle sprites leave it null (or return
-    /// null for a missing file) to fall back to PokeAPI.
+    /// null for a missing file) to fall back to the remote sprite CDN (see <see cref="SpriteSource"/>).
     /// </summary>
     public static Func<string, string?>? SpriteResolver { get; set; }
 

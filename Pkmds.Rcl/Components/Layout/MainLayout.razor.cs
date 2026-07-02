@@ -106,7 +106,15 @@ public partial class MainLayout : IDisposable
             switch (result)
             {
                 case "none":
-                    Snackbar.Add("You're up to date.", Severity.Success);
+                    // Belt-and-braces against the JS-side race (see checkForUpdates in app.js):
+                    // if the service worker's 'updateAvailable' event landed anyway — flipping
+                    // IsUpdateAvailable via ShowUpdateMessage — don't contradict it by also
+                    // claiming the app is up to date.
+                    if (!IsUpdateAvailable)
+                    {
+                        Snackbar.Add("You're up to date.", Severity.Success);
+                    }
+
                     break;
                 case "error":
                 case "no-sw":

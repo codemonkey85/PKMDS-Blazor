@@ -3,7 +3,7 @@ using Pkmds.Core.Extensions;
 namespace Pkmds.Core.Utilities;
 
 /// <summary>
-/// Builds PokeAPI CDN URLs for Pokémon sprites — both the high-res HOME artwork and the
+/// Builds sprite URLs in the PokeAPI layout — both the high-res HOME artwork and the
 /// game-version-specific pixel-art sprites. Handles form variants, gender differences,
 /// shiny variants, Alcremie cream/sweet permutations, and Totem-form mapping.
 /// </summary>
@@ -11,14 +11,16 @@ namespace Pkmds.Core.Utilities;
 /// Lives in <c>Pkmds.Core</c> so AOT-clean consumers (the macOS / iOS Quick Look extensions,
 /// any future native host) can share the form-mapping data without taking a dependency on
 /// <c>Pkmds.Rcl</c> (MudBlazor + Blazor + Tailwind, none of which AOT-compile).
+/// The transport (which CDN / fork / branch the sprites come from) is centralized in
+/// <see cref="SpriteSource"/> — change it there, not here.
 /// </remarks>
 public static class PokeApiSpriteUrls
 {
-    private const string PokeApiHomeBaseUrl =
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/";
+    // Local shorthands for the centralized transport in SpriteSource — the interpolations
+    // below stay readable. To change the CDN / fork / branch, edit SpriteSource, not these.
+    private const string PokeApiHomeBaseUrl = SpriteSource.HomeBaseUrl;
 
-    private const string PokeApiVersionsBaseUrl =
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/";
+    private const string PokeApiVersionsBaseUrl = SpriteSource.VersionsBaseUrl;
 
     // Alcremie (869): 9 cream forms × 7 sweet decorations = 63 combinations.
     // PKHeX form (0-8) = cream type; GetFormArgument(0) (0-6) = sweet type.
