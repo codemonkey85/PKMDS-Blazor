@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "any",
   "background_color": "#FAFAF9",
-  "theme_color": "#1E40AF",
+  "theme_color": "#1C1917",
   "icons": [
     {
       "src": "_content/Pkmds.Rcl/icon-192.png",

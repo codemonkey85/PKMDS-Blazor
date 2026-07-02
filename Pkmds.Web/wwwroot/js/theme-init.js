@@ -28,6 +28,16 @@
     document.documentElement.setAttribute('data-theme', theme);
 })();
 
-window.setAppTheme = function (theme) {
+window.setAppTheme = function (theme, themeColor) {
     document.documentElement.setAttribute('data-theme', theme);
+
+    // Keep the PWA window-chrome color derived from the C# theme (AppTheme.PwaThemeColor,
+    // passed via interop) instead of duplicating the hex here. The static value in
+    // index.html is only the pre-boot placeholder.
+    if (themeColor) {
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) {
+            meta.setAttribute('content', themeColor);
+        }
+    }
 };

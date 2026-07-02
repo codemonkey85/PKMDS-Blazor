@@ -254,7 +254,7 @@ public partial class MainLayout : IDisposable
             // setAppTheme call would otherwise be unobserved and could tear down rendering.
             try
             {
-                await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
+                await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr, AppTheme.PwaThemeColor);
             }
             catch (JSException ex)
             {
@@ -279,7 +279,7 @@ public partial class MainLayout : IDisposable
                 ? "dark"
                 : "light"
         };
-        await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
+        await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr, AppTheme.PwaThemeColor);
 
         // Persist the new theme through the settings service (keeps pkmds_theme in sync too)
         await SettingsService.SaveAsync(SettingsService.Settings with
@@ -354,7 +354,7 @@ public partial class MainLayout : IDisposable
             var themeStr = isDarkMode
                 ? "dark"
                 : "light";
-            await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr);
+            await JSRuntime.InvokeVoidAsync("setAppTheme", themeStr, AppTheme.PwaThemeColor);
 
             StateHasChanged();
         }
