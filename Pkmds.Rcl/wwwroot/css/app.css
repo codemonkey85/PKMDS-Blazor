@@ -24,6 +24,29 @@ body, html {
     padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* MudBlazor anchors snackbars a fixed 24px from the screen edges, which lands
+   them under the iOS status bar (portrait) or the Dynamic Island / notch
+   (landscape) with viewport-fit=cover. The snackbar container is position:fixed,
+   so the body's safe-area padding doesn't reach it — shift each anchor by the
+   matching inset instead. Insets are 0 where no safe area exists, so this is a
+   no-op elsewhere. Same specificity as MudBlazor's rules, but our stylesheet
+   loads after, so this wins. */
+.mud-snackbar-location-top-left,
+.mud-snackbar-location-top-center,
+.mud-snackbar-location-top-right {
+    top: calc(24px + var(--pkmds-safe-area-top));
+}
+
+.mud-snackbar-location-top-right,
+.mud-snackbar-location-bottom-right {
+    right: calc(24px + env(safe-area-inset-right, 0px));
+}
+
+.mud-snackbar-location-top-left,
+.mud-snackbar-location-bottom-left {
+    left: calc(24px + env(safe-area-inset-left, 0px));
+}
+
 /* The padding above grows .mud-appbar's effective height by the iOS status-bar
    inset, but MudBlazor's .mud-main-content padding-top is fixed to the bar's
    nominal height — so page content (e.g. the save-file title row in
@@ -34,6 +57,19 @@ body, html {
    the dense variant is the only one that needs covering. */
 .mud-appbar-dense ~ .mud-main-content {
     padding-top: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4 + env(safe-area-inset-top, 0px));
+}
+
+/* MudBlazor 9.6.0 renders the active tab panel with display: contents
+   (MudBlazor/MudBlazor#13288), so the panel div no longer generates a layout box
+   and every height/overflow rule this stylesheet puts on .mud-tab-panel is
+   silently ignored. On narrow screens (< 1280px) the outer tab panel is the
+   page's only scroll container (html/body are overflow:hidden), so 9.6.0 broke
+   all scrolling there — box grid, edit form, and Trainer tab were clipped with
+   no way to reach the overflow. Restore the 9.5.x block box. This must stay
+   ABOVE the :has(...) rules that switch the Bank/Pokédex panels to display:flex;
+   the specificity ties at (0,4,0), so file order decides the winner. */
+.mud-tabs-panels > .mud-tab-panel.mud-tab-panel-active:not(.mud-tab-panel-hidden) {
+    display: block;
 }
 
 .menu-container {
