@@ -23,5 +23,6 @@ global using Pkmds.Rcl.Extensions;
 global using Pkmds.Rcl.Models;
 global using Pkmds.Rcl.Services;
 global using Pkmds.Rcl.Services.Json;
+global using Pkmds.Rcl.Theming;
 global using Serilog.Events;
 global using Severity = MudBlazor.Severity;

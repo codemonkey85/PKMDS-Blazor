@@ -662,6 +662,10 @@ body, html {
     max-width: 10rem;
 }
 
+/* begin pkmds-splash — pre-boot loading screen. MudBlazor's CSS variables don't
+   exist yet at this point, so colors must be literal hexes mirroring
+   AppTheme.Colors. ThemeSyncTests scans this marker-bounded section and fails
+   if a hex here drifts from the C# palette. */
 .pkmds-splash {
     position: fixed;
     inset: 0;
@@ -846,6 +850,8 @@ body, html {
 [data-theme="light"] .loading-progress-text {
     color: #57534E;
 }
+
+/* end pkmds-splash */
 
 /* Drag and drop styles */
 .slot-dragging {
