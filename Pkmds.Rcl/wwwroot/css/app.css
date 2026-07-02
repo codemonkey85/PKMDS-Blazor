@@ -59,6 +59,19 @@ body, html {
     padding-top: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4 + env(safe-area-inset-top, 0px));
 }
 
+/* MudBlazor 9.6.0 renders the active tab panel with display: contents
+   (MudBlazor/MudBlazor#13288), so the panel div no longer generates a layout box
+   and every height/overflow rule this stylesheet puts on .mud-tab-panel is
+   silently ignored. On narrow screens (< 1280px) the outer tab panel is the
+   page's only scroll container (html/body are overflow:hidden), so 9.6.0 broke
+   all scrolling there — box grid, edit form, and Trainer tab were clipped with
+   no way to reach the overflow. Restore the 9.5.x block box. This must stay
+   ABOVE the :has(...) rules that switch the Bank/Pokédex panels to display:flex;
+   the specificity ties at (0,4,0), so file order decides the winner. */
+.mud-tabs-panels > .mud-tab-panel.mud-tab-panel-active:not(.mud-tab-panel-hidden) {
+    display: block;
+}
+
 .menu-container {
     padding-bottom: env(safe-area-inset-bottom, 16px); /* Fallback to 16px */
     padding-left: env(safe-area-inset-left, 8px); /* Fallback to 8px */
