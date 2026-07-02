@@ -24,15 +24,27 @@ body, html {
     padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* MudBlazor anchors top snackbars at a fixed top: 24px, which lands under the iOS
-   status bar in standalone PWA mode (viewport-fit=cover). Shift them down by the
-   safe-area inset; in a regular browser tab the inset is 0, so this is a no-op.
-   Same specificity as MudBlazor's rules, but our stylesheet loads after, so this
-   wins. */
+/* MudBlazor anchors snackbars a fixed 24px from the screen edges, which lands
+   them under the iOS status bar (portrait) or the Dynamic Island / notch
+   (landscape) with viewport-fit=cover. The snackbar container is position:fixed,
+   so the body's safe-area padding doesn't reach it — shift each anchor by the
+   matching inset instead. Insets are 0 where no safe area exists, so this is a
+   no-op elsewhere. Same specificity as MudBlazor's rules, but our stylesheet
+   loads after, so this wins. */
 .mud-snackbar-location-top-left,
 .mud-snackbar-location-top-center,
 .mud-snackbar-location-top-right {
     top: calc(24px + var(--pkmds-safe-area-top));
+}
+
+.mud-snackbar-location-top-right,
+.mud-snackbar-location-bottom-right {
+    right: calc(24px + env(safe-area-inset-right, 0px));
+}
+
+.mud-snackbar-location-top-left,
+.mud-snackbar-location-bottom-left {
+    left: calc(24px + env(safe-area-inset-left, 0px));
 }
 
 /* The padding above grows .mud-appbar's effective height by the iOS status-bar
