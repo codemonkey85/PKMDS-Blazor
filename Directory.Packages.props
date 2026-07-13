@@ -21,7 +21,19 @@
     <PackageVersion Include="Microsoft.JSInterop.WebAssembly" Version="10.0.3" />
     <!-- Windows Shell preview-handler PoC only (tools/windows-preview-poc). -->
     <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
-    <PackageVersion Include="MudBlazor" Version="9.6.0" />
+    <!--
+      Pinned to 9.5.0: MudBlazor 9.6.0 (commit ef59e90d2, "MudMenu: Invoke OnClick
+      before closing the menu") reordered MudMenuItem so OnClick runs while the menu
+      popover is still open, then closes it afterward. Combined with the WebView
+      menu-close JS-interop change (3fcb3457a), this shifted the menu -> unsaved-changes
+      dialog -> programmatic download overlay/activation timing enough that iOS Safari
+      silently dropped the export download (it only honors anchor/data-URI downloads
+      tied to a live user gesture). Reported across #1044-#1060; desktop unaffected.
+      Do not bump past 9.5.0 until the export path is hardened against activation loss
+      or MudBlazor reverts the reorder. See also the app.css .mud-tab-panel override
+      (commit 71640687), which offsets the 9.6.0 display:contents tab-panel change.
+    -->
+    <PackageVersion Include="MudBlazor" Version="9.5.0" />
     <PackageVersion Include="PKHeX.Core" Version="26.5.5" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
