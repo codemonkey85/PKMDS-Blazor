@@ -65,14 +65,14 @@ public partial class StatsTab : IDisposable
         }
     }
 
-    private void OnStatNatureSet(Nature statNature)
+    private void OnStatAlignmentSet(Nature statAlignment)
     {
         if (Pokemon is null)
         {
             return;
         }
 
-        Pokemon.StatAlignment = statNature;
+        Pokemon.StatAlignment = statAlignment;
         if (AppState?.IsHaXEnabled is not true)
         {
             AppService.LoadPokemonStats(Pokemon);

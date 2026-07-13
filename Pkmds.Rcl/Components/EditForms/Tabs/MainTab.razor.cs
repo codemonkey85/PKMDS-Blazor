@@ -164,14 +164,14 @@ public partial class MainTab : IDisposable
         AppService.LoadPokemonStats(Pokemon);
     }
 
-    private void OnStatNatureSet(Nature statNature)
+    private void OnStatAlignmentSet(Nature statAlignment)
     {
         if (Pokemon is null)
         {
             return;
         }
 
-        Pokemon.StatAlignment = statNature;
+        Pokemon.StatAlignment = statAlignment;
         AppService.LoadPokemonStats(Pokemon);
     }
 

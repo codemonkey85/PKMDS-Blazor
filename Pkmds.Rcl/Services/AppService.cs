@@ -2025,8 +2025,11 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         switch (AppState.SaveFile)
         {
             case SAV5 sav5:
-                // Mirror the old single-flag write (bit 0 = Wi-Fi tournament lock).
+                // Set both tournament flags together so this stays the inverse of
+                // IsBattleBoxLocked (which reports locked if either flag is set);
+                // otherwise unlocking a save with the Live flag set would no-op.
                 sav5.BattleBox.BattleBoxLockedWiFiTournament = locked;
+                sav5.BattleBox.BattleBoxLockedLiveTournament = locked;
                 break;
             case SAV6XY xy:
                 xy.BattleBox.Locked = locked;

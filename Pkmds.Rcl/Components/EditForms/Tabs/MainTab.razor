@@ -202,7 +202,7 @@
         <AutocompleteSelect T="@Nature"
                             Label="Stat Alignment"
                             @bind-Value:get="@Pokemon.StatAlignment"
-                            @bind-Value:set="@OnStatNatureSet"
+                            @bind-Value:set="@OnStatAlignmentSet"
                             Items="@GetNatureItems()"
                             ToStringFunc="@GetNatureName"
                             For="@(() => Pokemon.StatAlignment)">
