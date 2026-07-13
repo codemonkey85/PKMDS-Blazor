@@ -200,12 +200,12 @@
     @if (saveGeneration >= 8)
     {
         <AutocompleteSelect T="@Nature"
-                            Label="Stat Nature"
-                            @bind-Value:get="@Pokemon.StatNature"
+                            Label="Stat Alignment"
+                            @bind-Value:get="@Pokemon.StatAlignment"
                             @bind-Value:set="@OnStatNatureSet"
                             Items="@GetNatureItems()"
                             ToStringFunc="@GetNatureName"
-                            For="@(() => Pokemon.StatNature)">
+                            For="@(() => Pokemon.StatAlignment)">
             <ItemTemplate Context="nature">
                 <MudStack Row>
                     <MudText>

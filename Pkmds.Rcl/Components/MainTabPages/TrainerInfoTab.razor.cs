@@ -471,11 +471,14 @@ public partial class TrainerInfoTab : IDisposable
         switch (saveFile)
         {
             case SAV4HGSS hgss:
+                // PKHeX.Core 26.7.7 replaced SAV4HGSS.PokeathlonPoints with the
+                // Pokeathlon4 substructure; points live on Pokeathlon.Points (capped
+                // at Pokeathlon4.MaxPoints = 99,999).
                 yield return new CurrencyDescriptor(
                     "Pokéathlon Points",
-                    hgss.PokeathlonPoints,
-                    v => hgss.PokeathlonPoints = v,
-                    uint.MaxValue);
+                    hgss.Pokeathlon.Points,
+                    v => hgss.Pokeathlon.Points = v,
+                    Pokeathlon4.MaxPoints);
                 break;
 
             case SAV5 sav5:

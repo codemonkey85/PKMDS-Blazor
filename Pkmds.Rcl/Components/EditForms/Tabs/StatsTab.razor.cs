@@ -72,7 +72,7 @@ public partial class StatsTab : IDisposable
             return;
         }
 
-        Pokemon.StatNature = statNature;
+        Pokemon.StatAlignment = statNature;
         if (AppState?.IsHaXEnabled is not true)
         {
             AppService.LoadPokemonStats(Pokemon);
@@ -125,7 +125,7 @@ public partial class StatsTab : IDisposable
         }
 
         var nature = Pokemon.Format >= 8
-            ? Pokemon.StatNature
+            ? Pokemon.StatAlignment
             : Pokemon.Nature;
         return GetNatureModifier(nature, stat) switch
         {
@@ -143,7 +143,7 @@ public partial class StatsTab : IDisposable
         }
 
         var nature = Pokemon.Format >= 8
-            ? Pokemon.StatNature
+            ? Pokemon.StatAlignment
             : Pokemon.Nature;
         return GetNatureModifier(nature, stat);
     }

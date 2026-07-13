@@ -171,7 +171,7 @@ public partial class MainTab : IDisposable
             return;
         }
 
-        Pokemon.StatNature = statNature;
+        Pokemon.StatAlignment = statNature;
         AppService.LoadPokemonStats(Pokemon);
     }
 

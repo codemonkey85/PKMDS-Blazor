@@ -149,7 +149,7 @@ public partial class StatsChart : IDisposable
         }
 
         // Indices follow chart axis order: [HP(0), Atk(1), Def(2), Spe(3), SpD(4), SpA(5)]
-        return Pokemon.StatNature switch
+        return Pokemon.StatAlignment switch
         {
             Nature.Adamant => [0, 1, 0, 0, 0, -1],
             Nature.Bold => [0, -1, 1, 0, 0, 0],

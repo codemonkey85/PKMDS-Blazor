@@ -1676,7 +1676,9 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
 
     public bool IsBattleBoxLocked() => AppState.SaveFile switch
     {
-        SAV5 sav5 => sav5.BattleBox.BattleBoxLocked,
+        // PKHeX.Core 26.7.7 split BattleBox5.BattleBoxLocked into two tournament
+        // flags; treat either being set as "locked" to preserve prior behavior.
+        SAV5 sav5 => sav5.BattleBox.BattleBoxLockedWiFiTournament || sav5.BattleBox.BattleBoxLockedLiveTournament,
         SAV6XY xy => xy.BattleBox.Locked,
         SAV6AO ao => ao.BattleBox.Locked,
         _ => false
@@ -2023,7 +2025,8 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         switch (AppState.SaveFile)
         {
             case SAV5 sav5:
-                sav5.BattleBox.BattleBoxLocked = locked;
+                // Mirror the old single-flag write (bit 0 = Wi-Fi tournament lock).
+                sav5.BattleBox.BattleBoxLockedWiFiTournament = locked;
                 break;
             case SAV6XY xy:
                 xy.BattleBox.Locked = locked;
