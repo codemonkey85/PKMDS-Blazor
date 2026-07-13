@@ -170,6 +170,101 @@ function pkmdsInferMimeType(ext) {
     return 'application/octet-stream';
 }
 
+function pkmdsIsIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+// iOS/iPadOS Safari (WebKit) only starts a download when the anchor click happens
+// inside a live user gesture. Our export pipeline reaches the download after several
+// awaits (unsaved-changes dialog, IsSupportedAsync interop, the download interop call),
+// by which point the transient activation is gone — so a script-triggered a.click() is
+// silently dropped and "Export Save File" appears to do nothing (issues #1044-#1060).
+//
+// Fix: instead of clicking for the user, present a real control they tap themselves.
+// The tap IS the gesture WebKit requires, so the download/share is always honored,
+// regardless of how much async ran before this point. Returns a Promise that resolves
+// once the user acts or dismisses. Used only on iOS; other platforms keep the direct
+// programmatic download, which works there.
+function pkmdsPresentDownload(fileName, blob) {
+    return new Promise((resolve) => {
+        const url = URL.createObjectURL(blob);
+        let settled = false;
+        const finish = () => {
+            if (settled) return;
+            settled = true;
+            document.removeEventListener('keydown', onKey);
+            root.remove();
+            // Keep the object URL alive long enough for the download/share to read it.
+            setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* ignore */ } }, 60000);
+            resolve();
+        };
+        const onKey = (e) => { if (e.key === 'Escape') finish(); };
+
+        const root = document.createElement('div');
+        root.setAttribute('role', 'dialog');
+        root.setAttribute('aria-modal', 'true');
+        root.style.cssText = 'position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;';
+
+        const card = document.createElement('div');
+        card.style.cssText = 'background:#1e1e28;color:#fff;border-radius:16px;padding:24px 22px;width:min(420px,92vw);box-sizing:border-box;box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:12px;text-align:center;';
+
+        const title = document.createElement('div');
+        title.textContent = 'Your save file is ready';
+        title.style.cssText = 'font-size:1.15rem;font-weight:700;';
+
+        const sub = document.createElement('div');
+        sub.textContent = 'Tap below to save it to your device.';
+        sub.style.cssText = 'font-size:.92rem;opacity:.8;margin-bottom:4px;';
+
+        const btnStyle = 'display:block;width:100%;box-sizing:border-box;padding:14px 18px;border-radius:9999px;font-weight:600;font-size:1rem;text-decoration:none;border:0;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+
+        card.appendChild(title);
+        card.appendChild(sub);
+
+        // Primary: native share sheet ("Save to Files") when the platform can share the file.
+        let file = null;
+        try { file = new File([blob], fileName, { type: blob.type || 'application/octet-stream' }); } catch (e) { /* File ctor unsupported */ }
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+            const shareBtn = document.createElement('button');
+            shareBtn.type = 'button';
+            shareBtn.textContent = 'Save to Files…';
+            shareBtn.style.cssText = btnStyle + 'background:#7c4dff;color:#fff;margin-bottom:2px;';
+            shareBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.share({ files: [file], title: fileName });
+                    finish();
+                } catch (e) {
+                    // User cancelled the share sheet, or share failed — leave the dialog open
+                    // so they can still use the direct download link below.
+                }
+            });
+            card.appendChild(shareBtn);
+        }
+
+        // Always offer a direct download link the user taps (real anchor = real gesture).
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.textContent = 'Download ' + fileName;
+        link.style.cssText = btnStyle + 'background:#fff;color:#111;';
+        link.addEventListener('click', () => { setTimeout(finish, 400); });
+        card.appendChild(link);
+
+        const cancel = document.createElement('button');
+        cancel.type = 'button';
+        cancel.textContent = 'Cancel';
+        cancel.style.cssText = btnStyle + 'background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);font-weight:500;margin-top:2px;';
+        cancel.addEventListener('click', finish);
+        card.appendChild(cancel);
+
+        root.appendChild(card);
+        root.addEventListener('click', (e) => { if (e.target === root) finish(); });
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(root);
+    });
+}
+
 window.showFilePickerAndWrite = async function (fileName, byteArray, extension, description, mimeType) {
     // byteArray is expected to be a JS array of numbers coming from a Blazor byte[]
     try {
@@ -206,17 +301,23 @@ window.showFilePickerAndWrite = async function (fileName, byteArray, extension, 
         // iOS (all browsers) uses WebKit, which may expose showSaveFilePicker but has
         // incomplete support for createWritable() — always use the anchor fallback on iOS.
         const supportsFS = !!window.showSaveFilePicker;
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isIOS = pkmdsIsIOS();
         if (!supportsFS || /Android/i.test(navigator.userAgent) || isIOS) {
-            console.warn('[showFilePickerAndWrite] Falling back to anchor download for this platform.');
-
             const uint8 = byteArray instanceof Uint8Array ? byteArray : new Uint8Array(byteArray);
             const blob = new Blob([uint8], {type: blobType});
 
             const hasExt = ext && fileName.toLowerCase().endsWith(ext.toLowerCase());
             const finalName = (ext && !hasExt) ? fileName + ext : fileName;
 
+            if (isIOS) {
+                // iOS drops script-triggered downloads made outside a user gesture — present a
+                // control the user taps instead of clicking the anchor for them. See pkmdsPresentDownload.
+                console.warn('[showFilePickerAndWrite] iOS: presenting user-tap download.');
+                await pkmdsPresentDownload(finalName, blob);
+                return;
+            }
+
+            console.warn('[showFilePickerAndWrite] Falling back to anchor download for this platform.');
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = finalName;
@@ -285,6 +386,10 @@ window.downloadBlob = function (fileName, byteArray, mimeType) {
     const uint8 = byteArray instanceof Uint8Array ? byteArray : new Uint8Array(byteArray);
     const inferredExt = fileName ? fileName.slice(fileName.lastIndexOf('.')) : '';
     const blob = new Blob([uint8], { type: mimeType || pkmdsInferMimeType(inferredExt) });
+    if (pkmdsIsIOS()) {
+        // iOS ignores script-triggered downloads outside a user gesture — let the user tap.
+        return pkmdsPresentDownload(fileName, blob);
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
