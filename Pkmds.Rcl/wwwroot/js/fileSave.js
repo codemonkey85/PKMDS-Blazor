@@ -268,7 +268,11 @@ function pkmdsPresentDownload(fileName, blob) {
             shareBtn.style.cssText = btnStyle + 'background:#7c4dff;color:#fff;margin-bottom:2px;';
             shareBtn.addEventListener('click', async () => {
                 try {
-                    await navigator.share({ files: [file], title: fileName });
+                    // Share ONLY the file — no title/text. On iOS, when a share includes both a
+                    // file and a title/text and the user picks "Save to Files", the title is
+                    // written out as a separate .txt alongside the save (e.g. a 12-byte "text"
+                    // file containing "TR ADDED.dsv"). Files-only avoids that stray download.
+                    await navigator.share({ files: [file] });
                     finish();
                 } catch (e) {
                     // User cancelled the share sheet, or share failed — leave the dialog open
