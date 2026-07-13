@@ -223,9 +223,16 @@ function pkmdsPresentDownload(fileName, blob) {
         card.appendChild(sub);
 
         // Primary: native share sheet ("Save to Files") when the platform can share the file.
+        // Guard both the File ctor and canShare: navigator.canShare({ files }) can throw on some
+        // WebKit builds (Web Share present but file-sharing unsupported / payload rejected). An
+        // unguarded throw here would reject pkmdsPresentDownload before the overlay is appended,
+        // aborting export on iOS with no download link at all — the very platform this fixes. On
+        // any failure we simply skip the share button and fall through to the direct download link.
         let file = null;
         try { file = new File([blob], fileName, { type: blob.type || 'application/octet-stream' }); } catch (e) { /* File ctor unsupported */ }
-        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        let canShareFile = false;
+        try { canShareFile = !!(file && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) { canShareFile = false; }
+        if (canShareFile) {
             const shareBtn = document.createElement('button');
             shareBtn.type = 'button';
             shareBtn.textContent = 'Save to Files…';
