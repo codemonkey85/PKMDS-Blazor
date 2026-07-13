@@ -21,7 +21,21 @@
     <PackageVersion Include="Microsoft.JSInterop.WebAssembly" Version="10.0.3" />
     <!-- Windows Shell preview-handler PoC only (tools/windows-preview-poc). -->
     <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
-    <PackageVersion Include="MudBlazor" Version="9.6.0" />
+    <!--
+      Pinned to 9.5.0, but NOTE: this pin is NOT what fixed the iOS export outage
+      (#1044-#1060). It was an initial mitigation attempt based on the theory that
+      MudBlazor 9.6.0's MudMenuItem OnClick reorder (ef59e90d2) broke the export;
+      an on-device iOS retest disproved that — export still failed on 9.5.0. The
+      actual root cause is that iOS WebKit only honors a download inside a live user
+      gesture, and our export pipeline clicked the anchor after several awaits; the
+      real fix is the user-tap download in Pkmds.Rcl/wwwroot/js/fileSave.js
+      (pkmdsPresentDownload) and the WriteFileOldWay -> downloadBlob change, which are
+      MudBlazor-version-independent. The pin is retained only out of caution; unpinning
+      to current MudBlazor is tracked in #1063. If you unpin, drop the app.css
+      .mud-tab-panel override too only if it's no longer needed (commit 71640687
+      offsets the 9.6.0 display:contents tab-panel change).
+    -->
+    <PackageVersion Include="MudBlazor" Version="9.5.0" />
     <PackageVersion Include="PKHeX.Core" Version="26.5.5" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />

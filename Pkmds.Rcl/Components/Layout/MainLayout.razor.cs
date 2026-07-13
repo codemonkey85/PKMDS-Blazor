@@ -671,6 +671,14 @@ public partial class MainLayout : IDisposable
             fileName = "save";
         }
 
+        // No real extension to enforce (e.g. the original save had none, like "violet_main").
+        // Return the name untouched instead of appending a bare "." — that produced download
+        // names like "violet_main." with a trailing dot.
+        if (string.IsNullOrWhiteSpace(extension) || extension == ".")
+        {
+            return fileName;
+        }
+
         extension = extension.StartsWith('.')
             ? extension
             : $".{extension}";
@@ -1154,21 +1162,12 @@ public partial class MainLayout : IDisposable
     {
         var finalName = EnsureExtension(fileName, fileTypeExtension);
 
-        var base64String = Convert.ToBase64String(data);
-
-        var element = await JSRuntime.InvokeAsync<IJSObjectReference>(
-            "eval",
-            "document.createElement('a')");
-
-        await element.InvokeVoidAsync(
-            "setAttribute",
-            "href",
-            $"data:{mimeType};base64,{base64String}");
-
-        await element.InvokeVoidAsync("setAttribute", "download", finalName);
-
-        // No need for target/rel; we're just triggering a download.
-        await element.InvokeVoidAsync("click");
+        // Delegate to downloadBlob (single interop hop). It routes iOS through a user-tap
+        // download (WebKit ignores script-triggered downloads outside a user gesture) and
+        // uses a Blob URL on other platforms. This replaces the old eval + data-URI +
+        // detached-anchor approach, which iOS Safari silently dropped and which relied on
+        // unsafe-eval.
+        await JSRuntime.InvokeVoidAsync("downloadBlob", finalName, data, mimeType);
     }
 
     private enum ThemeMode
