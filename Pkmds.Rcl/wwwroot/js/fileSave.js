@@ -175,6 +175,11 @@ function pkmdsIsIOS() {
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+// Monotonic counter so each download dialog gets unique element ids for its
+// aria-labelledby / aria-describedby wiring (avoids id collisions if one is ever
+// shown before a previous one is torn down).
+let pkmdsDialogSeq = 0;
+
 // iOS/iPadOS Safari (WebKit) only starts a download when the anchor click happens
 // inside a live user gesture. Our export pipeline reaches the download after several
 // awaits (unsaved-changes dialog, IsSupportedAsync interop, the download interop call),
@@ -189,31 +194,55 @@ function pkmdsIsIOS() {
 function pkmdsPresentDownload(fileName, blob) {
     return new Promise((resolve) => {
         const url = URL.createObjectURL(blob);
+        const previouslyFocused = document.activeElement;
+        const uid = 'pkmds-dl-' + (++pkmdsDialogSeq);
         let settled = false;
         const finish = () => {
             if (settled) return;
             settled = true;
             document.removeEventListener('keydown', onKey);
             root.remove();
+            // Restore focus to wherever the user was before the dialog opened.
+            try { if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus(); } catch (e) { /* ignore */ }
             // Keep the object URL alive long enough for the download/share to read it.
             setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* ignore */ } }, 60000);
             resolve();
         };
-        const onKey = (e) => { if (e.key === 'Escape') finish(); };
+        // Escape closes the dialog; Tab is trapped so keyboard focus can't leave the modal.
+        const onKey = (e) => {
+            if (e.key === 'Escape') { finish(); return; }
+            if (e.key !== 'Tab') return;
+            const focusables = Array.prototype.slice.call(root.querySelectorAll('a[href],button'));
+            if (focusables.length === 0) return;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            const active = document.activeElement;
+            if (e.shiftKey && (active === first || !root.contains(active))) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && (active === last || !root.contains(active))) {
+                e.preventDefault();
+                first.focus();
+            }
+        };
 
         const root = document.createElement('div');
         root.setAttribute('role', 'dialog');
         root.setAttribute('aria-modal', 'true');
+        root.setAttribute('aria-labelledby', uid + '-title');
+        root.setAttribute('aria-describedby', uid + '-sub');
         root.style.cssText = 'position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;';
 
         const card = document.createElement('div');
         card.style.cssText = 'background:#1e1e28;color:#fff;border-radius:16px;padding:24px 22px;width:min(420px,92vw);box-sizing:border-box;box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:12px;text-align:center;';
 
         const title = document.createElement('div');
+        title.id = uid + '-title';
         title.textContent = 'Your save file is ready';
         title.style.cssText = 'font-size:1.15rem;font-weight:700;';
 
         const sub = document.createElement('div');
+        sub.id = uid + '-sub';
         sub.textContent = 'Tap below to save it to your device.';
         sub.style.cssText = 'font-size:.92rem;opacity:.8;margin-bottom:4px;';
 
@@ -269,6 +298,13 @@ function pkmdsPresentDownload(fileName, blob) {
         root.addEventListener('click', (e) => { if (e.target === root) finish(); });
         document.addEventListener('keydown', onKey);
         document.body.appendChild(root);
+
+        // Move focus into the dialog so keyboard / assistive-tech users aren't stranded
+        // behind the modal. Prefer the primary action (share button, else the download link).
+        const firstFocusable = root.querySelector('button,a[href]');
+        if (firstFocusable) {
+            try { firstFocusable.focus(); } catch (e) { /* ignore */ }
+        }
     });
 }
 
@@ -391,7 +427,11 @@ window.showFilePickerAndWrite = async function (fileName, byteArray, extension, 
 window.downloadBlob = function (fileName, byteArray, mimeType) {
     if (!byteArray) return;
     const uint8 = byteArray instanceof Uint8Array ? byteArray : new Uint8Array(byteArray);
-    const inferredExt = fileName ? fileName.slice(fileName.lastIndexOf('.')) : '';
+    // Only treat a trailing ".xyz" as an extension. Guard against lastIndexOf === -1, where
+    // slice(-1) would return the final character (wrong MIME for extension-less names like
+    // "violet_main", which EnsureExtension now preserves).
+    const dot = fileName ? fileName.lastIndexOf('.') : -1;
+    const inferredExt = dot > 0 ? fileName.slice(dot) : '';
     const blob = new Blob([uint8], { type: mimeType || pkmdsInferMimeType(inferredExt) });
     if (pkmdsIsIOS()) {
         // iOS ignores script-triggered downloads outside a user gesture — let the user tap.
