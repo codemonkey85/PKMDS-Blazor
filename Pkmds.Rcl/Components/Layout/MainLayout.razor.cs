@@ -671,6 +671,14 @@ public partial class MainLayout : IDisposable
             fileName = "save";
         }
 
+        // No real extension to enforce (e.g. the original save had none, like "violet_main").
+        // Return the name untouched instead of appending a bare "." — that produced download
+        // names like "violet_main." with a trailing dot.
+        if (string.IsNullOrWhiteSpace(extension) || extension == ".")
+        {
+            return fileName;
+        }
+
         extension = extension.StartsWith('.')
             ? extension
             : $".{extension}";
