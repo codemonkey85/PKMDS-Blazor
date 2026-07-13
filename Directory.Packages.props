@@ -35,7 +35,7 @@
       .mud-tab-panel override too only if it's no longer needed (commit 71640687
       offsets the 9.6.0 display:contents tab-panel change).
     -->
-    <PackageVersion Include="MudBlazor" Version="9.5.0" />
+    <PackageVersion Include="MudBlazor" Version="9.7.0" />
     <PackageVersion Include="PKHeX.Core" Version="26.5.5" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
