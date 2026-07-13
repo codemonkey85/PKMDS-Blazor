@@ -15,7 +15,7 @@ public enum LegalizationChangeCategory
     /// <summary>Moves, relearn moves, held item, ability, Tera type.</summary>
     Battle,
 
-    /// <summary>IVs, EVs, AVs/GVs, nature, stat nature, Hyper Training flags.</summary>
+    /// <summary>IVs, EVs, AVs/GVs, nature, stat alignment, Hyper Training flags.</summary>
     Stats,
 
     /// <summary>Shininess, friendship, markings, ribbon delta.</summary>

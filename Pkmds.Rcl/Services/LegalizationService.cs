@@ -998,7 +998,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         if (enc is IFixedNature { IsFixedNature: true } fn)
         {
             pk.Nature = fn.Nature;
-            pk.StatNature = fn.Nature;
+            pk.StatAlignment = fn.Nature;
         }
 
         // Toxtricity form ↔ nature lock.
@@ -1151,7 +1151,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         if (enc is IFixedNature { IsFixedNature: true } fn)
         {
             pk.Nature = fn.Nature;
-            pk.StatNature = fn.Nature;
+            pk.StatAlignment = fn.Nature;
         }
 
         // Clamp level bounds to the encounter — these are safe to enforce because

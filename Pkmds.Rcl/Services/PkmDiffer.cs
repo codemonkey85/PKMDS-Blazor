@@ -296,11 +296,11 @@ public static class PkmDiffer
                 SafeNameLookup.Nature((int)b.Nature), SafeNameLookup.Nature((int)a.Nature)));
         }
 
-        if (b.StatNature != a.StatNature)
+        if (b.StatAlignment != a.StatAlignment)
         {
             changes.Add(new LegalizationChange(
-                LegalizationChangeCategory.Stats, "Stat Nature",
-                SafeNameLookup.Nature((int)b.StatNature), SafeNameLookup.Nature((int)a.StatNature)));
+                LegalizationChangeCategory.Stats, "Stat Alignment",
+                SafeNameLookup.Nature((int)b.StatAlignment), SafeNameLookup.Nature((int)a.StatAlignment)));
         }
 
         if (b is IHyperTrain bh && a is IHyperTrain ah)

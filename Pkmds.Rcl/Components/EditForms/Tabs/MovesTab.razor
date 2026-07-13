@@ -293,7 +293,7 @@
                 EntityContext.Gen7b or EntityContext.Gen8a or EntityContext.Gen9a);
             var isGen1 = saveFileEntityContext is EntityContext.Gen1;
             var statNature = Pokemon.Format >= 8
-                ? Pokemon.StatNature
+                ? Pokemon.StatAlignment
                 : Pokemon.Nature;
             var atkModifier = hasNature
                 ? GetNatureModifier(statNature, Stats.Attack)
