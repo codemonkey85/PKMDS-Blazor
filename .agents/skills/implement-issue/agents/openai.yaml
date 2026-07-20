@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement Issue"
+  short_description: "Implement repository issues end to end"
+  default_prompt: "Use $implement-issue to implement this repository issue and prepare it for review."

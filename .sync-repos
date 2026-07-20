@@ -7,7 +7,7 @@
 #   - absolute path       e.g.  C:\Code\PKHeX  or  ~/Code/codemonkey85/PKHeX
 #   - relative path       e.g.  ../PKHeX                    (resolved relative to this file's directory)
 #
-# First existing git directory wins. See ~/.claude/skills/sync-repos/SKILL.md for the full resolution order.
+# First existing git directory wins. See .agents/skills/sync-repos/SKILL.md for the full resolution order.
 
 PKHeX
 pokemon-showdown

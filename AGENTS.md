@@ -265,6 +265,14 @@ Prefer reading local source over fetching from GitHub or relying solely on docs:
 - **Tests**: Do not run `dotnet test` locally — leave it to the CI GitHub Actions workflow (`.github/workflows/buildandtest.yml`). Run only `dotnet format` and `dotnet build -c Debug` to verify changes locally.
 - **PR review feedback**: (1) Review all comments and plan the response; (2) reply to each individual comment on the PR explaining what you're doing and why; (3) make code changes, commit, and push; (4) mark all addressed comments as resolved on the PR.
 
+## Codex repository workflows
+
+- Use the repository skill `$address-pr-feedback` whenever addressing pull request review comments.
+- Use the repository skill `$implement-issue` whenever implementing a GitHub issue.
+- Use the repository skill `$sync-repos` before work that depends on the current state of PKHeX or the other repositories listed in `.sync-repos`.
+- For new UI or substantial visual redesigns, use the `frontend-design` skill when it is available.
+- Codex project tooling lives in `.codex/`: `config.toml` configures the Playwright MCP server, while `hooks.json` regenerates derived data when its generator source changes. Project hooks must be reviewed and trusted with `/hooks` before Codex will run them.
+
 ## User-facing advice — protect user data
 
 When suggesting troubleshooting steps to users (in issue comments, emails, or docs),
