@@ -1,0 +1,18 @@
+{
+  "description": "Regenerate derived data after its generator source changes.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/regen-data.py\"",
+            "timeout": 120,
+            "statusMessage": "Regenerating data files..."
+          }
+        ]
+      }
+    ]
+  }
+}

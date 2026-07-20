@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync Related Repositories"
+  short_description: "Update repositories used by PKMDS-Blazor"
+  default_prompt: "Use $sync-repos to update the repositories that PKMDS-Blazor depends on for this task."

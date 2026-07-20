@@ -1,0 +1,4 @@
+interface:
+  display_name: "Address PR Feedback"
+  short_description: "Address unresolved PR review feedback"
+  default_prompt: "Use $address-pr-feedback to address the unresolved review feedback on this pull request."
