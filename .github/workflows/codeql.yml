@@ -38,7 +38,7 @@ jobs:
           build-mode: none
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v7.0.0
+      uses: actions/checkout@v7.0.1
 
       # .NET SDK + WASM workload are only needed for the csharp manual build;
       # the buildless analyses (js, actions, python) skip them.

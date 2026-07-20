@@ -36,7 +36,7 @@ jobs:
       # accepted when main contains commits that modify `.github/workflows/*`
       # (the default GITHUB_TOKEN cannot be granted the `workflows` scope).
       - name: Checkout code
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: true
           token: ${{ secrets.RELEASE_PAT }}
@@ -105,7 +105,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6.0.0
