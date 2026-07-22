@@ -57,6 +57,11 @@ jobs:
 
 
       - name: Deploy to Azure Static Web Apps
+        # Repository secrets are not available to Dependabot or fork PRs. Keep
+        # the publish validation above, but skip the credentialed deployment.
+        if: >-
+          github.event.pull_request.user.login != 'dependabot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
@@ -87,14 +92,19 @@ jobs:
         run: cd functions-publish && zip -r ../functions.zip .
 
       - name: Azure login
+        if: >-
+          github.event.pull_request.user.login != 'dependabot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Functions
+        if: >-
+          github.event.pull_request.user.login != 'dependabot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         run: |
           az functionapp deployment source config-zip \
             --name pkmds-functions \
             --resource-group pkmds-bug-reports \
             --src functions.zip
-
