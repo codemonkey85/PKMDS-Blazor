@@ -92,7 +92,7 @@
         if (isNetworkError) {
             var hint = document.createElement('p');
             hint.style.cssText = 'margin: 0.4rem 0 0; font-size: 0.8rem; color: #555;';
-            hint.textContent = 'This is usually a temporary network problem or an app update in progress — reloading typically fixes it.';
+            hint.textContent = 'This is usually a temporary network problem or an app update in progress. You can safely repair the cached app files without deleting saves, backups, or your Pokémon Bank.';
             ui.insertBefore(hint, (stack ? details : msgEl).nextSibling);
         }
 
@@ -132,6 +132,19 @@
         reportLink.style.cssText = 'padding: 0.2rem 0.6rem; font-size: 0.78rem; background: #b91c1c; color: #fff; border-radius: 3px; text-decoration: none;';
 
         row.appendChild(copyBtn);
+
+        if (isNetworkError) {
+            var repairBtn = document.createElement('button');
+            repairBtn.textContent = 'Repair app cache and reload';
+            repairBtn.style.cssText = 'padding: 0.2rem 0.6rem; font-size: 0.78rem; cursor: pointer; border: 1px solid #1e40af; background: #1e40af; color: #fff; border-radius: 3px;';
+            repairBtn.addEventListener('click', function () {
+                repairBtn.disabled = true;
+                repairBtn.textContent = 'Repairing…';
+                window.clearAppCacheAndReload();
+            });
+            row.appendChild(repairBtn);
+        }
+
         row.appendChild(reportLink);
 
         var insertAfter = hint || (stack ? details : msgEl);

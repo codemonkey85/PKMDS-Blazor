@@ -85,12 +85,13 @@ public sealed partial class EmbeddedHostBridge
         _appService.ClearSelection();
         ParseSettings.ClearActiveTrainer();
         _appState.SaveFile = null;
-        _appState.ManicEmuSaveContext = null;
+        _appState.SaveArchiveContext = null;
         _appState.ShowProgressIndicator = true;
 
         try
         {
-            if (!SaveFileLoader.TryLoad(data, fileName, out var saveFile, out var manicContext))
+            var originalData = data.ToArray();
+            if (!SaveFileLoader.TryLoad(data, fileName, out var saveFile, out var archiveContext))
             {
                 _logger.LogError("Host save load failed: invalid format ({FileName})", fileName);
                 return false;
@@ -102,7 +103,8 @@ public sealed partial class EmbeddedHostBridge
                 return false;
             }
 
-            _appState.ManicEmuSaveContext = manicContext;
+            _appState.OriginalSaveFileBytes = originalData;
+            _appState.SaveArchiveContext = archiveContext;
             // Mirror the standalone load path: InitFromSaveFileData populates
             // ParseSettings.ActiveTrainer and AllowGBCartEra for legality
             // checks (see notes on FinishLoadingSaveFile in MainLayout).
@@ -138,10 +140,10 @@ public sealed partial class EmbeddedHostBridge
 
         try
         {
-            // Note: this emits raw save bytes only. Manic EMU ZIP rebuild is
-            // not applied here because the host is expected to deal in raw
-            // save bytes directly — embedded contexts don't carry the ZIP
-            // wrapper that the standalone web upload flow has to preserve.
+            // Note: this emits raw save bytes only. Archive rebuild is not applied
+            // because the embedded-host contract deliberately deals in raw save data,
+            // even when the host originally supplied an archive wrapper.
+            saveFile.PrepareForExport();
             var bytes = saveFile.Write().ToArray();
             var base64 = Convert.ToBase64String(bytes);
             var fileName = _appState.SaveFileName ?? "save.sav";

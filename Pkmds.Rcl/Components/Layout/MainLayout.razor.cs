@@ -146,7 +146,7 @@ public partial class MainLayout : IDisposable
     }
 
     private async Task ReloadApp() =>
-        await JSRuntime.InvokeVoidAsync("location.reload");
+        await JSRuntime.InvokeVoidAsync("applyUpdate");
 
     private bool ComputeIsDarkMode() => themeMode switch
     {
@@ -400,7 +400,12 @@ public partial class MainLayout : IDisposable
 
     private async Task ShowBackupManagerDialog()
     {
-        var parameters = new DialogParameters { { nameof(BackupManagerDialog.SaveFile), AppState.SaveFile }, { nameof(BackupManagerDialog.FileName), AppState.SaveFileName }, { nameof(BackupManagerDialog.IsManicEmu), AppState.ManicEmuSaveContext is not null }, { nameof(BackupManagerDialog.ManicEmuContext), AppState.ManicEmuSaveContext } };
+        var parameters = new DialogParameters
+        {
+            { nameof(BackupManagerDialog.SaveFile), AppState.SaveFile },
+            { nameof(BackupManagerDialog.FileName), AppState.SaveFileName },
+            { nameof(BackupManagerDialog.ArchiveContext), AppState.SaveArchiveContext }
+        };
         var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Medium);
         var dialog = await DialogService.ShowAsync<BackupManagerDialog>("Backup Manager", parameters, options);
         var result = await dialog.Result;
@@ -439,9 +444,10 @@ public partial class MainLayout : IDisposable
         try
         {
             var data = restore.SaveBytes;
+            var originalData = data.ToArray();
             var fileName = restore.Entry.FileName;
 
-            if (SaveFileLoader.TryLoad(data, fileName, out var saveFile, out var manicContext))
+            if (SaveFileLoader.TryLoad(data, fileName, out var saveFile, out var archiveContext))
             {
                 if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
@@ -451,7 +457,8 @@ public partial class MainLayout : IDisposable
                     return;
                 }
 
-                AppState.ManicEmuSaveContext = manicContext;
+                AppState.OriginalSaveFileBytes = originalData;
+                AppState.SaveArchiveContext = archiveContext;
                 FinishLoadingSaveFile(saveFile, fileName);
             }
             else
@@ -552,7 +559,7 @@ public partial class MainLayout : IDisposable
         AppService.ClearSelection();
         ParseSettings.ClearActiveTrainer();
         AppState.SaveFile = null;
-        AppState.ManicEmuSaveContext = null;
+        AppState.SaveArchiveContext = null;
         AppState.ShowProgressIndicator = true;
 
         // Now broadcast the state flip so SaveFileComponent's skeleton paints, then yield via
@@ -563,12 +570,13 @@ public partial class MainLayout : IDisposable
 
         try
         {
-            // SaveFileLoader checks for a Manic EMU .3ds.sav ZIP (sdmc/… entries) before delegating
+            var originalData = data.ToArray();
+            // SaveFileLoader captures supported ZIP wrappers before delegating
             // to SaveUtil.TryGetSaveFile for raw saves. The ordering matters: PKHeX's built-in
             // ZipReader would otherwise recognise the archive by its inner `main` entry and unwrap
-            // it invisibly, so manicContext would never be set and export would silently produce
-            // raw bytes that Manic EMU rejects on re-import (see issue #750).
-            if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out var manicContext))
+            // it invisibly, so archiveContext would never be set and export would silently produce
+            // raw bytes under a ZIP filename (see issues #750 and #1131-#1133).
+            if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out var archiveContext))
             {
                 if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
@@ -578,13 +586,20 @@ public partial class MainLayout : IDisposable
                     return;
                 }
 
-                if (manicContext is not null)
+                AppState.OriginalSaveFileBytes = originalData;
+                if (archiveContext is not null)
                 {
-                    AppState.ManicEmuSaveContext = manicContext;
-                    Logger.LogInformation("Loaded save from Manic EMU .3ds.sav archive; entry: {EntryPath}", manicContext.SaveEntryPath);
-                    Snackbar.Add(
-                        "Manic EMU save archive detected — export will rebuild the ZIP for seamless re-import.",
-                        Severity.Info);
+                    AppState.SaveArchiveContext = archiveContext;
+                    Logger.LogInformation(
+                        "Loaded save archive ({ArchiveKind}); entry: {EntryPath}",
+                        archiveContext.Kind,
+                        archiveContext.SaveEntryPath);
+                    if (archiveContext.IsManicEmu)
+                    {
+                        Snackbar.Add(
+                            "Manic EMU save archive detected — export will rebuild the ZIP for seamless re-import.",
+                            Severity.Info);
+                    }
                 }
 
                 FinishLoadingSaveFile(saveFile, selectedFile.Name);
@@ -622,13 +637,14 @@ public partial class MainLayout : IDisposable
         {
             try
             {
+                AppState.SaveFile.PrepareForExport();
                 var rawSave = AppState.SaveFile.Write().ToArray();
-                var backupBytes = AppState.ManicEmuSaveContext is not null
-                    ? ManicEmuSaveHelper.RebuildZip(AppState.ManicEmuSaveContext, rawSave)
+                var backupBytes = AppState.SaveArchiveContext is not null
+                    ? SaveArchiveHelper.RebuildZip(AppState.SaveArchiveContext, rawSave)
                     : rawSave;
                 await BackupService.CreateBackupAsync(
                     backupBytes, AppState.SaveFile, selectedFile.Name,
-                    isManicEmu: AppState.ManicEmuSaveContext is not null, source: "auto");
+                    isManicEmu: AppState.SaveArchiveContext?.IsManicEmu == true, source: "auto");
                 await BackupService.EnforceRetentionAsync(SettingsService.Settings.MaxBackupCount);
             }
             catch (Exception ex)
@@ -714,6 +730,11 @@ public partial class MainLayout : IDisposable
 
         try
         {
+            if (AppState.SaveFile.PrepareForExport())
+            {
+                RefreshService.RefreshBoxAndPartyState();
+            }
+
             var rawSaveBytes = AppState.SaveFile.Write().ToArray();
             // Prefer AppState.SaveFileName — it's set consistently by both the upload path and
             // the restore-from-backup path, whereas browserLoadSaveFile?.Name is null whenever
@@ -722,19 +743,25 @@ public partial class MainLayout : IDisposable
             // ".3ds.sav" compound extension on re-export.
             var originalName = AppState.SaveFileName ?? browserLoadSaveFile?.Name;
 
-            // If the save was loaded from a Manic EMU .3ds.sav ZIP, rebuild the ZIP so the
-            // user can import it directly back into Manic EMU without any manual repacking.
-            if (AppState.ManicEmuSaveContext is not null)
+            // If the save was loaded from an archive, replace the inner save and preserve
+            // the wrapper expected by the originating emulator.
+            if (AppState.SaveArchiveContext is { } archiveContext)
             {
-                // Echo back whichever compound extension the upload carried (.3ds.sav canonically, or
-                // .3ds.save if the user renamed manually or iOS Safari mangled the suffix) so the
-                // round-trip is bit-for-bit transparent. Flag the MIME as application/zip — the default
-                // application/x-pokemon-savedata is wrong for an archive and confuses iOS Safari.
-                var (exportName, compoundExt) = ManicEmuSaveHelper.GetExportFileName(originalName);
-                Logger.LogDebug("Exporting save as Manic EMU {Extension}: {FileName}", compoundExt, exportName);
-
-                var zipBytes = ManicEmuSaveHelper.RebuildZip(AppState.ManicEmuSaveContext, rawSaveBytes);
-                await WriteFile(zipBytes, exportName, compoundExt, "Save File", mimeType: "application/zip");
+                var zipBytes = SaveArchiveHelper.RebuildZip(archiveContext, rawSaveBytes);
+                if (archiveContext.IsManicEmu)
+                {
+                    // Echo back whichever compound extension the upload carried (.3ds.sav canonically,
+                    // or .3ds.save) so the round-trip remains transparent to Manic EMU.
+                    var (exportName, compoundExt) = ManicEmuSaveHelper.GetExportFileName(originalName);
+                    Logger.LogDebug("Exporting save as Manic EMU {Extension}: {FileName}", compoundExt, exportName);
+                    await WriteFile(zipBytes, exportName, compoundExt, "Save File", mimeType: "application/zip");
+                }
+                else
+                {
+                    var exportName = string.IsNullOrWhiteSpace(originalName) ? "save.zip" : originalName;
+                    Logger.LogDebug("Exporting save in original ZIP wrapper: {FileName}", exportName);
+                    await WriteFile(zipBytes, exportName, ".zip", "Save File", mimeType: "application/zip");
+                }
             }
             // Only default to "save.sav" if we have no original filename at all
             else if (string.IsNullOrWhiteSpace(originalName))

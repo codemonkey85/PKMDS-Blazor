@@ -43,13 +43,14 @@ public class SaveFileLoaderTests
         var rawSave = File.ReadAllBytes(Path.Combine(TestFilesPath, "moon.sav"));
         var zipBytes = BuildManicEmuZip(rawSave);
 
-        var ok = SaveFileLoader.TryLoad(zipBytes, "moon.3ds.sav", out var saveFile, out var manicContext);
+        var ok = SaveFileLoader.TryLoad(zipBytes, "moon.3ds.sav", out var saveFile, out var archiveContext);
 
         ok.Should().BeTrue();
         saveFile.Should().NotBeNull();
         saveFile.Should().BeOfType<SAV7SM>();
-        manicContext.Should().NotBeNull();
-        manicContext!.SaveEntryPath.Should().Be(ManicEmuSavePath);
+        archiveContext.Should().NotBeNull();
+        archiveContext!.Kind.Should().Be(SaveArchiveKind.ManicEmu);
+        archiveContext.SaveEntryPath.Should().Be(ManicEmuSavePath);
     }
 
     [Fact]
@@ -65,11 +66,10 @@ public class SaveFileLoaderTests
     }
 
     [Fact]
-    public void TryLoad_ZipWithoutSdmcEntries_FallsThroughToPkhexZipReader()
+    public void TryLoad_GenericZip_ReturnsContextAndPreservesWrapper()
     {
-        // A plain ZIP whose inner file is named `main` — recognised by PKHeX's ZipReader but
-        // not by our Manic EMU helper (no sdmc/ prefix). TryLoad should still return true, with
-        // a null manic context, so non-Manic ZIPs (e.g. PKHeX-produced ones) still work.
+        // A plain ZIP whose inner file is named `main` is recognised by PKHeX's ZipReader.
+        // We must retain that wrapper so export does not put bare save bytes under a .zip name.
         var rawSave = File.ReadAllBytes(Path.Combine(TestFilesPath, "moon.sav"));
 
         using var ms = new MemoryStream();
@@ -80,11 +80,20 @@ public class SaveFileLoaderTests
             s.Write(rawSave, 0, rawSave.Length);
         }
 
-        var ok = SaveFileLoader.TryLoad(ms.ToArray(), "moon.zip", out var saveFile, out var manicContext);
+        var originalZip = ms.ToArray();
+        var ok = SaveFileLoader.TryLoad(originalZip, "moon.zip", out var saveFile, out var archiveContext);
 
         ok.Should().BeTrue();
         saveFile.Should().NotBeNull();
-        manicContext.Should().BeNull();
+        archiveContext.Should().NotBeNull();
+        archiveContext!.Kind.Should().Be(SaveArchiveKind.GenericZip);
+        archiveContext.SaveEntryPath.Should().Be("main");
+
+        var rebuilt = SaveArchiveHelper.RebuildZip(archiveContext, saveFile!.Write().ToArray());
+        rebuilt.AsSpan(0, 4).ToArray().Should().Equal(0x50, 0x4B, 0x03, 0x04);
+        SaveFileLoader.TryLoad(rebuilt, "moon.zip", out var reloaded, out var rebuiltContext).Should().BeTrue();
+        reloaded.Should().BeOfType<SAV7SM>();
+        rebuiltContext.Should().NotBeNull();
     }
 
     [Fact]
@@ -111,7 +120,7 @@ public class SaveFileLoaderTests
         SaveFileLoader.TryLoad(zipBytes, "moon.3ds.sav", out var saveFile, out var ctx).Should().BeTrue();
 
         var exportedBytes = saveFile!.Write().ToArray();
-        var rebuilt = ManicEmuSaveHelper.RebuildZip(ctx!, exportedBytes);
+        var rebuilt = SaveArchiveHelper.RebuildZip(ctx!, exportedBytes);
 
         SaveFileLoader.TryLoad(rebuilt, "moon.3ds.sav", out var reloaded, out var reloadedCtx).Should().BeTrue();
         reloaded.Should().NotBeNull();
@@ -133,7 +142,7 @@ public class SaveFileLoaderTests
         var original = BuildManicEmuZip(rawSave);
 
         SaveFileLoader.TryLoad(original, "moon.3ds.sav", out var saveFile, out var ctx).Should().BeTrue();
-        var rebuilt = ManicEmuSaveHelper.RebuildZip(ctx!, saveFile!.Write().ToArray());
+        var rebuilt = SaveArchiveHelper.RebuildZip(ctx!, saveFile!.Write().ToArray());
 
         // Walk the central directory and confirm bit 11 is set on every CDFH.
         var eocdOffset = FindEndOfCentralDirectory(rebuilt);
@@ -193,7 +202,7 @@ public class SaveFileLoaderTests
         var original = BuildManicEmuZip(rawSave);
 
         SaveFileLoader.TryLoad(original, "moon.3ds.sav", out var saveFile, out var ctx).Should().BeTrue();
-        var rebuilt = ManicEmuSaveHelper.RebuildZip(ctx!, saveFile!.Write().ToArray());
+        var rebuilt = SaveArchiveHelper.RebuildZip(ctx!, saveFile!.Write().ToArray());
 
         // Store-method rebuild must be close to the input size (allow modest drift from
         // timestamp/header differences). A deflate-compressed rebuild would be a fraction
@@ -210,5 +219,39 @@ public class SaveFileLoaderTests
             entry.CompressedLength.Should().Be(entry.Length,
                 $"entry '{entry.FullName}' should be store-method (uncompressed) to match Manic EMU's own output");
         }
+    }
+
+    [Fact]
+    public void TryLoad_ValidWhite2WithCoincidentalHgssSignature_PrefersGen5Footer()
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "Test-Save-White-2.sav"));
+        const int hgssSignatureOffset = 0x40000 + SAV4HGSS.GeneralSize - 0xC;
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(
+            data.AsSpan(hgssSignatureOffset),
+            SAV4HGSS.GeneralSize);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(
+            data.AsSpan(hgssSignatureOffset + 4),
+            SAV4.MAGIC_JAPAN_INTL);
+
+        // Reproduce the PKHeX detection-order collision from issue #1127.
+        SaveUtil.TryGetSaveFile(data, out var pkhexResult, "white-2.dsv").Should().BeTrue();
+        pkhexResult.Should().BeOfType<SAV4HGSS>();
+
+        SaveFileLoader.TryLoad(data, "white-2.dsv", out var result, out var archiveContext).Should().BeTrue();
+        result.Should().BeOfType<SAV5B2W2>();
+        result!.Version.Should().Be(GameVersion.W2);
+        result.ChecksumsValid.Should().BeTrue();
+        archiveContext.Should().BeNull();
+    }
+
+    [Fact]
+    public void TryLoad_GenuineHeartGold_RemainsHgss()
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "Pokemon Heart Gold  (JP)old.sav"));
+
+        SaveFileLoader.TryLoad(data, "heart-gold.sav", out var result, out var archiveContext).Should().BeTrue();
+
+        result.Should().BeOfType<SAV4HGSS>();
+        archiveContext.Should().BeNull();
     }
 }
