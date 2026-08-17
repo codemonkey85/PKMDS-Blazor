@@ -13,7 +13,9 @@ self.addEventListener('activate', event => {
     event.waitUntil(onActivate(event));
 });
 self.addEventListener('message', event => {
-    if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        event.waitUntil(self.skipWaiting());
+    }
 });
 self.addEventListener('fetch', event => event.respondWith(onFetch(event)));
 
@@ -73,7 +75,7 @@ async function onActivate(event) {
     const cacheKeys = await caches.keys();
     const oldAppCaches = cacheKeys
         .filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName);
-    const previousCache = oldAppCaches.at(-1);
+    const previousCache = oldAppCaches.length ? oldAppCaches[oldAppCaches.length - 1] : undefined;
     await Promise.all(cacheKeys
         .filter(key => key.startsWith(cacheNamePrefix)
             && key !== cacheName
