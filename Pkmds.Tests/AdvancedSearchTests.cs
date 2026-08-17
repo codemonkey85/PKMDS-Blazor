@@ -437,7 +437,8 @@ public class AdvancedSearchTests
         public DateTime? AppBuildDate => null;
         public int? PinnedBoxNumber { get; set; }
         public string? SaveFileName { get; set; }
-        public ManicEmuSaveHelper.ManicEmuSaveContext? ManicEmuSaveContext { get; set; }
+        public SaveArchiveContext? SaveArchiveContext { get; set; }
+        public byte[]? OriginalSaveFileBytes { get; set; }
         public bool SelectedSlotsAreValid => true;
         public bool IsHaXEnabled { get; set; }
         public SpriteStyle SpriteStyle { get; set; }

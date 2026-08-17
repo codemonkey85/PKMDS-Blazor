@@ -145,7 +145,7 @@
         // bootstrap and surfaces as `TypeError: Failed to fetch` (issue #978).
         // Retrying turns that one-off failure into a brief stall instead.
         function retryFetchBootResource(defaultUri, integrity) {
-            var maxAttempts = 3;
+            var maxAttempts = 5;
             var baseDelayMs = 500;
             function attempt(n) {
                 // Mirror Blazor's default boot fetch: revalidate via no-cache and
@@ -154,14 +154,11 @@
                     ? {cache: 'no-cache', integrity: integrity}
                     : {cache: 'no-cache'};
                 return fetch(defaultUri, init).then(function (response) {
-                    // Retry transient server-side failures; let other statuses
-                    // flow through, including 4xx and the SW's synthetic 504.
-                    // 504 is excluded deliberately: service-worker.published.js
-                    // returns it precisely when the network is already down, so
-                    // retrying can't recover and only adds startup delay.
+                    // Retry transient server-side failures and the service worker's
+                    // synthetic 504. A 504 can represent a momentary handoff or radio
+                    // interruption, so giving the network another chance is useful.
                     if (!response.ok && n < maxAttempts
-                        && ((response.status >= 500 && response.status !== 504)
-                            || response.status === 429)) {
+                        && (response.status >= 500 || response.status === 429)) {
                         return backoffThenRetry(n);
                     }
                     return response;

@@ -180,7 +180,10 @@ public partial class BugReportDialog
                 // Always populate source/type diagnostics — triagers need to know whether a Gen
                 // 1 save came from a VC dump or a physical cartridge even when the user opts
                 // out of attaching the save bytes, since legality rules diverge between them.
-                saveFileSource = SaveSourceDetector.Detect(sf, AppState.SaveFileName, AppState.ManicEmuSaveContext is not null);
+                saveFileSource = SaveSourceDetector.Detect(
+                    sf,
+                    AppState.SaveFileName,
+                    AppState.SaveArchiveContext?.IsManicEmu == true);
                 saveFileType = sf.GetType().Name;
             }
 
@@ -193,32 +196,41 @@ public partial class BugReportDialog
                 saveBytes = uploadedBytes;
                 saveFileName = uploadedFileName ?? "save.bin";
             }
+            else if (ShowSaveAttach && attachSaveFile && AppState.OriginalSaveFileBytes is { Length: > 0 } originalBytes)
+            {
+                // Preserve the exact upload for diagnostics. Serializing the parsed object can
+                // contaminate the evidence when format detection itself is the bug: issue #1127's
+                // White 2 input was misdetected as HGSS, then the old report path wrote HGSS
+                // checksums into the attached copy.
+                saveBytes = originalBytes;
+                saveFileName = AppState.SaveFileName ?? "save.bin";
+            }
             else if (ShowSaveAttach && attachSaveFile && AppState.SaveFile is { } currentSave)
             {
+                currentSave.PrepareForExport();
                 var rawBytes = currentSave.Write().ToArray();
-                // If the current save was loaded from a Manic EMU .3ds.sav ZIP, rebuild the
-                // archive so the bug report preserves the wrapper. Without this the submitted
-                // bytes are the bare inner save and we can never diagnose ZIP round-trip
-                // issues from user reports (see issue #750). The attachment name must carry
-                // the compound extension so triagers can see at a glance the payload is a ZIP
-                // and not a bare .sav — a generic save.bin fallback would mask that.
+                // Preserve any ZIP wrapper captured during load. Without this the submitted
+                // bytes are the bare inner save and archive round-trip bugs become impossible
+                // to diagnose (issues #750 and #1131-#1133).
                 //
                 // RebuildZip can throw (InvalidDataException on oversized non-save entries,
                 // corrupt archives, etc.). Getting the report through matters more than the
                 // wrapper, so on failure we fall back to the bare save — the submission
                 // itself must not be blocked by an attach-side issue.
-                if (AppState.ManicEmuSaveContext is { } ctx)
+                if (AppState.SaveArchiveContext is { } ctx)
                 {
                     try
                     {
-                        saveBytes = ManicEmuSaveHelper.RebuildZip(ctx, rawBytes);
-                        saveFileName = ManicEmuSaveHelper.GetExportFileName(AppState.SaveFileName).ExportName;
+                        saveBytes = SaveArchiveHelper.RebuildZip(ctx, rawBytes);
+                        saveFileName = ctx.IsManicEmu
+                            ? ManicEmuSaveHelper.GetExportFileName(AppState.SaveFileName).ExportName
+                            : AppState.SaveFileName ?? "save.zip";
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning(ex, "Failed to rebuild Manic EMU ZIP for bug report attachment; falling back to bare save");
+                        Logger.LogWarning(ex, "Failed to rebuild save ZIP for bug report attachment; falling back to bare save");
                         saveBytes = rawBytes;
-                        saveFileName = AppState.SaveFileName ?? "save.bin";
+                        saveFileName = GetBareSaveFileName(AppState.SaveFileName, currentSave.Extension);
                     }
                 }
                 else
@@ -256,5 +268,13 @@ public partial class BugReportDialog
             isSubmitting = false;
             StateHasChanged();
         }
+    }
+
+    private static string GetBareSaveFileName(string? originalName, string extension)
+    {
+        var stem = string.IsNullOrWhiteSpace(originalName)
+            ? "save"
+            : Path.GetFileNameWithoutExtension(originalName);
+        return $"{stem}{extension}";
     }
 }

@@ -3,13 +3,19 @@
 
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => {
+    // Activate the downloaded worker promptly, but do not claim pages that are already
+    // running the previous app version. They keep their matching worker/cache until reload.
     self.skipWaiting();
     event.waitUntil(onInstall(event));
 });
 
 self.addEventListener('activate', event => {
     event.waitUntil(onActivate(event));
-    self.clients.claim();
+});
+self.addEventListener('message', event => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        event.waitUntil(self.skipWaiting());
+    }
 });
 self.addEventListener('fetch', event => event.respondWith(onFetch(event)));
 
@@ -42,31 +48,38 @@ const manifestUrlList = self.assetsManifest.assets.map(asset => new URL(asset.ur
 async function onInstall(event) {
     console.info('Service worker: Install');
 
-    // Fetch and cache all matching items from the assets manifest.
-    // Use per-file error handling instead of cache.addAll() (which is all-or-nothing) so that a
-    // single SRI hash mismatch — e.g. during the brief CDN propagation window after a new deploy
-    // reaches GitHub Pages edge nodes at different times — does not abort the entire install.
-    // Any file that fails to pre-cache here will simply be fetched live from the network until
-    // the next successful install picks it up.
+    // A worker must not install with a partial version cache. That creates a mixed app where
+    // some boot resources are served from this deployment and missing ones fall through to the
+    // network (or a newer deployment). Reject the install instead; the previous worker/cache
+    // stays healthy and the browser can retry once the deployment has propagated.
     const assetsRequests = self.assetsManifest.assets
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
         .map(asset => new Request(asset.url, {integrity: asset.hash, cache: 'no-cache'}));
     const cache = await caches.open(cacheName);
-    await Promise.allSettled(
-        assetsRequests.map(req =>
-            cache.add(req).catch(err => console.warn(`SW: Failed to pre-cache ${req.url}:`, err))
-        )
-    );
+    try {
+        await Promise.all(assetsRequests.map(req => cache.add(req)));
+    } catch (err) {
+        await caches.delete(cacheName);
+        console.error('SW: Version cache install failed; keeping the previous worker active.', err);
+        throw err;
+    }
 }
 
 async function onActivate(event) {
     console.info('Service worker: Activate');
 
-    // Delete unused caches
+    // Keep the immediately previous app cache while any already-open page is still controlled
+    // by its previous worker. Because activate intentionally does not call clients.claim(), a
+    // reload moves that page to this worker without mixing old HTML with new boot resources.
     const cacheKeys = await caches.keys();
+    const oldAppCaches = cacheKeys
+        .filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName);
+    const previousCache = oldAppCaches.length ? oldAppCaches[oldAppCaches.length - 1] : undefined;
     await Promise.all(cacheKeys
-        .filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName)
+        .filter(key => key.startsWith(cacheNamePrefix)
+            && key !== cacheName
+            && key !== previousCache)
         .map(key => caches.delete(key)));
 }
 

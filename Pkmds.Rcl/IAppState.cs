@@ -30,12 +30,18 @@ public interface IAppState
     string? SaveFileName { get; set; }
 
     /// <summary>
-    /// Gets or sets the Manic EMU ZIP context captured when the user uploaded a
-    /// <c>.3ds.sav</c> / <c>.3ds.save</c> archive. Non-null only while a Manic EMU save is loaded.
-    /// Export, auto-backup, and bug-report submission all read this to round-trip the
-    /// original ZIP wrapper instead of the raw inner save. Cleared when the save file is unloaded.
+    /// Gets or sets an untouched copy of the bytes supplied when the current save was loaded.
+    /// Bug reports use this instead of serializing a potentially misdetected save object.
     /// </summary>
-    ManicEmuSaveHelper.ManicEmuSaveContext? ManicEmuSaveContext { get; set; }
+    byte[]? OriginalSaveFileBytes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ZIP context captured when the user uploaded an archived save.
+    /// Export, auto-backup, and bug-report submission all read this to round-trip the
+    /// original wrapper instead of writing bare save bytes under an archive filename.
+    /// Cleared when the save file is unloaded.
+    /// </summary>
+    SaveArchiveContext? SaveArchiveContext { get; set; }
 
     /// <summary>
     /// Gets or sets the secondary save file used by the cross-save Trade tab.
