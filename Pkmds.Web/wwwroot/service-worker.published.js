@@ -17,13 +17,26 @@ self.addEventListener('message', event => {
         event.waitUntil(self.skipWaiting());
     }
 });
-self.addEventListener('fetch', event => event.respondWith(onFetch(event)));
+self.addEventListener('fetch', event => {
+    const clientId = event.resultingClientId || event.clientId;
+    if (clientId && !trackedClientIds.has(clientId)) {
+        trackedClientIds.add(clientId);
+        event.waitUntil(recordClientCacheLease(clientId).catch(err => {
+            trackedClientIds.delete(clientId);
+            console.warn('SW: Failed to record client cache lease.', err);
+        }));
+    }
+    event.respondWith(onFetch(event));
+});
 
 const cacheNamePrefix = 'offline-cache-';
+const cacheLeaseName = 'pkmds-client-cache-leases-v1';
+const cacheLeasePathPrefix = '/__pkmds-client-cache-lease__/';
 const spriteCacheName = 'pokeapi-sprites-v1';
 const spriteOrigin = 'https://raw.githubusercontent.com';
 const CACHE_VERSION = '%%CACHE_VERSION%%'
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}${CACHE_VERSION}`;
+const trackedClientIds = new Set();
 
 const offlineAssetsInclude = [/\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /\.json$/, /\.css$/, /\.woff$/, /\.woff2$/, /\.png$/, /\.jpe?g$/, /\.gif$/, /\.ico$/, /\.svg$/, /\.webp$/, /\.blat$/, /\.dat$/];
 // AOT-compiled native blob (~44 MB raw, ~7.75 MB brotli) is excluded from
@@ -69,18 +82,70 @@ async function onInstall(event) {
 async function onActivate(event) {
     console.info('Service worker: Activate');
 
-    // Keep the immediately previous app cache while any already-open page is still controlled
-    // by its previous worker. Because activate intentionally does not call clients.claim(), a
-    // reload moves that page to this worker without mixing old HTML with new boot resources.
+    // A tab can remain controlled by any older worker across multiple deployments. Each worker
+    // records which version cache its clients use, so retain every cache leased by a live tab
+    // instead of guessing that only the immediately previous cache can still be needed.
     const cacheKeys = await caches.keys();
-    const oldAppCaches = cacheKeys
-        .filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName);
-    const previousCache = oldAppCaches.length ? oldAppCaches[oldAppCaches.length - 1] : undefined;
+    const {leasedCacheNames, hasUnleasedClients} = await getLiveClientCacheLeases();
+    if (hasUnleasedClients) {
+        // Older deployed workers do not know how to create leases, and a first-load page may be
+        // uncontrolled. Preserve all app caches until a later activation can identify every
+        // live client's cache rather than risking an in-use version during migration.
+        console.info('SW: Live client without a cache lease; preserving prior app caches.');
+        return;
+    }
+
     await Promise.all(cacheKeys
         .filter(key => key.startsWith(cacheNamePrefix)
-            && key !== cacheName
-            && key !== previousCache)
+            && !leasedCacheNames.has(key))
         .map(key => caches.delete(key)));
+}
+
+async function recordClientCacheLease(clientId) {
+    const leaseCache = await caches.open(cacheLeaseName);
+    await leaseCache.put(
+        getClientCacheLeaseRequest(clientId),
+        new Response(cacheName, {headers: {'Content-Type': 'text/plain'}}));
+}
+
+async function getLiveClientCacheLeases() {
+    const liveClients = await self.clients.matchAll({type: 'window', includeUncontrolled: true});
+    const liveClientIds = new Set(liveClients.map(client => client.id));
+    const leasedClientIds = new Set();
+    const leasedCacheNames = new Set([cacheName]);
+    const leaseCache = await caches.open(cacheLeaseName);
+    const leaseRequests = await leaseCache.keys();
+
+    await Promise.all(leaseRequests.map(async request => {
+        const clientId = getClientIdFromLeaseRequest(request);
+        if (!clientId || !liveClientIds.has(clientId)) {
+            await leaseCache.delete(request);
+            return;
+        }
+
+        const response = await leaseCache.match(request);
+        const leasedCacheName = response && await response.text();
+        if (leasedCacheName && leasedCacheName.startsWith(cacheNamePrefix)) {
+            leasedClientIds.add(clientId);
+            leasedCacheNames.add(leasedCacheName);
+        }
+    }));
+
+    return {
+        leasedCacheNames,
+        hasUnleasedClients: liveClients.some(client => !leasedClientIds.has(client.id)),
+    };
+}
+
+function getClientCacheLeaseRequest(clientId) {
+    const url = new URL(`${cacheLeasePathPrefix}${encodeURIComponent(clientId)}`, self.origin);
+    return new Request(url.href);
+}
+
+function getClientIdFromLeaseRequest(request) {
+    const pathname = new URL(request.url).pathname;
+    if (!pathname.startsWith(cacheLeasePathPrefix)) return null;
+    return decodeURIComponent(pathname.slice(cacheLeasePathPrefix.length));
 }
 
 async function onFetch(event) {
