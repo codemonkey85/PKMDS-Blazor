@@ -104,6 +104,30 @@ window.addUpdateListener = () => {
     });
 };
 
+// Apply a downloaded update. Current workers activate without claiming an already-running
+// page, so a normal reload transitions to the new version atomically. The waiting-worker path
+// also supports browsers or future lifecycle changes that leave the update in `waiting`.
+window.applyUpdate = async () => {
+    const registration = await window._swRegistrationPromise;
+    if (!registration) {
+        window.location.reload();
+        return;
+    }
+
+    if (registration.waiting) {
+        const controllerChanged = new Promise(resolve => {
+            navigator.serviceWorker.addEventListener('controllerchange', resolve, {once: true});
+        });
+        registration.waiting.postMessage({type: 'SKIP_WAITING'});
+        await Promise.race([
+            controllerChanged,
+            new Promise(resolve => setTimeout(resolve, 3000)),
+        ]);
+    }
+
+    window.location.reload();
+};
+
 // Proactively check for a service worker update.
 // Returns: 'found' (update ready), 'none' (up to date), 'no-sw' (SW unavailable), 'error' (check/install failed)
 window.checkForUpdates = async () => {
@@ -183,4 +207,3 @@ window.checkForUpdates = async () => {
         registration.removeEventListener('updatefound', signalUpdateFound);
     }
 };
-

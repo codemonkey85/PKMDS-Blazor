@@ -10,6 +10,14 @@ public static class SaveFileExtensions
     private const int PartySize = 6;
 
     /// <summary>
+    /// Runs the same storage finalization hook used by PKHeX before serializing a save.
+    /// LGPE in particular keeps unified storage in a form that must be compacted before export.
+    /// </summary>
+    /// <returns><see langword="true" /> when finalization changed the save.</returns>
+    public static bool PrepareForExport(this SaveFile sav) =>
+        sav is IStorageCleanup cleanup && cleanup.FixStoragePreWrite();
+
+    /// <summary>
     /// Validates that a freshly parsed save satisfies the core invariants the editor relies on,
     /// returning <see langword="false"/> with a user-facing <paramref name="reason"/> for saves that
     /// parse structurally but are unsafe to edit. This catches two cases the bare

@@ -109,7 +109,7 @@
             @if (ShowSaveAttach)
             {
                 <MudSwitch @bind-Value="@attachSaveFile"
-                           Label="Attach current save file"
+                           Label="Attach original uploaded save file"
                            Disabled="@(!HasSaveFile || uploadedBytes is not null)"
                            Color="@Color.Primary"/>
                 <MudFileUpload T="IBrowserFile"

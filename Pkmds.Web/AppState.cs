@@ -40,7 +40,8 @@ public record AppState : IAppState
             if (SaveFile is null)
             {
                 SaveFileName = null;
-                ManicEmuSaveContext = null;
+                OriginalSaveFileBytes = null;
+                SaveArchiveContext = null;
             }
 
             // Clear slot-A selections so a stale SelectedBoxNumber from a previous
@@ -57,7 +58,10 @@ public record AppState : IAppState
     public string? SaveFileName { get; set; }
 
     /// <inheritdoc />
-    public ManicEmuSaveHelper.ManicEmuSaveContext? ManicEmuSaveContext { get; set; }
+    public byte[]? OriginalSaveFileBytes { get; set; }
+
+    /// <inheritdoc />
+    public SaveArchiveContext? SaveArchiveContext { get; set; }
 
     /// <inheritdoc />
     public SaveFile? SaveFileB

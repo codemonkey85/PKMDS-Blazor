@@ -4,9 +4,9 @@ public partial class TradeTab : RefreshAwareComponent
 {
     private bool isLoading;
 
-    // Preserve the slot-B Manic EMU ZIP context across the session so Export Slot B
-    // can rebuild the .3ds.sav/.3ds.save ZIP without requiring the user to re-upload.
-    private ManicEmuSaveHelper.ManicEmuSaveContext? manicEmuSaveContextB;
+    // Preserve the slot-B ZIP context so Export Slot B can replace the inner save
+    // without changing the wrapper expected by the originating emulator.
+    private SaveArchiveContext? saveArchiveContextB;
 
     [Inject]
     private IBackupService BackupService { get; set; } = null!;
@@ -86,7 +86,7 @@ public partial class TradeTab : RefreshAwareComponent
         StateHasChanged();
 
         SaveFile? loadedSave = null;
-        ManicEmuSaveHelper.ManicEmuSaveContext? manicContext = null;
+        SaveArchiveContext? archiveContext = null;
 
         try
         {
@@ -95,28 +95,15 @@ public partial class TradeTab : RefreshAwareComponent
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
 
-            if (SaveUtil.TryGetSaveFile(data, out var saveFile, selectedFile.Name))
+            if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out archiveContext))
             {
-                if (!saveFile.State.Exportable)
+                if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
-                    await DialogService.ShowMessageBoxAsync("Unsupported save file",
-                        "This save file cannot be loaded — it may be from an unsupported ROM hack or format.");
+                    await DialogService.ShowMessageBoxAsync("Unsupported save file", unsupportedReason);
                     return;
                 }
 
                 loadedSave = saveFile;
-            }
-            else if (ManicEmuSaveHelper.TryExtractSaveFromZip(data, selectedFile.Name, out saveFile, out var ctx))
-            {
-                if (!saveFile.State.Exportable)
-                {
-                    await DialogService.ShowMessageBoxAsync("Unsupported save file",
-                        "This save file cannot be loaded — it may be from an unsupported ROM hack or format.");
-                    return;
-                }
-
-                loadedSave = saveFile;
-                manicContext = ctx;
             }
             else
             {
@@ -138,7 +125,7 @@ public partial class TradeTab : RefreshAwareComponent
             AppState.SelectedBoxNumberB = loadedSave.CurrentBox;
             AppState.SelectedBoxSlotNumberB = null;
             AppState.SelectedPartySlotNumberB = null;
-            manicEmuSaveContextB = manicContext;
+            saveArchiveContextB = archiveContext;
 
             // Per-slot on-load backup. Identical contract to the slot-A load path:
             // bytes come from the freshly loaded SaveFile (handles Manic EMU rebuild),
@@ -148,13 +135,14 @@ public partial class TradeTab : RefreshAwareComponent
             {
                 try
                 {
+                    loadedSave.PrepareForExport();
                     var rawSave = loadedSave.Write().ToArray();
-                    var backupBytes = manicContext is not null
-                        ? ManicEmuSaveHelper.RebuildZip(manicContext, rawSave)
+                    var backupBytes = archiveContext is not null
+                        ? SaveArchiveHelper.RebuildZip(archiveContext, rawSave)
                         : rawSave;
                     await BackupService.CreateBackupAsync(
                         backupBytes, loadedSave, selectedFile.Name,
-                        isManicEmu: manicContext is not null, source: "auto");
+                        isManicEmu: archiveContext?.IsManicEmu == true, source: "auto");
                     await BackupService.EnforceRetentionAsync(SettingsService.Settings.MaxBackupCount);
                 }
                 catch (Exception ex)
@@ -195,7 +183,7 @@ public partial class TradeTab : RefreshAwareComponent
 
         AppState.SaveFileB = null;
         AppState.SaveFileNameB = null;
-        manicEmuSaveContextB = null;
+        saveArchiveContextB = null;
         RefreshService.Refresh();
     }
 
@@ -207,17 +195,25 @@ public partial class TradeTab : RefreshAwareComponent
         }
 
         Logger.LogInformation("Exporting slot-B save file");
+        saveB.PrepareForExport();
         var rawSaveBytes = saveB.Write().ToArray();
         var originalName = AppState.SaveFileNameB;
 
         bool wrote;
-        // Same branching as MainLayout.ExportSaveFile — rebuild the Manic EMU ZIP
-        // when the slot-B save came from one, otherwise preserve the original name.
-        if (manicEmuSaveContextB is not null)
+        // Same branching as MainLayout.ExportSaveFile — rebuild any captured ZIP wrapper.
+        if (saveArchiveContextB is { } archiveContext)
         {
-            var (exportName, compoundExt) = ManicEmuSaveHelper.GetExportFileName(originalName);
-            var zipBytes = ManicEmuSaveHelper.RebuildZip(manicEmuSaveContextB, rawSaveBytes);
-            wrote = await WriteSlotBFileAsync(zipBytes, exportName, compoundExt);
+            var zipBytes = SaveArchiveHelper.RebuildZip(archiveContext, rawSaveBytes);
+            if (archiveContext.IsManicEmu)
+            {
+                var (exportName, compoundExt) = ManicEmuSaveHelper.GetExportFileName(originalName);
+                wrote = await WriteSlotBFileAsync(zipBytes, exportName, compoundExt);
+            }
+            else
+            {
+                var exportName = string.IsNullOrWhiteSpace(originalName) ? "save.zip" : originalName;
+                wrote = await WriteSlotBFileAsync(zipBytes, exportName, ".zip");
+            }
         }
         else if (string.IsNullOrWhiteSpace(originalName))
         {

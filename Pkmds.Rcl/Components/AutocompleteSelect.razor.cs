@@ -30,7 +30,10 @@ public partial class AutocompleteSelect<T>
 
     [Parameter] public bool Strict { get; set; } = true;
 
-    [Parameter] public int? MaxItems { get; set; }
+    // Keep MudAutocomplete's own bounded default. Leaving this null overrides MudBlazor's
+    // default of 10 and renders every match, which made one-letter item searches stall for
+    // several seconds on mobile devices (issue #1122).
+    [Parameter] public int? MaxItems { get; set; } = 10;
 
     [Parameter] public int DebounceInterval { get; set; } = 100;
 
