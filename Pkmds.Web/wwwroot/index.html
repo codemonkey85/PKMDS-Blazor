@@ -179,6 +179,7 @@
             return attempt(1);
         }
 
+        window._pkmdsBootInProgress = true;
         Blazor.start({
             loadBootResource: function (type, name, defaultUri, integrity) {
                 // The 'dotnetjs' module is imported as a script and must be
@@ -193,6 +194,8 @@
                 }
                 return retryFetchBootResource(defaultUri, integrity);
             }
+        }).then(function () {
+            window.markAppBootSucceeded();
         });
     } else {
         // Resolve against document.baseURI so the redirect lands on the

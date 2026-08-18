@@ -140,9 +140,26 @@
             repairBtn.addEventListener('click', function () {
                 repairBtn.disabled = true;
                 repairBtn.textContent = 'Repairing…';
-                window.clearAppCacheAndReload();
+                if (typeof window.clearAppCacheAndReload === 'function') {
+                    window.clearAppCacheAndReload();
+                } else {
+                    window.location.reload();
+                }
             });
             row.appendChild(repairBtn);
+
+            // If the network is reachable, repair stale app caches automatically once. The
+            // guarded helper preserves IndexedDB and prevents reload loops when the failure is
+            // a real connectivity problem rather than a mixed service-worker version.
+            if (window._pkmdsBootInProgress === true
+                && typeof window.tryAutomaticAppCacheRecovery === 'function') {
+                window.tryAutomaticAppCacheRecovery().then(function (started) {
+                    if (started) {
+                        repairBtn.disabled = true;
+                        repairBtn.textContent = 'Repairing…';
+                    }
+                });
+            }
         }
 
         row.appendChild(reportLink);
