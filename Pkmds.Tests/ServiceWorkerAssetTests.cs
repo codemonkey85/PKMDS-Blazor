@@ -51,6 +51,25 @@ public sealed partial class ServiceWorkerAssetTests
         cacheScript.Should().NotContain("indexedDB.deleteDatabase");
     }
 
+    [Fact]
+    public void WaitingServiceWorkerUpdateIsPreservedAndDispatched()
+    {
+        var appScript = ReadRepoFile("Pkmds.Web", "wwwroot", "js", "app.js");
+
+        appScript.Should().Contain("""
+            function notifyUpdateAvailable() {
+                window._pkmdsUpdateWaiting = true;
+                window.dispatchEvent(new CustomEvent('updateAvailable'));
+            }
+            """);
+        appScript.Should().Contain("""
+            if (registration.waiting && navigator.serviceWorker.controller) {
+                notifyUpdateAvailable();
+            }
+            """);
+        appScript.Should().Contain("if (window._pkmdsUpdateWaiting)");
+    }
+
     [GeneratedRegex(@"const offlineAssetsExclude = \[[^;]+;", RegexOptions.CultureInvariant)]
     private static partial Regex OfflineAssetsExcludeRegex();
 

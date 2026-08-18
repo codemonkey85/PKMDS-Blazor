@@ -18,6 +18,11 @@ function pkmdsIsEmbedded() {
     return false;
 }
 
+function notifyUpdateAvailable() {
+    window._pkmdsUpdateWaiting = true;
+    window.dispatchEvent(new CustomEvent('updateAvailable'));
+}
+
 // Service worker registration
 if (pkmdsIsEmbedded()) {
     console.info('Service worker registration skipped: embedded host mode.');
@@ -26,7 +31,7 @@ if (pkmdsIsEmbedded()) {
     window._swRegistrationPromise = navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'}).then(registration => {
         console.info('Service worker registered, scope:', registration.scope);
         if (registration.waiting && navigator.serviceWorker.controller) {
-            window._pkmdsUpdateWaiting = true;
+            notifyUpdateAvailable();
         }
         setInterval(() => registration.update().catch(err => {
             // Safari may throw "newestWorker is null" — this is benign
@@ -39,8 +44,7 @@ if (pkmdsIsEmbedded()) {
             installingWorker.onstatechange = () => {
                 if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
                     // Notify Blazor about the update
-                    window._pkmdsUpdateWaiting = true;
-                    window.dispatchEvent(new CustomEvent('updateAvailable'));
+                    notifyUpdateAvailable();
                 }
             };
         };
@@ -144,7 +148,7 @@ window.checkForUpdates = async () => {
 
     // A waiting worker was already downloaded but not yet activated — notify immediately.
     if (registration.waiting) {
-        window.dispatchEvent(new CustomEvent('updateAvailable'));
+        notifyUpdateAvailable();
         return 'found';
     }
 
@@ -180,7 +184,7 @@ window.checkForUpdates = async () => {
 
         // A fast install may have already moved the new worker to the waiting slot.
         if (registration.waiting) {
-            window.dispatchEvent(new CustomEvent('updateAvailable'));
+            notifyUpdateAvailable();
             return 'found';
         }
 
@@ -200,7 +204,7 @@ window.checkForUpdates = async () => {
                     // Mirror the controller check in the global onupdatefound handler: with no
                     // controller this is the page's very first SW install, not an update.
                     if (navigator.serviceWorker.controller) {
-                        window.dispatchEvent(new CustomEvent('updateAvailable'));
+                        notifyUpdateAvailable();
                         resolve('found');
                     } else {
                         resolve('none');
