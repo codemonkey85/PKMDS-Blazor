@@ -18,6 +18,11 @@ function pkmdsIsEmbedded() {
     return false;
 }
 
+function notifyUpdateAvailable() {
+    window._pkmdsUpdateWaiting = true;
+    window.dispatchEvent(new CustomEvent('updateAvailable'));
+}
+
 // Service worker registration
 if (pkmdsIsEmbedded()) {
     console.info('Service worker registration skipped: embedded host mode.');
@@ -25,6 +30,9 @@ if (pkmdsIsEmbedded()) {
 } else if ('serviceWorker' in navigator) {
     window._swRegistrationPromise = navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'}).then(registration => {
         console.info('Service worker registered, scope:', registration.scope);
+        if (registration.waiting && navigator.serviceWorker.controller) {
+            notifyUpdateAvailable();
+        }
         setInterval(() => registration.update().catch(err => {
             // Safari may throw "newestWorker is null" — this is benign
             if (!(err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null')))) {
@@ -36,7 +44,7 @@ if (pkmdsIsEmbedded()) {
             installingWorker.onstatechange = () => {
                 if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
                     // Notify Blazor about the update
-                    window.dispatchEvent(new CustomEvent('updateAvailable'));
+                    notifyUpdateAvailable();
                 }
             };
         };
@@ -100,13 +108,17 @@ window.pkmdsGetUserAgent = () => navigator.userAgent;
 // Listen for update events and forward to Blazor
 window.addUpdateListener = () => {
     window.addEventListener('updateAvailable', () => {
+        window._pkmdsUpdateWaiting = false;
         DotNet.invokeMethodAsync('Pkmds.Web', 'ShowUpdateMessage');
     });
+    if (window._pkmdsUpdateWaiting) {
+        window._pkmdsUpdateWaiting = false;
+        DotNet.invokeMethodAsync('Pkmds.Web', 'ShowUpdateMessage');
+    }
 };
 
-// Apply a downloaded update. Current workers activate without claiming an already-running
-// page, so a normal reload transitions to the new version atomically. The waiting-worker path
-// also supports browsers or future lifecycle changes that leave the update in `waiting`.
+// Apply a downloaded update. The worker waits until this explicit handoff, then claims the
+// current page; controllerchange tells us it is safe to reload under the new version.
 window.applyUpdate = async () => {
     const registration = await window._swRegistrationPromise;
     if (!registration) {
@@ -136,7 +148,7 @@ window.checkForUpdates = async () => {
 
     // A waiting worker was already downloaded but not yet activated — notify immediately.
     if (registration.waiting) {
-        window.dispatchEvent(new CustomEvent('updateAvailable'));
+        notifyUpdateAvailable();
         return 'found';
     }
 
@@ -172,7 +184,7 @@ window.checkForUpdates = async () => {
 
         // A fast install may have already moved the new worker to the waiting slot.
         if (registration.waiting) {
-            window.dispatchEvent(new CustomEvent('updateAvailable'));
+            notifyUpdateAvailable();
             return 'found';
         }
 
@@ -192,7 +204,7 @@ window.checkForUpdates = async () => {
                     // Mirror the controller check in the global onupdatefound handler: with no
                     // controller this is the page's very first SW install, not an update.
                     if (navigator.serviceWorker.controller) {
-                        window.dispatchEvent(new CustomEvent('updateAvailable'));
+                        notifyUpdateAvailable();
                         resolve('found');
                     } else {
                         resolve('none');
