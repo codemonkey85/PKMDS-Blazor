@@ -3,14 +3,19 @@
 
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => {
-    // Activate the downloaded worker promptly, but do not claim pages that are already
-    // running the previous app version. They keep their matching worker/cache until reload.
-    self.skipWaiting();
+    // Keep the new worker waiting until existing pages close or explicitly apply the update.
+    // Activating during an ordinary reload can pair HTML served by the old worker with boot
+    // resources served by the new worker, which strands clients on mixed app versions.
     event.waitUntil(onInstall(event));
 });
 
 self.addEventListener('activate', event => {
-    event.waitUntil(onActivate(event));
+    event.waitUntil((async () => {
+        await onActivate(event);
+        // Explicit updates wait for controllerchange before reloading. Claiming here completes
+        // that handoff; natural activation normally has no existing clients to claim.
+        await self.clients.claim();
+    })());
 });
 self.addEventListener('message', event => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
@@ -39,19 +44,16 @@ const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}${CACHE_VERSI
 const trackedClientIds = new Set();
 
 const offlineAssetsInclude = [/\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /\.json$/, /\.css$/, /\.woff$/, /\.woff2$/, /\.png$/, /\.jpe?g$/, /\.gif$/, /\.ico$/, /\.svg$/, /\.webp$/, /\.blat$/, /\.dat$/];
-// AOT-compiled native blob (~44 MB raw, ~7.75 MB brotli) is excluded from
-// SW pre-cache because it alone has caused iOS Safari to reject the entire
-// install on tight per-origin SW cache quotas, breaking offline reload.
-// Browsers continue to serve it via the regular HTTP cache (1-year max-age
-// on the fingerprinted asset), so returning users with a populated HTTP
-// cache still get offline reload; only stone-cold first-load-offline fails
-// for this single file, which has always been a thin scenario.
-//
 // appsettings*.json is intentionally NOT excluded: our appsettings.json is
 // static (just the Azure function URL) and excluding it caused 429 failures
 // for users on iCloud Private Relay / GitHub Pages rate-limited IPs, crashing
 // the Blazor bootstrap before the app could start (issue #910).
-const offlineAssetsExclude = [/^service-worker\.js$/, /^staticwebapp\.config\.json$/, /^_framework\/dotnet\.native\.[^\/]+\.wasm$/];
+//
+// dotnet.native.*.wasm used to be excluded when AOT made it roughly 44 MB.
+// AOT is disabled now and the runtime is roughly 3 MB. It must be cached: an
+// old app version cannot boot after a deploy removes its fingerprinted runtime
+// from the server, which caused the recurring 98% startup failures (#1142+).
+const offlineAssetsExclude = [/^service-worker\.js$/, /^staticwebapp\.config\.json$/];
 
 // Replace with your base path if you are hosting on a subfolder. Ensure there is a trailing '/'.
 const base = "/";
