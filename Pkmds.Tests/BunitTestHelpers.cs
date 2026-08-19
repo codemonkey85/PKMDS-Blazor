@@ -47,7 +47,9 @@ internal static class BunitTestHelpers
         ctx.Services.AddSingleton(refreshService);
         ctx.Services.AddSingleton(appService);
         ctx.Services.AddSingleton<IHostService, HostService>();
+        ctx.Services.AddSingleton<ILegalizationService>(new LegalizationService(appState));
         ctx.Services.AddSingleton<ILegalityFixService, LegalityFixService>();
+        ctx.Services.AddSingleton<IHapticService, HapticService>();
         ctx.Services.AddSingleton<IDragDropService>(new NullDragDropService());
         ctx.Services.AddSingleton<IFileSystemAccessService>(new NullFileSystemAccessService());
         ctx.Services.AddSingleton<ILoggingService>(new NullLoggingService());
