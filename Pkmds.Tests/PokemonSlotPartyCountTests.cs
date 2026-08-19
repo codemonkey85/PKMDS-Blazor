@@ -12,7 +12,7 @@ namespace Pkmds.Tests;
 public class PokemonSlotPartyCountTests
 {
     [Fact]
-    public void PokemonSlotComponent_PartySlot_CorruptGen3PartyCount_RendersWithoutThrowing()
+    public async Task PokemonSlotComponent_PartySlot_CorruptGen3PartyCount_RendersWithoutThrowing()
     {
         var (saveFile, appState, refreshService, appService) =
             BunitTestHelpers.LoadSave("POKEMON EMER_BPEE-0.sav");
@@ -23,7 +23,7 @@ public class PokemonSlotPartyCountTests
         var pkm = saveFile.BlankPKM;
         pkm.Species = (ushort)Species.Bulbasaur;
 
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var render = () => ctx.Render<PokemonSlotComponent>(p => p
             .Add(c => c.SlotNumber, 0)

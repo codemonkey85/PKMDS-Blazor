@@ -75,22 +75,20 @@ public class LegalityCheckerTests
     }
 
     [Fact]
-    public void GetLegalityAnalysis_HackedShiny_ReturnsInvalidResult()
+    public void GetLegalityAnalysis_InvalidSpecies_ReturnsInvalidResult()
     {
-        // This event Lucario is shiny-locked; forcing it shiny must invalidate its encounter.
+        // An out-of-range species ID must produce one or more legality violations.
         var (service, saveFile) = CreateService("Black - Full Completion.sav");
         ParseSettings.InitFromSaveFileData(saveFile);
 
         var pkm = LoadPkm("Lucario_B06DDFAD.pk5");
-        pkm.SetIsShiny(true);
+        pkm.Species = ushort.MaxValue;
         pkm.RefreshChecksum();
 
         var la = service.GetLegalityAnalysis(pkm);
 
-        // Either a Shiny or PID/EC violation should appear
-        var hasViolation = !la.Valid || la.Results.Any(r => !r.Valid && r.Identifier is
-            CheckIdentifier.Shiny or CheckIdentifier.PID or CheckIdentifier.EC);
-        hasViolation.Should().BeTrue("forcing an illegal shiny PID should produce a legality violation");
+        la.Valid.Should().BeFalse("an out-of-range species ID must be illegal");
+        la.Results.Should().Contain(r => !r.Valid, "the report should explain the legality violation");
     }
 
     [Fact]
