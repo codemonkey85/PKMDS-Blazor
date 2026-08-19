@@ -8,10 +8,10 @@ namespace Pkmds.Tests;
 public class PokemonSlotLegalityTests
 {
     [Fact]
-    public void PokemonSlotComponent_LegalPokemon_RendersValidOverlay()
+    public async Task PokemonSlotComponent_LegalPokemon_RendersValidOverlay()
     {
         var (saveFile, appState, refreshService, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var pkm = saveFile.GetPartySlotAtIndex(0);
         pkm.Species.Should().BeGreaterThan(0, "need a real Pokémon for the legality overlay to appear");
@@ -22,18 +22,18 @@ public class PokemonSlotLegalityTests
             .Add(c => c.OnSlotClick, EventCallback.Empty)
             .Add(c => c.GetClassFunction, () => string.Empty));
 
-        cut.Markup.Should().Contain("valid.png",
-            "a legal Pokémon must render the valid.png legality indicator");
+        cut.Markup.Should().Contain("legality-indicator-icon--legal",
+            "a legal Pokémon must render the legal SVG indicator");
     }
 
     [Fact]
-    public void PokemonSlotComponent_IllegalPokemon_RendersWarnOverlay()
+    public async Task PokemonSlotComponent_IllegalPokemon_RendersWarnOverlay()
     {
         var (saveFile, appState, refreshService, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var pkm = saveFile.GetPartySlotAtIndex(0);
-        pkm.AbilityNumber = 4; // force ability violation
+        pkm.Ability = 0;
         pkm.RefreshChecksum();
 
         var cut = ctx.Render<PokemonSlotComponent>(p => p
@@ -42,15 +42,15 @@ public class PokemonSlotLegalityTests
             .Add(c => c.OnSlotClick, EventCallback.Empty)
             .Add(c => c.GetClassFunction, () => string.Empty));
 
-        cut.Markup.Should().Contain("warn.png",
-            "an illegal Pokémon must render the warn.png legality indicator");
+        cut.Markup.Should().Contain("legality-indicator-icon--illegal",
+            "an illegal Pokémon must render the illegal SVG indicator");
     }
 
     [Fact]
-    public void PokemonSlotComponent_EmptySlot_RendersNoLegalityOverlay()
+    public async Task PokemonSlotComponent_EmptySlot_RendersNoLegalityOverlay()
     {
         var (saveFile, appState, refreshService, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var blank = saveFile.BlankPKM;
         blank.Species.Should().Be(0, "BlankPKM must have Species 0");
@@ -61,9 +61,7 @@ public class PokemonSlotLegalityTests
             .Add(c => c.OnSlotClick, EventCallback.Empty)
             .Add(c => c.GetClassFunction, () => string.Empty));
 
-        cut.Markup.Should().NotContain("valid.png",
-            "an empty slot should not show the valid legality overlay");
-        cut.Markup.Should().NotContain("warn.png",
-            "an empty slot should not show the warn legality overlay");
+        cut.Markup.Should().NotContain("legality-indicator-icon",
+            "an empty slot should not show a legality overlay");
     }
 }

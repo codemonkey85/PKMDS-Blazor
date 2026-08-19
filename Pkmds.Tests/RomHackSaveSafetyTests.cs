@@ -11,6 +11,8 @@ namespace Pkmds.Tests;
 /// </summary>
 public class RomHackSaveSafetyTests
 {
+    private const string TestFilesPath = "../../../TestFiles";
+
     // The real Pokémon Unbound save from issue #1003 reported a party count of 187.
     private const int OverReportedPartyCount = 187;
 
@@ -46,9 +48,10 @@ public class RomHackSaveSafetyTests
     [Fact]
     public void IsSupportedForEditing_VanillaSave_IsSupported()
     {
-        var sav = new SAV3E();
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "POKEMON EMER_BPEE-0.sav"));
+        SaveUtil.TryGetSaveFile(data, out var sav, "POKEMON EMER_BPEE-0.sav").Should().BeTrue();
 
-        var supported = sav.IsSupportedForEditing(out var reason);
+        var supported = sav!.IsSupportedForEditing(out var reason);
 
         supported.Should().BeTrue();
         reason.Should().BeNull();

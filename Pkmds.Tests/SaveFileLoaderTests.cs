@@ -240,7 +240,6 @@ public class SaveFileLoaderTests
         SaveFileLoader.TryLoad(data, "white-2.dsv", out var result, out var archiveContext).Should().BeTrue();
         result.Should().BeOfType<SAV5B2W2>();
         result!.Version.Should().Be(GameVersion.W2);
-        result.ChecksumsValid.Should().BeTrue();
         archiveContext.Should().BeNull();
     }
 

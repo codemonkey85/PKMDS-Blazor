@@ -27,14 +27,12 @@ public class ManicEmuSaveHelperTests
                 stream.Write(entryBytes, 0, entryBytes.Length);
             }
 
-            if (extraEntryPath is null || extraEntryBytes is null)
+            if (extraEntryPath is not null && extraEntryBytes is not null)
             {
-                return ms.ToArray();
+                var extra = archive.CreateEntry(extraEntryPath, CompressionLevel.Optimal);
+                using var extraStream = extra.Open();
+                extraStream.Write(extraEntryBytes, 0, extraEntryBytes.Length);
             }
-
-            var extra = archive.CreateEntry(extraEntryPath, CompressionLevel.Optimal);
-            using var extraStream = extra.Open();
-            extraStream.Write(extraEntryBytes, 0, extraEntryBytes.Length);
         }
 
         return ms.ToArray();

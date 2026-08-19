@@ -6,10 +6,10 @@ namespace Pkmds.Tests;
 public class LegalityTabTests
 {
     [Fact]
-    public void LegalityTab_LegalPokemon_RendersSuccessAlert()
+    public async Task LegalityTab_LegalPokemon_RendersSuccessAlert()
     {
         var (saveFile, appState, refreshService, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var pkm = saveFile.GetPartySlotAtIndex(0);
         pkm.Species.Should().BeGreaterThan(0);
@@ -25,13 +25,13 @@ public class LegalityTabTests
     }
 
     [Fact]
-    public void LegalityTab_IllegalPokemon_RendersErrorAlertAndIssueList()
+    public async Task LegalityTab_IllegalPokemon_RendersErrorAlertAndIssueList()
     {
         var (saveFile, appState, refreshService, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var pkm = saveFile.GetPartySlotAtIndex(0);
-        pkm.AbilityNumber = 4; // force ability violation
+        pkm.Ability = 0;
         pkm.RefreshChecksum();
 
         var la = appService.GetLegalityAnalysis(pkm);
@@ -46,10 +46,10 @@ public class LegalityTabTests
     }
 
     [Fact]
-    public void LegalityTab_NullPokemon_DoesNotThrow()
+    public async Task LegalityTab_NullPokemon_DoesNotThrow()
     {
         var (saveFile, appState, refreshService, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var act = () => ctx.Render<LegalityTab>(p => p
             .Add(c => c.Pokemon, null)
@@ -59,10 +59,10 @@ public class LegalityTabTests
     }
 
     [Fact]
-    public void LegalityTab_SpeciesZero_RendersNoErrorIndicators()
+    public async Task LegalityTab_SpeciesZero_RendersNoErrorIndicators()
     {
         var (saveFile, appState, refreshService, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
-        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
 
         var blank = saveFile.BlankPKM;
         blank.Species.Should().Be(0, "BlankPKM must have Species 0");
@@ -73,7 +73,7 @@ public class LegalityTabTests
             .Add(c => c.Pokemon, blank)
             .Add(c => c.Analysis, la));
 
-        // A blank slot is trivially valid — no error alert should appear
+        // The component suppresses legality UI for a blank slot even though PKHeX reports it invalid.
         cut.Markup.Should().NotContain("mud-alert-filled-error",
             "a Species-0 blank slot should not produce an error alert");
     }

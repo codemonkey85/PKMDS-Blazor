@@ -62,11 +62,7 @@ public sealed partial class ServiceWorkerAssetTests
                 window.dispatchEvent(new CustomEvent('updateAvailable'));
             }
             """);
-        appScript.Should().Contain("""
-            if (registration.waiting && navigator.serviceWorker.controller) {
-                notifyUpdateAvailable();
-            }
-            """);
+        WaitingRegistrationNotificationRegex().IsMatch(appScript).Should().BeTrue();
         appScript.Should().Contain("if (window._pkmdsUpdateWaiting)");
     }
 
@@ -75,4 +71,7 @@ public sealed partial class ServiceWorkerAssetTests
 
     [GeneratedRegex(@"self\.addEventListener\('install',[\s\S]+?\n}\);", RegexOptions.CultureInvariant)]
     private static partial Regex InstallHandlerRegex();
+
+    [GeneratedRegex(@"if \(registration\.waiting && navigator\.serviceWorker\.controller\)\s*\{\s*notifyUpdateAvailable\(\);\s*\}", RegexOptions.CultureInvariant)]
+    private static partial Regex WaitingRegistrationNotificationRegex();
 }

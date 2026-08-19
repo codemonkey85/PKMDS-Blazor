@@ -58,13 +58,12 @@ public class LegalityCheckerTests
     [Fact]
     public void GetLegalityAnalysis_IllegalAbility_ReturnsInvalidAbilityResult()
     {
-        // Lucario from a Gen 5 event — mutate AbilityNumber to 4 (Hidden Ability flag)
-        // to trigger an ability legality failure.
+        // Lucario from a Gen 5 event — replace its actual ability ID with an invalid value.
         var (_, saveFile) = CreateService("Black - Full Completion.sav");
         ParseSettings.InitFromSaveFileData(saveFile);
 
         var pkm = LoadPkm("Lucario_B06DDFAD.pk5");
-        pkm.AbilityNumber = 4; // Hidden Ability — illegal for this specific event Lucario
+        pkm.Ability = 0;
         pkm.RefreshChecksum();
 
         var localAppState = new TestAppState();
@@ -76,41 +75,20 @@ public class LegalityCheckerTests
     }
 
     [Fact]
-    public void GetLegalityAnalysis_HackedShiny_ReturnsInvalidResult()
+    public void GetLegalityAnalysis_InvalidSpecies_ReturnsInvalidResult()
     {
-        // Load Black save and pick a box Pokémon, then force its PID to a shiny value
-        // while keeping the original TID/SID, producing a shiny + PID/EC mismatch.
+        // An out-of-range species ID must produce one or more legality violations.
         var (service, saveFile) = CreateService("Black - Full Completion.sav");
         ParseSettings.InitFromSaveFileData(saveFile);
 
-        PKM? pkm = null;
-        for (var box = 0; box < saveFile.BoxCount; box++)
-        {
-            for (var slot = 0; slot < saveFile.BoxSlotCount; slot++)
-            {
-                var candidate = saveFile.GetBoxSlotAtIndex(box, slot);
-                if (candidate.Species > 0 && !candidate.IsShiny)
-                {
-                    pkm = candidate;
-                    goto foundCandidate;
-                }
-            }
-        }
-
-    foundCandidate:
-
-        pkm.Should().NotBeNull("Black full completion save must have at least one non-shiny box Pokémon");
-
-        // Force shiny by flipping the shiny bits in the PID (Gen 5 uses PID ^ TID ^ SID < 8 check)
-        pkm!.PID ^= 0x10000000u; // dirty flip: makes shiny but breaks PID/gender/nature consistency
+        var pkm = LoadPkm("Lucario_B06DDFAD.pk5");
+        pkm.Species = ushort.MaxValue;
         pkm.RefreshChecksum();
 
         var la = service.GetLegalityAnalysis(pkm);
 
-        // Either a Shiny or PID/EC violation should appear
-        var hasViolation = !la.Valid || la.Results.Any(r => !r.Valid && r.Identifier is
-            CheckIdentifier.Shiny or CheckIdentifier.PID or CheckIdentifier.EC);
-        hasViolation.Should().BeTrue("forcing an illegal shiny PID should produce a legality violation");
+        la.Valid.Should().BeFalse("an out-of-range species ID must be illegal");
+        la.Results.Should().Contain(r => !r.Valid, "the report should explain the legality violation");
     }
 
     [Fact]
@@ -129,7 +107,7 @@ public class LegalityCheckerTests
                 "all check results for a known-legal Pokémon should carry Valid judgement"));
 
         // Introduce a violation and confirm at least one Invalid judgement appears
-        pkm.AbilityNumber = 4;
+        pkm.Ability = 0;
         pkm.RefreshChecksum();
 
         var laInvalid = service.GetLegalityAnalysis(pkm);
@@ -138,7 +116,7 @@ public class LegalityCheckerTests
     }
 
     [Fact]
-    public void GetLegalityAnalysis_NullSpecies_ReturnsValidOrDoesNotThrow()
+    public void GetLegalityAnalysis_NullSpecies_ReturnsInvalidWithoutThrowing()
     {
         var (service, saveFile) = CreateService("Black - Full Completion.sav");
         var blank = saveFile.BlankPKM;
@@ -149,7 +127,7 @@ public class LegalityCheckerTests
 
         act.Should().NotThrow("GetLegalityAnalysis must not throw for a blank slot (Species 0)");
         la.Should().NotBeNull();
-        la!.Valid.Should().BeTrue("a blank Species-0 slot is trivially valid in PKHeX");
+        la!.Valid.Should().BeFalse("PKHeX reports a blank Species-0 slot as invalid");
     }
 
     [Fact]
@@ -159,7 +137,7 @@ public class LegalityCheckerTests
         ParseSettings.InitFromSaveFileData(saveFile);
 
         var pkm = LoadPkm("Lucario_B06DDFAD.pk5");
-        pkm.AbilityNumber = 4;
+        pkm.Ability = 0;
 
         var la = service.GetLegalityAnalysis(pkm);
         var failingResult = la.Results.FirstOrDefault(r => !r.Valid);

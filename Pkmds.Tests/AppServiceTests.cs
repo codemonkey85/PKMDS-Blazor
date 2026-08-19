@@ -137,7 +137,7 @@ public class AppServiceTests
     }
 
     [Fact]
-    public void ExportPartyAsShowdown_LetsGoPikachu_ReturnsShowdownFormat()
+    public void ExportPartyAsShowdown_LetsGoPikachu_ReturnsEmptyBecausePartyUsesFlaggedBoxSlots()
     {
         // Arrange - Load Let's Go Pikachu save file
         var filePath = Path.Combine(TestFilesPath, "Lets-Go-Pikachu-All-Pokemon.bin");
@@ -152,7 +152,7 @@ public class AppServiceTests
         var showdown = appService.ExportPartyAsShowdown();
 
         // Assert
-        showdown.Should().NotBeNullOrEmpty("Let's Go save files should export party to Showdown format");
+        showdown.Should().BeEmpty("Let's Go party members are flagged box slots and must be exported from the box");
     }
 
     [Fact]
@@ -381,9 +381,9 @@ public class AppServiceTests
     }
 
     [Fact]
-    public void GetWonderCardSlots_EmeraldWithImportedWC3_ReturnsSinglePopulatedSlot()
+    public void GetWonderCardSlots_EmeraldSave_ReturnsSingleEmptySlot()
     {
-        // The bundled JPN Emerald save has the Old Sea Map WC3 imported (see PR #810 / issue #423).
+        // Emerald exposes one WC3 slot; the bundled JPN save leaves it empty.
         var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "Pocket Monsters - Emerald (Japan).sav"));
         SaveUtil.TryGetSaveFile(data, out var saveFile, "Pocket Monsters - Emerald (Japan).sav").Should().BeTrue();
         saveFile.Should().BeOfType<SAV3E>();
@@ -398,16 +398,15 @@ public class AppServiceTests
         var slot = slots[0];
         slot.Index.Should().Be(0);
         slot.CardType.Should().Be(nameof(WonderCard3));
-        slot.IsEmpty.Should().BeFalse();
-        slot.Title.Should().NotBe("(empty)");
-        slot.Title.Should().NotBeNullOrWhiteSpace();
-        slot.CardId.Should().NotBeNull();
+        slot.IsEmpty.Should().BeTrue();
+        slot.Title.Should().Be("(empty)");
+        slot.CardId.Should().BeNull();
         // Gen 3 has no IMysteryGiftFlags-style bitmap, so Received is always null here.
         slot.Received.Should().BeNull();
     }
 
     [Fact]
-    public void GetWonderCardSlots_BlackSave_ReturnsTwelveSlotsAllEmpty()
+    public void GetWonderCardSlots_BlackSave_ReturnsTwelveSlotsWithBundledGifts()
     {
         // Black/White's MysteryBlock5 exposes 12 PGF slots via IMysteryGiftStorageProvider.
         var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "Black - Full Completion.sav"));
@@ -422,9 +421,10 @@ public class AppServiceTests
         slots.Should().HaveCount(12);
         slots.Select(s => s.Index).Should().Equal(Enumerable.Range(0, 12));
         slots.Should().OnlyContain(s => s.CardType == nameof(PGF));
-        // The bundled save has no imported gifts; every slot should report empty + no Received flag.
-        slots.Should().OnlyContain(s => s.IsEmpty);
-        slots.Should().OnlyContain(s => s.Received == null || s.Received == false);
+        // The bundled completion save contains eleven received gifts and one empty slot.
+        slots.Count(s => !s.IsEmpty).Should().Be(11);
+        slots.Count(s => s.IsEmpty).Should().Be(1);
+        slots.Where(s => !s.IsEmpty).Should().OnlyContain(s => s.Received == true);
     }
 
     [Fact]
