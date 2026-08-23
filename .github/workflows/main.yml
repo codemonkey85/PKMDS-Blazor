@@ -98,34 +98,41 @@ jobs:
         uses: actions/deploy-pages@v5.0.0
 
   deploy_functions:
-    name: Deploy Azure Functions
+    name: Deploy AWS Lambda
     runs-on: ubuntu-latest
-    # Least-privilege: deploys via the AZURE_CREDENTIALS secret, not GITHUB_TOKEN.
+    # Least-privilege: assumes an IAM role via OIDC rather than storing long-lived AWS keys.
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v7.0.1
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6.0.0
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
         with:
-          global-json-file: ./global.json
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Publish Functions
-        run: dotnet publish Pkmds.Functions/Pkmds.Functions.csproj -c Release -o functions-publish --nologo
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Zip publish output
-        run: cd functions-publish && zip -r ../functions.zip .
-
-      - name: Azure login
-        uses: azure/login@v3
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy to Azure Functions
+      - name: Build and push image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.LAMBDA_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          az functionapp deployment source config-zip \
-            --name pkmds-functions \
-            --resource-group pkmds-bug-reports \
-            --src functions.zip
+          docker build -f Pkmds.Functions/Dockerfile -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Update Lambda function code
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.LAMBDA_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws lambda update-function-code \
+            --function-name "${{ vars.LAMBDA_FUNCTION_NAME }}" \
+            --image-uri "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

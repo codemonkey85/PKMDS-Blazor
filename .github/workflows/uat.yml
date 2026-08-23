@@ -71,40 +71,53 @@ jobs:
           skip_app_build: true
 
   deploy_functions:
-    name: Deploy Azure Functions
+    name: Deploy AWS Lambda
     runs-on: ubuntu-latest
-    # Least-privilege: deploys via the AZURE_CREDENTIALS secret, not GITHUB_TOKEN.
+    # Least-privilege: assumes an IAM role via OIDC rather than storing long-lived AWS keys.
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v7.0.1
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6.0.0
-        with:
-          global-json-file: ./global.json
-
-      - name: Publish Functions
-        run: dotnet publish Pkmds.Functions/Pkmds.Functions.csproj -c Release -o functions-publish --nologo
-
-      - name: Zip publish output
-        run: cd functions-publish && zip -r ../functions.zip .
-
-      - name: Azure login
+      - name: Configure AWS credentials
         if: >-
           github.event.pull_request.user.login != 'dependabot[bot]' &&
           github.event.pull_request.head.repo.full_name == github.repository
-        uses: azure/login@v3
+        uses: aws-actions/configure-aws-credentials@v5
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Deploy to Azure Functions
+      - name: Login to Amazon ECR
         if: >-
           github.event.pull_request.user.login != 'dependabot[bot]' &&
           github.event.pull_request.head.repo.full_name == github.repository
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        if: >-
+          github.event.pull_request.user.login != 'dependabot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.LAMBDA_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          az functionapp deployment source config-zip \
-            --name pkmds-functions \
-            --resource-group pkmds-bug-reports \
-            --src functions.zip
+          docker build -f Pkmds.Functions/Dockerfile -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Update Lambda function code
+        if: >-
+          github.event.pull_request.user.login != 'dependabot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.LAMBDA_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws lambda update-function-code \
+            --function-name "${{ vars.LAMBDA_FUNCTION_NAME }}" \
+            --image-uri "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

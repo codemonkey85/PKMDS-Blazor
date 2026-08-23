@@ -1,10 +1,12 @@
-var builder = FunctionsApplication.CreateBuilder(args);
-
-builder.ConfigureFunctionsWebApplication();
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
+    // Serves requests via Lambda Function URLs (and API Gateway HTTP APIs, which share the same
+    // payload format) when running in Lambda; falls back to Kestrel for local dev.
+    .AddAWSLambdaHosting(LambdaEventSource.HttpApi)
+    .AddSingleton<IAmazonS3, AmazonS3Client>()
     .AddSingleton<IGitHubService, GitHubService>()
-    .AddSingleton<IBlobService, BlobService>()
+    .AddSingleton<IStorageService, S3StorageService>()
     .AddCors(options =>
     {
         options.AddDefaultPolicy(policy =>
@@ -25,4 +27,13 @@ builder.Services
         });
     });
 
-builder.Build().Run();
+var app = builder.Build();
+
+app.UseCors();
+
+// Routes keep the "/api" prefix used by the old Azure Functions HTTP triggers so the frontend
+// and the GitHub webhook configuration only need their base URL updated, not their paths.
+app.MapPost("/api/SubmitBugReport", SubmitBugReport.Run);
+app.MapPost("/api/GitHubWebhook", GitHubWebhook.Run);
+
+app.Run();

@@ -1,21 +1,22 @@
 namespace Pkmds.Functions.Functions;
 
-public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobService, ILogger<SubmitBugReport> logger)
+public class SubmitBugReport
 {
     private const long MaxSaveFileSizeBytes = 8 * 1024 * 1024; // 8 MB
 
     // Mirror the dialog's client-side minimum so direct callers can't bypass it with a one-word report.
     private const int MinPrimaryTextLength = 20;
 
-    [Function("SubmitBugReport")]
-    public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "SubmitBugReport")]
+    public static async Task<IResult> Run(
         HttpRequest req,
+        IGitHubService gitHubService,
+        IStorageService storageService,
+        ILogger<SubmitBugReport> logger,
         CancellationToken cancellationToken)
     {
         if (!req.HasFormContentType)
         {
-            return new BadRequestObjectResult(new { error = "Expected multipart/form-data." });
+            return Results.BadRequest(new { error = "Expected multipart/form-data." });
         }
 
         IFormCollection form;
@@ -26,7 +27,7 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to read form data");
-            return new BadRequestObjectResult(new { error = "Failed to read form data." });
+            return Results.BadRequest(new { error = "Failed to read form data." });
         }
 
         var name = form["name"].ToString().Trim();
@@ -57,7 +58,7 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
 
         if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
         {
-            return new BadRequestObjectResult(new { error = "name and email are required." });
+            return Results.BadRequest(new { error = "name and email are required." });
         }
 
         // primaryText is already trimmed at assignment (the source fields are .Trim()'d). A length
@@ -65,7 +66,7 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         // since the primary text is "what happened" for bugs and "details" for feature/feedback.
         if (primaryText.Length < MinPrimaryTextLength)
         {
-            return new BadRequestObjectResult(new { error = $"Please provide at least {MinPrimaryTextLength} characters describing your report." });
+            return Results.BadRequest(new { error = $"Please provide at least {MinPrimaryTextLength} characters describing your report." });
         }
 
         var (titlePrefix, issueLabel) = category.ToLowerInvariant() switch
@@ -159,13 +160,13 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to create GitHub issue");
-            return new ObjectResult(new { error = "Failed to create GitHub issue. Please try again later." }) { StatusCode = StatusCodes.Status502BadGateway };
+            return Results.Json(new { error = "Failed to create GitHub issue. Please try again later." }, statusCode: StatusCodes.Status502BadGateway);
         }
 
         var saveFile = form.Files["saveFile"];
         if (saveFile is not { Length: > 0 })
         {
-            return new ObjectResult(new { issueNumber, issueUrl }) { StatusCode = StatusCodes.Status201Created };
+            return Results.Json(new { issueNumber, issueUrl }, statusCode: StatusCodes.Status201Created);
         }
 
         {
@@ -180,12 +181,10 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
                 try
                 {
                     await using var stream = saveFile.OpenReadStream();
-                    await blobService.UploadAsync(issueNumber, safeFileName, stream, cancellationToken);
-                    var blobPath = $"{issueNumber}/{safeFileName}";
-                    var sasUrl = blobService.GetSasUrl(issueNumber, safeFileName, TimeSpan.FromDays(30));
-                    var comment = sasUrl is not null
-                        ? $"📎 [Download save file]({sasUrl}) — expires in 30 days (blob path: `{blobPath}`)"
-                        : $"📎 Save file attached at blob path: `{blobPath}`";
+                    await storageService.UploadAsync(issueNumber, safeFileName, stream, cancellationToken);
+                    var objectPath = $"{issueNumber}/{safeFileName}";
+                    var presignedUrl = storageService.GetPresignedUrl(issueNumber, safeFileName, TimeSpan.FromDays(30));
+                    var comment = $"📎 [Download save file]({presignedUrl}) — expires in 30 days (object path: `{objectPath}`)";
                     await gitHubService.AddCommentAsync(issueNumber, comment);
                 }
                 catch (Exception ex)
@@ -196,7 +195,7 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             }
         }
 
-        return new ObjectResult(new { issueNumber, issueUrl }) { StatusCode = StatusCodes.Status201Created };
+        return Results.Json(new { issueNumber, issueUrl }, statusCode: StatusCodes.Status201Created);
     }
 
     private static string FirstNonEmpty(params string[] values) =>

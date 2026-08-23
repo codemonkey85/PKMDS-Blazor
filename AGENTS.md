@@ -69,6 +69,8 @@ Runtime wiring (Web)
   - Setup .NET (from `global.json`), install wasm tools, restore/build Web (Release), run `dotnet test`.
 - `.github/workflows/main.yml` (main):
   - Setup .NET + wasm tools, restore, publish Web to `release/`, copy `index.html` → `404.html`, add `.nojekyll`, replace `%%CACHE_VERSION%%` in `service-worker.published.js`, deploy `release/wwwroot` to `gh-pages`.
+  - `deploy_functions` job: builds `Pkmds.Functions/Dockerfile`, pushes the image to ECR, and updates the AWS Lambda function code. Auths to AWS via OIDC (`secrets.AWS_ROLE_ARN`); needs repo variables `vars.AWS_REGION`, `vars.LAMBDA_ECR_REPOSITORY`, `vars.LAMBDA_FUNCTION_NAME`. The frontend job `needs: deploy_functions` so the SPA never ships ahead of the backend it depends on.
+- `.github/workflows/uat.yml`: same `deploy_functions` job runs per-PR against the same Lambda function (mirrors the frontend's Azure Static Web Apps preview deploy).
 - `.github/workflows/codeql.yml`: CodeQL for C# and JS/TS (manual C# build step).
 
 ## PKHeX.Core

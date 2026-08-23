@@ -1,11 +1,12 @@
 namespace Pkmds.Functions.Functions;
 
-public class GitHubWebhook(IBlobService blobService, IConfiguration configuration, ILogger<GitHubWebhook> logger)
+public class GitHubWebhook
 {
-    [Function("GitHubWebhook")]
-    public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "GitHubWebhook")]
+    public static async Task<IResult> Run(
         HttpRequest req,
+        IStorageService storageService,
+        IConfiguration configuration,
+        ILogger<GitHubWebhook> logger,
         CancellationToken cancellationToken)
     {
         string body;
@@ -18,13 +19,13 @@ public class GitHubWebhook(IBlobService blobService, IConfiguration configuratio
         if (!string.IsNullOrWhiteSpace(secret) && !VerifySignature(body, secret, req.Headers["X-Hub-Signature-256"]))
         {
             logger.LogWarning("GitHub webhook signature verification failed");
-            return new UnauthorizedResult();
+            return Results.Unauthorized();
         }
 
         var eventType = req.Headers["X-GitHub-Event"].ToString();
         if (eventType != "issues")
         {
-            return new OkResult();
+            return Results.Ok();
         }
 
         GitHubIssuePayload? payload;
@@ -35,27 +36,27 @@ public class GitHubWebhook(IBlobService blobService, IConfiguration configuratio
         catch (JsonException ex)
         {
             logger.LogError(ex, "Failed to deserialize GitHub webhook payload");
-            return new BadRequestObjectResult(new { error = "Invalid payload." });
+            return Results.BadRequest(new { error = "Invalid payload." });
         }
 
         if (payload?.Action != "closed")
         {
-            return new OkResult();
+            return Results.Ok();
         }
 
         {
-            logger.LogInformation("GitHub issue #{IssueNumber} closed — cleaning up blobs", payload.Issue.Number);
+            logger.LogInformation("GitHub issue #{IssueNumber} closed — cleaning up files", payload.Issue.Number);
             try
             {
-                await blobService.DeleteIssueFilesAsync(payload.Issue.Number, cancellationToken);
+                await storageService.DeleteIssueFilesAsync(payload.Issue.Number, cancellationToken);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to delete blobs for issue #{IssueNumber}", payload.Issue.Number);
+                logger.LogError(ex, "Failed to delete files for issue #{IssueNumber}", payload.Issue.Number);
             }
         }
 
-        return new OkResult();
+        return Results.Ok();
     }
 
     private static bool VerifySignature(string body, string secret, string? signatureHeader)
