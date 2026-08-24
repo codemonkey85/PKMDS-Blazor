@@ -63,6 +63,15 @@ public partial class App : IDisposable
             closeOnEscapeKey: false,
             backdropClick: false);
         var dialog = await DialogService.ShowAsync<BugReportDialog>("Report this crash", parameters, options);
-        await dialog.Result;
+        var result = await dialog.Result;
+        if (result is { Data: BugReportResult { IssueUrl: { } issueUrl } submission })
+        {
+            var message = submission.WarningMessage is null
+                ? $"Crash report submitted! <a href=\"{issueUrl}\" target=\"_blank\">View issue</a>"
+                : $"{submission.WarningMessage} <a href=\"{issueUrl}\" target=\"_blank\">View issue</a>";
+            Snackbar.Add(new MarkupString(message),
+                submission.WarningMessage is null ? MudBlazor.Severity.Success : MudBlazor.Severity.Warning,
+                snackbarOptions => snackbarOptions.RequireInteraction = true);
+        }
     }
 }

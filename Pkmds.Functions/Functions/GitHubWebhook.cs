@@ -44,14 +44,14 @@ public class GitHubWebhook(IBlobService blobService, IConfiguration configuratio
         }
 
         {
-            logger.LogInformation("GitHub issue #{IssueNumber} closed — cleaning up blobs", payload.Issue.Number);
+            logger.LogInformation("GitHub issue #{IssueNumber} closed — applying private-data retention", payload.Issue.Number);
             try
             {
-                await blobService.DeleteIssueFilesAsync(payload.Issue.Number, cancellationToken);
+                await blobService.CloseIssueAsync(payload.Issue.Number, cancellationToken);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to delete blobs for issue #{IssueNumber}", payload.Issue.Number);
+                logger.LogError(ex, "Failed to apply private-data retention for issue #{IssueNumber}", payload.Issue.Number);
             }
         }
 

@@ -17,11 +17,15 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
         try
         {
             using var content = new MultipartFormDataContent();
-            content.Add(new StringContent(request.Name), "name");
-            content.Add(new StringContent(request.Email), "email");
             content.Add(new StringContent(request.Category.ToString()), "category");
             content.Add(new StringContent(request.AppVersion), "appVersion");
             content.Add(new StringContent(request.UserAgent), "userAgent");
+            content.Add(new StringContent(request.ContactOptIn.ToString()), "contactOptIn");
+
+            if (request.ContactOptIn && !string.IsNullOrWhiteSpace(request.ContactEmail))
+            {
+                content.Add(new StringContent(request.ContactEmail), "contactEmail");
+            }
 
             if (!string.IsNullOrWhiteSpace(request.Actual))
             {
@@ -53,29 +57,37 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
                 content.Add(new StringContent(request.PkhexVersion), "pkhexVersion");
             }
 
-            if (request.SaveGameName is not null)
+            if (!string.IsNullOrWhiteSpace(request.SaveGameName))
             {
                 content.Add(new StringContent(request.SaveGameName), "saveGameName");
             }
 
-            if (request.SaveRevision is not null)
+            if (!string.IsNullOrWhiteSpace(request.SaveRevision))
             {
                 content.Add(new StringContent(request.SaveRevision), "saveRevision");
             }
 
-            if (request.SaveFileSource is not null)
+            if (!string.IsNullOrWhiteSpace(request.SaveFileSource))
             {
                 content.Add(new StringContent(request.SaveFileSource), "saveFileSource");
             }
 
-            if (request.SaveFileType is not null)
+            if (!string.IsNullOrWhiteSpace(request.SaveFileType))
             {
                 content.Add(new StringContent(request.SaveFileType), "saveFileType");
             }
 
             if (request is { SaveFileBytes: { Length: > 0 } saveBytes, SaveFileName: not null })
             {
-                content.Add(new ByteArrayContent(saveBytes), "saveFile", request.SaveFileName);
+                var extension = Path.GetExtension(request.SaveFileName);
+                if (!string.IsNullOrWhiteSpace(extension))
+                {
+                    content.Add(new StringContent(extension), "saveFileExtension");
+                }
+
+                // Never place the user's original filename in multipart headers. Filenames can
+                // contain names or local paths and may be captured by infrastructure logs.
+                content.Add(new ByteArrayContent(saveBytes), "saveFile", "attachment.bin");
             }
 
             var response = await httpClient.PostAsync($"{functionUrl}/api/SubmitBugReport", content, cancellationToken);
@@ -86,7 +98,13 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
                 var issueUrl = json.TryGetProperty("issueUrl", out var urlElement)
                     ? urlElement.GetString()
                     : null;
-                return new BugReportResult(true, IssueUrl: issueUrl);
+                var contactStored = !request.ContactOptIn ||
+                                    (json.TryGetProperty("contactStored", out var contactStoredElement) &&
+                                     contactStoredElement.ValueKind is JsonValueKind.True);
+                var warningMessage = contactStored
+                    ? null
+                    : "The report was created, but your private contact address could not be stored. Please follow the GitHub issue for updates.";
+                return new BugReportResult(true, IssueUrl: issueUrl, WarningMessage: warningMessage);
             }
 
             var errorJson = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: cancellationToken);

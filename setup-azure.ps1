@@ -6,11 +6,12 @@
 .DESCRIPTION
     Creates:
       - Azure Resource Group
-      - Azure Storage Account + bug-reports blob container
-      - Azure Functions App (Consumption plan, .NET 9 isolated)
+      - Azure Storage Account + private bug-reports blob container
+      - Azure Functions App (Consumption plan, .NET 10 isolated)
     Configures:
       - All Function App application settings
       - CORS origins
+      - Storage lifecycle rules for private attachments and contact records
     Builds and deploys:
       - Pkmds.Functions project via zip deploy
     Wires up:
@@ -120,6 +121,57 @@ az storage container create `
     --auth-mode login `
     --output none
 Write-Done "Blob container ready"
+
+Write-Step "Configuring private report-data retention"
+$RetentionPolicy = @{
+    rules = @(
+        @{
+            enabled = $true
+            name = "delete-report-attachments-after-30-days"
+            type = "Lifecycle"
+            definition = @{
+                # Lifecycle evaluation is daily, so use a one-day buffer to keep the
+                # effective deletion ceiling at 30 days.
+                actions = @{ baseBlob = @{ delete = @{ daysAfterCreationGreaterThan = 29 } } }
+                filters = @{
+                    blobTypes = @("blockBlob")
+                    prefixMatch = @("$BlobContainer/attachments/")
+                }
+            }
+        },
+        @{
+            enabled = $true
+            name = "delete-open-contact-records-after-12-months"
+            type = "Lifecycle"
+            definition = @{
+                actions = @{ baseBlob = @{ delete = @{ daysAfterCreationGreaterThan = 364 } } }
+                filters = @{
+                    blobTypes = @("blockBlob")
+                    prefixMatch = @("$BlobContainer/contacts/open/")
+                }
+            }
+        },
+        @{
+            enabled = $true
+            name = "delete-closed-contact-records-after-30-days"
+            type = "Lifecycle"
+            definition = @{
+                actions = @{ baseBlob = @{ delete = @{ daysAfterCreationGreaterThan = 29 } } }
+                filters = @{
+                    blobTypes = @("blockBlob")
+                    prefixMatch = @("$BlobContainer/contacts/closed/")
+                }
+            }
+        }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
+
+az storage account management-policy create `
+    --account-name $StorageAccount `
+    --resource-group $ResourceGroup `
+    --policy $RetentionPolicy `
+    --output none
+Write-Done "Private attachments: 30 days maximum; contact records: 30 days after close or 12 months maximum"
 
 $StorageConnString = az storage account show-connection-string `
     --name $StorageAccount `

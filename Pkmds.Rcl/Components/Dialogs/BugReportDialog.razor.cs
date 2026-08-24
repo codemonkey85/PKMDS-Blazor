@@ -24,8 +24,8 @@ public partial class BugReportDialog
     // Feature / Feedback field.
     private string details = string.Empty;
 
-    private string email = string.Empty;
-    private string name = string.Empty;
+    private bool contactOptIn;
+    private string contactEmail = string.Empty;
     private bool isSubmitting;
     private string? submitError;
 
@@ -34,7 +34,8 @@ public partial class BugReportDialog
     private byte[]? uploadedBytes;
     private string? uploadedFileName;
 
-    private bool IsEmailValid => !string.IsNullOrWhiteSpace(email) && EmailValidator.IsValid(email);
+    private bool IsContactEmailValid => !contactOptIn ||
+                                        (!string.IsNullOrWhiteSpace(contactEmail) && EmailValidator.IsValid(contactEmail));
 
     // Save attachment only makes sense for bug reports; feature/feedback don't need a save.
     private bool ShowSaveAttach => CapturedException is not null || category == BugReportCategory.Bug;
@@ -46,12 +47,17 @@ public partial class BugReportDialog
     // rather than POST whitespace that the function would reject as missing primary text.
     private bool IsPrimaryValid => PrimaryText.Trim().Length >= MinPrimaryLength;
 
-    private bool IsFormValid => IsPrimaryValid && IsEmailValid && !string.IsNullOrWhiteSpace(name);
+    private bool IsFormValid => IsPrimaryValid && IsContactEmailValid;
 
     private static Func<string, string?> PrimaryValidation => v =>
         (v?.Trim().Length ?? 0) >= MinPrimaryLength
             ? null
             : $"Please provide at least {MinPrimaryLength} characters of detail.";
+
+    private string? ContactEmailValidation(string value) =>
+        !contactOptIn || EmailValidator.IsValid(value)
+            ? null
+            : "Please enter a valid email address or turn off contact permission.";
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = null!;
@@ -70,8 +76,6 @@ public partial class BugReportDialog
 
     protected override void OnInitialized()
     {
-        attachSaveFile = HasSaveFile;
-
         if (CapturedException is not null)
         {
             // Crashes are always bugs, and the structured split doesn't fit a stack dump — route
@@ -143,6 +147,14 @@ public partial class BugReportDialog
         }
     }
 
+    private void OnContactOptInChanged()
+    {
+        if (!contactOptIn)
+        {
+            contactEmail = string.Empty;
+        }
+    }
+
     private void Cancel() => MudDialog.Close(DialogResult.Cancel());
 
     private async Task Submit()
@@ -153,9 +165,9 @@ public partial class BugReportDialog
             return;
         }
 
-        if (!IsEmailValid || string.IsNullOrWhiteSpace(name))
+        if (!IsContactEmailValid)
         {
-            submitError = "Please provide a valid email address and name before submitting.";
+            submitError = "Please provide a valid contact email or turn off contact permission.";
             return;
         }
 
@@ -242,7 +254,9 @@ public partial class BugReportDialog
 
             var userAgent = await JSRuntime.InvokeAsync<string>("eval", "navigator.userAgent");
             var isBug = category == BugReportCategory.Bug;
-            var request = new BugReportRequest(name, email, category, AppVersion, userAgent,
+            var request = new BugReportRequest(category, AppVersion, userAgent,
+                ContactOptIn: contactOptIn,
+                ContactEmail: contactOptIn ? contactEmail.Trim() : null,
                 Actual: isBug ? actual : null,
                 Steps: isBug && !string.IsNullOrWhiteSpace(steps) ? steps : null,
                 Expected: isBug && !string.IsNullOrWhiteSpace(expected) ? expected : null,
@@ -256,7 +270,7 @@ public partial class BugReportDialog
 
             if (result.Success)
             {
-                MudDialog.Close(DialogResult.Ok(result.IssueUrl));
+                MudDialog.Close(DialogResult.Ok(result));
             }
             else
             {
