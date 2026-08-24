@@ -65,10 +65,11 @@ body, html {
    silently ignored. On narrow screens (< 1280px) the outer tab panel is the
    page's only scroll container (html/body are overflow:hidden), so 9.6.0 broke
    all scrolling there — box grid, edit form, and Trainer tab were clipped with
-   no way to reach the overflow. Restore the 9.5.x block box. This must stay
-   ABOVE the :has(...) rules that switch the Bank/Pokédex panels to display:flex;
-   the specificity ties at (0,4,0), so file order decides the winner. */
-.mud-tabs-panels > .mud-tab-panel.mud-tab-panel-active:not(.mud-tab-panel-hidden) {
+   no way to reach the overflow. Restore the 9.5.x block box. The later
+   :has(...) rules that switch the Bank/Pokédex panels to display:flex repeat
+   these active-panel terms and add their panel context, so they outrank this
+   rule. Keep the state terms in sync across all three selectors. */
+.mud-tabs-panels > .mud-tab-panel:not(.mud-tab).mud-tab-panel-active:not(.mud-tab-panel-hidden) {
     display: block;
 }
 
@@ -389,7 +390,7 @@ body, html {
 
     /* Bank tab: the tab panel becomes a flex column so the card grid can
        fill remaining vertical space without a fragile calc() offset. */
-    .save-file-outer-tabs > .mud-tabs-panels > .mud-tab-panel:has(.bank-tab-content) {
+    .save-file-outer-tabs > .mud-tabs-panels > .mud-tab-panel:not(.mud-tab).mud-tab-panel-active:not(.mud-tab-panel-hidden):has(.bank-tab-content) {
         display: flex;
         flex-direction: column;
     }
@@ -565,7 +566,7 @@ body, html {
        outer panel scrollbar so the table-container has a definite, viewport-bounded
        height to size against (otherwise the Virtualize component cuts the list off
        at whatever fits in its initial computed height — ~106 rows on phone portrait). */
-    .save-file-outer-tabs > .mud-tabs-panels > .mud-tab-panel:has(.pokedex-tab-content) {
+    .save-file-outer-tabs > .mud-tabs-panels > .mud-tab-panel:not(.mud-tab).mud-tab-panel-active:not(.mud-tab-panel-hidden):has(.pokedex-tab-content) {
         overflow: hidden;
         display: flex;
         flex-direction: column;

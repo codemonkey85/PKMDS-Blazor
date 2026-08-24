@@ -46,13 +46,17 @@ jobs:
       - name: Publish
         run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo -p:BlazorWebAssemblyEnvironment=Staging
 
+      - name: Verify service worker assets
+        run: node tools/verify-service-worker-assets.mjs release/wwwroot
+
       - name: Copy index.html to 404.html
         run: cp release/wwwroot/index.html release/wwwroot/404.html
 
       - name: Update cache version
         uses: datamonsters/replace-action@v2
         with:
-          files: 'release/wwwroot/service-worker.published.js'
+          # Publish renames service-worker.published.js to the deployed service-worker.js.
+          files: 'release/wwwroot/service-worker.js'
           replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
 
 

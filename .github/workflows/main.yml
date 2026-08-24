@@ -62,6 +62,9 @@ jobs:
       - name: Publish .NET Project
         run: dotnet publish Pkmds.Web/Pkmds.Web.csproj -c Release -o release --nologo /p:Version=${{ steps.version.outputs.VERSION }}
 
+      - name: Verify service worker assets
+        run: node tools/verify-service-worker-assets.mjs release/wwwroot
+
       # Create and push git tag with the version number
       - name: Create and push tag
         run: |
@@ -81,7 +84,8 @@ jobs:
       - name: Update version
         uses: datamonsters/replace-action@v2
         with:
-          files: 'release/wwwroot/service-worker.published.js'
+          # Publish renames service-worker.published.js to the deployed service-worker.js.
+          files: 'release/wwwroot/service-worker.js'
           replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
 
 

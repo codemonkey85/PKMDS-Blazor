@@ -23,6 +23,24 @@ function notifyUpdateAvailable() {
     window.dispatchEvent(new CustomEvent('updateAvailable'));
 }
 
+function isBenignServiceWorkerUpdateError(error) {
+    return error.name === 'InvalidStateError'
+        || (error.message && error.message.includes('newestWorker is null'));
+}
+
+function isMissingNewestWorkerRegistration(registration) {
+    return !registration.installing && !registration.waiting && !registration.active;
+}
+
+function shouldRepairServiceWorkerRegistration(error, registration) {
+    return isBenignServiceWorkerUpdateError(error)
+        || isMissingNewestWorkerRegistration(registration)
+        || (error.name === 'TypeError'
+            && error.message
+            && error.message.includes('ServiceWorker')
+            && error.message.includes('Not found'));
+}
+
 // Service worker registration
 if (pkmdsIsEmbedded()) {
     console.info('Service worker registration skipped: embedded host mode.');
@@ -33,12 +51,17 @@ if (pkmdsIsEmbedded()) {
         if (registration.waiting && navigator.serviceWorker.controller) {
             notifyUpdateAvailable();
         }
-        setInterval(() => registration.update().catch(err => {
-            // Safari may throw "newestWorker is null" — this is benign
-            if (!(err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null')))) {
-                console.warn('Periodic registration.update() failed:', err);
-            }
-        }), 60 * 60 * 1000); // check for updates every hour
+        setInterval(async () => {
+            const currentRegistration = await window._swRegistrationPromise;
+            if (!currentRegistration) return;
+
+            currentRegistration.update().catch(err => {
+                // A manual check repairs this state and updates the shared promise.
+                if (!isBenignServiceWorkerUpdateError(err)) {
+                    console.warn('Periodic registration.update() failed:', err);
+                }
+            });
+        }, 60 * 60 * 1000); // check for updates every hour
         registration.onupdatefound = () => {
             const installingWorker = registration.installing;
             installingWorker.onstatechange = () => {
@@ -143,7 +166,7 @@ window.applyUpdate = async () => {
 // Proactively check for a service worker update.
 // Returns: 'found' (update ready), 'none' (up to date), 'no-sw' (SW unavailable), 'error' (check/install failed)
 window.checkForUpdates = async () => {
-    const registration = await window._swRegistrationPromise;
+    let registration = await window._swRegistrationPromise;
     if (!registration) return 'no-sw';
 
     // A waiting worker was already downloaded but not yet activated — notify immediately.
@@ -159,6 +182,7 @@ window.checkForUpdates = async () => {
     // up to date") moments before the global onupdatefound handler announces "An update is
     // available" — two contradictory snackbars for the same check (issue seen mostly on mobile).
     let signalUpdateFound;
+    let repairedRegistration = false;
     const updateFoundPromise = new Promise(resolve => { signalUpdateFound = resolve; });
     registration.addEventListener('updatefound', signalUpdateFound);
 
@@ -166,10 +190,30 @@ window.checkForUpdates = async () => {
         try {
             await registration.update();
         } catch (err) {
-            if (!(err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null')))) {
+            // Safari reports this empty-registration state as InvalidStateError
+            // ("newestWorker is null"), while Chromium may report TypeError ("Not found").
+            // Use the registration's actual slots so both can take the same repair path.
+            if (!shouldRepairServiceWorkerRegistration(err, registration)) {
                 console.warn('Manual update check failed:', err);
+                return 'error';
             }
-            return 'error';
+
+            // InvalidStateError means this registration has no installing, waiting, or active
+            // worker. It does not mean the open page is current. Re-registering the same script
+            // and scope repairs that state and also performs the update check, so a stale tab can
+            // still discover a deployment that happened while it remained open.
+            registration.removeEventListener('updatefound', signalUpdateFound);
+            try {
+                repairedRegistration = true;
+                registration = await navigator.serviceWorker.register(
+                    'service-worker.js',
+                    {updateViaCache: 'none'});
+                window._swRegistrationPromise = Promise.resolve(registration);
+                registration.addEventListener('updatefound', signalUpdateFound);
+            } catch (repairError) {
+                console.warn('Manual service worker registration repair failed:', repairError);
+                return 'error';
+            }
         }
 
         // No new worker visible yet — give the async 'updatefound' event a grace window
@@ -190,6 +234,14 @@ window.checkForUpdates = async () => {
 
         const installing = registration.installing;
         if (!installing) {
+            // The repaired worker may have installed and activated before register() resolved.
+            // This page is still uncontrolled by it, so offer the same deliberate reload as a
+            // waiting update instead of claiming the stale page is current.
+            if (repairedRegistration) {
+                notifyUpdateAvailable();
+                return 'found';
+            }
+
             return 'none';
         }
 
@@ -203,7 +255,7 @@ window.checkForUpdates = async () => {
                     clearTimeout(timeoutId);
                     // Mirror the controller check in the global onupdatefound handler: with no
                     // controller this is the page's very first SW install, not an update.
-                    if (navigator.serviceWorker.controller) {
+                    if (navigator.serviceWorker.controller || repairedRegistration) {
                         notifyUpdateAvailable();
                         resolve('found');
                     } else {
