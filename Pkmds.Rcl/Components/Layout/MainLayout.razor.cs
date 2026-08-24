@@ -312,10 +312,10 @@ public partial class MainLayout : IDisposable
         var options = await DialogOptionsHelper.BuildAsync(MaxWidth.Small);
         var dialog = await DialogService.ShowAsync<BugReportDialog>("Send a Report", parameters, options);
         var result = await dialog.Result;
-        if (result is { Data: string issueUrl })
+        if (result is { Data: BugReportResult submission })
         {
-            Snackbar.Add(new MarkupString($"Bug report submitted! <a href=\"{issueUrl}\" target=\"_blank\">View issue</a>"),
-                Severity.Success,
+            Snackbar.Add(submission.ToSubmissionMarkup("Report submitted!"),
+                submission.WarningMessage is null ? Severity.Success : Severity.Warning,
                 options => options.RequireInteraction = true);
         }
     }

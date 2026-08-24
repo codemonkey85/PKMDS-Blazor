@@ -1,0 +1,123 @@
+{
+  "rules": [
+    {
+      "enabled": true,
+      "name": "delete-report-attachments-after-30-days",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 29
+            }
+          }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ],
+          "prefixMatch": [
+            "bug-reports/attachments/"
+          ]
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "name": "delete-legacy-report-attachments-after-30-days",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 29
+            }
+          }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ],
+          "prefixMatch": [
+            "bug-reports/0",
+            "bug-reports/1",
+            "bug-reports/2",
+            "bug-reports/3",
+            "bug-reports/4",
+            "bug-reports/5",
+            "bug-reports/6",
+            "bug-reports/7",
+            "bug-reports/8",
+            "bug-reports/9"
+          ]
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "name": "delete-closed-issue-markers-after-30-days",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 29
+            }
+          }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ],
+          "prefixMatch": [
+            "bug-reports/issues/closed/"
+          ]
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "name": "delete-open-contact-records-after-12-months",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 364
+            }
+          }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ],
+          "prefixMatch": [
+            "bug-reports/contacts/open/"
+          ]
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "name": "delete-closed-contact-records-after-30-days",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 29
+            }
+          }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ],
+          "prefixMatch": [
+            "bug-reports/contacts/closed/"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -29,8 +29,8 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             return new BadRequestObjectResult(new { error = "Failed to read form data." });
         }
 
-        var name = form["name"].ToString().Trim();
-        var email = form["email"].ToString().Trim();
+        var contactOptIn = bool.TryParse(form["contactOptIn"], out var parsedContactOptIn) && parsedContactOptIn;
+        var contactEmail = contactOptIn ? form["contactEmail"].ToString().Trim() : string.Empty;
         var category = form["category"].ToString().Trim();
         var appVersion = form["appVersion"].ToString().Trim();
         var pkhexVersion = form["pkhexVersion"].ToString().Trim();
@@ -39,12 +39,14 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         var actual = form["actual"].ToString().Trim();
         var steps = form["steps"].ToString().Trim();
         var expected = form["expected"].ToString().Trim();
-        var reportedSaveSource = form["reportedSaveSource"].ToString().Trim();
+        var reportedSaveSource = GetSafeReportedSaveSource(form["reportedSaveSource"].ToString().Trim());
         // Feature / Feedback free-text field.
         var details = form["details"].ToString().Trim();
         var saveGameName = form["saveGameName"].ToString().Trim();
         var saveRevision = form["saveRevision"].ToString().Trim();
-        var saveFileName = form["saveFileName"].ToString().Trim();
+        var saveFileExtension = GetSafeExtension(FirstNonEmpty(
+            form["saveFileExtension"].ToString().Trim(),
+            form["saveFileName"].ToString().Trim()));
         var saveFileSource = form["saveFileSource"].ToString().Trim();
         var saveFileType = form["saveFileType"].ToString().Trim();
 
@@ -55,9 +57,9 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             ? FirstNonEmpty(actual, form["description"].ToString().Trim())
             : details;
 
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
+        if (contactOptIn && !System.Net.Mail.MailAddress.TryCreate(contactEmail, out _))
         {
-            return new BadRequestObjectResult(new { error = "name and email are required." });
+            return new BadRequestObjectResult(new { error = "A valid contact email is required when contact permission is enabled." });
         }
 
         // primaryText is already trimmed at assignment (the source fields are .Trim()'d). A length
@@ -82,14 +84,14 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
 
         var saveFileSection = new StringBuilder();
         if (!string.IsNullOrWhiteSpace(saveGameName) ||
-            !string.IsNullOrWhiteSpace(saveFileName) ||
+            !string.IsNullOrWhiteSpace(saveFileExtension) ||
             !string.IsNullOrWhiteSpace(saveFileSource) ||
             !string.IsNullOrWhiteSpace(saveFileType))
         {
             saveFileSection.Append("\n\n## Save File\n");
-            if (!string.IsNullOrWhiteSpace(saveFileName))
+            if (!string.IsNullOrWhiteSpace(saveFileExtension))
             {
-                saveFileSection.Append($"\n- **File:** `{saveFileName}`");
+                saveFileSection.Append($"\n- **File type:** `{saveFileExtension}`");
             }
 
             if (!string.IsNullOrWhiteSpace(saveGameName))
@@ -140,7 +142,6 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         }
 
         var issueBody =
-            $"**Reporter:** {name} ({email})\n" +
             $"**App version:** {appVersion}\n" +
             (string.IsNullOrWhiteSpace(pkhexVersion)
                 ? string.Empty
@@ -154,7 +155,7 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         try
         {
             (issueNumber, issueUrl) = await gitHubService.CreateIssueAsync(issueTitle, issueBody, issueLabel);
-            logger.LogInformation("Created GitHub issue #{IssueNumber} for bug report from {Email}", issueNumber, email);
+            logger.LogInformation("Created GitHub issue #{IssueNumber} from an in-app report", issueNumber);
         }
         catch (Exception ex)
         {
@@ -162,10 +163,30 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             return new ObjectResult(new { error = "Failed to create GitHub issue. Please try again later." }) { StatusCode = StatusCodes.Status502BadGateway };
         }
 
+        var contactStored = !contactOptIn;
+        if (contactOptIn)
+        {
+            try
+            {
+                await blobService.StoreContactAsync(issueNumber, contactEmail, cancellationToken);
+                contactStored = true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to store private contact details for issue #{IssueNumber}", issueNumber);
+                // Non-fatal: the public issue already exists. Tell the client that follow-up by email
+                // is unavailable without echoing the address into logs or the response.
+            }
+        }
+
         var saveFile = form.Files["saveFile"];
+        var attachmentStored = saveFile is not { Length: > 0 };
         if (saveFile is not { Length: > 0 })
         {
-            return new ObjectResult(new { issueNumber, issueUrl }) { StatusCode = StatusCodes.Status201Created };
+            return new ObjectResult(new { issueNumber, issueUrl, contactStored, attachmentStored })
+            {
+                StatusCode = StatusCodes.Status201Created,
+            };
         }
 
         {
@@ -176,40 +197,67 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             }
             else
             {
-                var safeFileName = SanitizeFileName(saveFile.FileName);
                 try
                 {
                     await using var stream = saveFile.OpenReadStream();
-                    await blobService.UploadAsync(issueNumber, safeFileName, stream, cancellationToken);
-                    var blobPath = $"{issueNumber}/{safeFileName}";
-                    var sasUrl = blobService.GetSasUrl(issueNumber, safeFileName, TimeSpan.FromDays(30));
-                    var comment = sasUrl is not null
-                        ? $"📎 [Download save file]({sasUrl}) — expires in 30 days (blob path: `{blobPath}`)"
-                        : $"📎 Save file attached at blob path: `{blobPath}`";
-                    await gitHubService.AddCommentAsync(issueNumber, comment);
+                    attachmentStored = await blobService.UploadAttachmentAsync(issueNumber, stream, cancellationToken);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Failed to upload save file for issue #{IssueNumber}", issueNumber);
-                    // Non-fatal: issue was already created; log and continue.
+                }
+
+                if (attachmentStored)
+                {
+                    try
+                    {
+                        await gitHubService.AddCommentAsync(issueNumber,
+                            "📎 A save-file attachment was stored privately for designated maintainers. " +
+                            "It will be deleted when this issue closes or after 30 days, whichever comes first.");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Storage succeeded, so the attachment result remains true. The user-facing
+                        // response reports whether their private bytes were retained, independently
+                        // of this best-effort maintainer notification.
+                        logger.LogWarning(ex,
+                            "Stored a private attachment but failed to comment on issue #{IssueNumber}", issueNumber);
+                    }
                 }
             }
         }
 
-        return new ObjectResult(new { issueNumber, issueUrl }) { StatusCode = StatusCodes.Status201Created };
+        return new ObjectResult(new { issueNumber, issueUrl, contactStored, attachmentStored })
+        {
+            StatusCode = StatusCodes.Status201Created,
+        };
     }
 
     private static string FirstNonEmpty(params string[] values) =>
         Array.Find(values, v => !string.IsNullOrWhiteSpace(v)) ?? string.Empty;
 
-    private static string SanitizeFileName(string fileName)
+    private static string GetSafeExtension(string fileNameOrExtension)
     {
-        var name = Path.GetFileName(fileName);
-        var invalid = Path.GetInvalidFileNameChars();
-        name = invalid.Aggregate(name, (current, c) => current.Replace(c, '_'));
+        var extension = Path.GetExtension(fileNameOrExtension);
+        if (string.IsNullOrWhiteSpace(extension) && fileNameOrExtension.StartsWith('.'))
+        {
+            extension = fileNameOrExtension;
+        }
 
-        return string.IsNullOrWhiteSpace(name)
-            ? "save.bin"
-            : name;
+        if (extension.Length is < 2 or > 12 || extension[1..].Any(c => !char.IsAsciiLetterOrDigit(c)))
+        {
+            return string.Empty;
+        }
+
+        return extension.ToLowerInvariant();
     }
+
+    private static string GetSafeReportedSaveSource(string source) => source switch
+    {
+        "Emulator export" => source,
+        "Physical cartridge dump" => source,
+        "Downloaded file" => source,
+        "Other or not sure" => source,
+        _ => string.Empty,
+    };
 }

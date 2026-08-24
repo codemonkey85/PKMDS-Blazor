@@ -18,8 +18,8 @@
             {
                 <MudAlert Severity="@Severity.Warning"
                           Dense="true">
-                    A crash was detected. The error details have been pre-filled below. Please add your name,
-                    email, and any additional context about what you were doing before the crash.
+                    A crash was detected. The error details have been pre-filled below. Please add any
+                    additional context about what you were doing before the crash.
                 </MudAlert>
             }
             else
@@ -71,11 +71,16 @@
                               Label="What did you expect to happen? (optional)"
                               Lines="2"
                               Variant="@Variant.Outlined"/>
-                <MudTextField @bind-Value="@reportedSaveSource"
-                              Label="Where did the save come from? (optional)"
-                              Lines="2"
-                              Placeholder="e.g. exported from an emulator (which one?), a real cartridge, or a download — plus the filename and extension."
-                              Variant="@Variant.Outlined"/>
+                <MudSelect T="string"
+                           @bind-Value="@reportedSaveSource"
+                           Label="Where did the save come from? (optional)"
+                           Clearable="true"
+                           Variant="@Variant.Outlined">
+                    <MudSelectItem Value="@SaveSourceEmulator">Emulator export</MudSelectItem>
+                    <MudSelectItem Value="@SaveSourceCartridge">Physical cartridge dump</MudSelectItem>
+                    <MudSelectItem Value="@SaveSourceDownload">Downloaded file</MudSelectItem>
+                    <MudSelectItem Value="@SaveSourceOther">Other / not sure</MudSelectItem>
+                </MudSelect>
             }
             else
             {
@@ -93,18 +98,25 @@
                               Variant="@Variant.Outlined"/>
             }
 
-            <MudTextField @bind-Value="@email"
-                          Label="Email"
-                          InputType="@InputType.Email"
-                          Required
-                          Validation="@((string v) => EmailValidator.IsValid(v)
-                                          ? null
-                                          : "Please enter a valid email address.")"
-                          Variant="@Variant.Outlined"/>
-            <MudTextField @bind-Value="@name"
-                          Label="Name"
-                          Required
-                          Variant="@Variant.Outlined"/>
+            <MudSwitch @bind-Value="@contactOptIn"
+                       @bind-Value:after="OnContactOptInChanged"
+                       Label="Allow maintainers to email me about this report"
+                       Color="@Color.Primary"/>
+            @if (contactOptIn)
+            {
+                <MudTextField @bind-Value="@contactEmail"
+                              Label="Contact email (private)"
+                              InputType="@InputType.Email"
+                              Required
+                              Validation="@((string v) => ContactEmailValidation(v))"
+                              HelperText="Stored privately and never included in the public GitHub issue."
+                              Variant="@Variant.Outlined"/>
+                <MudText Typo="@Typo.caption"
+                         Color="@Color.Secondary">
+                    We may use this address to respond about this report. It is deleted 30 days after
+                    the issue closes, or 12 months after submission at the latest.
+                </MudText>
+            }
 
             @if (ShowSaveAttach)
             {
@@ -147,14 +159,19 @@
                     @submitError
                 </MudAlert>
             }
-            <MudText Typo="@Typo.caption"
-                     Color="@Color.Secondary">
-                Reports are submitted as GitHub issues to help improve the app.
-                @if (ShowSaveAttach && HasSaveFile)
-                {
-                    @:Your current save file can be attached to help diagnose the issue.
-                }
-            </MudText>
+            <MudAlert Severity="@Severity.Warning"
+                      Dense="true">
+                Your report text, app version, browser user agent, and technical diagnostics will be
+                posted publicly to GitHub. Do not include personal information in the report text.
+            </MudAlert>
+            @if (ShowSaveAttach)
+            {
+                <MudText Typo="@Typo.caption"
+                         Color="@Color.Secondary">
+                    Save-file attachments are private and available only to designated maintainers.
+                    They are deleted when the issue closes or after 30 days, whichever comes first.
+                </MudText>
+            }
         </MudStack>
     </DialogContent>
     <DialogActions>
