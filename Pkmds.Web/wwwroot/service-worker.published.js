@@ -74,12 +74,15 @@ const offlineAssetsInclude = [/\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /
 // AOT is disabled now and the runtime is roughly 3 MB. It must be cached: an
 // old app version cannot boot after a deploy removes its fingerprinted runtime
 // from the server, which caused the recurring 98% startup failures (#1142+).
-const offlineAssetsExclude = [/^service-worker\.js$/, /^staticwebapp\.config\.json$/];
+// Bundled sprites are cached on demand below. Pre-caching thousands of them can
+// trigger transient GitHub Pages 503 responses and reject the whole worker install.
+const offlineAssetsExclude = [/^service-worker\.js$/, /^staticwebapp\.config\.json$/, /^_content\/Pkmds\.Rcl\/sprites\//];
 
 // Replace with your base path if you are hosting on a subfolder. Ensure there is a trailing '/'.
 const base = "/";
 const baseUrl = new URL(base, self.origin);
 const manifestUrlList = self.assetsManifest.assets.map(asset => new URL(asset.url, baseUrl).href);
+const bundledSpritePathPrefix = new URL('_content/Pkmds.Rcl/sprites/', baseUrl).href;
 const nativeRuntimePath = /\/_framework\/dotnet\.native\.[^/]+\.wasm$/;
 const legacyRecoveryMarkerUrl = new URL('__legacy-cache-recovery__', baseUrl).href;
 
@@ -211,12 +214,15 @@ function getClientIdFromLeaseRequest(request) {
 }
 
 async function onFetch(event) {
-    // Cache-first strategy for PokeAPI sprites — separate long-lived cache that survives app updates.
+    // Cache bundled sprites lazily in the current version cache instead of requesting thousands
+    // during worker installation. PokeAPI sprites use a separate cache that survives app updates.
     // Return the promise rather than calling event.respondWith() here: the outer 'fetch' listener
     // already wraps onFetch(event) in respondWith, and double-calling it throws InvalidStateError
     // (and on iOS Safari surfaces as `FetchEvent.respondWith received an error: TypeError: ...`).
-    if (event.request.method === 'GET' && event.request.url.startsWith(spriteOrigin)) {
-        const cache = await caches.open(spriteCacheName);
+    const isPokeApiSprite = event.request.url.startsWith(spriteOrigin);
+    const isBundledSprite = event.request.url.startsWith(bundledSpritePathPrefix);
+    if (event.request.method === 'GET' && (isPokeApiSprite || isBundledSprite)) {
+        const cache = await caches.open(isPokeApiSprite ? spriteCacheName : cacheName);
         const cached = await cache.match(event.request);
         if (cached) return cached;
         try {

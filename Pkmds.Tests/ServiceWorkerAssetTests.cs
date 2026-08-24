@@ -15,6 +15,18 @@ public sealed partial class ServiceWorkerAssetTests
     }
 
     [Fact]
+    public void PublishedServiceWorkerCachesBundledSpritesLazily()
+    {
+        var serviceWorker = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "service-worker.published.js");
+        var exclusions = OfflineAssetsExcludeRegex().Match(serviceWorker);
+
+        exclusions.Success.Should().BeTrue();
+        exclusions.Value.Should().Contain("^_content\\/Pkmds\\.Rcl\\/sprites\\/");
+        serviceWorker.Should().Contain("const bundledSpritePathPrefix = new URL('_content/Pkmds.Rcl/sprites/', baseUrl).href;");
+        serviceWorker.Should().Contain("const cache = await caches.open(isPokeApiSprite ? spriteCacheName : cacheName);");
+    }
+
+    [Fact]
     public void PublishedServiceWorkerWaitsUnlessLegacyCacheCannotBoot()
     {
         var serviceWorker = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "service-worker.published.js");
