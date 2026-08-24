@@ -135,8 +135,19 @@ $RetentionPolicy = @{
                 actions = @{ baseBlob = @{ delete = @{ daysAfterCreationGreaterThan = 29 } } }
                 filters = @{
                     blobTypes = @("blockBlob")
+                    prefixMatch = @("$BlobContainer/attachments/")
+                }
+            }
+        },
+        @{
+            enabled = $true
+            name = "delete-legacy-report-attachments-after-30-days"
+            type = "Lifecycle"
+            definition = @{
+                actions = @{ baseBlob = @{ delete = @{ daysAfterCreationGreaterThan = 29 } } }
+                filters = @{
+                    blobTypes = @("blockBlob")
                     prefixMatch = @(
-                        "$BlobContainer/attachments/",
                         "$BlobContainer/0",
                         "$BlobContainer/1",
                         "$BlobContainer/2",
@@ -148,6 +159,18 @@ $RetentionPolicy = @{
                         "$BlobContainer/8",
                         "$BlobContainer/9"
                     )
+                }
+            }
+        },
+        @{
+            enabled = $true
+            name = "delete-closed-issue-markers-after-30-days"
+            type = "Lifecycle"
+            definition = @{
+                actions = @{ baseBlob = @{ delete = @{ daysAfterCreationGreaterThan = 29 } } }
+                filters = @{
+                    blobTypes = @("blockBlob")
+                    prefixMatch = @("$BlobContainer/issues/closed/")
                 }
             }
         },

@@ -5,6 +5,10 @@ namespace Pkmds.Rcl.Components.Dialogs;
 public partial class BugReportDialog
 {
     private const int MinPrimaryLength = 20;
+    private const string SaveSourceEmulator = "Emulator export";
+    private const string SaveSourceCartridge = "Physical cartridge dump";
+    private const string SaveSourceDownload = "Downloaded file";
+    private const string SaveSourceOther = "Other or not sure";
 
     // Match the Azure Function's MaxSaveFileSizeBytes so we reject oversized attachments up front
     // instead of silently filing an issue whose save never uploads.

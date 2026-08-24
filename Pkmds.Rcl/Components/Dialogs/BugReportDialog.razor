@@ -71,11 +71,16 @@
                               Label="What did you expect to happen? (optional)"
                               Lines="2"
                               Variant="@Variant.Outlined"/>
-                <MudTextField @bind-Value="@reportedSaveSource"
-                              Label="Where did the save come from? (optional)"
-                              Lines="2"
-                              Placeholder="e.g. exported from an emulator (which one?), a real cartridge, or a download — plus the filename and extension."
-                              Variant="@Variant.Outlined"/>
+                <MudSelect T="string"
+                           @bind-Value="@reportedSaveSource"
+                           Label="Where did the save come from? (optional)"
+                           Clearable="true"
+                           Variant="@Variant.Outlined">
+                    <MudSelectItem Value="@SaveSourceEmulator">Emulator export</MudSelectItem>
+                    <MudSelectItem Value="@SaveSourceCartridge">Physical cartridge dump</MudSelectItem>
+                    <MudSelectItem Value="@SaveSourceDownload">Downloaded file</MudSelectItem>
+                    <MudSelectItem Value="@SaveSourceOther">Other / not sure</MudSelectItem>
+                </MudSelect>
             }
             else
             {

@@ -2,7 +2,7 @@ namespace Pkmds.Functions.Services;
 
 public interface IBlobService
 {
-    Task UploadAttachmentAsync(
+    Task<bool> UploadAttachmentAsync(
         int issueNumber,
         Stream data,
         CancellationToken cancellationToken = default);

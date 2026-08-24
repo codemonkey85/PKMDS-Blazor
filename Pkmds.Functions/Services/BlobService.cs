@@ -3,12 +3,13 @@ namespace Pkmds.Functions.Services;
 public class BlobService(IConfiguration configuration, ILogger<BlobService> logger) : IBlobService
 {
     private const string AttachmentBlobName = "attachment.bin";
+    private const string ClosedIssueMarkerPrefix = "issues/closed";
     private const int ContactClosureRetentionDays = 30;
     private const int ContactMaximumRetentionDays = 365;
 
     private readonly BlobContainerClient containerClient = CreateContainerClient(configuration);
 
-    public async Task UploadAttachmentAsync(
+    public async Task<bool> UploadAttachmentAsync(
         int issueNumber,
         Stream data,
         CancellationToken cancellationToken = default)
@@ -16,7 +17,17 @@ public class BlobService(IConfiguration configuration, ILogger<BlobService> logg
         var blobName = $"attachments/{issueNumber}/{AttachmentBlobName}";
         var blobClient = containerClient.GetBlobClient(blobName);
         await blobClient.UploadAsync(data, true, cancellationToken);
+
+        if (await IsIssueClosedAsync(issueNumber, cancellationToken))
+        {
+            await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+            logger.LogInformation(
+                "Discarded a private attachment for already-closed issue #{IssueNumber}", issueNumber);
+            return false;
+        }
+
         logger.LogInformation("Stored a private attachment for issue #{IssueNumber}", issueNumber);
+        return true;
     }
 
     public async Task StoreContactAsync(
@@ -27,6 +38,12 @@ public class BlobService(IConfiguration configuration, ILogger<BlobService> logg
         var blobClient = containerClient.GetBlobClient($"contacts/open/{issueNumber}.json");
         var contact = new PrivateContactRecord(issueNumber, email, DateTimeOffset.UtcNow);
         await blobClient.UploadAsync(BinaryData.FromObjectAsJson(contact), true, cancellationToken);
+
+        if (await IsIssueClosedAsync(issueNumber, cancellationToken))
+        {
+            await MoveContactToClosedRetentionAsync(issueNumber, cancellationToken);
+        }
+
         logger.LogInformation("Stored private contact details for issue #{IssueNumber}", issueNumber);
     }
 
@@ -34,6 +51,12 @@ public class BlobService(IConfiguration configuration, ILogger<BlobService> logg
         int issueNumber,
         CancellationToken cancellationToken = default)
     {
+        // Persist the marker before cleanup. Storage operations reconcile against it after their
+        // writes, closing the race where GitHub delivers an issue-close event while the original
+        // submission is still storing private data. The marker also makes webhook retries safe.
+        var closedMarker = containerClient.GetBlobClient(GetClosedIssueMarkerName(issueNumber));
+        await closedMarker.UploadAsync(BinaryData.FromString("closed"), true, cancellationToken);
+
         var deleted = 0;
         foreach (var prefix in new[] { $"attachments/{issueNumber}/", $"{issueNumber}/" })
         {
@@ -54,12 +77,17 @@ public class BlobService(IConfiguration configuration, ILogger<BlobService> logg
     private async Task MoveContactToClosedRetentionAsync(int issueNumber, CancellationToken cancellationToken)
     {
         var openContact = containerClient.GetBlobClient($"contacts/open/{issueNumber}.json");
-        if (!await openContact.ExistsAsync(cancellationToken))
+        Azure.Response<BlobDownloadResult> content;
+        try
         {
+            content = await openContact.DownloadContentAsync(cancellationToken);
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status == StatusCodes.Status404NotFound)
+        {
+            // A concurrent webhook retry or post-write reconciliation may already have moved it.
             return;
         }
 
-        var content = await openContact.DownloadContentAsync(cancellationToken);
         var contact = content.Value.Content.ToObjectFromJson<PrivateContactRecord>();
         var latestClosedDeletion = DateTimeOffset.UtcNow.AddDays(ContactClosureRetentionDays);
         if (contact is null || latestClosedDeletion >= contact.SubmittedAtUtc.AddDays(ContactMaximumRetentionDays))
@@ -71,9 +99,30 @@ public class BlobService(IConfiguration configuration, ILogger<BlobService> logg
         }
 
         var closedContact = containerClient.GetBlobClient($"contacts/closed/{issueNumber}.json");
-        await closedContact.UploadAsync(content.Value.Content, true, cancellationToken);
+        try
+        {
+            await closedContact.UploadAsync(
+                content.Value.Content,
+                new BlobUploadOptions
+                {
+                    Conditions = new BlobRequestConditions { IfNoneMatch = Azure.ETag.All },
+                },
+                cancellationToken);
+        }
+        catch (Azure.RequestFailedException ex) when (ex.Status is StatusCodes.Status409Conflict or StatusCodes.Status412PreconditionFailed)
+        {
+            // A concurrent reconciliation or webhook retry already created the immutable closed
+            // record. Do not overwrite it: resetting creation time could extend retention.
+        }
+
         await openContact.DeleteIfExistsAsync(cancellationToken: cancellationToken);
     }
+
+    private async Task<bool> IsIssueClosedAsync(int issueNumber, CancellationToken cancellationToken) =>
+        await containerClient.GetBlobClient(GetClosedIssueMarkerName(issueNumber)).ExistsAsync(cancellationToken);
+
+    private static string GetClosedIssueMarkerName(int issueNumber) =>
+        $"{ClosedIssueMarkerPrefix}/{issueNumber}.marker";
 
     private static BlobContainerClient CreateContainerClient(IConfiguration configuration)
     {

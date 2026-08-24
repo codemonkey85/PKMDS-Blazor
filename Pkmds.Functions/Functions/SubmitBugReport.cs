@@ -39,7 +39,7 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         var actual = form["actual"].ToString().Trim();
         var steps = form["steps"].ToString().Trim();
         var expected = form["expected"].ToString().Trim();
-        var reportedSaveSource = form["reportedSaveSource"].ToString().Trim();
+        var reportedSaveSource = GetSafeReportedSaveSource(form["reportedSaveSource"].ToString().Trim());
         // Feature / Feedback free-text field.
         var details = form["details"].ToString().Trim();
         var saveGameName = form["saveGameName"].ToString().Trim();
@@ -180,9 +180,13 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
         }
 
         var saveFile = form.Files["saveFile"];
+        var attachmentStored = saveFile is not { Length: > 0 };
         if (saveFile is not { Length: > 0 })
         {
-            return new ObjectResult(new { issueNumber, issueUrl, contactStored }) { StatusCode = StatusCodes.Status201Created };
+            return new ObjectResult(new { issueNumber, issueUrl, contactStored, attachmentStored })
+            {
+                StatusCode = StatusCodes.Status201Created,
+            };
         }
 
         {
@@ -196,20 +200,37 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
                 try
                 {
                     await using var stream = saveFile.OpenReadStream();
-                    await blobService.UploadAttachmentAsync(issueNumber, stream, cancellationToken);
-                    await gitHubService.AddCommentAsync(issueNumber,
-                        "📎 A save-file attachment was stored privately for designated maintainers. " +
-                        "It will be deleted when this issue closes or after 30 days, whichever comes first.");
+                    attachmentStored = await blobService.UploadAttachmentAsync(issueNumber, stream, cancellationToken);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Failed to upload save file for issue #{IssueNumber}", issueNumber);
-                    // Non-fatal: issue was already created; log and continue.
+                }
+
+                if (attachmentStored)
+                {
+                    try
+                    {
+                        await gitHubService.AddCommentAsync(issueNumber,
+                            "📎 A save-file attachment was stored privately for designated maintainers. " +
+                            "It will be deleted when this issue closes or after 30 days, whichever comes first.");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Storage succeeded, so the attachment result remains true. The user-facing
+                        // response reports whether their private bytes were retained, independently
+                        // of this best-effort maintainer notification.
+                        logger.LogWarning(ex,
+                            "Stored a private attachment but failed to comment on issue #{IssueNumber}", issueNumber);
+                    }
                 }
             }
         }
 
-        return new ObjectResult(new { issueNumber, issueUrl, contactStored }) { StatusCode = StatusCodes.Status201Created };
+        return new ObjectResult(new { issueNumber, issueUrl, contactStored, attachmentStored })
+        {
+            StatusCode = StatusCodes.Status201Created,
+        };
     }
 
     private static string FirstNonEmpty(params string[] values) =>
@@ -230,4 +251,13 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
 
         return extension.ToLowerInvariant();
     }
+
+    private static string GetSafeReportedSaveSource(string source) => source switch
+    {
+        "Emulator export" => source,
+        "Physical cartridge dump" => source,
+        "Downloaded file" => source,
+        "Other or not sure" => source,
+        _ => string.Empty,
+    };
 }

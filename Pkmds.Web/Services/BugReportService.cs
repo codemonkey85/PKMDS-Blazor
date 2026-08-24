@@ -101,9 +101,26 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
                 var contactStored = !request.ContactOptIn ||
                                     (json.TryGetProperty("contactStored", out var contactStoredElement) &&
                                      contactStoredElement.ValueKind is JsonValueKind.True);
-                var warningMessage = contactStored
+                var attachmentRequested = request.SaveFileBytes is { Length: > 0 };
+                var attachmentStored = !attachmentRequested ||
+                                       (json.TryGetProperty("attachmentStored", out var attachmentStoredElement) &&
+                                        attachmentStoredElement.ValueKind is JsonValueKind.True);
+                var warnings = new List<string>();
+                if (!contactStored)
+                {
+                    warnings.Add(
+                        "Your private contact address could not be stored. Please follow the GitHub issue for updates.");
+                }
+
+                if (!attachmentStored)
+                {
+                    warnings.Add(
+                        "Your save-file attachment could not be stored. Keep your local copy in case a maintainer asks for it.");
+                }
+
+                var warningMessage = warnings.Count == 0
                     ? null
-                    : "The report was created, but your private contact address could not be stored. Please follow the GitHub issue for updates.";
+                    : $"The report was created, but {string.Join(" ", warnings)}";
                 return new BugReportResult(true, IssueUrl: issueUrl, WarningMessage: warningMessage);
             }
 

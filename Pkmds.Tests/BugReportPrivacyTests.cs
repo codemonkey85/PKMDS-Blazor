@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Pkmds.Tests;
 
 public sealed class BugReportPrivacyTests
@@ -26,6 +28,8 @@ public sealed class BugReportPrivacyTests
         dialog.Should().Contain("posted publicly to GitHub");
         dialog.Should().Contain("Save-file attachments are private");
         dialog.Should().NotContain("Label=\"Name\"");
+        dialog.Should().NotContain("filename and extension");
+        dialog.Should().Contain("Emulator export");
     }
 
     [Fact]
@@ -42,6 +46,8 @@ public sealed class BugReportPrivacyTests
         function.Should().NotContain("{Email}");
         function.Should().NotContain("GetSasUrl");
         function.Should().Contain("contactOptIn");
+        function.Should().Contain("GetSafeReportedSaveSource");
+        function.Should().Contain("attachmentStored");
         function.Should().Contain("stored privately for designated maintainers");
         storage.Should().NotContain("GenerateSasUri");
         storage.Should().Contain("contacts/open/{issueNumber}.json");
@@ -56,6 +62,7 @@ public sealed class BugReportPrivacyTests
 
         client.Should().Contain("\"saveFile\", \"attachment.bin\"");
         client.Should().NotContain("\"saveFile\", request.SaveFileName");
+        client.Should().Contain("Your save-file attachment could not be stored");
     }
 
     [Fact]
@@ -81,6 +88,8 @@ public sealed class BugReportPrivacyTests
         var policy = RepoFileTestHelper.ReadAllText("Pkmds.Functions", "report-retention-policy.json");
 
         setup.Should().Contain("delete-report-attachments-after-30-days");
+        setup.Should().Contain("delete-legacy-report-attachments-after-30-days");
+        setup.Should().Contain("delete-closed-issue-markers-after-30-days");
         setup.Should().Contain("delete-open-contact-records-after-12-months");
         setup.Should().Contain("delete-closed-contact-records-after-30-days");
         setup.Should().Contain("daysAfterCreationGreaterThan = 364");
@@ -92,5 +101,28 @@ public sealed class BugReportPrivacyTests
         policy.Should().Contain("\"bug-reports/9\"");
         setup.Should().Contain("\"$BlobContainer/0\"");
         setup.Should().Contain("\"$BlobContainer/9\"");
+
+        using var policyDocument = JsonDocument.Parse(policy);
+        var rules = policyDocument.RootElement.GetProperty("rules").EnumerateArray();
+        foreach (var rule in rules)
+        {
+            var prefixes = rule.GetProperty("definition").GetProperty("filters").GetProperty("prefixMatch");
+            prefixes.GetArrayLength().Should().BeLessThanOrEqualTo(10,
+                $"Azure Storage allows at most 10 prefixes per lifecycle rule ({rule.GetProperty("name").GetString()})");
+        }
+    }
+
+    [Fact]
+    public void IssueClosureIsRetryableAndRaceSafe()
+    {
+        var webhook = RepoFileTestHelper.ReadAllText(
+            "Pkmds.Functions", "Functions", "GitHubWebhook.cs");
+        var storage = RepoFileTestHelper.ReadAllText(
+            "Pkmds.Functions", "Services", "BlobService.cs");
+
+        webhook.Should().Contain("StatusCodes.Status503ServiceUnavailable");
+        storage.Should().Contain("ClosedIssueMarkerPrefix");
+        storage.Should().Contain("IsIssueClosedAsync");
+        storage.Should().Contain("Discarded a private attachment for already-closed issue");
     }
 }
