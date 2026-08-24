@@ -72,6 +72,8 @@ public sealed partial class ServiceWorkerAssetTests
 
         MissingNewestWorkerRepairRegex().IsMatch(appScript).Should().BeTrue();
         appScript.Should().Contain("if (!isBenignServiceWorkerUpdateError(err))");
+        appScript.Should().Contain("if (!shouldRepairServiceWorkerRegistration(err, registration))");
+        appScript.Should().Contain("error.message.includes('Not found')");
         appScript.Should().Contain("window._swRegistrationPromise = Promise.resolve(registration)");
         appScript.Should().Contain("const currentRegistration = await window._swRegistrationPromise");
         RepairedRegistrationReloadRegex().IsMatch(appScript).Should().BeTrue();

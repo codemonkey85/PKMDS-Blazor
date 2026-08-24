@@ -28,6 +28,19 @@ function isBenignServiceWorkerUpdateError(error) {
         || (error.message && error.message.includes('newestWorker is null'));
 }
 
+function isMissingNewestWorkerRegistration(registration) {
+    return !registration.installing && !registration.waiting && !registration.active;
+}
+
+function shouldRepairServiceWorkerRegistration(error, registration) {
+    return isBenignServiceWorkerUpdateError(error)
+        || isMissingNewestWorkerRegistration(registration)
+        || (error.name === 'TypeError'
+            && error.message
+            && error.message.includes('ServiceWorker')
+            && error.message.includes('Not found'));
+}
+
 // Service worker registration
 if (pkmdsIsEmbedded()) {
     console.info('Service worker registration skipped: embedded host mode.');
@@ -177,7 +190,10 @@ window.checkForUpdates = async () => {
         try {
             await registration.update();
         } catch (err) {
-            if (!isBenignServiceWorkerUpdateError(err)) {
+            // Safari reports this empty-registration state as InvalidStateError
+            // ("newestWorker is null"), while Chromium may report TypeError ("Not found").
+            // Use the registration's actual slots so both can take the same repair path.
+            if (!shouldRepairServiceWorkerRegistration(err, registration)) {
                 console.warn('Manual update check failed:', err);
                 return 'error';
             }
