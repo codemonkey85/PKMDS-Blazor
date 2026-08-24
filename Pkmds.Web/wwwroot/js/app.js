@@ -38,12 +38,17 @@ if (pkmdsIsEmbedded()) {
         if (registration.waiting && navigator.serviceWorker.controller) {
             notifyUpdateAvailable();
         }
-        setInterval(() => registration.update().catch(err => {
-            // Safari may throw "newestWorker is null" — this is benign
-            if (!isBenignServiceWorkerUpdateError(err)) {
-                console.warn('Periodic registration.update() failed:', err);
-            }
-        }), 60 * 60 * 1000); // check for updates every hour
+        setInterval(async () => {
+            const currentRegistration = await window._swRegistrationPromise;
+            if (!currentRegistration) return;
+
+            currentRegistration.update().catch(err => {
+                // A manual check repairs this state and updates the shared promise.
+                if (!isBenignServiceWorkerUpdateError(err)) {
+                    console.warn('Periodic registration.update() failed:', err);
+                }
+            });
+        }, 60 * 60 * 1000); // check for updates every hour
         registration.onupdatefound = () => {
             const installingWorker = registration.installing;
             installingWorker.onstatechange = () => {
@@ -164,6 +169,7 @@ window.checkForUpdates = async () => {
     // up to date") moments before the global onupdatefound handler announces "An update is
     // available" — two contradictory snackbars for the same check (issue seen mostly on mobile).
     let signalUpdateFound;
+    let repairedRegistration = false;
     const updateFoundPromise = new Promise(resolve => { signalUpdateFound = resolve; });
     registration.addEventListener('updatefound', signalUpdateFound);
 
@@ -182,6 +188,7 @@ window.checkForUpdates = async () => {
             // still discover a deployment that happened while it remained open.
             registration.removeEventListener('updatefound', signalUpdateFound);
             try {
+                repairedRegistration = true;
                 registration = await navigator.serviceWorker.register(
                     'service-worker.js',
                     {updateViaCache: 'none'});
@@ -211,6 +218,14 @@ window.checkForUpdates = async () => {
 
         const installing = registration.installing;
         if (!installing) {
+            // The repaired worker may have installed and activated before register() resolved.
+            // This page is still uncontrolled by it, so offer the same deliberate reload as a
+            // waiting update instead of claiming the stale page is current.
+            if (repairedRegistration) {
+                notifyUpdateAvailable();
+                return 'found';
+            }
+
             return 'none';
         }
 
@@ -224,7 +239,7 @@ window.checkForUpdates = async () => {
                     clearTimeout(timeoutId);
                     // Mirror the controller check in the global onupdatefound handler: with no
                     // controller this is the page's very first SW install, not an update.
-                    if (navigator.serviceWorker.controller) {
+                    if (navigator.serviceWorker.controller || repairedRegistration) {
                         notifyUpdateAvailable();
                         resolve('found');
                     } else {

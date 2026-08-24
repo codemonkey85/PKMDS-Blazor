@@ -73,6 +73,8 @@ public sealed partial class ServiceWorkerAssetTests
         MissingNewestWorkerRepairRegex().IsMatch(appScript).Should().BeTrue();
         appScript.Should().Contain("if (!isBenignServiceWorkerUpdateError(err))");
         appScript.Should().Contain("window._swRegistrationPromise = Promise.resolve(registration)");
+        appScript.Should().Contain("const currentRegistration = await window._swRegistrationPromise");
+        RepairedRegistrationReloadRegex().IsMatch(appScript).Should().BeTrue();
     }
 
     [GeneratedRegex(@"const offlineAssetsExclude = \[[^;]+;", RegexOptions.CultureInvariant)]
@@ -98,4 +100,7 @@ public sealed partial class ServiceWorkerAssetTests
 
     [GeneratedRegex(@"catch \(err\)\s*\{\s*if \(!isBenignServiceWorkerUpdateError\(err\)\)[\s\S]+?registration = await navigator\.serviceWorker\.register\([\s\S]+?registration\.addEventListener\('updatefound', signalUpdateFound\);", RegexOptions.CultureInvariant)]
     private static partial Regex MissingNewestWorkerRepairRegex();
+
+    [GeneratedRegex(@"if \(repairedRegistration\)\s*\{\s*notifyUpdateAvailable\(\);\s*return 'found';\s*\}[\s\S]+?if \(navigator\.serviceWorker\.controller \|\| repairedRegistration\)", RegexOptions.CultureInvariant)]
+    private static partial Regex RepairedRegistrationReloadRegex();
 }
