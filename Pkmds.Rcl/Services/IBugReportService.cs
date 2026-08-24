@@ -8,11 +8,11 @@ public enum BugReportCategory
 }
 
 public sealed record BugReportRequest(
-    string Name,
-    string Email,
     BugReportCategory Category,
     string AppVersion,
     string UserAgent,
+    bool ContactOptIn = false,
+    string? ContactEmail = null,
     // Bug category — structured fields. Actual is the one required field (and also carries the
     // pre-filled dump on the crash path); the rest are optional context.
     string? Actual = null,
@@ -30,7 +30,11 @@ public sealed record BugReportRequest(
     string? SaveFileType = null,
     Exception? CapturedException = null);
 
-public sealed record BugReportResult(bool Success, string? IssueUrl = null, string? ErrorMessage = null);
+public sealed record BugReportResult(
+    bool Success,
+    string? IssueUrl = null,
+    string? ErrorMessage = null,
+    string? WarningMessage = null);
 
 public interface IBugReportService
 {

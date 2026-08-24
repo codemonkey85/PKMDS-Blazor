@@ -127,6 +127,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Configure private report-data retention
+        run: |
+          az storage account management-policy create \
+            --account-name pkmdsbugreports \
+            --resource-group pkmds-bug-reports \
+            --policy @Pkmds.Functions/report-retention-policy.json \
+            --output none
+
       - name: Deploy to Azure Functions
         run: |
           az functionapp deployment source config-zip \
