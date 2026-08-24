@@ -38,12 +38,19 @@ self.addEventListener('message', event => {
 });
 self.addEventListener('fetch', event => {
     const clientId = event.resultingClientId || event.clientId;
-    if (clientId && !trackedClientIds.has(clientId)) {
+    const isNavigation = event.request.mode === 'navigate';
+    if (clientId && (!trackedClientIds.has(clientId) || isNavigation)) {
         trackedClientIds.add(clientId);
-        event.waitUntil(recordClientCacheLease(clientId).catch(err => {
-            trackedClientIds.delete(clientId);
-            console.warn('SW: Failed to record client cache lease.', err);
-        }));
+        event.waitUntil(recordClientCacheLease(clientId)
+            .then(async () => {
+                if (isNavigation) {
+                    await pruneUnusedAppCaches();
+                }
+            })
+            .catch(err => {
+                trackedClientIds.delete(clientId);
+                console.warn('SW: Failed to record client cache lease or prune unused caches.', err);
+            }));
     }
     event.respondWith(onFetch(event));
 });
@@ -98,6 +105,13 @@ async function onInstall(event) {
 }
 
 async function hasLegacyCacheWithoutNativeRuntime() {
+    // A stale cache by itself must not bypass the normal waiting-worker handoff. Workers from
+    // before cache leases can only strand a client when such an unleased client is still live.
+    const {hasUnleasedClients} = await getLiveClientCacheLeases();
+    if (!hasUnleasedClients) {
+        return false;
+    }
+
     const cacheKeys = await caches.keys();
     const legacyCacheKeys = cacheKeys.filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName);
 
@@ -121,9 +135,15 @@ async function onActivate(event) {
         // Do not claim or prune a successfully running legacy tab. Its next deliberate reload
         // will use this now-active worker, while its current editor and cache remain untouched.
         console.warn('SW: Preserving legacy clients and cache until their next navigation.');
+        await currentCache.delete(legacyRecoveryMarkerUrl);
         return false;
     }
 
+    await pruneUnusedAppCaches();
+    return true;
+}
+
+async function pruneUnusedAppCaches() {
     // A tab can remain controlled by any older worker across multiple deployments. Each worker
     // records which version cache its clients use, so retain every cache leased by a live tab
     // instead of guessing that only the immediately previous cache can still be needed.
@@ -134,15 +154,13 @@ async function onActivate(event) {
         // uncontrolled. Preserve all app caches until a later activation can identify every
         // live client's cache rather than risking an in-use version during migration.
         console.info('SW: Live client without a cache lease; preserving prior app caches.');
-        return true;
+        return;
     }
 
     await Promise.all(cacheKeys
         .filter(key => key.startsWith(cacheNamePrefix)
             && !leasedCacheNames.has(key))
         .map(key => caches.delete(key)));
-
-    return true;
 }
 
 async function recordClientCacheLease(clientId) {

@@ -14,33 +14,16 @@ namespace Pkmds.Tests;
 /// </summary>
 public class ThemeSyncTests
 {
-    private static readonly string RepoRoot = FindRepoRoot();
-
     private static readonly HashSet<string> AllThemeColors = typeof(AppTheme.Colors)
         .GetFields(BindingFlags.Public | BindingFlags.Static)
         .Where(f => f.IsLiteral)
         .Select(f => (string)f.GetRawConstantValue()!)
         .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-    private static string FindRepoRoot()
-    {
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Pkmds.slnx")))
-        {
-            dir = dir.Parent;
-        }
-
-        return dir?.FullName
-            ?? throw new InvalidOperationException("Could not locate the repo root (no Pkmds.slnx found above the test bin directory).");
-    }
-
-    private static string ReadRepoFile(params string[] pathSegments) =>
-        File.ReadAllText(Path.Combine([RepoRoot, .. pathSegments]));
-
     [Fact]
     public void IndexHtml_ThemeColorMeta_IsSingleAndMatchesAppTheme()
     {
-        var html = ReadRepoFile("Pkmds.Web", "wwwroot", "index.html");
+        var html = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "index.html");
 
         var metas = Regex.Matches(html, """<meta[^>]*name="theme-color"[^>]*>""");
 
@@ -55,7 +38,7 @@ public class ThemeSyncTests
     [Fact]
     public void IndexHtml_BrandAccents_MatchLightPrimary()
     {
-        var html = ReadRepoFile("Pkmds.Web", "wwwroot", "index.html");
+        var html = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "index.html");
 
         var maskIcon = Regex.Match(html, """<link[^>]*rel="mask-icon"[^>]*color="([^"]+)""");
         maskIcon.Success.Should().BeTrue("index.html should declare a mask-icon color");
@@ -69,7 +52,7 @@ public class ThemeSyncTests
     [Fact]
     public void Manifest_ThemeAndBackgroundColors_MatchAppTheme()
     {
-        var manifest = ReadRepoFile("Pkmds.Web", "wwwroot", "manifest.webmanifest");
+        var manifest = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "manifest.webmanifest");
 
         using var json = JsonDocument.Parse(manifest);
         json.RootElement.GetProperty("theme_color").GetString()
@@ -93,7 +76,7 @@ public class ThemeSyncTests
     [Fact]
     public void SplashCss_UsesOnlyAppThemeColors()
     {
-        var css = ReadRepoFile("Pkmds.Rcl", "wwwroot", "css", "app.css");
+        var css = RepoFileTestHelper.ReadAllText("Pkmds.Rcl", "wwwroot", "css", "app.css");
 
         var begin = css.IndexOf("/* begin pkmds-splash", StringComparison.Ordinal);
         var end = css.IndexOf("/* end pkmds-splash", StringComparison.Ordinal);
@@ -115,7 +98,7 @@ public class ThemeSyncTests
     {
         // The page has its own standalone grays (it renders without any app CSS), but its
         // link colors mirror the palette primaries and should follow them if they change.
-        var html = ReadRepoFile("Pkmds.Web", "wwwroot", "BrowserNotSupported.html");
+        var html = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "BrowserNotSupported.html");
 
         html.Should().ContainEquivalentOf(AppTheme.Colors.Blue800,
             "BrowserNotSupported.html light link color should match the light palette Primary");
