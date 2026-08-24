@@ -148,7 +148,7 @@ window.applyUpdate = async () => {
 // Proactively check for a service worker update.
 // Returns: 'found' (update ready), 'none' (up to date), 'no-sw' (SW unavailable), 'error' (check/install failed)
 window.checkForUpdates = async () => {
-    const registration = await window._swRegistrationPromise;
+    let registration = await window._swRegistrationPromise;
     if (!registration) return 'no-sw';
 
     // A waiting worker was already downloaded but not yet activated — notify immediately.
@@ -171,15 +171,26 @@ window.checkForUpdates = async () => {
         try {
             await registration.update();
         } catch (err) {
-            // Some browsers reject a redundant manual check even though their normal
-            // navigation update check completed successfully. Do not report that known
-            // browser state quirk as a failed update; genuine failures remain visible.
-            if (isBenignServiceWorkerUpdateError(err)) {
-                return 'none';
+            if (!isBenignServiceWorkerUpdateError(err)) {
+                console.warn('Manual update check failed:', err);
+                return 'error';
             }
 
-            console.warn('Manual update check failed:', err);
-            return 'error';
+            // InvalidStateError means this registration has no installing, waiting, or active
+            // worker. It does not mean the open page is current. Re-registering the same script
+            // and scope repairs that state and also performs the update check, so a stale tab can
+            // still discover a deployment that happened while it remained open.
+            registration.removeEventListener('updatefound', signalUpdateFound);
+            try {
+                registration = await navigator.serviceWorker.register(
+                    'service-worker.js',
+                    {updateViaCache: 'none'});
+                window._swRegistrationPromise = Promise.resolve(registration);
+                registration.addEventListener('updatefound', signalUpdateFound);
+            } catch (repairError) {
+                console.warn('Manual service worker registration repair failed:', repairError);
+                return 'error';
+            }
         }
 
         // No new worker visible yet — give the async 'updatefound' event a grace window

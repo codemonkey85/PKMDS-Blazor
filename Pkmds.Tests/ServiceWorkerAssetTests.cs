@@ -66,12 +66,13 @@ public sealed partial class ServiceWorkerAssetTests
     }
 
     [Fact]
-    public void ManualUpdateCheckTreatsKnownBrowserStateErrorAsNoUpdate()
+    public void ManualUpdateCheckRepairsMissingNewestWorkerRegistration()
     {
         var appScript = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "js", "app.js");
 
-        BenignManualUpdateErrorRegex().IsMatch(appScript).Should().BeTrue();
+        MissingNewestWorkerRepairRegex().IsMatch(appScript).Should().BeTrue();
         appScript.Should().Contain("if (!isBenignServiceWorkerUpdateError(err))");
+        appScript.Should().Contain("window._swRegistrationPromise = Promise.resolve(registration)");
     }
 
     [GeneratedRegex(@"const offlineAssetsExclude = \[[^;]+;", RegexOptions.CultureInvariant)]
@@ -95,6 +96,6 @@ public sealed partial class ServiceWorkerAssetTests
     [GeneratedRegex(@"if \(registration\.waiting && navigator\.serviceWorker\.controller\)\s*\{\s*notifyUpdateAvailable\(\);\s*\}", RegexOptions.CultureInvariant)]
     private static partial Regex WaitingRegistrationNotificationRegex();
 
-    [GeneratedRegex(@"catch \(err\)\s*\{[\s\S]+?if \(isBenignServiceWorkerUpdateError\(err\)\)\s*\{\s*return 'none';\s*\}[\s\S]+?return 'error';", RegexOptions.CultureInvariant)]
-    private static partial Regex BenignManualUpdateErrorRegex();
+    [GeneratedRegex(@"catch \(err\)\s*\{\s*if \(!isBenignServiceWorkerUpdateError\(err\)\)[\s\S]+?registration = await navigator\.serviceWorker\.register\([\s\S]+?registration\.addEventListener\('updatefound', signalUpdateFound\);", RegexOptions.CultureInvariant)]
+    private static partial Regex MissingNewestWorkerRepairRegex();
 }
