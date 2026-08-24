@@ -31,14 +31,31 @@ public sealed partial class ServiceWorkerAssetTests
     }
 
     [Fact]
-    public void PublishedServiceWorkerWaitsForExplicitUpdateHandoff()
+    public void PublishedServiceWorkerWaitsUnlessLegacyCacheCannotBoot()
     {
         var serviceWorker = ReadRepoFile("Pkmds.Web", "wwwroot", "service-worker.published.js");
         var installHandler = InstallHandlerRegex().Match(serviceWorker);
 
         installHandler.Success.Should().BeTrue();
-        installHandler.Value.Should().NotContain("skipWaiting");
+        LegacyRecoveryActivationRegex().IsMatch(installHandler.Value).Should().BeTrue();
+        serviceWorker.Should().Contain("hasLegacyCacheWithoutNativeRuntime");
+        serviceWorker.Should().Contain("nativeRuntimePath");
+        serviceWorker.Should().Contain("legacyRecoveryMarkerUrl");
+        serviceWorker.Should().Contain("if (shouldClaimClients)");
+        serviceWorker.Should().Contain("return false;");
         serviceWorker.Should().Contain("event.waitUntil(self.skipWaiting())");
+    }
+
+    [Fact]
+    public void DeploymentWorkflowsStampTheDeployedServiceWorker()
+    {
+        foreach (var workflow in new[] { "main.yml", "uat.yml" })
+        {
+            var workflowContents = ReadRepoFile(".github", "workflows", workflow);
+
+            workflowContents.Should().Contain("files: 'release/wwwroot/service-worker.js'");
+            workflowContents.Should().NotContain("files: 'release/wwwroot/service-worker.published.js'");
+        }
     }
 
     [Fact]
@@ -71,6 +88,9 @@ public sealed partial class ServiceWorkerAssetTests
 
     [GeneratedRegex(@"self\.addEventListener\('install',[\s\S]+?\n}\);", RegexOptions.CultureInvariant)]
     private static partial Regex InstallHandlerRegex();
+
+    [GeneratedRegex(@"if \(await hasLegacyCacheWithoutNativeRuntime\(\)\)\s*\{[\s\S]+?await self\.skipWaiting\(\);\s*}", RegexOptions.CultureInvariant)]
+    private static partial Regex LegacyRecoveryActivationRegex();
 
     [GeneratedRegex(@"if \(registration\.waiting && navigator\.serviceWorker\.controller\)\s*\{\s*notifyUpdateAvailable\(\);\s*\}", RegexOptions.CultureInvariant)]
     private static partial Regex WaitingRegistrationNotificationRegex();

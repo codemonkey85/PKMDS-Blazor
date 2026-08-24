@@ -3,18 +3,32 @@
 
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => {
-    // Keep the new worker waiting until existing pages close or explicitly apply the update.
-    // Activating during an ordinary reload can pair HTML served by the old worker with boot
-    // resources served by the new worker, which strands clients on mixed app versions.
-    event.waitUntil(onInstall(event));
+    event.waitUntil((async () => {
+        await onInstall(event);
+
+        // Keep healthy updates waiting until existing pages close or explicitly apply them.
+        // The one exception is a legacy cache that cannot boot after deployment because it did
+        // not pre-cache its fingerprinted native runtime. Such a page can only ever serve the
+        // old recovery code, while this complete worker remains waiting behind it. Activate the
+        // complete worker so the user's next reload escapes that loop. Do not navigate/reload
+        // clients here: an already-running editor may contain unsaved changes.
+        if (await hasLegacyCacheWithoutNativeRuntime()) {
+            console.warn('SW: Legacy cache is missing its native runtime; activating recovery worker.');
+            const cache = await caches.open(cacheName);
+            await cache.put(legacyRecoveryMarkerUrl, new Response('true'));
+            await self.skipWaiting();
+        }
+    })());
 });
 
 self.addEventListener('activate', event => {
     event.waitUntil((async () => {
-        await onActivate(event);
+        const shouldClaimClients = await onActivate(event);
         // Explicit updates wait for controllerchange before reloading. Claiming here completes
         // that handoff; natural activation normally has no existing clients to claim.
-        await self.clients.claim();
+        if (shouldClaimClients) {
+            await self.clients.claim();
+        }
     })());
 });
 self.addEventListener('message', event => {
@@ -59,6 +73,8 @@ const offlineAssetsExclude = [/^service-worker\.js$/, /^staticwebapp\.config\.js
 const base = "/";
 const baseUrl = new URL(base, self.origin);
 const manifestUrlList = self.assetsManifest.assets.map(asset => new URL(asset.url, baseUrl).href);
+const nativeRuntimePath = /\/_framework\/dotnet\.native\.[^/]+\.wasm$/;
+const legacyRecoveryMarkerUrl = new URL('__legacy-cache-recovery__', baseUrl).href;
 
 async function onInstall(event) {
     console.info('Service worker: Install');
@@ -81,8 +97,32 @@ async function onInstall(event) {
     }
 }
 
+async function hasLegacyCacheWithoutNativeRuntime() {
+    const cacheKeys = await caches.keys();
+    const legacyCacheKeys = cacheKeys.filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName);
+
+    for (const legacyCacheKey of legacyCacheKeys) {
+        const legacyCache = await caches.open(legacyCacheKey);
+        const cachedRequests = await legacyCache.keys();
+        if (!cachedRequests.some(request => nativeRuntimePath.test(new URL(request.url).pathname))) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 async function onActivate(event) {
     console.info('Service worker: Activate');
+
+    const currentCache = await caches.open(cacheName);
+    const isLegacyRecovery = Boolean(await currentCache.match(legacyRecoveryMarkerUrl));
+    if (isLegacyRecovery) {
+        // Do not claim or prune a successfully running legacy tab. Its next deliberate reload
+        // will use this now-active worker, while its current editor and cache remain untouched.
+        console.warn('SW: Preserving legacy clients and cache until their next navigation.');
+        return false;
+    }
 
     // A tab can remain controlled by any older worker across multiple deployments. Each worker
     // records which version cache its clients use, so retain every cache leased by a live tab
@@ -94,13 +134,15 @@ async function onActivate(event) {
         // uncontrolled. Preserve all app caches until a later activation can identify every
         // live client's cache rather than risking an in-use version during migration.
         console.info('SW: Live client without a cache lease; preserving prior app caches.');
-        return;
+        return true;
     }
 
     await Promise.all(cacheKeys
         .filter(key => key.startsWith(cacheNamePrefix)
             && !leasedCacheNames.has(key))
         .map(key => caches.delete(key)));
+
+    return true;
 }
 
 async function recordClientCacheLease(clientId) {
