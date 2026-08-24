@@ -65,6 +65,15 @@ public sealed partial class ServiceWorkerAssetTests
         appScript.Should().Contain("if (window._pkmdsUpdateWaiting)");
     }
 
+    [Fact]
+    public void ManualUpdateCheckTreatsKnownBrowserStateErrorAsNoUpdate()
+    {
+        var appScript = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "js", "app.js");
+
+        BenignManualUpdateErrorRegex().IsMatch(appScript).Should().BeTrue();
+        appScript.Should().Contain("if (!isBenignServiceWorkerUpdateError(err))");
+    }
+
     [GeneratedRegex(@"const offlineAssetsExclude = \[[^;]+;", RegexOptions.CultureInvariant)]
     private static partial Regex OfflineAssetsExcludeRegex();
 
@@ -85,4 +94,7 @@ public sealed partial class ServiceWorkerAssetTests
 
     [GeneratedRegex(@"if \(registration\.waiting && navigator\.serviceWorker\.controller\)\s*\{\s*notifyUpdateAvailable\(\);\s*\}", RegexOptions.CultureInvariant)]
     private static partial Regex WaitingRegistrationNotificationRegex();
+
+    [GeneratedRegex(@"catch \(err\)\s*\{[\s\S]+?if \(isBenignServiceWorkerUpdateError\(err\)\)\s*\{\s*return 'none';\s*\}[\s\S]+?return 'error';", RegexOptions.CultureInvariant)]
+    private static partial Regex BenignManualUpdateErrorRegex();
 }

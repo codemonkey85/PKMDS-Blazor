@@ -23,6 +23,11 @@ function notifyUpdateAvailable() {
     window.dispatchEvent(new CustomEvent('updateAvailable'));
 }
 
+function isBenignServiceWorkerUpdateError(error) {
+    return error.name === 'InvalidStateError'
+        || (error.message && error.message.includes('newestWorker is null'));
+}
+
 // Service worker registration
 if (pkmdsIsEmbedded()) {
     console.info('Service worker registration skipped: embedded host mode.');
@@ -35,7 +40,7 @@ if (pkmdsIsEmbedded()) {
         }
         setInterval(() => registration.update().catch(err => {
             // Safari may throw "newestWorker is null" — this is benign
-            if (!(err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null')))) {
+            if (!isBenignServiceWorkerUpdateError(err)) {
                 console.warn('Periodic registration.update() failed:', err);
             }
         }), 60 * 60 * 1000); // check for updates every hour
@@ -166,9 +171,14 @@ window.checkForUpdates = async () => {
         try {
             await registration.update();
         } catch (err) {
-            if (!(err.name === 'InvalidStateError' || (err.message && err.message.includes('newestWorker is null')))) {
-                console.warn('Manual update check failed:', err);
+            // Some browsers reject a redundant manual check even though their normal
+            // navigation update check completed successfully. Do not report that known
+            // browser state quirk as a failed update; genuine failures remain visible.
+            if (isBenignServiceWorkerUpdateError(err)) {
+                return 'none';
             }
+
+            console.warn('Manual update check failed:', err);
             return 'error';
         }
 
