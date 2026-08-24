@@ -37,7 +37,16 @@ public sealed partial class ServiceWorkerAssetTests
 
             workflowContents.Should().Contain("files: 'release/wwwroot/service-worker.js'");
             workflowContents.Should().NotContain("files: 'release/wwwroot/service-worker.published.js'");
+            workflowContents.Should().Contain("node tools/verify-service-worker-assets.mjs release/wwwroot");
         }
+    }
+
+    [Fact]
+    public void TailwindBuildPrecedesCurrentProjectStaticAssetHashing()
+    {
+        var targets = RepoFileTestHelper.ReadAllText("Pkmds.Rcl", "Tailwind.targets");
+
+        targets.Should().Contain("BeforeTargets=\"BeforeCompile;ResolveCurrentProjectStaticWebAssetsInputs;ResolveStaticWebAssetsInputs\"");
     }
 
     [Fact]
