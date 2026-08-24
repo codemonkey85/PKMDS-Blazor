@@ -4,26 +4,10 @@ namespace Pkmds.Tests;
 
 public sealed partial class ServiceWorkerAssetTests
 {
-    private static readonly string RepoRoot = FindRepoRoot();
-
-    private static string FindRepoRoot()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Pkmds.slnx")))
-        {
-            directory = directory.Parent;
-        }
-
-        return directory?.FullName ?? throw new DirectoryNotFoundException("Could not locate the repository root.");
-    }
-
-    private static string ReadRepoFile(params string[] pathSegments) =>
-        File.ReadAllText(Path.Combine([RepoRoot, .. pathSegments]));
-
     [Fact]
     public void PublishedServiceWorkerPreCachesNativeRuntime()
     {
-        var serviceWorker = ReadRepoFile("Pkmds.Web", "wwwroot", "service-worker.published.js");
+        var serviceWorker = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "service-worker.published.js");
         var exclusions = OfflineAssetsExcludeRegex().Match(serviceWorker);
 
         exclusions.Success.Should().BeTrue();
@@ -31,20 +15,35 @@ public sealed partial class ServiceWorkerAssetTests
     }
 
     [Fact]
-    public void PublishedServiceWorkerWaitsForExplicitUpdateHandoff()
+    public void PublishedServiceWorkerWaitsUnlessLegacyCacheCannotBoot()
     {
-        var serviceWorker = ReadRepoFile("Pkmds.Web", "wwwroot", "service-worker.published.js");
+        var serviceWorker = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "service-worker.published.js");
         var installHandler = InstallHandlerRegex().Match(serviceWorker);
 
         installHandler.Success.Should().BeTrue();
-        installHandler.Value.Should().NotContain("skipWaiting");
+        LegacyRecoveryInstallRegex().IsMatch(installHandler.Value).Should().BeTrue();
+        LiveLegacyClientGuardRegex().IsMatch(serviceWorker).Should().BeTrue();
+        LegacyRecoveryClientSafetyRegex().IsMatch(serviceWorker).Should().BeTrue();
+        NavigationCacheCleanupRegex().IsMatch(serviceWorker).Should().BeTrue();
         serviceWorker.Should().Contain("event.waitUntil(self.skipWaiting())");
+    }
+
+    [Fact]
+    public void DeploymentWorkflowsStampTheDeployedServiceWorker()
+    {
+        foreach (var workflow in new[] { "main.yml", "uat.yml" })
+        {
+            var workflowContents = RepoFileTestHelper.ReadAllText(".github", "workflows", workflow);
+
+            workflowContents.Should().Contain("files: 'release/wwwroot/service-worker.js'");
+            workflowContents.Should().NotContain("files: 'release/wwwroot/service-worker.published.js'");
+        }
     }
 
     [Fact]
     public void AutomaticCacheRecoveryDoesNotDeleteIndexedDb()
     {
-        var cacheScript = ReadRepoFile("Pkmds.Rcl", "wwwroot", "js", "appCache.js");
+        var cacheScript = RepoFileTestHelper.ReadAllText("Pkmds.Rcl", "wwwroot", "js", "appCache.js");
 
         cacheScript.Should().Contain("caches.delete");
         cacheScript.Should().Contain("r.unregister()");
@@ -54,7 +53,7 @@ public sealed partial class ServiceWorkerAssetTests
     [Fact]
     public void WaitingServiceWorkerUpdateIsPreservedAndDispatched()
     {
-        var appScript = ReadRepoFile("Pkmds.Web", "wwwroot", "js", "app.js");
+        var appScript = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "js", "app.js");
 
         appScript.Should().Contain("""
             function notifyUpdateAvailable() {
@@ -71,6 +70,18 @@ public sealed partial class ServiceWorkerAssetTests
 
     [GeneratedRegex(@"self\.addEventListener\('install',[\s\S]+?\n}\);", RegexOptions.CultureInvariant)]
     private static partial Regex InstallHandlerRegex();
+
+    [GeneratedRegex(@"if \(await hasLegacyCacheWithoutNativeRuntime\(\)\)\s*\{[\s\S]+?await self\.skipWaiting\(\);\s*}", RegexOptions.CultureInvariant)]
+    private static partial Regex LegacyRecoveryInstallRegex();
+
+    [GeneratedRegex(@"const \{hasUnleasedClients} = await getLiveClientCacheLeases\(\);\s*if \(!hasUnleasedClients\)\s*\{\s*return false;\s*}", RegexOptions.CultureInvariant)]
+    private static partial Regex LiveLegacyClientGuardRegex();
+
+    [GeneratedRegex(@"if \(isLegacyRecovery\)\s*\{[\s\S]+?await currentCache\.delete\(legacyRecoveryMarkerUrl\);\s*return false;\s*}", RegexOptions.CultureInvariant)]
+    private static partial Regex LegacyRecoveryClientSafetyRegex();
+
+    [GeneratedRegex(@"const isNavigation = event\.request\.mode === 'navigate';[\s\S]+?if \(isNavigation\)\s*\{\s*await pruneUnusedAppCaches\(\);\s*}", RegexOptions.CultureInvariant)]
+    private static partial Regex NavigationCacheCleanupRegex();
 
     [GeneratedRegex(@"if \(registration\.waiting && navigator\.serviceWorker\.controller\)\s*\{\s*notifyUpdateAvailable\(\);\s*\}", RegexOptions.CultureInvariant)]
     private static partial Regex WaitingRegistrationNotificationRegex();

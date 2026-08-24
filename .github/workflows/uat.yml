@@ -52,7 +52,8 @@ jobs:
       - name: Update cache version
         uses: datamonsters/replace-action@v2
         with:
-          files: 'release/wwwroot/service-worker.published.js'
+          # Publish renames service-worker.published.js to the deployed service-worker.js.
+          files: 'release/wwwroot/service-worker.js'
           replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
 
 

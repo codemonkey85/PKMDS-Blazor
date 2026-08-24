@@ -67,8 +67,9 @@ body, html {
    all scrolling there — box grid, edit form, and Trainer tab were clipped with
    no way to reach the overflow. Restore the 9.5.x block box. This must stay
    ABOVE the :has(...) rules that switch the Bank/Pokédex panels to display:flex;
-   the specificity ties at (0,4,0), so file order decides the winner. */
-.mud-tabs-panels > .mud-tab-panel.mud-tab-panel-active:not(.mud-tab-panel-hidden) {
+   the specificity ties at (0,5,0), so file order decides the winner. Keep the
+   :not(.mud-tab) term in sync with MudBlazor's active-panel selector. */
+.mud-tabs-panels > .mud-tab-panel:not(.mud-tab).mud-tab-panel-active:not(.mud-tab-panel-hidden) {
     display: block;
 }
 
