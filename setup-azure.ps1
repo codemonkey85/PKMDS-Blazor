@@ -135,7 +135,19 @@ $RetentionPolicy = @{
                 actions = @{ baseBlob = @{ delete = @{ daysAfterCreationGreaterThan = 29 } } }
                 filters = @{
                     blobTypes = @("blockBlob")
-                    prefixMatch = @("$BlobContainer/attachments/")
+                    prefixMatch = @(
+                        "$BlobContainer/attachments/",
+                        "$BlobContainer/0",
+                        "$BlobContainer/1",
+                        "$BlobContainer/2",
+                        "$BlobContainer/3",
+                        "$BlobContainer/4",
+                        "$BlobContainer/5",
+                        "$BlobContainer/6",
+                        "$BlobContainer/7",
+                        "$BlobContainer/8",
+                        "$BlobContainer/9"
+                    )
                 }
             }
         },

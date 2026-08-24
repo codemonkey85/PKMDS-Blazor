@@ -64,12 +64,9 @@ public partial class App : IDisposable
             backdropClick: false);
         var dialog = await DialogService.ShowAsync<BugReportDialog>("Report this crash", parameters, options);
         var result = await dialog.Result;
-        if (result is { Data: BugReportResult { IssueUrl: { } issueUrl } submission })
+        if (result is { Data: BugReportResult submission })
         {
-            var message = submission.WarningMessage is null
-                ? $"Crash report submitted! <a href=\"{issueUrl}\" target=\"_blank\">View issue</a>"
-                : $"{submission.WarningMessage} <a href=\"{issueUrl}\" target=\"_blank\">View issue</a>";
-            Snackbar.Add(new MarkupString(message),
+            Snackbar.Add(submission.ToSubmissionMarkup("Crash report submitted!"),
                 submission.WarningMessage is null ? MudBlazor.Severity.Success : MudBlazor.Severity.Warning,
                 snackbarOptions => snackbarOptions.RequireInteraction = true);
         }

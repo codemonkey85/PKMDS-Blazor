@@ -17,7 +17,17 @@
             "blockBlob"
           ],
           "prefixMatch": [
-            "bug-reports/attachments/"
+            "bug-reports/attachments/",
+            "bug-reports/0",
+            "bug-reports/1",
+            "bug-reports/2",
+            "bug-reports/3",
+            "bug-reports/4",
+            "bug-reports/5",
+            "bug-reports/6",
+            "bug-reports/7",
+            "bug-reports/8",
+            "bug-reports/9"
           ]
         }
       }

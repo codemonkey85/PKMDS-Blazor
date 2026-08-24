@@ -59,6 +59,21 @@ public sealed class BugReportPrivacyTests
     }
 
     [Fact]
+    public void SubmissionMarkupOnlyLinksValidatedRepositoryIssueUrls()
+    {
+        var validResult = new BugReportResult(true, "https://github.com/codemonkey85/PKMDS-Blazor/issues/1217");
+        var maliciousResult = new BugReportResult(
+            true,
+            "https://example.com/\" onmouseover=\"alert(1)",
+            WarningMessage: "<img src=x onerror=alert(1)>");
+
+        validResult.ToSubmissionMarkup("Submitted").Value.Should().Contain(
+            "rel=\"noopener noreferrer\"");
+        maliciousResult.ToSubmissionMarkup("Submitted").Value.Should().Be(
+            "&lt;img src=x onerror=alert(1)&gt;");
+    }
+
+    [Fact]
     public void ProvisioningEnforcesPrivateDataRetentionCeilings()
     {
         var setup = RepoFileTestHelper.ReadAllText("setup-azure.ps1");
@@ -73,5 +88,9 @@ public sealed class BugReportPrivacyTests
         workflow.Should().Contain("--policy @Pkmds.Functions/report-retention-policy.json");
         policy.Should().Contain("\"daysAfterCreationGreaterThan\": 364");
         policy.Should().Contain("\"daysAfterCreationGreaterThan\": 29");
+        policy.Should().Contain("\"bug-reports/0\"");
+        policy.Should().Contain("\"bug-reports/9\"");
+        setup.Should().Contain("\"$BlobContainer/0\"");
+        setup.Should().Contain("\"$BlobContainer/9\"");
     }
 }
