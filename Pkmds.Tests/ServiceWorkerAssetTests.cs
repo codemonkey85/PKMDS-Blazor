@@ -46,7 +46,7 @@ public sealed partial class ServiceWorkerAssetTests
     {
         var targets = RepoFileTestHelper.ReadAllText("Pkmds.Rcl", "Tailwind.targets");
 
-        targets.Should().Contain("BeforeTargets=\"BeforeCompile;ResolveCurrentProjectStaticWebAssetsInputs;ResolveStaticWebAssetsInputs\"");
+        targets.Should().Contain("BeforeTargets=\"ResolveProjectStaticWebAssets;BeforeCompile;ResolveCurrentProjectStaticWebAssetsInputs;ResolveStaticWebAssetsInputs\"");
     }
 
     [Fact]

@@ -103,7 +103,7 @@
     <!-- Use Inputs/Outputs for incremental build to prevent rebuilding when unnecessary -->
     <Target Name="TailwindBuild"
             Condition="'$(SkipTailwind)' != 'true'"
-            BeforeTargets="BeforeCompile;ResolveCurrentProjectStaticWebAssetsInputs;ResolveStaticWebAssetsInputs"
+            BeforeTargets="ResolveProjectStaticWebAssets;BeforeCompile;ResolveCurrentProjectStaticWebAssetsInputs;ResolveStaticWebAssetsInputs"
             Inputs="$(TailwindInputCss);$(TailwindConfigJs);$(MSBuildThisFileDirectory)Tailwind.targets"
             Outputs="$(TailwindMarkerFile);$(TailwindOutputCss)">
         <PropertyGroup>
