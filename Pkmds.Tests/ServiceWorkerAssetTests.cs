@@ -100,7 +100,7 @@ public sealed partial class ServiceWorkerAssetTests
     [GeneratedRegex(@"if \(registration\.waiting && navigator\.serviceWorker\.controller\)\s*\{\s*notifyUpdateAvailable\(\);\s*\}", RegexOptions.CultureInvariant)]
     private static partial Regex WaitingRegistrationNotificationRegex();
 
-    [GeneratedRegex(@"catch \(err\)\s*\{\s*if \(!isBenignServiceWorkerUpdateError\(err\)\)[\s\S]+?registration = await navigator\.serviceWorker\.register\([\s\S]+?registration\.addEventListener\('updatefound', signalUpdateFound\);", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"catch \(err\)\s*\{[\s\S]+?if \(!shouldRepairServiceWorkerRegistration\(err, registration\)\)[\s\S]+?registration = await navigator\.serviceWorker\.register\([\s\S]+?registration\.addEventListener\('updatefound', signalUpdateFound\);", RegexOptions.CultureInvariant)]
     private static partial Regex MissingNewestWorkerRepairRegex();
 
     [GeneratedRegex(@"if \(repairedRegistration\)\s*\{\s*notifyUpdateAvailable\(\);\s*return 'found';\s*\}[\s\S]+?if \(navigator\.serviceWorker\.controller \|\| repairedRegistration\)", RegexOptions.CultureInvariant)]
