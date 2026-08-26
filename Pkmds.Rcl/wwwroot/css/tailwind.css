@@ -227,6 +227,9 @@
   .my-3 {
     margin-block: calc(var(--spacing) * 3);
   }
+  .my-4 {
+    margin-block: calc(var(--spacing) * 4);
+  }
   .ms-2 {
     margin-inline-start: calc(var(--spacing) * 2);
   }
@@ -298,9 +301,6 @@
   }
   .h-\[50px\] {
     height: 50px;
-  }
-  .h-\[398px\] {
-    height: 398px;
   }
   .h-\[400px\] {
     height: 400px;
@@ -426,9 +426,6 @@
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
   }
-  .px-3 {
-    padding-inline: calc(var(--spacing) * 3);
-  }
   .px-\[5px\] {
     padding-inline: 5px;
   }
@@ -441,17 +438,8 @@
   .py-8 {
     padding-block: calc(var(--spacing) * 8);
   }
-  .pt-3 {
-    padding-top: calc(var(--spacing) * 3);
-  }
   .pt-\[3px\] {
     padding-top: 3px;
-  }
-  .pb-1 {
-    padding-bottom: calc(var(--spacing) * 1);
-  }
-  .pb-4 {
-    padding-bottom: calc(var(--spacing) * 4);
   }
   .text-center {
     text-align: center;
@@ -507,16 +495,6 @@
   .select-none {
     -webkit-user-select: none;
     user-select: none;
-  }
-  .xl\:h-\[calc\(100dvh-319px\)\] {
-    @media (width >= 80rem) {
-      height: calc(100dvh - 319px);
-    }
-  }
-  .xl\:h-\[calc\(100vh-319px\)\] {
-    @media (width >= 80rem) {
-      height: calc(100vh - 319px);
-    }
   }
 }
 @property --tw-rotate-x {
