@@ -1,10 +1,13 @@
+using Bunit;
+using Pkmds.Rcl.Components.MainTabPages;
+
 namespace Pkmds.Tests;
 
 /// <summary>
 /// Regression tests for LGPE (SAV7b) party handling. Let's Go stores the party as a pointer list
 /// into unified storage; an empty slot holds the SLOT_EMPTY sentinel, and reading or writing such
 /// a slot via the index API throws <see cref="ArgumentOutOfRangeException"/>. Saves in the wild
-/// (emulator / JKSM dumps) can report a <see cref="SaveFile.PartyCount"/> larger than the number of
+/// (extracted or emulator saves) can report a <see cref="SaveFile.PartyCount"/> larger than the number of
 /// populated pointer slots, which crashed the party grid, the editor save path, and CompactParty
 /// (issues #942–#948). The safe extension helpers must tolerate that state instead of throwing.
 /// </summary>
@@ -79,5 +82,23 @@ public class LgpePartySafetyTests
         var sav = new SAV8SWSH();
 
         sav.GetSafePartyCount().Should().Be(sav.PartyCount);
+    }
+
+    [Fact]
+    public async Task TradePane_PhantomPartySlot_RendersWithoutThrowing()
+    {
+        var sav = CreateLgpeWithOverReportedParty(2);
+        var appState = new TestAppState { SaveFile = sav };
+        var refreshService = new TestRefreshService();
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
+        await using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
+
+        var render = () => ctx.Render<TradePane>(parameters => parameters
+            .Add(component => component.Title, "Let's Go Pikachu")
+            .Add(component => component.SaveFile, sav)
+            .Add(component => component.SelectedPartySlot, 0));
+
+        render.Should().NotThrow(
+            "the Trade tab must treat an unreadable SAV7b party pointer as an empty slot");
     }
 }

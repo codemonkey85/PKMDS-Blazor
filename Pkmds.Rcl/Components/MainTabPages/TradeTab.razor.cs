@@ -279,7 +279,7 @@ public partial class TradeTab : RefreshAwareComponent
         if (!TryGetSelectedSource(fromA: true, out _, out var isParty, out var boxNum, out var slotNum))
             return false;
         var pkm = isParty
-            ? srcSave.GetPartySlotAtIndex(slotNum)
+            ? srcSave.TryGetPartySlot(slotNum)
             : boxNum.HasValue ? srcSave.GetBoxSlotAtIndex(boxNum.Value, slotNum) : null;
         return IsCrossTransferEligible(pkm, srcSave, destSave, AppState.IsHaXEnabled);
     }
@@ -291,7 +291,7 @@ public partial class TradeTab : RefreshAwareComponent
         if (!TryGetSelectedSource(fromA: false, out _, out var isParty, out var boxNum, out var slotNum))
             return false;
         var pkm = isParty
-            ? srcSave.GetPartySlotAtIndex(slotNum)
+            ? srcSave.TryGetPartySlot(slotNum)
             : boxNum.HasValue ? srcSave.GetBoxSlotAtIndex(boxNum.Value, slotNum) : null;
         return IsCrossTransferEligible(pkm, srcSave, destSave, AppState.IsHaXEnabled);
     }
@@ -329,7 +329,7 @@ public partial class TradeTab : RefreshAwareComponent
         var partySel = fromA ? AppState.SelectedPartySlotNumber : AppState.SelectedPartySlotNumberB;
         if (partySel is { } partySlot && partySlot < sav.PartyCount)
         {
-            var pkm = sav.GetPartySlotAtIndex(partySlot);
+            var pkm = sav.TryGetPartySlot(partySlot);
             if (pkm is { Species: > 0 })
             {
                 source = sav;
@@ -374,7 +374,7 @@ public partial class TradeTab : RefreshAwareComponent
 
         // Belt-and-suspenders: same eligibility gate as CanTransferFrom* / TradeSlot.HandleDrop.
         if (!IsCrossTransferEligible(
-                srcIsParty ? srcSave.GetPartySlotAtIndex(srcSlot)
+                srcIsParty ? srcSave.TryGetPartySlot(srcSlot)
                            : srcBox.HasValue ? srcSave.GetBoxSlotAtIndex(srcBox.Value, srcSlot) : null,
                 srcSave, destSave, AppState.IsHaXEnabled))
         {
@@ -507,7 +507,7 @@ public partial class TradeTab : RefreshAwareComponent
         }
 
         var srcPkm = srcIsParty
-            ? srcSave.GetPartySlotAtIndex(srcSlot)
+            ? srcSave.TryGetPartySlot(srcSlot)
             : srcBox.HasValue
                 ? srcSave.GetBoxSlotAtIndex(srcBox.Value, srcSlot)
                 : null;
@@ -542,7 +542,7 @@ public partial class TradeTab : RefreshAwareComponent
         }
 
         var destPkmPrev = destIsParty
-            ? destSave.GetPartySlotAtIndex(destSlot)
+            ? destSave.TryGetPartySlot(destSlot)
             : destBox.HasValue
                 ? destSave.GetBoxSlotAtIndex(destBox.Value, destSlot)
                 : null;
@@ -976,7 +976,7 @@ public partial class TradeTab : RefreshAwareComponent
         bool destIsParty, int? destBox, int destSlot)
     {
         var source = srcIsParty
-            ? save.GetPartySlotAtIndex(srcSlot)
+            ? save.TryGetPartySlot(srcSlot)
             : srcBox.HasValue ? save.GetBoxSlotAtIndex(srcBox.Value, srcSlot) : null;
         if (source is null)
         {
@@ -984,7 +984,7 @@ public partial class TradeTab : RefreshAwareComponent
         }
 
         var dest = destIsParty
-            ? save.GetPartySlotAtIndex(destSlot)
+            ? save.TryGetPartySlot(destSlot)
             : destBox.HasValue ? save.GetBoxSlotAtIndex(destBox.Value, destSlot) : null;
         if (dest is null)
         {
@@ -1003,7 +1003,7 @@ public partial class TradeTab : RefreshAwareComponent
                 {
                     continue;
                 }
-                var partyMon = save.GetPartySlotAtIndex(i);
+                var partyMon = save.TryGetPartySlot(i);
                 if (partyMon is { Species: > 0, IsEgg: false })
                 {
                     battleReady++;
