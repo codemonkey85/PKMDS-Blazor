@@ -98,7 +98,7 @@ public partial class TradePane : RefreshAwareComponent
 
             if (SelectedPartySlot is { } partySlot && partySlot < sav.PartyCount)
             {
-                return sav.GetPartySlotAtIndex(partySlot);
+                return sav.TryGetPartySlot(partySlot);
             }
 
             if (SelectedBox is { } boxNum && SelectedBoxSlot is { } boxSlot)

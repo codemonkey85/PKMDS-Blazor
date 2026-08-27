@@ -17,8 +17,9 @@ public static partial class SaveSourceDetector
     /// <summary>
     /// Returns a concise label for the save's origin. Decision order is most-specific first:
     /// explicit Manic EMU archive context → known filename conventions (DeSmuME .dsv,
-    /// <c>sav*.dat</c> VC dumps) → SAV-type-specific flags (<see cref="SAV1.IsVirtualConsole" />)
-    /// → generation-based fallback. Returns <c>"Unknown"</c> if no signal matches.
+    /// <c>sav*.dat</c> VC dumps) → SAV-type-specific platform/VC signals
+    /// (<see cref="SAV7b" />, <see cref="SAV1.IsVirtualConsole" />) → generation-based fallback.
+    /// Returns <c>"Unknown"</c> if no signal matches.
     /// </summary>
     public static string Detect(SaveFile saveFile, string? fileName, bool isManicEmuArchive)
     {
@@ -55,9 +56,10 @@ public static partial class SaveSourceDetector
             return "Virtual Console (sav*.dat)";
         }
 
-        // SAV-type specific detection (IsVirtualConsole on Gen 1/2).
+        // SAV-type specific detection (LGPE platform and IsVirtualConsole on Gen 1/2).
         var sourceFromType = saveFile switch
         {
+            SAV7b => "Switch save (raw)",
             SAV1 { IsVirtualConsole: true } => "Gen 1 Virtual Console",
             SAV1 => "Gen 1 physical cartridge",
             SAV2 { IsVirtualConsole: true } => "Gen 2 Virtual Console",
