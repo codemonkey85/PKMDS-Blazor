@@ -88,16 +88,31 @@ public partial class AutocompleteSelect<T>
             return;
         }
 
-        var matches = (Items ?? [])
-            .Where(item => string.Equals(EffectiveToStringFunc(item), text, StringComparison.OrdinalIgnoreCase))
-            .Take(2)
-            .ToList();
-        if (matches.Count != 1 || EqualityComparer<T>.Default.Equals(Value!, matches[0]))
+        var toString = EffectiveToStringFunc;
+        T? match = default;
+        var foundMatch = false;
+        foreach (var item in Items ?? [])
+        {
+            if (!string.Equals(toString(item), text, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (foundMatch)
+            {
+                return;
+            }
+
+            match = item;
+            foundMatch = true;
+        }
+
+        if (!foundMatch || EqualityComparer<T>.Default.Equals(Value!, match!))
         {
             return;
         }
 
-        await OnWrappedValueChanged(new Option(matches[0]));
+        await OnWrappedValueChanged(new Option(match));
     }
 
     private Func<T?, string?> EffectiveToStringFunc =>
