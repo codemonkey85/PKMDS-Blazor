@@ -30,6 +30,8 @@ public partial class AutocompleteSelect<T>
 
     [Parameter] public bool Strict { get; set; } = true;
 
+    [Parameter] public bool SelectExactMatchOnTextChange { get; set; }
+
     // Keep MudAutocomplete's own bounded default. Leaving this null overrides MudBlazor's
     // default of 10 and renders every match, which made one-letter item searches stall for
     // several seconds on mobile devices (issue #1122).
@@ -77,6 +79,25 @@ public partial class AutocompleteSelect<T>
         var newValue = opt is null ? default : opt.Value;
         Value = newValue;
         await ValueChanged.InvokeAsync(newValue);
+    }
+
+    private async Task OnWrappedTextChanged(string? text)
+    {
+        if (!SelectExactMatchOnTextChange || string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        var matches = (Items ?? [])
+            .Where(item => string.Equals(EffectiveToStringFunc(item), text, StringComparison.OrdinalIgnoreCase))
+            .Take(2)
+            .ToList();
+        if (matches.Count != 1 || EqualityComparer<T>.Default.Equals(Value!, matches[0]))
+        {
+            return;
+        }
+
+        await OnWrappedValueChanged(new Option(matches[0]));
     }
 
     private Func<T?, string?> EffectiveToStringFunc =>
