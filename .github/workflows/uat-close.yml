@@ -1,8 +1,8 @@
 name: UAT — Close Preview Environments
 
 on:
-  # Always runs when a PR targeting main is closed, regardless of which files changed.
-  # Intentionally has no paths-ignore — environment cleanup must happen unconditionally.
+  # Runs when a PR targeting main is closed, regardless of which files changed.
+  # Intentionally has no paths-ignore — eligible preview environments must always be cleaned up.
   pull_request:
     branches: [main]
     types: [closed]
@@ -20,7 +20,12 @@ jobs:
   close_pr_staging:
     name: Close UAT for PR ${{ github.event.pull_request.number }}
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    # Keep this eligibility check in sync with the credentialed deployment steps in uat.yml.
+    # Dependabot and fork PRs cannot access the deployment secrets, so no preview exists to delete.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     permissions:
       id-token: write
       contents: read
