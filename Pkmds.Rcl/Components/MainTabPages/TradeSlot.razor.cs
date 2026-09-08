@@ -281,12 +281,7 @@ public partial class TradeSlot : RefreshAwareComponent
         _ => false
     };
 
-    private static string StatusTitle(LegalityStatus status) => status switch
-    {
-        LegalityStatus.Legal => "Legal",
-        LegalityStatus.Fishy => "Fishy",
-        _ => "Illegal"
-    };
+    private static string StatusTitle(LegalityStatus status) => LegalityUi.GetStatusLabel(status);
 
     // Use solid glyphs rather than the *Circle / Cancel variants — those are drawn as
     // cutouts and inherit the sprite behind them. The coloured disc comes from the

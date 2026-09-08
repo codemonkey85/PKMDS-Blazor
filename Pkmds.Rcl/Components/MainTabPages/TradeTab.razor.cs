@@ -921,35 +921,38 @@ public partial class TradeTab : RefreshAwareComponent
             return true;
         }
 
-        // LegalityLocalizationContext is a ref struct, so we can't use LINQ over it —
-        // materialise the humanized strings via a plain loop.
-        var ctx = LegalityLocalizationContext.Create(la);
-        var messages = new List<string>(3);
-        foreach (var r in la.Results)
+        // Materialise the user-facing strings via a plain loop so the warning and
+        // invalid findings retain their order from PKHeX.
+        List<string> messages;
         {
-            if (r.Judgement is not (PKHeX.Core.Severity.Invalid or PKHeX.Core.Severity.Fishy))
+            var ctx = LegalityLocalizationContext.Create(la);
+            messages = new List<string>(3);
+            foreach (var r in la.Results)
             {
-                continue;
-            }
-            var humanized = ctx.Humanize(in r, verbose: false);
-            if (!string.IsNullOrWhiteSpace(humanized))
-            {
-                messages.Add(humanized);
-            }
-            if (messages.Count >= 3)
-            {
-                break;
+                if (r.Judgement is not (PKHeX.Core.Severity.Invalid or PKHeX.Core.Severity.Fishy))
+                {
+                    continue;
+                }
+                var humanized = LegalityUi.GetDisplayMessage(ctx, in r, verbose: false);
+                if (!string.IsNullOrWhiteSpace(humanized))
+                {
+                    messages.Add(humanized);
+                }
+                if (messages.Count >= 3)
+                {
+                    break;
+                }
             }
         }
 
-        var severity = invalid ? "illegal" : "fishy";
+        var statusDescription = invalid ? "illegal" : "legal, but has warnings";
         // MudBlazor's message box collapses whitespace in plain strings, so a bulleted list
         // has to be rendered as HTML via the MarkupString overload (same pattern as
         // ConfirmHeldItemLossAsync) — otherwise the bullets all wrap onto one line.
         var body = new StringBuilder();
         if (messages.Count > 0)
         {
-            body.Append("<p>The converted Pokémon is ").Append(severity).Append(":</p>");
+            body.Append("<p>The converted Pokémon is ").Append(statusDescription).Append(":</p>");
             body.Append("<ul style=\"margin:8px 0 0 0;padding-left:1.25rem;\">");
             foreach (var msg in messages)
             {
@@ -960,10 +963,10 @@ public partial class TradeTab : RefreshAwareComponent
         }
         else
         {
-            body.Append("<p>The converted Pokémon is ").Append(severity).Append(". Proceed with the transfer?</p>");
+            body.Append("<p>The converted Pokémon is ").Append(statusDescription).Append(". Proceed with the transfer?</p>");
         }
         var result = await DialogService.ShowMessageBoxAsync(
-            invalid ? "Illegal after conversion" : "Fishy after conversion",
+            invalid ? "Illegal after conversion" : "Warnings after conversion",
             new MarkupString(body.ToString()),
             yesText: "Transfer anyway",
             cancelText: "Cancel");

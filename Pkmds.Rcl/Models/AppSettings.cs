@@ -64,7 +64,7 @@ public record AppSettings
     public bool ShowLegalIndicator { get; init; } = true;
 
     /// <summary>
-    /// Whether to show the yellow "fishy" indicator on box/party slots.
+    /// Whether to show the yellow warning indicator on box/party slots.
     /// </summary>
     public bool ShowFishyIndicator { get; init; } = true;
 

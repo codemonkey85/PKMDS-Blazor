@@ -329,7 +329,6 @@ public partial class LegalityTab : IDisposable
             return result.Result.ToString();
         }
 
-        var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in result);
+        return LegalityUi.GetDisplayMessage(la, in result);
     }
 }
