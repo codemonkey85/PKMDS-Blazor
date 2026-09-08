@@ -22,7 +22,7 @@ public partial class SaveFileComponent : RefreshAwareComponent
             !await UnsavedChangesGuard.ConfirmAsync(
                 AppService,
                 DialogService,
-                "This Pokémon has unsaved changes. Save or discard those changes before switching Battle Revolution profiles.",
+                "The currently edited Pokémon has unsaved changes. Save or discard those edits before switching Battle Revolution profiles.",
                 snackbar: Snackbar))
         {
             return;
