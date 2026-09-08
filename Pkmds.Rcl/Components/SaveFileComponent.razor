@@ -31,6 +31,29 @@ else
         @SaveFileNameDisplay.SaveFileNameDisplayString(AppState, AppService)
     </MudText>
 
+    @if (saveFile is SAV4BR battleRevolution)
+    {
+        <div class="flex flex-wrap items-center gap-3 my-3">
+            <MudSelect T="@int"
+                       @key="@battleRevolutionProfileSelectorVersion"
+                       Label="Active Battle Revolution profile"
+                       Variant="@Variant.Outlined"
+                       Margin="@Margin.Dense"
+                       Value="@battleRevolution.CurrentSlot"
+                       ValueChanged="@(profile => OnBattleRevolutionProfileChangedAsync(battleRevolution, profile))"
+                       Style="min-width: 240px; max-width: 420px;">
+                @for (var profile = 0; profile < battleRevolution.SaveNames.Count; profile++)
+                {
+                    var profileIndex = profile;
+                    <MudSelectItem Value="@profileIndex"
+                                   @key="@profileIndex">
+                        @GetBattleRevolutionProfileLabel(battleRevolution, profileIndex)
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+    }
+
     <MudTabs Outlined
              Rounded
              Border
@@ -38,53 +61,70 @@ else
              @bind-ActivePanelIndex="@activeTabIndex">
 
         <MudTabPanel Text="Party / Box">
-            <div class="mt-3 party-box-tab-content">
-                <PartyAndBoxTab/>
-            </div>
+            <TabErrorBoundary TabName="Party / Box" @key="saveFile">
+                <div class="mt-3 party-box-tab-content">
+                    <PartyAndBoxTab/>
+                </div>
+            </TabErrorBoundary>
         </MudTabPanel>
 
         <MudTabPanel Text="Trainer">
-            <div class="mt-3 trainer-tab-content">
-                <TrainerInfoTab/>
-            </div>
+            <TabErrorBoundary TabName="Trainer" @key="saveFile">
+                <div class="mt-3 trainer-tab-content">
+                    <TrainerInfoTab/>
+                </div>
+            </TabErrorBoundary>
         </MudTabPanel>
 
-        <MudTabPanel Text="Bag">
-            <div class="mt-3">
-                <BagTab Inventory="@AppState.SaveFile.Inventory"/>
-            </div>
-        </MudTabPanel>
+        @if (HasEditableInventory(saveFile))
+        {
+            <MudTabPanel Text="Bag">
+                <TabErrorBoundary TabName="Bag" @key="saveFile">
+                    <div class="mt-3">
+                        <BagTab Inventory="@saveFile.Inventory"/>
+                    </div>
+                </TabErrorBoundary>
+            </MudTabPanel>
+        }
 
         @if (saveFile.Generation >= 4)
         {
             <MudTabPanel Text="Mystery Gifts">
-                <div class="mt-3">
-                    <MysteryGiftDatabaseTab/>
-                </div>
+                <TabErrorBoundary TabName="Mystery Gifts" @key="saveFile">
+                    <div class="mt-3">
+                        <MysteryGiftDatabaseTab/>
+                    </div>
+                </TabErrorBoundary>
             </MudTabPanel>
         }
 
         @if (AppService.HasWonderCardSlots())
         {
             <MudTabPanel Text="Wonder Cards">
-                <div class="mt-3">
-                    <WonderCardsTab/>
-                </div>
+                <TabErrorBoundary TabName="Wonder Cards" @key="saveFile">
+                    <div class="mt-3">
+                        <WonderCardsTab/>
+                    </div>
+                </TabErrorBoundary>
             </MudTabPanel>
         }
 
         @if (saveFile is SAV3 { Generation: 3 } sav3)
         {
             <MudTabPanel Text="Records">
-                <RecordsTab SaveFile="@sav3"/>
+                <TabErrorBoundary TabName="Records" @key="saveFile">
+                    <RecordsTab SaveFile="@sav3"/>
+                </TabErrorBoundary>
             </MudTabPanel>
 
             @if (saveFile is SAV3RS or SAV3E)
             {
                 <MudTabPanel Text="RTC">
-                    <div class="mt-3">
-                        <RtcTab SaveFile="@sav3"/>
-                    </div>
+                    <TabErrorBoundary TabName="RTC" @key="saveFile">
+                        <div class="mt-3">
+                            <RtcTab SaveFile="@sav3"/>
+                        </div>
+                    </TabErrorBoundary>
                 </MudTabPanel>
             }
         }
@@ -92,64 +132,82 @@ else
         @if (saveFile is SAV3RS or SAV3E or SAV4Sinnoh or SAV8BS)
         {
             <MudTabPanel Text="Feebas">
-                <div class="mt-3 feebas-tab-content">
-                    <FeebasLocatorTab/>
-                </div>
+                <TabErrorBoundary TabName="Feebas" @key="saveFile">
+                    <div class="mt-3 feebas-tab-content">
+                        <FeebasLocatorTab/>
+                    </div>
+                </TabErrorBoundary>
             </MudTabPanel>
         }
 
         @if (saveFile.HasPokeDex)
         {
             <MudTabPanel Text="Pokédex">
-                <PokedexTab/>
+                <TabErrorBoundary TabName="Pokédex" @key="saveFile">
+                    <PokedexTab/>
+                </TabErrorBoundary>
             </MudTabPanel>
         }
 
         @if (AppService.HasBattleBox() || AppService.HasBattleTeams() || AppService.HasRentalTeams())
         {
             <MudTabPanel Text="Teams">
-                <div class="mt-3 teams-tab-content">
-                    <TeamsTab/>
-                </div>
+                <TabErrorBoundary TabName="Teams" @key="saveFile">
+                    <div class="mt-3 teams-tab-content">
+                        <TeamsTab/>
+                    </div>
+                </TabErrorBoundary>
             </MudTabPanel>
         }
 
         <MudTabPanel Text="Legality Report">
-            <div class="mt-3">
-                <LegalityReportTab OnJumpToPartyBox="@JumpToPartyBox"/>
-            </div>
+            <TabErrorBoundary TabName="Legality Report" @key="saveFile">
+                <div class="mt-3">
+                    <LegalityReportTab OnJumpToPartyBox="@JumpToPartyBox"/>
+                </div>
+            </TabErrorBoundary>
         </MudTabPanel>
 
         <MudTabPanel Text="Search">
-            <div class="mt-3">
-                <AdvancedSearchTab OnJumpToPartyBox="@JumpToPartyBox"/>
-            </div>
+            <TabErrorBoundary TabName="Search" @key="saveFile">
+                <div class="mt-3">
+                    <AdvancedSearchTab OnJumpToPartyBox="@JumpToPartyBox"/>
+                </div>
+            </TabErrorBoundary>
         </MudTabPanel>
 
         <MudTabPanel Text="Encounter DB">
-            <div class="mt-3">
-                <EncounterDatabaseTab OnJumpToPartyBox="@JumpToPartyBox"/>
-            </div>
+            <TabErrorBoundary TabName="Encounter DB" @key="saveFile">
+                <div class="mt-3">
+                    <EncounterDatabaseTab OnJumpToPartyBox="@JumpToPartyBox"/>
+                </div>
+            </TabErrorBoundary>
         </MudTabPanel>
 
         <MudTabPanel Text="Batch Editor">
-            <div class="mt-3">
-                <BatchEditorTab/>
-            </div>
+            <TabErrorBoundary TabName="Batch Editor" @key="saveFile">
+                <div class="mt-3">
+                    <BatchEditorTab/>
+                </div>
+            </TabErrorBoundary>
         </MudTabPanel>
 
         @if (!HostService.IsEmbedded)
         {
             <MudTabPanel Text="Pokémon Bank">
-                <div class="mt-3 bank-tab-content">
-                    <PokemonBankTab/>
-                </div>
+                <TabErrorBoundary TabName="Pokémon Bank" @key="saveFile">
+                    <div class="mt-3 bank-tab-content">
+                        <PokemonBankTab/>
+                    </div>
+                </TabErrorBoundary>
             </MudTabPanel>
 
             <MudTabPanel Text="Trade">
-                <div class="mt-3 trade-tab-content">
-                    <TradeTab/>
-                </div>
+                <TabErrorBoundary TabName="Trade" @key="saveFile">
+                    <div class="mt-3 trade-tab-content">
+                        <TradeTab/>
+                    </div>
+                </TabErrorBoundary>
             </MudTabPanel>
         }
 

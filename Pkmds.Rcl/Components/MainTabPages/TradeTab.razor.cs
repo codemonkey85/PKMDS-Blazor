@@ -97,6 +97,11 @@ public partial class TradeTab : RefreshAwareComponent
 
             if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out archiveContext))
             {
+                if (!await SaveVersionResolver.ResolveAmbiguousVersionAsync(saveFile, DialogService))
+                {
+                    return;
+                }
+
                 if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
                     await DialogService.ShowMessageBoxAsync("Unsupported save file", unsupportedReason);

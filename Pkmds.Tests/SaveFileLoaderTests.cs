@@ -253,4 +253,34 @@ public class SaveFileLoaderTests
         result.Should().BeOfType<SAV4HGSS>();
         archiveContext.Should().BeNull();
     }
+
+    [Theory]
+    [InlineData("POKEMON FIRE_BPRE-0.sav", GameVersion.FR)]
+    [InlineData("POKEMON LEAF_BPGE-0.sav", GameVersion.LG)]
+    public void TryLoad_FireRedLeafGreen_InfersVersionFromFileName(
+        string fileName,
+        GameVersion expectedVersion)
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, fileName));
+
+        SaveFileLoader.TryLoad(data, fileName, out var result, out var archiveContext).Should().BeTrue();
+
+        var frlg = result.Should().BeOfType<SAV3FRLG>().Subject;
+        frlg.Version.Should().Be(expectedVersion);
+        frlg.Personal.Should().BeSameAs(expectedVersion == GameVersion.FR
+            ? PersonalTable.FR
+            : PersonalTable.LG);
+        archiveContext.Should().BeNull();
+    }
+
+    [Fact]
+    public void TryLoad_FireRedLeafGreen_WithAmbiguousFileName_DoesNotDefaultToFireRed()
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "POKEMON LEAF_BPGE-0.sav"));
+
+        SaveFileLoader.TryLoad(data, "save.srm", out var result, out _).Should().BeTrue();
+
+        result.Should().BeOfType<SAV3FRLG>()
+            .Which.Version.Should().Be(GameVersion.FRLG);
+    }
 }

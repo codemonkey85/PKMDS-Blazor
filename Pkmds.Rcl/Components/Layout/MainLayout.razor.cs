@@ -449,6 +449,12 @@ public partial class MainLayout : IDisposable
 
             if (SaveFileLoader.TryLoad(data, fileName, out var saveFile, out var archiveContext))
             {
+                if (!await SaveVersionResolver.ResolveAmbiguousVersionAsync(saveFile, DialogService))
+                {
+                    AppState.ShowProgressIndicator = false;
+                    return;
+                }
+
                 if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
                     Logger.LogWarning("Backup save file rejected (unsupported format/ROM hack): {FileName}", fileName);
@@ -578,6 +584,12 @@ public partial class MainLayout : IDisposable
             // raw bytes under a ZIP filename (see issues #750 and #1131-#1133).
             if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out var archiveContext))
             {
+                if (!await SaveVersionResolver.ResolveAmbiguousVersionAsync(saveFile, DialogService))
+                {
+                    AppState.ShowProgressIndicator = false;
+                    return;
+                }
+
                 if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
                 {
                     Logger.LogWarning("Save file rejected (unsupported format/ROM hack): {FileName}", selectedFile.Name);
