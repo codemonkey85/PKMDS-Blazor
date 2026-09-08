@@ -3,6 +3,7 @@ namespace Pkmds.Rcl.Components;
 public partial class SaveFileComponent : RefreshAwareComponent
 {
     private int activeTabIndex;
+    private int battleRevolutionProfileSelectorVersion;
 
     internal static bool HasEditableInventory(SaveFile saveFile) => saveFile.Inventory.Pouches.Count != 0;
 
@@ -29,6 +30,7 @@ public partial class SaveFileComponent : RefreshAwareComponent
                 "The currently edited Pokémon has unsaved changes. Save or discard those edits before switching Battle Revolution profiles.",
                 snackbar: Snackbar))
         {
+            battleRevolutionProfileSelectorVersion++;
             RefreshService.Refresh();
             return;
         }
