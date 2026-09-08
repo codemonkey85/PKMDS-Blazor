@@ -167,11 +167,27 @@ public partial class TrainerInfoTab : IDisposable
     private Task OnOTNameChangedAsync(SaveFile saveFile, string value) =>
         RunSyncAsync("Syncing OT name to matching Pokémon…", () => OnOTNameChanged(saveFile, value));
 
-    private Task OnTID16ChangedAsync(SaveFile saveFile, ushort value) =>
-        RunSyncAsync("Syncing Trainer ID to matching Pokémon…", () => OnTID16Changed(saveFile, value));
+    private Task OnTID16ChangedAsync(SaveFile saveFile, ushort value)
+    {
+        if (saveFile is SAV4BR)
+        {
+            saveFile.TID16 = value;
+            return Task.CompletedTask;
+        }
 
-    private Task OnSID16ChangedAsync(SaveFile saveFile, ushort value) =>
-        RunSyncAsync("Syncing Secret ID to matching Pokémon…", () => OnSID16Changed(saveFile, value));
+        return RunSyncAsync("Syncing Trainer ID to matching Pokémon…", () => OnTID16Changed(saveFile, value));
+    }
+
+    private Task OnSID16ChangedAsync(SaveFile saveFile, ushort value)
+    {
+        if (saveFile is SAV4BR)
+        {
+            saveFile.SID16 = value;
+            return Task.CompletedTask;
+        }
+
+        return RunSyncAsync("Syncing Secret ID to matching Pokémon…", () => OnSID16Changed(saveFile, value));
+    }
 
     private Task OnTrainerTID7ChangedAsync(SaveFile saveFile, uint value) =>
         RunSyncAsync("Syncing Trainer ID to matching Pokémon…", () => OnTrainerTID7Changed(saveFile, value));
@@ -238,6 +254,12 @@ public partial class TrainerInfoTab : IDisposable
             pkm => pkm.OriginalTrainerName = saveFile.OT,
             pkm => IsHtMatch(pkm, oldName, oldGender: null),
             pkm => pkm.HandlingTrainerName = saveFile.OT);
+    }
+
+    private void OnBattleRevolutionNameChanged(SAV4BR saveFile, string value)
+    {
+        saveFile.CurrentOT = value;
+        RefreshService.Refresh();
     }
 
     private static void OnTID16Changed(SaveFile saveFile, ushort value)

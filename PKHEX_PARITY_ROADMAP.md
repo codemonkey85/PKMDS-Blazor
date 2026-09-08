@@ -748,8 +748,12 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] DLC/Black City/White Forest editor (SAV_DLC5)
 - [ ] Pass Powers
 
-### 3.7 Generation 4 (Diamond/Pearl/Platinum, HGSS)
+### 3.7 Generation 4 (Diamond/Pearl/Platinum, HGSS, Battle Revolution)
 **Tasks:**
+- [x] **Pokémon Battle Revolution baseline support** — load/export encrypted PBR saves, switch among all four profiles, edit party/box `BK4` Pokémon, show the active profile's trainer name, and hide unsupported inventory/date/gender controls — closes #1283
+- [ ] **Battle Revolution Battle Pass editor** (`SAV_BattlePass`, `BattlePassAccessor`)
+- [ ] **Battle Revolution Gear editor** (`SAV_Gear`, `GearUnlock`)
+- [ ] **Battle Revolution profile details and progress** — birth date, self-introduction, Player ID, battle records, and Colosseum unlocks (`SAV_Trainer4BR`)
 - [x] **Feebas tile locator** (DPPt — Mt. Coronet B1F) — finds Feebas tiles for the save's RNG seed; includes Feebas seed editor — closes #815
 - [ ] Pokéwalker editor (SAV_Pokéwalker4)
   - [ ] Route unlocks
@@ -812,6 +816,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 
 ### 4.1 UI/UX Improvements
 **Tasks:**
+- [x] **Per-tab error containment** — each save-editor tab has a recoverable error boundary, so a component failure leaves the save loaded and the other tabs usable — closes #1283
 - [x] **Fix "Load Pokémon File" and "Load Mystery Gift File" slot behaviour (#445)** — use currently selected slot (or first empty box slot as fallback), write via `AppService.EditFormPokemon`/`SavePokemon`, show snackbars instead of blocking dialogs, and navigate to Party/Box tab after placement.
 - [ ] Add keyboard shortcuts for common operations
 - [ ] Implement undo/redo functionality

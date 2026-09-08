@@ -92,6 +92,7 @@ A: PKMDS currently supports the following games:
 - Pokémon HeartGold and SoulSilver
 - Pokémon Platinum
 - Pokémon Diamond and Pearl
+- Pokémon Battle Revolution
 - Pokémon XD: Gale of Darkness
 - Pokémon Emerald
 - Pokémon FireRed and LeafGreen

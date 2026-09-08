@@ -30,11 +30,15 @@ public static class SaveFileNameDisplay
             sbTitle.Append(" - ");
         }
 
-        // Trainer name
-        sbTitle.Append($"{saveFile.OT} ");
+        // PBR stores the trainer name per profile in CurrentOT; SaveFile.OT is only
+        // the base-class fallback and otherwise displays "PKHex".
+        var trainerName = saveFile is SAV4BR battleRevolution
+            ? battleRevolution.CurrentOT
+            : saveFile.OT;
+        sbTitle.Append($"{trainerName} ");
 
-        // Gender symbol (not available in Gen 1)
-        if (saveFile.Context is not EntityContext.Gen1)
+        // Gender is not available in Gen 1 or as a save-level field in PBR.
+        if (saveFile.Context is not EntityContext.Gen1 && saveFile is not SAV4BR)
         {
             var genderDisplay = saveFile.Gender == (byte)Gender.Male
                 ? Constants.MaleGenderUnicode
@@ -107,6 +111,7 @@ public static class SaveFileNameDisplay
         StadiumJ => "Stadium (J)",
         Stadium => "Stadium",
         Stadium2 => "Stadium 2",
+        BATREV => "Battle Revolution",
         _ => gameVersion.ToString()
     };
 }

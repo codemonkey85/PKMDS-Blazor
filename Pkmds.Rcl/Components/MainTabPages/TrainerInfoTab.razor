@@ -24,12 +24,23 @@
              } saveFile)
     {
         <div class="form-field">
-            <MudTextField Label="Name"
-                          Variant="@Variant.Outlined"
-                          MaxLength="@saveFile.MaxStringLengthTrainer"
-                          @bind-Value:get="@saveFile.OT"
-                          @bind-Value:set="@(async value => await OnOTNameChangedAsync(saveFile, value))"
-                          For="@(() => saveFile.OT)"/>
+            @if (saveFile is SAV4BR battleRevolution)
+            {
+                <MudTextField Label="Name"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@battleRevolution.MaxStringLengthTrainer"
+                              @bind-Value:get="@battleRevolution.CurrentOT"
+                              @bind-Value:set="@(value => OnBattleRevolutionNameChanged(battleRevolution, value))"/>
+            }
+            else
+            {
+                <MudTextField Label="Name"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@saveFile.MaxStringLengthTrainer"
+                              @bind-Value:get="@saveFile.OT"
+                              @bind-Value:set="@(async value => await OnOTNameChangedAsync(saveFile, value))"
+                              For="@(() => saveFile.OT)"/>
+            }
         </div>
 
         @switch (saveFile.GetTrainerIDFormat())
@@ -96,7 +107,7 @@
             </div>
         }
 
-        @if (saveGeneration >= 2)
+        @if (saveGeneration >= 2 && saveFile is not SAV4BR)
         {
             <div class="form-field">
                 <GenderDisplayComponent Gender="@((Gender)saveFile.Gender)"
@@ -314,7 +325,7 @@
             </div>
         </div>
 
-        @if (saveGeneration >= 4)
+        @if (saveGeneration >= 4 && saveFile is not SAV4BR)
         {
             <div class="form-field">
                 <label for="game-start">
@@ -470,7 +481,7 @@
                              For="@(() => saveFile.Money)"/>
         </div>
 
-        @if (saveGeneration <= 4)
+        @if (saveGeneration <= 4 && saveFile is not SAV4BR)
         {
             <div class="form-field">
                 <MudNumericField Label="Coins"
