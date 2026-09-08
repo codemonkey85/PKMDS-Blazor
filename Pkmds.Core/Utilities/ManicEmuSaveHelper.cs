@@ -165,7 +165,7 @@ public static class ManicEmuSaveHelper
 
                 var entryBytes = entryStream.ToArray();
 
-                if (!SaveUtil.TryGetSaveFile(entryBytes, out var sf, fileName))
+                if (!SaveFileLoader.TryLoadRawSave(entryBytes, fileName, out var sf))
                 {
                     continue;
                 }
