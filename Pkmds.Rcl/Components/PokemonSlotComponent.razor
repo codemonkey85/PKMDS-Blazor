@@ -76,12 +76,7 @@
                                 LegalityStatus.Fishy => "legality-indicator-icon--fishy",
                                 _ => "legality-indicator-icon--illegal"
                             }}")"
-                     title="@(status switch
-                            {
-                                LegalityStatus.Legal => "Legal",
-                                LegalityStatus.Fishy => "Fishy",
-                                _ => "Illegal"
-                            })">
+                     title="@LegalityUi.GetStatusLabel(status)">
                     <MudIcon Icon="@(status switch
                                    {
                                        LegalityStatus.Legal => Icons.Material.Filled.Check,

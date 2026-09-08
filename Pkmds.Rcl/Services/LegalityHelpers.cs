@@ -31,8 +31,7 @@ public static class LegalityHelpers
             return string.Empty;
         }
 
-        var ctx = LegalityLocalizationContext.Create(la);
-        return ctx.Humanize(in r);
+        return LegalityUi.GetDisplayMessage(la, in r);
     }
 
     public static string GetIdentifierLabel(CheckIdentifier id) => id switch
@@ -77,7 +76,7 @@ public static class LegalityHelpers
     public static string GetSeverityLabel(PKHexSeverity severity) => severity switch
     {
         PKHexSeverity.Valid => "Valid",
-        PKHexSeverity.Fishy => "Fishy",
+        PKHexSeverity.Fishy => "Warning",
         _ => "Invalid"
     };
 }

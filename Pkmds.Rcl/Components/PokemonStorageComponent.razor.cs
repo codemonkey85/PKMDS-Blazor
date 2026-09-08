@@ -411,7 +411,7 @@ public partial class PokemonStorageComponent : RefreshAwareComponent
 
         if (fishyCount > 0)
         {
-            parts.Add($"still Fishy: {fishyCount}");
+            parts.Add($"still legal with warnings: {fishyCount}");
         }
 
         if (failureCount > 0)
