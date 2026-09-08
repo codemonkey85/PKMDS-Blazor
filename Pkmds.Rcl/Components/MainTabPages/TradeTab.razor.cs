@@ -930,7 +930,7 @@ public partial class TradeTab : RefreshAwareComponent
             {
                 continue;
             }
-            var humanized = LegalityUi.GetDisplayMessage(la, in r);
+            var humanized = LegalityUi.GetDisplayMessage(la, in r, verbose: false);
             if (!string.IsNullOrWhiteSpace(humanized))
             {
                 messages.Add(humanized);

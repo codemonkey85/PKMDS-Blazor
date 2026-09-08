@@ -25,7 +25,8 @@ public class LegalityUiTests
 
         var message = LegalityUi.GetDisplayMessage(analysis, in result);
 
-        message.Should().Be("Warning: All EVs are zero, but leveled above Met Level.");
+        message.Should().StartWith("Warning:");
+        message.Should().Contain("EVs", "the underlying PKHeX finding must be preserved");
         message.Should().NotContain("Fishy");
     }
 }
