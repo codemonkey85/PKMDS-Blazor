@@ -172,6 +172,7 @@ public partial class TrainerInfoTab : IDisposable
         if (saveFile is SAV4BR)
         {
             saveFile.TID16 = value;
+            RefreshService.Refresh();
             return Task.CompletedTask;
         }
 
@@ -183,6 +184,7 @@ public partial class TrainerInfoTab : IDisposable
         if (saveFile is SAV4BR)
         {
             saveFile.SID16 = value;
+            RefreshService.Refresh();
             return Task.CompletedTask;
         }
 
