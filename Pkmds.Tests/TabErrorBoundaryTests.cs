@@ -1,7 +1,5 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor.Services;
 
 namespace Pkmds.Tests;
 
@@ -11,8 +9,10 @@ public class TabErrorBoundaryTests
     public void ChildFailure_IsContainedAndCanRecover()
     {
         // Arrange
-        using var ctx = new BunitContext();
-        ctx.Services.AddMudServices();
+        var appState = new TestAppState();
+        var refreshService = new TestRefreshService();
+        var appService = new AppService(appState, refreshService, new LegalizationService(appState));
+        using var ctx = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
         var shouldThrow = true;
         RenderFragment childContent = builder =>
         {
