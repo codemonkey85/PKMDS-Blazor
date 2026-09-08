@@ -18,13 +18,18 @@ public partial class SaveFileComponent : RefreshAwareComponent
 
     private async Task OnBattleRevolutionProfileChangedAsync(SAV4BR saveFile, int profile)
     {
-        if (saveFile.CurrentSlot == profile ||
-            !await UnsavedChangesGuard.ConfirmAsync(
+        if (saveFile.CurrentSlot == profile)
+        {
+            return;
+        }
+
+        if (!await UnsavedChangesGuard.ConfirmAsync(
                 AppService,
                 DialogService,
                 "The currently edited Pokémon has unsaved changes. Save or discard those edits before switching Battle Revolution profiles.",
                 snackbar: Snackbar))
         {
+            RefreshService.Refresh();
             return;
         }
 
