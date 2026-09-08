@@ -76,7 +76,8 @@ A: A Pokémon save file is a file that contains the data for a Pokémon game. It
 
 Q: What games are supported by PKMDS?
 
-A: PKMDS currently supports the following games:
+A: PKMDS currently supports save files from the following games and storage titles:
+
 - Pokémon Legends: Z-A
 - Pokémon Scarlet and Violet
 - Pokémon Legends: Arceus
@@ -86,6 +87,7 @@ A: PKMDS currently supports the following games:
 - Pokémon Ultra Sun and Ultra Moon
 - Pokémon Sun and Moon
 - Pokémon Omega Ruby and Alpha Sapphire
+- Pokémon Omega Ruby and Alpha Sapphire Special Demo Version
 - Pokémon X and Y
 - Pokémon Black 2 and White 2
 - Pokémon Black and White
@@ -93,6 +95,7 @@ A: PKMDS currently supports the following games:
 - Pokémon Platinum
 - Pokémon Diamond and Pearl
 - Pokémon Battle Revolution
+- My Pokémon Ranch
 - Pokémon XD: Gale of Darkness
 - Pokémon Emerald
 - Pokémon FireRed and LeafGreen
@@ -102,7 +105,7 @@ A: PKMDS currently supports the following games:
 - Pokémon Crystal
 - Pokémon Stadium 2
 - Pokémon Gold and Silver
-- Pokémon Stadium
+- Pokémon Stadium (including the original Japanese release)
 - Pokémon Yellow
 - Pokémon Red and Blue
 - Pokémon Green
