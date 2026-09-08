@@ -73,12 +73,28 @@ public static class SaveFileLoader
         // (issue #1127). Prefer a checksum-valid Gen 5 footer before delegating to the
         // normal detector. This mirrors PKHeX's own footer validation; it does not repair or
         // guess at damaged data.
-        if (TryLoadGen5ByFooter(data, out saveFile))
+        if (!TryLoadGen5ByFooter(data, out saveFile) &&
+            !SaveUtil.TryGetSaveFile(data, out saveFile, fileName))
         {
-            return true;
+            return false;
         }
 
-        return SaveUtil.TryGetSaveFile(data, out saveFile, fileName);
+        // The Memory<byte> SaveUtil overload does not initialize Metadata.FileName or run the
+        // legacy language/version inference performed by its path-based overload. Browser uploads
+        // can only use the memory overload, so mirror PKHeX WinForms' load sequence here. This is
+        // required for saves whose exact version is not encoded in the data, notably FireRed vs.
+        // LeafGreen (issue #1282).
+        if (!string.IsNullOrWhiteSpace(fileName))
+        {
+            saveFile.Metadata.SetExtraInfo(fileName);
+        }
+
+        if (saveFile.Generation <= 3)
+        {
+            SaveLanguage.TryRevise(saveFile);
+        }
+
+        return true;
     }
 
     private static bool TryLoadGen5ByFooter(
