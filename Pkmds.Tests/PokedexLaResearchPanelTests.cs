@@ -19,13 +19,17 @@ public class PokedexLaResearchPanelTests
                 var tasks = dexIndex == 0 ? [] : PokedexConstants8a.ResearchTasks[dexIndex - 1];
                 return (Species: species, Tasks: tasks);
             })
-            .First(x => x.Tasks.Any(task => !task.Task.CanSetCurrentValue()) &&
-                        x.Tasks.Any(task => task.Task.CanSetCurrentValue() && task.TaskThresholds.Length > 0));
+            .FirstOrDefault(x => x.Tasks.Any(task => !task.Task.CanSetCurrentValue()) &&
+                                 x.Tasks.Any(task => task.Task.CanSetCurrentValue() && task.TaskThresholds.Length > 0));
+
+        speciesWithNonSettableTask.Tasks.Should().NotBeNull(
+            "the Legends: Arceus fixture should contain a species with both settable and non-settable research tasks");
+        var tasks = speciesWithNonSettableTask.Tasks!;
 
         var editableTaskIndex = Array.FindIndex(
-            speciesWithNonSettableTask.Tasks,
+            tasks,
             task => task.Task.CanSetCurrentValue() && task.TaskThresholds.Length > 0);
-        var editableTask = speciesWithNonSettableTask.Tasks[editableTaskIndex];
+        var editableTask = tasks[editableTaskIndex];
 
         // Act
         var act = () => PokedexLaResearchPanel.CompleteSpeciesResearch(
