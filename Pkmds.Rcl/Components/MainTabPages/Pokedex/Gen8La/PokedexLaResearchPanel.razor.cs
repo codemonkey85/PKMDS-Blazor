@@ -114,6 +114,12 @@ public partial class PokedexLaResearchPanel : BasePkmdsComponent
 
     private void CompleteThisSpecies(PokedexSave8a dex, ushort species)
     {
+        CompleteSpeciesResearch(dex, species);
+        StateHasChanged();
+    }
+
+    internal static void CompleteSpeciesResearch(PokedexSave8a dex, ushort species)
+    {
         var dexIndex = PokedexSave8a.GetDexIndex(PokedexType8a.Hisui, species);
         if (dexIndex == 0)
         {
@@ -122,7 +128,9 @@ public partial class PokedexLaResearchPanel : BasePkmdsComponent
 
         foreach (var task in PokedexConstants8a.ResearchTasks[dexIndex - 1])
         {
-            if (task.TaskThresholds.Length == 0)
+            // ObtainForms / PartOfArceus / SpeciesQuest tasks have no settable
+            // counter. PKHeX throws if they are passed to SetResearchTaskProgressByForce.
+            if (!task.Task.CanSetCurrentValue() || task.TaskThresholds.Length == 0)
             {
                 continue;
             }
@@ -134,7 +142,6 @@ public partial class PokedexLaResearchPanel : BasePkmdsComponent
         // from scratch (all levels newly unreported) rather than accumulating on old data.
         dex.ResetResearchEntry(species);
         dex.UpdateSpecificReportPoke(species);
-        StateHasChanged();
     }
 
     private async Task OpenResearchEditorDialog(ushort species)
