@@ -923,21 +923,25 @@ public partial class TradeTab : RefreshAwareComponent
 
         // Materialise the user-facing strings via a plain loop so the warning and
         // invalid findings retain their order from PKHeX.
-        var messages = new List<string>(3);
-        foreach (var r in la.Results)
+        List<string> messages;
         {
-            if (r.Judgement is not (PKHeX.Core.Severity.Invalid or PKHeX.Core.Severity.Fishy))
+            var ctx = LegalityLocalizationContext.Create(la);
+            messages = new List<string>(3);
+            foreach (var r in la.Results)
             {
-                continue;
-            }
-            var humanized = LegalityUi.GetDisplayMessage(la, in r, verbose: false);
-            if (!string.IsNullOrWhiteSpace(humanized))
-            {
-                messages.Add(humanized);
-            }
-            if (messages.Count >= 3)
-            {
-                break;
+                if (r.Judgement is not (PKHeX.Core.Severity.Invalid or PKHeX.Core.Severity.Fishy))
+                {
+                    continue;
+                }
+                var humanized = LegalityUi.GetDisplayMessage(ctx, in r, verbose: false);
+                if (!string.IsNullOrWhiteSpace(humanized))
+                {
+                    messages.Add(humanized);
+                }
+                if (messages.Count >= 3)
+                {
+                    break;
+                }
             }
         }
 

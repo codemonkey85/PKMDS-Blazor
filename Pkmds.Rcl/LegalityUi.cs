@@ -70,6 +70,18 @@ public static class LegalityUi
     public static string GetDisplayMessage(LegalityAnalysis la, in CheckResult result, bool verbose = false)
     {
         var ctx = LegalityLocalizationContext.Create(la);
+        return GetDisplayMessage(ctx, in result, verbose);
+    }
+
+    /// <summary>
+    /// Humanizes a PKHeX check result using an existing localization context while
+    /// translating its technical Fishy severity into the app's warning terminology.
+    /// </summary>
+    /// <param name="ctx">Localization context for the legality analysis.</param>
+    /// <param name="result">Check result to humanize.</param>
+    /// <param name="verbose">Whether to include the check identifier in the PKHeX message.</param>
+    public static string GetDisplayMessage(LegalityLocalizationContext ctx, in CheckResult result, bool verbose = false)
+    {
         var message = ctx.Humanize(in result, verbose);
         if (result.Judgement != PKHexSeverity.Fishy)
         {
