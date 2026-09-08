@@ -20,7 +20,7 @@
                                     ? Icons.Material.Filled.CheckCircle
                                     : Icons.Material.Filled.Cancel)">
                 @(IsFishy
-                    ? "This Pokémon is valid but has fishy details."
+                    ? "This Pokémon is legal, but has unusual details. These warnings can occur through normal gameplay."
                     : IsLegal
                         ? "This Pokémon is legal."
                         : "This Pokémon has legality issues.")
@@ -38,7 +38,7 @@
             @if (totalIssues > 0)
             {
                 <MudText Typo="@Typo.subtitle2"
-                         Class="mt-2">Issues (@totalIssues)
+                         Class="mt-2">@(IsFishy ? "Warnings" : "Issues") (@totalIssues)
                 </MudText>
 
                 <MudList T="@string"
@@ -222,6 +222,14 @@
 
             <MudExpansionPanels>
                 <MudExpansionPanel Text="Full Legality Report">
+                    @if (IsFishy)
+                    {
+                        <MudText Typo="@Typo.caption"
+                                 Color="@Color.Secondary"
+                                 Class="mb-2">
+                            PKHeX's technical report uses “Fishy” for warning-level findings. It does not mean this Pokémon is illegal.
+                        </MudText>
+                    }
                     <MudText Typo="@Typo.body2"
                              Style="white-space: pre-wrap; font-family: monospace; font-size: 0.75rem;">
                         @analysis.Report(true)

@@ -118,8 +118,8 @@
                     <MudSwitch T="@bool"
                                Value="@showFishyIndicator"
                                Color="@Color.Warning"
-                               Label="Show Fishy (yellow)"
-                               title="Show a yellow warning on slots whose Pokémon pass legality but have suspicious checks"
+                               Label="Show warnings (yellow)"
+                               title="Show a yellow warning on slots whose Pokémon pass legality but have unusual details that may be legitimate"
                                ValueChanged="@(v => OnToggle(v, x => showFishyIndicator = x))"/>
                     <MudSwitch T="@bool"
                                Value="@showIllegalIndicator"

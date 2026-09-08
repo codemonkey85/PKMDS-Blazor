@@ -29,15 +29,13 @@ public static class LegalityUi
 
     public static string GetFirstIssue(LegalityAnalysis la)
     {
-        var ctx = LegalityLocalizationContext.Create(la);
-
         // Prefer Invalid over Fishy so the more severe issue wins when both are present.
         // CheckResult.Valid is true for Fishy judgements, so match on Judgement directly.
         foreach (var result in la.Results)
         {
             if (result.Judgement == PKHexSeverity.Invalid)
             {
-                return ctx.Humanize(in result);
+                return GetDisplayMessage(la, in result);
             }
         }
 
@@ -55,11 +53,33 @@ public static class LegalityUi
         {
             if (result.Judgement == PKHexSeverity.Fishy)
             {
-                return ctx.Humanize(in result);
+                return GetDisplayMessage(la, in result);
             }
         }
 
         return string.Empty;
+    }
+
+    /// <summary>
+    /// Humanizes a PKHeX check result while translating its technical Fishy severity
+    /// into the warning terminology used by the app.
+    /// </summary>
+    /// <param name="la">Legality analysis that produced the result.</param>
+    /// <param name="result">Check result to humanize.</param>
+    /// <param name="verbose">Whether to include the check identifier in the PKHeX message.</param>
+    public static string GetDisplayMessage(LegalityAnalysis la, in CheckResult result, bool verbose = false)
+    {
+        var ctx = LegalityLocalizationContext.Create(la);
+        var message = ctx.Humanize(in result, verbose);
+        if (result.Judgement != PKHexSeverity.Fishy)
+        {
+            return message;
+        }
+
+        var technicalLabel = ctx.Settings.Description(PKHexSeverity.Fishy);
+        return message.StartsWith(technicalLabel, StringComparison.Ordinal)
+            ? $"Warning{message[technicalLabel.Length..]}"
+            : message;
     }
 
     public static Color GetStatusColor(LegalityStatus status) => status switch
@@ -81,7 +101,7 @@ public static class LegalityUi
     public static string GetStatusLabel(LegalityStatus status) => status switch
     {
         LegalityStatus.Legal => "Legal",
-        LegalityStatus.Fishy => "Fishy",
+        LegalityStatus.Fishy => "Legal with warnings",
         LegalityStatus.Illegal => "Illegal",
         _ => "Unknown"
     };

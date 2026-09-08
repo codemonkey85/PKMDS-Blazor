@@ -161,7 +161,7 @@ public interface IAppState
     /// <summary>Whether to render the green "legal" indicator on slots.</summary>
     bool ShowLegalIndicator { get; set; }
 
-    /// <summary>Whether to render the yellow "fishy" indicator on slots.</summary>
+    /// <summary>Whether to render the yellow warning indicator on slots.</summary>
     bool ShowFishyIndicator { get; set; }
 
     /// <summary>Whether to render the red "illegal" indicator on slots.</summary>
