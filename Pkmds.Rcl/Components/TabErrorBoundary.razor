@@ -1,0 +1,24 @@
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        @ChildContent
+    </ChildContent>
+    <ErrorContent Context="exception">
+        <MudAlert Severity="@Severity.Error"
+                  Variant="@Variant.Outlined"
+                  Class="mt-3">
+            <MudStack Spacing="2">
+                <MudText Typo="@Typo.h6">@TabName couldn't be displayed</MudText>
+                <MudText Typo="@Typo.body2">
+                    Your save is still loaded, and the other tabs remain available.
+                </MudText>
+                <MudText Typo="@Typo.caption">@exception.GetType().Name</MudText>
+                <MudButton Variant="@Variant.Filled"
+                           Color="@Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Refresh"
+                           OnClick="@Recover">
+                    Try again
+                </MudButton>
+            </MudStack>
+        </MudAlert>
+    </ErrorContent>
+</ErrorBoundary>
