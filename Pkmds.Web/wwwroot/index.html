@@ -43,7 +43,10 @@
          Apple-prefixed one, so both are kept for compatibility. -->
     <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-title" content="PKMDS"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <!-- Keep the status bar opaque. iOS 27 applies a progressive blur to standalone
+         web apps that opt into black-translucent; black avoids that treatment while
+         matching the app bar and preserving light status-bar content (issue #1306). -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>

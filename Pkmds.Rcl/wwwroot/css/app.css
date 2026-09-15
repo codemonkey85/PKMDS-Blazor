@@ -10,16 +10,14 @@
 }
 
 body, html {
-    /* Top inset is handled by .mud-appbar below so the iOS status bar overlays the
-       app bar (not a blank gap above it) when running as an installed PWA with
-       apple-mobile-web-app-status-bar-style=black-translucent. Adding it here too
-       would double-count and leave a 44px gap of background colour above the bar. */
+    /* Top inset is handled by .mud-appbar below wherever the viewport extends into
+       a display cutout. Adding it here too would double-count the inset. */
     padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom, 16px) env(safe-area-inset-left, 8px);
     box-sizing: border-box;
 }
 
-/* Push the app bar's contents below the iOS status bar in standalone PWA mode.
-   In a regular browser tab env(safe-area-inset-top) is 0, so this is a no-op. */
+/* Push the app bar's contents below any top display cutout. With an opaque iOS PWA
+   status bar (and in regular browser tabs) the top inset is 0, so this is a no-op. */
 .mud-appbar {
     padding-top: env(safe-area-inset-top, 0px);
 }
@@ -47,8 +45,8 @@ body, html {
     left: calc(24px + env(safe-area-inset-left, 0px));
 }
 
-/* The padding above grows .mud-appbar's effective height by the iOS status-bar
-   inset, but MudBlazor's .mud-main-content padding-top is fixed to the bar's
+/* When the padding above grows .mud-appbar's effective height by a safe-area
+   inset, MudBlazor's .mud-main-content padding-top is fixed to the bar's
    nominal height — so page content (e.g. the save-file title row in
    SaveFileComponent) renders behind the now-taller bar in standalone PWA mode.
    Match the inset here so MudMainContent's reserved space tracks the bar.
