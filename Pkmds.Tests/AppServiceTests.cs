@@ -483,9 +483,8 @@ public class AppServiceTests
         var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "bdsp.bin"));
         SaveUtil.TryGetSaveFile(data, out var saveFile, "bdsp.bin").Should().BeTrue();
         var bdsp = saveFile.Should().BeOfType<SAV8BS>().Subject;
-        var gifts = EncounterEvent.GetAllEvents().OfType<WB8>().ToList();
-        var pokemonGift = gifts.First(g => g.CardType == WB8.GiftType.Pokemon);
-        var nonPokemonGift = gifts.First(g => g.CardType != WB8.GiftType.Pokemon);
+        var pokemonGift = new WB8 { CardType = WB8.GiftType.Pokemon };
+        var nonPokemonGift = new WB8 { CardType = WB8.GiftType.Item };
 
         Pkmds.Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
             .SupportsCardImport(bdsp, pokemonGift).Should().BeFalse();
