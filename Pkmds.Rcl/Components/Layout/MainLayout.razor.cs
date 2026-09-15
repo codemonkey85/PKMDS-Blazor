@@ -1166,15 +1166,15 @@ public partial class MainLayout : IDisposable
     {
         Logger.LogDebug("Writing file: {FileName}, Size: {Size} bytes, MIME: {Mime}", fileName, data.Length, mimeType);
 
-        if (!await FileSystemAccessService.IsSupportedAsync())
-        {
-            Logger.LogDebug("File System Access API not supported, using legacy method");
-            await WriteFileOldWay(data, fileName, fileTypeExtension, mimeType);
-            return;
-        }
-
         try
         {
+            if (!await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
+            {
+                Logger.LogDebug("File System Access API not supported, using download fallback");
+                await WriteFileOldWay(data, fileName, fileTypeExtension, mimeType);
+                return;
+            }
+
             await JSRuntime.InvokeVoidAsync(
                 "showFilePickerAndWrite",
                 fileName,
@@ -1182,7 +1182,7 @@ public partial class MainLayout : IDisposable
                 fileTypeExtension,
                 fileTypeDescription,
                 mimeType);
-            Logger.LogDebug("File written successfully using File System Access API");
+            Logger.LogDebug("File export completed");
         }
         catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
                                      ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
@@ -1192,9 +1192,23 @@ public partial class MainLayout : IDisposable
         }
         catch (JSException ex)
         {
-            Logger.LogError(ex, "Error writing file using File System Access API: {FileName}", fileName);
-            Snackbar.Add("Export failed. Please try again or use a different browser.", Severity.Error);
+            Logger.LogError(ex, "Error exporting file: {FileName}", fileName);
+            Snackbar.Add($"Export failed. Browser detail: {GetExportErrorDetail(ex.Message)}", Severity.Error);
         }
+    }
+
+    internal static string GetExportErrorDetail(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return "Unknown browser error.";
+        }
+
+        var compact = string.Join(' ', message.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        const int maxLength = 180;
+        return compact.Length <= maxLength
+            ? compact
+            : $"{compact[..maxLength]}…";
     }
 
     private async Task WriteFileOldWay(byte[] data, string fileName, string fileTypeExtension, string mimeType)

@@ -147,10 +147,11 @@ public partial class BankExportDialog : IDisposable
 
     private async Task WriteZipAsync(byte[] data, string fileName, CancellationToken ct)
     {
-        // Mirror BulkExportDialog: prefer File System Access API, fall back to anchor.
-        if (await FileSystemAccessService.IsSupportedAsync())
+        // Mirror BulkExportDialog: prefer the save picker specifically, then use the shared
+        // download flow. Either path can report user cancellation as AbortError.
+        try
         {
-            try
+            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
             {
                 await JSRuntime.InvokeVoidAsync(
                     "showFilePickerAndWrite",
@@ -159,18 +160,19 @@ public partial class BankExportDialog : IDisposable
                     data,
                     ".zip",
                     "Pokémon Export");
-                return;
             }
-            catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
-                                         ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
+            else
             {
-                // User dismissed the picker — surface as cancellation so callers show
-                // "Export cancelled." rather than a false success.
-                throw new OperationCanceledException("Save dialog dismissed.");
+                await JSRuntime.InvokeVoidAsync("downloadBlob", ct, fileName, data, "application/zip");
             }
         }
-
-        await JSRuntime.InvokeVoidAsync("downloadBlob", ct, fileName, data, "application/zip");
+        catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
+                                     ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
+        {
+            // Surface both picker and tap-dialog dismissal as cancellation so callers do not
+            // report a successful export when no file was saved.
+            throw new OperationCanceledException("Save dialog dismissed.");
+        }
     }
 
     private void CancelExport() => cts?.Cancel();

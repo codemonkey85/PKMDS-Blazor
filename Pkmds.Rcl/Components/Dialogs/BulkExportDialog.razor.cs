@@ -268,12 +268,13 @@ public partial class BulkExportDialog : IDisposable
 
     private async Task WriteZipAsync(byte[] data, string fileName, CancellationToken ct)
     {
-        // Mirror MainLayout.WriteFile: prefer File System Access API, fall back to anchor.
+        // Mirror MainLayout.WriteFile: prefer the save picker specifically, then use the
+        // shared download flow.
         // Thread `ct` through to both JS calls so Cancel stays responsive through the
         // "Saving…" phase (e.g. while the File System Access picker is open).
-        if (await FileSystemAccessService.IsSupportedAsync())
+        try
         {
-            try
+            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
             {
                 await JSRuntime.InvokeVoidAsync(
                     "showFilePickerAndWrite",
@@ -282,18 +283,19 @@ public partial class BulkExportDialog : IDisposable
                     data,
                     ".zip",
                     "Pokémon Export");
-                return;
             }
-            catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
-                                         ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
+            else
             {
-                // User dismissed the picker. Throw so ExportAsync surfaces "cancelled"
-                // rather than reporting a successful export with no file written.
-                throw new OperationCanceledException("Save dialog dismissed.");
+                await JSRuntime.InvokeVoidAsync("downloadBlob", ct, fileName, data, "application/zip");
             }
         }
-
-        await JSRuntime.InvokeVoidAsync("downloadBlob", ct, fileName, data, "application/zip");
+        catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
+                                     ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
+        {
+            // User dismissed either the picker or the tap dialog. Throw so ExportAsync surfaces
+            // "cancelled" rather than reporting a successful export with no file written.
+            throw new OperationCanceledException("Save dialog dismissed.");
+        }
     }
 
     private void CancelExport() => cts?.Cancel();
