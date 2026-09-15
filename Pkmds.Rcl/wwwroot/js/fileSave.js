@@ -175,22 +175,35 @@ function pkmdsIsIOS() {
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+function pkmdsNeedsUserTapDownload() {
+    // Mobile Chromium can expose the download attribute while still suppressing a
+    // programmatic anchor click after Blazor's async export pipeline has consumed the
+    // original user gesture. A real tap also keeps the established iOS workaround intact.
+    return pkmdsIsIOS() || /Android/i.test(navigator.userAgent);
+}
+
+function pkmdsIsAbortError(error) {
+    if (!error) return false;
+    const message = error.message || String(error);
+    return error.name === 'AbortError' || /AbortError|aborted a request/i.test(message);
+}
+
 // Monotonic counter so each download dialog gets unique element ids for its
 // aria-labelledby / aria-describedby wiring (avoids id collisions if one is ever
 // shown before a previous one is torn down).
 let pkmdsDialogSeq = 0;
 
-// iOS/iPadOS Safari (WebKit) only starts a download when the anchor click happens
-// inside a live user gesture. Our export pipeline reaches the download after several
-// awaits (unsaved-changes dialog, IsSupportedAsync interop, the download interop call),
-// by which point the transient activation is gone — so a script-triggered a.click() is
-// silently dropped and "Export Save File" appears to do nothing (issues #1044-#1060).
+// Some mobile browsers only start a download when the anchor click happens inside a live
+// user gesture. Our export pipeline reaches the download after several awaits (unsaved-changes
+// dialog, IsSupportedAsync interop, the download interop call), by which point transient
+// activation can be gone — so a script-triggered a.click() is silently dropped and
+// "Export Save File" appears to do nothing (issues #1044-#1060, #1297).
 //
 // Fix: instead of clicking for the user, present a real control they tap themselves.
 // The tap IS the gesture WebKit requires, so the download/share is always honored,
 // regardless of how much async ran before this point. Returns a Promise that resolves
-// once the user acts or dismisses. Used only on iOS; other platforms keep the direct
-// programmatic download, which works there.
+// once the user acts or dismisses. Used on iOS and Android, and as a last-resort fallback
+// when a reported File System Access implementation fails.
 function pkmdsPresentDownload(fileName, blob) {
     return new Promise((resolve) => {
         const url = URL.createObjectURL(blob);
@@ -312,8 +325,27 @@ function pkmdsPresentDownload(fileName, blob) {
     });
 }
 
+function pkmdsDownloadPreparedBlob(fileName, blob, forceUserTap) {
+    if (forceUserTap || pkmdsNeedsUserTapDownload()) {
+        return pkmdsPresentDownload(fileName, blob);
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.remove();
+    }, 0);
+}
+
 window.showFilePickerAndWrite = async function (fileName, byteArray, extension, description, mimeType) {
     // byteArray is expected to be a JS array of numbers coming from a Blazor byte[]
+    let fallbackFileName = fileName || 'download';
+    let fallbackBlob = null;
     try {
         if (!byteArray) throw new Error('byteArray is null/undefined');
         const length = byteArray.length || 0;
@@ -343,38 +375,22 @@ window.showFilePickerAndWrite = async function (fileName, byteArray, extension, 
         // callers that dispatch .zip / .json (bulk exports, bank exports) shouldn't have to
         // thread a MIME just to avoid the generic Pokémon-savedata tag on anchor fallbacks.
         const blobType = mimeType || pkmdsInferMimeType(ext);
+        const uint8 = byteArray instanceof Uint8Array ? byteArray : new Uint8Array(byteArray);
+        fallbackBlob = new Blob([uint8], {type: blobType});
 
-        // Chrome Android may have partial / flaky support for File System Access API.
+        const hasExt = ext && fileName.toLowerCase().endsWith(ext.toLowerCase());
+        fallbackFileName = (ext && !hasExt) ? fileName + ext : fileName;
+
+        // Feature-detect the picker instead of excluding Android by user agent. Current
+        // Chromium supports this API on Android and ChromeOS; if an implementation still
+        // fails, the catch block below presents a user-initiated download instead.
         // iOS (all browsers) uses WebKit, which may expose showSaveFilePicker but has
-        // incomplete support for createWritable() — always use the anchor fallback on iOS.
+        // incomplete support for createWritable(), so it always uses the tap flow.
         const supportsFS = !!window.showSaveFilePicker;
         const isIOS = pkmdsIsIOS();
-        if (!supportsFS || /Android/i.test(navigator.userAgent) || isIOS) {
-            const uint8 = byteArray instanceof Uint8Array ? byteArray : new Uint8Array(byteArray);
-            const blob = new Blob([uint8], {type: blobType});
-
-            const hasExt = ext && fileName.toLowerCase().endsWith(ext.toLowerCase());
-            const finalName = (ext && !hasExt) ? fileName + ext : fileName;
-
-            if (isIOS) {
-                // iOS drops script-triggered downloads made outside a user gesture — present a
-                // control the user taps instead of clicking the anchor for them. See pkmdsPresentDownload.
-                console.warn('[showFilePickerAndWrite] iOS: presenting user-tap download.');
-                await pkmdsPresentDownload(finalName, blob);
-                return;
-            }
-
-            console.warn('[showFilePickerAndWrite] Falling back to anchor download for this platform.');
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = finalName;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                URL.revokeObjectURL(a.href);
-                a.remove();
-            }, 0);
-
+        if (!supportsFS || isIOS) {
+            console.warn('[showFilePickerAndWrite] File picker unavailable; using download fallback.');
+            await pkmdsDownloadPreparedBlob(fallbackFileName, fallbackBlob);
             return;
         }
 
@@ -407,8 +423,6 @@ window.showFilePickerAndWrite = async function (fileName, byteArray, extension, 
         const handle = await window.showSaveFilePicker(opts);
         const writable = await handle.createWritable({ keepExistingData: false });
 
-        const uint8 = byteArray instanceof Uint8Array ? byteArray : new Uint8Array(byteArray);
-
         // Prefer direct BufferSource write (avoid Blob in some mobile implementations).
         await writable.write(uint8);
 
@@ -419,7 +433,28 @@ window.showFilePickerAndWrite = async function (fileName, byteArray, extension, 
         console.log('[showFilePickerAndWrite] Write complete. Bytes written:', uint8.length);
     } catch (ex) {
         console.error('[showFilePickerAndWrite] Error:', ex);
-        throw ex;
+        if (pkmdsIsAbortError(ex)) {
+            throw ex;
+        }
+
+        if (!fallbackBlob) {
+            throw ex;
+        }
+
+        try {
+            // The picker can be present but unusable (or lose transient activation) on some
+            // mobile/ChromeOS configurations. A visible download control supplies a fresh user
+            // gesture and gives the user a second, independent way to save the generated bytes.
+            console.warn('[showFilePickerAndWrite] File picker failed; presenting download fallback.');
+            await pkmdsDownloadPreparedBlob(fallbackFileName, fallbackBlob, true);
+        } catch (fallbackError) {
+            console.error('[showFilePickerAndWrite] Download fallback failed:', fallbackError);
+            const pickerMessage = ex && ex.message ? ex.message : String(ex);
+            const fallbackMessage = fallbackError && fallbackError.message
+                ? fallbackError.message
+                : String(fallbackError);
+            throw new Error('File picker failed (' + pickerMessage + '); download fallback failed (' + fallbackMessage + ').');
+        }
     }
 };
 
@@ -437,18 +472,5 @@ window.downloadBlob = function (fileName, byteArray, mimeType) {
     const dot = fileName ? fileName.lastIndexOf('.') : -1;
     const inferredExt = dot > 0 ? fileName.slice(dot) : '';
     const blob = new Blob([uint8], { type: mimeType || pkmdsInferMimeType(inferredExt) });
-    if (pkmdsIsIOS()) {
-        // iOS ignores script-triggered downloads outside a user gesture — let the user tap.
-        return pkmdsPresentDownload(fileName, blob);
-    }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-        URL.revokeObjectURL(url);
-        a.remove();
-    }, 0);
+    return pkmdsDownloadPreparedBlob(fileName, blob);
 };
