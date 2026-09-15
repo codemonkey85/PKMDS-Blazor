@@ -2,6 +2,8 @@ namespace Pkmds.Rcl.Components;
 
 public partial class PokemonStorageComponent : RefreshAwareComponent
 {
+    internal static bool UsesLetsGoStorage(SaveFile saveFile) => saveFile is SAV7b;
+
     private int cachedBoxNumber = -1;
 
     private int illegalCountInBox;
