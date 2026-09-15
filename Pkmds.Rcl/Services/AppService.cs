@@ -894,6 +894,63 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         return Task.CompletedTask;
     }
 
+    public PKM? ReceiveMysteryGiftPokemon(MysteryGift gift, out string resultsMessage)
+    {
+        try
+        {
+            if (AppState.SaveFile is not { } saveFile)
+            {
+                resultsMessage = "No save file loaded.";
+                return null;
+            }
+
+            if (!gift.IsEntity || gift.Species.IsInvalidSpecies())
+            {
+                resultsMessage = "This Mystery Gift does not contain a Pokémon.";
+                return null;
+            }
+
+            if (!gift.IsCardCompatible(saveFile, out resultsMessage))
+            {
+                return null;
+            }
+
+            var originalPokemon = gift.ConvertToPKM(saveFile, EncounterCriteria.Unrestricted);
+            var pokemon = originalPokemon;
+            if (pokemon.GetType() != saveFile.PKMType)
+            {
+                pokemon = EntityConverter.ConvertToType(originalPokemon, saveFile.PKMType, out var conversionResult);
+                if (!conversionResult.IsSuccess || pokemon is null)
+                {
+                    resultsMessage = conversionResult.GetDisplayString(originalPokemon, saveFile.PKMType);
+                    return null;
+                }
+            }
+
+            saveFile.AdaptToSaveFile(pokemon);
+
+            // Receiving from the database must never overwrite an occupied slot implicitly.
+            if (!TrySelectFirstEmptyBoxSlot())
+            {
+                resultsMessage = "No empty box slots available. Free up a slot and try again.";
+                return null;
+            }
+
+            EditFormPokemon = pokemon;
+            var receivedPokemon = EditFormPokemon ?? pokemon;
+            SavePokemon(receivedPokemon);
+
+            var speciesName = GetPokemonSpeciesName(receivedPokemon.Species);
+            resultsMessage = $"{speciesName} received from Mystery Gift in the first available box slot.";
+            return receivedPokemon;
+        }
+        catch (Exception ex)
+        {
+            resultsMessage = ex.Message;
+            return null;
+        }
+    }
+
     public Task ImportWonderCard3(byte[] data, out bool isSuccessful, out string resultsMessage)
     {
         // WC3 files are not handled by FileUtil.TryGetMysteryGift / MysteryGift.GetMysteryGift —

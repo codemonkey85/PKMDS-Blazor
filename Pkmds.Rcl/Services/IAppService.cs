@@ -279,6 +279,16 @@ public interface IAppService
     Task ImportMysteryGift(byte[] data, string fileExtension, out bool isSuccessful, out string resultsMessage);
 
     /// <summary>
+    /// Generates a Pokémon from a Mystery Gift and places it in the first empty box slot.
+    /// This is used by games such as Sword and Shield that can receive event Pokémon but do not
+    /// expose an injectable Wonder Card album.
+    /// </summary>
+    /// <param name="gift">The Mystery Gift encounter to receive.</param>
+    /// <param name="resultsMessage">A message describing the result.</param>
+    /// <returns>The Pokémon written to the save, or <see langword="null" /> when it could not be received.</returns>
+    PKM? ReceiveMysteryGiftPokemon(MysteryGift gift, out string resultsMessage);
+
+    /// <summary>
     /// Returns <see langword="true" /> if the loaded save file exposes any wonder card /
     /// mystery gift slots that the in-app viewer can display. Mirrors the support matrix in
     /// PKHeX WinForms' <c>SAV_Wondercard</c>: Generation 3 Emerald / FRLG, plus all Gen 4–7
