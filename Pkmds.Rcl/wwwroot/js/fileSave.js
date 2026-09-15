@@ -202,15 +202,16 @@ let pkmdsDialogSeq = 0;
 // Fix: instead of clicking for the user, present a real control they tap themselves.
 // The tap IS the gesture WebKit requires, so the download/share is always honored,
 // regardless of how much async ran before this point. Returns a Promise that resolves
-// once the user acts or dismisses. Used on iOS and Android, and as a last-resort fallback
-// when a reported File System Access implementation fails.
+// only after the user starts a download/share and rejects with AbortError when dismissed.
+// Used on iOS and Android, and as a last-resort fallback when a reported File System
+// Access implementation fails.
 function pkmdsPresentDownload(fileName, blob) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const url = URL.createObjectURL(blob);
         const previouslyFocused = document.activeElement;
         const uid = 'pkmds-dl-' + (++pkmdsDialogSeq);
         let settled = false;
-        const finish = () => {
+        const finish = (completed) => {
             if (settled) return;
             settled = true;
             document.removeEventListener('keydown', onKey);
@@ -219,11 +220,15 @@ function pkmdsPresentDownload(fileName, blob) {
             try { if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus(); } catch (e) { /* ignore */ }
             // Keep the object URL alive long enough for the download/share to read it.
             setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* ignore */ } }, 60000);
-            resolve();
+            if (completed) {
+                resolve();
+            } else {
+                reject(new DOMException('The user aborted a request.', 'AbortError'));
+            }
         };
         // Escape closes the dialog; Tab is trapped so keyboard focus can't leave the modal.
         const onKey = (e) => {
-            if (e.key === 'Escape') { finish(); return; }
+            if (e.key === 'Escape') { finish(false); return; }
             if (e.key !== 'Tab') return;
             const focusables = Array.prototype.slice.call(root.querySelectorAll('a[href],button'));
             if (focusables.length === 0) return;
@@ -286,7 +291,7 @@ function pkmdsPresentDownload(fileName, blob) {
                     // written out as a separate .txt alongside the save (e.g. a 12-byte "text"
                     // file containing "TR ADDED.dsv"). Files-only avoids that stray download.
                     await navigator.share({ files: [file] });
-                    finish();
+                    finish(true);
                 } catch (e) {
                     // User cancelled the share sheet, or share failed — leave the dialog open
                     // so they can still use the direct download link below.
@@ -301,18 +306,18 @@ function pkmdsPresentDownload(fileName, blob) {
         link.download = fileName;
         link.textContent = 'Download ' + fileName;
         link.style.cssText = btnStyle + 'background:#fff;color:#111;';
-        link.addEventListener('click', () => { setTimeout(finish, 400); });
+        link.addEventListener('click', () => { setTimeout(() => finish(true), 400); });
         card.appendChild(link);
 
         const cancel = document.createElement('button');
         cancel.type = 'button';
         cancel.textContent = 'Cancel';
         cancel.style.cssText = btnStyle + 'background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);font-weight:500;margin-top:2px;';
-        cancel.addEventListener('click', finish);
+        cancel.addEventListener('click', () => finish(false));
         card.appendChild(cancel);
 
         root.appendChild(card);
-        root.addEventListener('click', (e) => { if (e.target === root) finish(); });
+        root.addEventListener('click', (e) => { if (e.target === root) finish(false); });
         document.addEventListener('keydown', onKey);
         document.body.appendChild(root);
 
@@ -324,6 +329,13 @@ function pkmdsPresentDownload(fileName, blob) {
         }
     });
 }
+
+window.pkmdsSupportsSaveFilePicker = function () {
+    // Export only needs showSaveFilePicker. The package-level support check also requires
+    // open and directory pickers, which can incorrectly reject browsers that can save.
+    // iOS is kept on the user-tap flow because createWritable support is incomplete.
+    return typeof window.showSaveFilePicker === 'function' && !pkmdsIsIOS();
+};
 
 function pkmdsDownloadPreparedBlob(fileName, blob, forceUserTap) {
     if (forceUserTap || pkmdsNeedsUserTapDownload()) {
@@ -386,9 +398,8 @@ window.showFilePickerAndWrite = async function (fileName, byteArray, extension, 
         // fails, the catch block below presents a user-initiated download instead.
         // iOS (all browsers) uses WebKit, which may expose showSaveFilePicker but has
         // incomplete support for createWritable(), so it always uses the tap flow.
-        const supportsFS = !!window.showSaveFilePicker;
-        const isIOS = pkmdsIsIOS();
-        if (!supportsFS || isIOS) {
+        const supportsFS = window.pkmdsSupportsSaveFilePicker();
+        if (!supportsFS) {
             console.warn('[showFilePickerAndWrite] File picker unavailable; using download fallback.');
             await pkmdsDownloadPreparedBlob(fallbackFileName, fallbackBlob);
             return;
@@ -448,6 +459,10 @@ window.showFilePickerAndWrite = async function (fileName, byteArray, extension, 
             console.warn('[showFilePickerAndWrite] File picker failed; presenting download fallback.');
             await pkmdsDownloadPreparedBlob(fallbackFileName, fallbackBlob, true);
         } catch (fallbackError) {
+            if (pkmdsIsAbortError(fallbackError)) {
+                throw fallbackError;
+            }
+
             console.error('[showFilePickerAndWrite] Download fallback failed:', fallbackError);
             const pickerMessage = ex && ex.message ? ex.message : String(ex);
             const fallbackMessage = fallbackError && fallbackError.message

@@ -1168,7 +1168,7 @@ public partial class MainLayout : IDisposable
 
         try
         {
-            if (!await FileSystemAccessService.IsSupportedAsync())
+            if (!await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
             {
                 Logger.LogDebug("File System Access API not supported, using download fallback");
                 await WriteFileOldWay(data, fileName, fileTypeExtension, mimeType);

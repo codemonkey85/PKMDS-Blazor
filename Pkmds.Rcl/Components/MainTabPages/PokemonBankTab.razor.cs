@@ -348,24 +348,21 @@ public partial class PokemonBankTab : RefreshAwareComponent
             var fileName = AppService.GetCleanFileName(pkm);
             var ext = $".{pkm.Extension}";
 
-            if (await FileSystemAccessService.IsSupportedAsync())
+            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
             {
-                try
-                {
-                    await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite", fileName, bytes, ext, "Pokémon File");
-                    Snackbar.Add($"{entry.SpeciesName} exported.", Severity.Success);
-                    return;
-                }
-                catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
-                                             ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
-                {
-                    Snackbar.Add("Export cancelled.", Severity.Info);
-                    return;
-                }
+                await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite", fileName, bytes, ext, "Pokémon File");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("downloadBlob", fileName, bytes, "application/x-pokemon-savedata");
             }
 
-            await JSRuntime.InvokeVoidAsync("downloadBlob", fileName, bytes, "application/x-pokemon-savedata");
             Snackbar.Add($"{entry.SpeciesName} exported.", Severity.Success);
+        }
+        catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
+                                     ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
+        {
+            Snackbar.Add("Export cancelled.", Severity.Info);
         }
         catch (Exception ex)
         {
@@ -435,6 +432,11 @@ public partial class PokemonBankTab : RefreshAwareComponent
                 "showFilePickerAndWrite", "pkmds-bank.json", data, ".json", "Pokémon Bank Export");
 
             Snackbar.Add("Bank exported.", Severity.Success);
+        }
+        catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase) ||
+                                     ex.Message.Contains("aborted a request", StringComparison.OrdinalIgnoreCase))
+        {
+            Snackbar.Add("Export cancelled.", Severity.Info);
         }
         catch (Exception ex)
         {
