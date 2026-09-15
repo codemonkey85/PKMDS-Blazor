@@ -477,6 +477,44 @@ public class AppServiceTests
         message.Should().Contain("received from Mystery Gift");
     }
 
+    [Fact]
+    public void SupportsCardImport_BdspGift_RoutesByGiftType()
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "bdsp.bin"));
+        SaveUtil.TryGetSaveFile(data, out var saveFile, "bdsp.bin").Should().BeTrue();
+        var bdsp = saveFile.Should().BeOfType<SAV8BS>().Subject;
+        var gifts = EncounterEvent.GetAllEvents().OfType<WB8>().ToList();
+        var pokemonGift = gifts.First(g => g.CardType == WB8.GiftType.Pokemon);
+        var nonPokemonGift = gifts.First(g => g.CardType != WB8.GiftType.Pokemon);
+
+        Pkmds.Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
+            .SupportsCardImport(bdsp, pokemonGift).Should().BeFalse();
+        Pkmds.Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
+            .SupportsCardImport(bdsp, nonPokemonGift).Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReceiveMysteryGiftPokemon_IncompatibleCard_DoesNotWriteBoxSlot()
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "Test-Save-Shield.sav"));
+        SaveUtil.TryGetSaveFile(data, out var saveFile, "Test-Save-Shield.sav").Should().BeTrue();
+        var swordShield = saveFile.Should().BeOfType<SAV8SWSH>().Subject;
+        swordShield.SetBoxSlotAtIndex(swordShield.BlankPKM, 0, 0);
+        var gift = EncounterEvent.GetAllEvents()
+            .First(g => g.IsEntity &&
+                        g.Species.IsValidSpecies() &&
+                        !g.IsCardCompatible(swordShield, out _));
+
+        var appState = new TestAppState { SaveFile = swordShield };
+        var appService = new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
+
+        var received = appService.ReceiveMysteryGiftPokemon(gift, out var message);
+
+        received.Should().BeNull();
+        swordShield.GetBoxSlotAtIndex(0, 0).Species.Should().Be(0);
+        message.Should().NotBeNullOrWhiteSpace();
+    }
+
     private class TestAppState : IAppState
     {
         public string CurrentLanguage { get; set; } = "en";

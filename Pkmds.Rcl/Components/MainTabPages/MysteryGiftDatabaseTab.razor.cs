@@ -165,6 +165,15 @@ public partial class MysteryGiftDatabaseTab
             return;
         }
 
+        if (!await UnsavedChangesGuard.ConfirmAsync(
+                AppService,
+                DialogService,
+                "This Pokémon has unsaved changes. Save them to the slot before receiving a Mystery Gift Pokémon?",
+                snackbar: Snackbar))
+        {
+            return;
+        }
+
         var pokemon = AppService.ReceiveMysteryGiftPokemon(mysteryGift, out var receiveMessage);
         if (pokemon is null)
         {
@@ -183,7 +192,8 @@ public partial class MysteryGiftDatabaseTab
 
     internal static bool SupportsCardImport(SaveFile saveFile, MysteryGift mysteryGift) =>
         mysteryGift is DataMysteryGift &&
-        (saveFile is IMysteryGiftStorageProvider || saveFile is SAV8BS && mysteryGift is WB8);
+        (saveFile is IMysteryGiftStorageProvider ||
+         saveFile is SAV8BS && mysteryGift is WB8 { CardType: not WB8.GiftType.Pokemon });
 
     private static string RenderListAsHtml(IReadOnlyList<string> items, string tag = "p")
     {

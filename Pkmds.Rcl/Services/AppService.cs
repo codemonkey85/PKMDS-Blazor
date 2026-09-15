@@ -910,6 +910,11 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                 return null;
             }
 
+            if (!gift.IsCardCompatible(saveFile, out resultsMessage))
+            {
+                return null;
+            }
+
             var originalPokemon = gift.ConvertToPKM(saveFile, EncounterCriteria.Unrestricted);
             var pokemon = originalPokemon;
             if (pokemon.GetType() != saveFile.PKMType)
