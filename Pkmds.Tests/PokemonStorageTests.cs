@@ -5,9 +5,12 @@ public class PokemonStorageTests
     [Fact]
     public void LeafGreenSave_UsesStandardBoxStorage()
     {
-        var (saveFile, _, _, _) = BunitTestHelpers.LoadSave("POKEMON LEAF_BPGE-0.sav");
+        const string fileName = "POKEMON LEAF_BPGE-0.sav";
+        var data = File.ReadAllBytes(Path.Combine("../../../TestFiles", fileName));
+        SaveFileLoader.TryLoad(data, fileName, out var saveFile, out _).Should().BeTrue();
+        saveFile.Should().NotBeNull();
 
-        saveFile.Version.Should().Be(GameVersion.LG);
+        saveFile!.Version.Should().Be(GameVersion.LG);
         PokemonStorageComponent.UsesLetsGoStorage(saveFile).Should().BeFalse();
     }
 
