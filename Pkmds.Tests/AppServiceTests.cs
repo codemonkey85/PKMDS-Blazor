@@ -446,6 +446,37 @@ public class AppServiceTests
         slots.Should().OnlyContain(s => s.CardType == nameof(WR7));
     }
 
+    [Fact]
+    public void ReceiveMysteryGiftPokemon_SwordShieldSave_WritesFirstEmptyBoxSlot()
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "Test-Save-Shield.sav"));
+        SaveUtil.TryGetSaveFile(data, out var saveFile, "Test-Save-Shield.sav").Should().BeTrue();
+        var swordShield = saveFile.Should().BeOfType<SAV8SWSH>().Subject;
+        ParseSettings.InitFromSaveFileData(swordShield);
+
+        // Guarantee a deterministic first available destination without relying on fixture contents.
+        swordShield.SetBoxSlotAtIndex(swordShield.BlankPKM, 0, 0);
+        var gift = EncounterEvent.GetAllEvents()
+            .OfType<WC8>()
+            .First(g => g.IsEntity && swordShield.Personal.IsPresentInGame(g.Species, g.Form));
+
+        var appState = new TestAppState { SaveFile = swordShield };
+        var appService = new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
+
+        appService.HasWonderCardSlots().Should().BeFalse();
+        Pkmds.Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
+            .SupportsCardImport(swordShield, gift).Should().BeFalse();
+
+        var received = appService.ReceiveMysteryGiftPokemon(gift, out var message);
+
+        received.Should().NotBeNull();
+        received!.Species.Should().Be(gift.Species);
+        swordShield.GetBoxSlotAtIndex(0, 0).Species.Should().Be(gift.Species);
+        appState.SelectedBoxNumber.Should().Be(0);
+        appState.SelectedBoxSlotNumber.Should().Be(0);
+        message.Should().Contain("received from Mystery Gift");
+    }
+
     private class TestAppState : IAppState
     {
         public string CurrentLanguage { get; set; } = "en";

@@ -146,16 +146,44 @@ public partial class MysteryGiftDatabaseTab
 
     private async Task OnClickImport(MysteryGift mysteryGift)
     {
-        if (mysteryGift is not DataMysteryGift dataMysteryGift)
+        if (AppState.SaveFile is not { } saveFile)
         {
             return;
         }
 
-        await AppService.ImportMysteryGift(dataMysteryGift, out var isSuccessful, out var resultsMessage);
-        Snackbar.Add(resultsMessage, isSuccessful
-            ? Severity.Success
-            : Severity.Error);
+        if (SupportsCardImport(saveFile, mysteryGift))
+        {
+            if (mysteryGift is not DataMysteryGift dataMysteryGift)
+            {
+                return;
+            }
+
+            await AppService.ImportMysteryGift(dataMysteryGift, out var isSuccessful, out var resultsMessage);
+            Snackbar.Add(resultsMessage, isSuccessful
+                ? Severity.Success
+                : Severity.Error);
+            return;
+        }
+
+        var pokemon = AppService.ReceiveMysteryGiftPokemon(mysteryGift, out var receiveMessage);
+        if (pokemon is null)
+        {
+            Snackbar.Add(receiveMessage, Severity.Error);
+            return;
+        }
+
+        var legality = new LegalityAnalysis(pokemon);
+        Snackbar.Add(
+            legality.Valid
+                ? receiveMessage
+                : $"{receiveMessage} Legality check flagged issues; review the Pokémon in the editor.",
+            legality.Valid ? Severity.Success : Severity.Warning);
+        RefreshService.RequestJumpToPartyBox();
     }
+
+    internal static bool SupportsCardImport(SaveFile saveFile, MysteryGift mysteryGift) =>
+        mysteryGift is DataMysteryGift &&
+        (saveFile is IMysteryGiftStorageProvider || saveFile is SAV8BS && mysteryGift is WB8);
 
     private static string RenderListAsHtml(IReadOnlyList<string> items, string tag = "p")
     {
