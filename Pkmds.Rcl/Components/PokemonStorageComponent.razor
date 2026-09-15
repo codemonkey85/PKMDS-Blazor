@@ -7,7 +7,7 @@
         <PartyGrid/>
     }
 
-    @if (saveFile.Version is GameVersion.LG or GameVersion.GP or GameVersion.GE)
+    @if (UsesLetsGoStorage(saveFile))
     {
         <div class="flex flex-wrap mx-[5px] mb-[5px] px-[5px] items-center">
             <MudIconButton OnClick="@OpenAddToBankDialogAsync"

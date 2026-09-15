@@ -70,6 +70,7 @@
         <MudGrid Spacing="1">
             @foreach (var mysteryGift in paginatedItems)
             {
+                var supportsCardImport = AppState.SaveFile is { } saveFile && SupportsCardImport(saveFile, mysteryGift);
                 <MudItem xs="12"
                          sm="6"
                          md="4"
@@ -122,12 +123,15 @@
                             <MudButton OnClick="@(() => OnClickImport(mysteryGift))"
                                        ButtonType="@ButtonType.Button"
                                        Variant="@Variant.Filled"
-                                       StartIcon="@Icons.Material.Filled.ImportExport"
+                                       StartIcon="@(supportsCardImport
+                                                      ? Icons.Material.Filled.ImportExport
+                                                      : Icons.Material.Filled.CardGiftcard)"
                                        Color="@Color.Default"
                                        Size="@Size.Small"
-                                       title="Import Card"
-                                       Disabled="@(mysteryGift.Species.IsInvalidSpecies())">
-                                Import
+                                       title="@(supportsCardImport ? "Import Wonder Card" : "Receive Pokémon")"
+                                       Disabled="@(!supportsCardImport &&
+                                                   (!mysteryGift.IsEntity || mysteryGift.Species.IsInvalidSpecies()))">
+                                @(supportsCardImport ? "Import" : "Receive")
                             </MudButton>
                         </MudCardActions>
                     </MudCard>

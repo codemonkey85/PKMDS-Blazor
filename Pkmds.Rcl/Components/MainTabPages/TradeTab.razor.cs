@@ -236,29 +236,26 @@ public partial class TradeTab : RefreshAwareComponent
         }
     }
 
-    // Minimal duplicate of MainLayout's WriteFile: File System Access API when supported,
-    // fall back to an anchor click for legacy browsers. Returns whether the file was
+    // Minimal duplicate of MainLayout's WriteFile: save picker when supported,
+    // fall back to the shared download flow for legacy browsers. Returns whether the file was
     // actually written (false on user cancel or failure) so the caller knows whether
     // to clear the dirty flag.
     private async Task<bool> WriteSlotBFileAsync(byte[] data, string fileName, string fileTypeExtension)
     {
-        if (!await FileSystemAccessService.IsSupportedAsync())
-        {
-            var finalName = string.IsNullOrWhiteSpace(fileName) ? "save.sav" : fileName;
-            var base64 = Convert.ToBase64String(data);
-            var element = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "eval", "document.createElement('a')");
-            await element.InvokeVoidAsync("setAttribute", "href",
-                $"data:application/x-pokemon-savedata;base64,{base64}");
-            await element.InvokeVoidAsync("setAttribute", "download", finalName);
-            await element.InvokeVoidAsync("click");
-            return true;
-        }
-
         try
         {
-            await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite",
-                fileName, data, fileTypeExtension, "Save File");
+            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
+            {
+                await JSRuntime.InvokeVoidAsync("showFilePickerAndWrite",
+                    fileName, data, fileTypeExtension, "Save File");
+            }
+            else
+            {
+                var finalName = string.IsNullOrWhiteSpace(fileName) ? "save.sav" : fileName;
+                await JSRuntime.InvokeVoidAsync(
+                    "downloadBlob", finalName, data, "application/x-pokemon-savedata");
+            }
+
             return true;
         }
         catch (JSException ex) when (ex.Message.Contains("AbortError", StringComparison.OrdinalIgnoreCase)
