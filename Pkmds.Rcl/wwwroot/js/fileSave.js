@@ -175,6 +175,10 @@ function pkmdsIsIOS() {
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+function pkmdsIsSamsungInternet() {
+    return /SamsungBrowser\//i.test(navigator.userAgent);
+}
+
 function pkmdsNeedsUserTapDownload() {
     // Mobile Chromium can expose the download attribute while still suppressing a
     // programmatic anchor click after Blazor's async export pipeline has consumed the
@@ -334,7 +338,13 @@ window.pkmdsSupportsSaveFilePicker = function () {
     // Export only needs showSaveFilePicker. The package-level support check also requires
     // open and directory pickers, which can incorrectly reject browsers that can save.
     // iOS is kept on the user-tap flow because createWritable support is incomplete.
-    return typeof window.showSaveFilePicker === 'function' && !pkmdsIsIOS();
+    // Samsung Internet 29 exposes the picker and reports a successful write, but can leave
+    // the selected destination as a zero-byte file (issue #1316). Because no exception is
+    // raised, the fallback below cannot recover; route Samsung Internet through the existing
+    // user-tap Blob download/share flow instead.
+    return typeof window.showSaveFilePicker === 'function' &&
+        !pkmdsIsIOS() &&
+        !pkmdsIsSamsungInternet();
 };
 
 function pkmdsDownloadPreparedBlob(fileName, blob, forceUserTap) {
