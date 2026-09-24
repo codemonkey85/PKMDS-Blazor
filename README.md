@@ -7,7 +7,8 @@
 
 A web app to edit your Pokémon save files. Check it out at [pkmds.app](https://pkmds.app/)!
 
-#### **PLEASE NOTE: PKMDS does not, and will never, support custom ROMs.**
+<a id="custom-roms-and-rom-hacks"></a>
+**PLEASE NOTE: PKMDS does not, and will never, support custom ROMs or ROM hacks.**
 
 **Note: this is a save editor, not a ROM editor.**
 
