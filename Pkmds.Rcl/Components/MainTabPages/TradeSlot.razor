@@ -22,8 +22,7 @@
             var highResUrl = HostService.IsEmbedded
                 ? null
                 : AppState.SpriteStyle == SpriteStyle.Game
-                    ? PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl(Pokemon.Species, Pokemon.Form,
-                        Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender, OwnerVersion)
+                    ? ImageHelper.GetPokemonGameSpriteUrl(Pokemon, OwnerVersion)
                     : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(Pokemon.Species, Pokemon.Form,
                         Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender);
             <object class="pkm-sprite w-full h-auto object-contain block"

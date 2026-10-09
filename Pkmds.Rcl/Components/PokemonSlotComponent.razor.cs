@@ -135,29 +135,6 @@ public partial class PokemonSlotComponent : IDisposable
         };
     }
 
-    // The CDN's Gen II shiny Celebi images are cropped to 40×40, while their
-    // transparent non-shiny counterparts use 56×56 canvases. Use padded copies
-    // so both colors have the same scale and position in a box slot.
-    private static string? GetGen2ShinyCelebiSpriteUrl(PKM pokemon, GameVersion version)
-    {
-        if (pokemon.Species != (ushort)Species.Celebi || !pokemon.GetIsShinySafe())
-        {
-            return null;
-        }
-
-        var game = version switch
-        {
-            GameVersion.GD or GameVersion.GS => "gold",
-            GameVersion.SI => "silver",
-            GameVersion.C => "crystal",
-            _ => null
-        };
-
-        return game is null
-            ? null
-            : $"_content/Pkmds.Rcl/sprites/overrides/gen2/shiny-celebi-{game}.png";
-    }
-
     // ReSharper disable once UnusedMember.Local
     private void OnHighResSpriteLoaded()
     {
