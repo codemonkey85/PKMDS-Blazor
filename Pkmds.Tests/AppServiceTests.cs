@@ -447,6 +447,51 @@ public class AppServiceTests
     }
 
     [Fact]
+    public async Task ImportMysteryGift_HeartGoldPokemonCard_FillsFirstPGTSlot()
+    {
+        var saveFile = new SAV4HGSS();
+        var gift = new PCD { CardID = 123 };
+        gift.Gift.GiftType = GiftType4.Pokémon;
+        gift.Gift.PK = new PK4 { Species = 25 };
+        var appState = new TestAppState { SaveFile = saveFile };
+        var appService = new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
+
+        await appService.ImportMysteryGift(gift, out var isSuccessful, out var message);
+
+        isSuccessful.Should().BeTrue(message);
+        saveFile.Mystery.GetMysteryGiftPGT(0).Species.Should().Be(25);
+        saveFile.Mystery.GetMysteryGiftPCD(0).IsEmpty.Should().BeTrue();
+        saveFile.LockCapsuleSlot.IsEmpty.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ImportMysteryGift_HeartGoldFullRegularAlbum_DoesNotUseLockCapsuleSlot()
+    {
+        var saveFile = new SAV4HGSS();
+        var pgt = new PGT { GiftType = GiftType4.Item, ItemID = 1 };
+        var pcd = new PCD { CardID = 123 };
+        pcd.Gift.GiftType = GiftType4.Item;
+        pcd.Gift.ItemID = 1;
+        for (var i = 0; i < 8; i++)
+        {
+            saveFile.Mystery.SetMysteryGift(i, pgt.Clone());
+        }
+        for (var i = 0; i < 3; i++)
+        {
+            saveFile.Mystery.SetMysteryGift(i, pcd.Clone());
+        }
+
+        var appState = new TestAppState { SaveFile = saveFile };
+        var appService = new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
+        await appService.ImportMysteryGift(pcd, out var isSuccessful, out var message);
+
+        isSuccessful.Should().BeFalse();
+        message.Should().Contain("No compatible empty Mystery Gift slot");
+        saveFile.LockCapsuleSlot.IsEmpty.Should().BeTrue();
+        saveFile.Mystery.GetMysteryGiftPCD(0).CardID.Should().Be(123);
+    }
+
+    [Fact]
     public void ReceiveMysteryGiftPokemon_SwordShieldSave_WritesFirstEmptyBoxSlot()
     {
         var data = File.ReadAllBytes(Path.Combine(TestFilesPath, "Test-Save-Shield.sav"));

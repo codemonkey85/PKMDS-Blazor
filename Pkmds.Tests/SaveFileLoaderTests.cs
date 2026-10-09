@@ -255,6 +255,29 @@ public class SaveFileLoaderTests
     }
 
     [Theory]
+    [InlineData("Pokemon Platinum.sav", typeof(SAV4Pt))]
+    [InlineData("Pokemon Heart Gold  (JP)old.sav", typeof(SAV4HGSS))]
+    public void TryLoad_ValidGen4WithCoincidentalGen5Footer_RemainsGen4(string fileName, Type expectedType)
+    {
+        var data = File.ReadAllBytes(Path.Combine(TestFilesPath, fileName));
+        SaveUtil.TryGetSaveFile(data, out var original, fileName).Should().BeTrue();
+        original.Should().BeOfType(expectedType);
+        data = original!.Write().ToArray();
+        SaveUtil.TryGetSaveFile(data, out var normalized, fileName).Should().BeTrue();
+        normalized!.ChecksumsValid.Should().BeTrue();
+
+        // The B2W2 footer falls in an unused gap between Gen 4 extra blocks. Give it
+        // a valid CRC without changing any Gen 4 checksums.
+        var footer = data.AsSpan(SaveUtil.SIZE_G5B2W2 - 0x100, 0x94 + 0x10);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(
+            footer[^2..], Checksums.CRC16_CCITT(footer[..0x94]));
+
+        SaveFileLoader.TryLoad(data, fileName, out var result, out var archiveContext).Should().BeTrue();
+        result.Should().BeOfType(expectedType);
+        archiveContext.Should().BeNull();
+    }
+
+    [Theory]
     [InlineData("POKEMON FIRE_BPRE-0.sav", GameVersion.FR)]
     [InlineData("POKEMON LEAF_BPGE-0.sav", GameVersion.LG)]
     public void TryLoad_FireRedLeafGreen_InfersVersionFromFileName(
