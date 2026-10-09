@@ -114,7 +114,7 @@ public partial class PokemonSlotComponent : IDisposable
                             lastLoadedIsShiny, lastLoadedIsFemale, lastLoadedSpriteStyle);
     }
 
-    // Gen I/II transparent sprites are 40×40 px — scale up to fill the slot.
+    // Gen I/II pixel-art sprites are small — scale their canvases to fill the slot.
     // X/Y and OR/AS sprites are tightly cropped 60×60 px — scale down slightly.
     private string GetHiResSizeClass()
     {
@@ -133,6 +133,29 @@ public partial class PokemonSlotComponent : IDisposable
                 => "pkm-sprite-hires--sm",
             _ => string.Empty
         };
+    }
+
+    // The CDN's Gen II shiny Celebi images are cropped to 40×40, while their
+    // transparent non-shiny counterparts use 56×56 canvases. Use padded copies
+    // so both colors have the same scale and position in a box slot.
+    private static string? GetGen2ShinyCelebiSpriteUrl(PKM pokemon, GameVersion version)
+    {
+        if (pokemon.Species != (ushort)Species.Celebi || !pokemon.GetIsShinySafe())
+        {
+            return null;
+        }
+
+        var game = version switch
+        {
+            GameVersion.GD or GameVersion.GS => "gold",
+            GameVersion.SI => "silver",
+            GameVersion.C => "crystal",
+            _ => null
+        };
+
+        return game is null
+            ? null
+            : $"_content/Pkmds.Rcl/sprites/overrides/gen2/shiny-celebi-{game}.png";
     }
 
     // ReSharper disable once UnusedMember.Local
