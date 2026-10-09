@@ -26,6 +26,6 @@
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
-    <PackageVersion Include="xunit.v3" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3" Version="4.0.2" />
   </ItemGroup>
 </Project>
