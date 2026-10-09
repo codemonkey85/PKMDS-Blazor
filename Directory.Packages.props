@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.29.2" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.30.1" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.1" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.1.0" />
@@ -11,7 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="bUnit" Version="2.11.3" />
-    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="FluentAssertions" Version="8.11.0" />
     <PackageVersion Include="Humanizer" Version="3.0.10" />
     <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="4.0.0" />
@@ -21,7 +21,7 @@
     <PackageVersion Include="Microsoft.JSInterop.WebAssembly" Version="10.0.3" />
     <!-- Windows Shell preview-handler PoC only (tools/windows-preview-poc). -->
     <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
-    <PackageVersion Include="MudBlazor" Version="9.10.0" />
+    <PackageVersion Include="MudBlazor" Version="9.11.0" />
     <PackageVersion Include="PKHeX.Core" Version="26.8.26" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />

@@ -652,42 +652,19 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             var cards = GetMysteryGiftProvider(saveFile);
             var album = LoadMysteryGifts(saveFile, cards);
             var flags = cards as IMysteryGiftFlags;
-            var index = 0;
-
-            var lastUnfilled = GetLastUnfilledByType(gift, album);
-            if (lastUnfilled > -1)
-            {
-                index = lastUnfilled;
-            }
-
-            if (gift is PCD { IsLockCapsule: true })
-            {
-                index = 11;
-            }
-
-            var other = album[index];
-            if (gift is PCD { CanConvertToPGT: true } pcd && other is PGT)
-            {
-                gift = pcd.Gift;
-            }
-            else if (gift.Type != other.Type)
+            var index = FindFirstEmptyGiftSlot(gift, album, saveFile is SAV4HGSS, out var storedGift);
+            if (index < 0)
             {
                 isSuccessful = false;
-                resultsMessage = $"{gift.Type} != {other.Type}";
-                return Task.CompletedTask;
-            }
-            else if (gift is PCD g && g is { IsLockCapsule: true } != (index == 11))
-            {
-                isSuccessful = false;
-                resultsMessage = $"{GameInfo.Strings.Item[533]} slot not valid.";
+                resultsMessage = "No compatible empty Mystery Gift slot is available.";
                 return Task.CompletedTask;
             }
 
-            album[index] = gift.Clone();
+            album[index] = storedGift.Clone();
 
             List<string> receivedFlags = [];
 
-            SetCardId(gift.CardID, flags, receivedFlags);
+            SetCardId(storedGift.CardID, flags, receivedFlags);
             SaveReceivedFlags(flags, receivedFlags);
             SaveReceivedCards(saveFile, cards, album);
 
@@ -702,24 +679,40 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             return Task.CompletedTask;
         }
 
-        static int GetLastUnfilledByType(DataMysteryGift gift, DataMysteryGift[] album)
+        static int FindFirstEmptyGiftSlot(
+            DataMysteryGift gift, DataMysteryGift[] album, bool isHgss, out DataMysteryGift storedGift)
         {
-            for (var i = 0; i < album.Length; i++)
+            storedGift = gift;
+            if (gift is PCD pcd)
             {
-                var exist = album[i];
-                if (!exist.IsEmpty)
+                if (pcd.IsLockCapsule)
                 {
-                    continue;
+                    return isHgss && album[^1].IsEmpty ? album.Length - 1 : -1;
                 }
 
-                if (exist.Type != gift.Type)
+                // Gen 4 has eight PGT slots before its three regular PCD slots. A PCD's
+                // inner gift can be delivered from a PGT slot; use those first so Pokémon
+                // gifts fill the album from the beginning.
+                for (var i = 0; i < album.Length; i++)
                 {
-                    continue;
+                    if (album[i] is PGT { IsEmpty: true })
+                    {
+                        storedGift = pcd.Gift;
+                        return i;
+                    }
                 }
-
-                return i;
             }
 
+            // HGSS has a twelfth, dedicated PCD slot for the Lock Capsule. Never use it
+            // for an ordinary card, even when all eleven regular slots are occupied.
+            var count = isHgss && gift is PCD ? album.Length - 1 : album.Length;
+            for (var i = 0; i < count; i++)
+            {
+                if (album[i].IsEmpty && album[i].Type == gift.Type)
+                {
+                    return i;
+                }
+            }
             return -1;
         }
 

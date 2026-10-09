@@ -67,14 +67,18 @@ public static class SaveFileLoader
         string? fileName,
         [NotNullWhen(true)] out SaveFile? saveFile)
     {
-        // Gen 4 and Gen 5 raw saves share the same 512 KiB size. PKHeX currently checks the
-        // Gen 4 signatures first, so unrelated Gen 5 extdata can occasionally satisfy an HGSS
-        // footer signature and win before PKHeX examines the valid Gen 5 checksum footer
-        // (issue #1127). Prefer a checksum-valid Gen 5 footer before delegating to the
-        // normal detector. This mirrors PKHeX's own footer validation; it does not repair or
-        // guess at damaged data.
-        if (!TryLoadGen5ByFooter(data, out saveFile) &&
-            !SaveUtil.TryGetSaveFile(data, out saveFile, fileName))
+        // Gen 4 and Gen 5 raw saves share the same 512 KiB size. A Gen 5 save can have a
+        // coincidental Gen 4 signature (issue #1127), while a Gen 4 save can also have a
+        // coincidental Gen 5 footer (issue #1325). Keep a checksum-valid Gen 4 result from
+        // PKHeX; otherwise prefer a checksum-valid Gen 5 footer over PKHeX's signature-only
+        // Gen 4 detection. Preserve PKHeX's result when neither stronger check applies.
+        SaveUtil.TryGetSaveFile(data, out saveFile, fileName);
+        if (saveFile is not SAV4 { ChecksumsValid: true } &&
+            TryLoadGen5ByFooter(data, out var gen5Save))
+        {
+            saveFile = gen5Save;
+        }
+        if (saveFile is null)
         {
             return false;
         }
