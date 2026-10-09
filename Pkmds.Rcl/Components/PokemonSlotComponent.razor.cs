@@ -114,7 +114,7 @@ public partial class PokemonSlotComponent : IDisposable
                             lastLoadedIsShiny, lastLoadedIsFemale, lastLoadedSpriteStyle);
     }
 
-    // Gen I/II transparent sprites are 40×40 px — scale up to fill the slot.
+    // Gen I/II pixel-art sprites are small — scale their canvases to fill the slot.
     // X/Y and OR/AS sprites are tightly cropped 60×60 px — scale down slightly.
     private string GetHiResSizeClass()
     {

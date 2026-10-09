@@ -42,6 +42,34 @@ public static partial class ImageHelper
     public static string GetPokemonSpriteFilename(PKM? pokemon) =>
         $"{SpritesRoot}{SpritePaths.GetPokemonSprite(pokemon)}";
 
+    /// <summary>Gets the game-version sprite URL, using bundled fixes for misaligned CDN sprites.</summary>
+    public static string? GetPokemonGameSpriteUrl(PKM pokemon, GameVersion version)
+    {
+        var isShiny = pokemon.GetIsShinySafe();
+
+        // The CDN's Gen II shiny Celebi sprites are cropped to 40×40, while the
+        // regular sprites use 56×56 canvases. These padded copies keep both
+        // colors at the same scale and position in box, party, and Trade slots.
+        if (pokemon.Species == (ushort)Species.Celebi && isShiny)
+        {
+            var game = version switch
+            {
+                GameVersion.GD or GameVersion.GS => "gold",
+                GameVersion.SI => "silver",
+                GameVersion.C => "crystal",
+                _ => null
+            };
+
+            if (game is not null)
+            {
+                return $"{SpritesRoot}overrides/gen2/shiny-celebi-{game}.png";
+            }
+        }
+
+        return PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl(pokemon.Species, pokemon.Form,
+            pokemon.GetFormArgument(0), isShiny, pokemon.Gender, version);
+    }
+
     /// <summary>
     /// Gets the bundled sprite filename for a specific species form, for use in form-picker UIs
     /// where a full PKM is not available. Does not handle eggs, gender differences, or totem forms.

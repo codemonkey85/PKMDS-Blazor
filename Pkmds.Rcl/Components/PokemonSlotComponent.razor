@@ -25,8 +25,7 @@
             var highResUrl = HostService.IsEmbedded
                 ? null
                 : AppState.SpriteStyle == SpriteStyle.Game
-                    ? PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl(Pokemon.Species, Pokemon.Form,
-                        Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender,
+                    ? ImageHelper.GetPokemonGameSpriteUrl(Pokemon,
                         AppState.SaveFile?.Version ?? GameVersion.Any)
                     : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(Pokemon.Species, Pokemon.Form,
                         Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender);
