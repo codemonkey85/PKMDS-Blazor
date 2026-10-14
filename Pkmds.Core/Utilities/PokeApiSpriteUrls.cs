@@ -22,6 +22,8 @@ public static class PokeApiSpriteUrls
 
     private const string PokeApiVersionsBaseUrl = SpriteSource.VersionsBaseUrl;
 
+    private readonly record struct GameSpriteSet(string Path, string FileExtension);
+
     // Alcremie (869): 9 cream forms × 7 sweet decorations = 63 combinations.
     // PKHeX form (0-8) = cream type; GetFormArgument(0) (0-6) = sweet type.
     private static readonly string[] AlcremieCreamNames =
@@ -541,19 +543,14 @@ public static class PokeApiSpriteUrls
 
     /// <summary>
     /// Returns <see langword="true" /> if the given game version's sprite directory on PokeAPI
-    /// includes a <c>shiny/</c> subdirectory.
-    /// Gen I (shiny didn't exist), Gen VIII BDSP, and Gen IX do not have one in the CDN repo.
+    /// includes a <c>shiny/</c> subdirectory. Every mapped set except Generation I has one.
     /// </summary>
     private static bool HasShinyCdnSprite(GameVersion version) => version switch
     {
         // Gen I: shiny mechanic didn't exist
         GameVersion.RD or GameVersion.GN or GameVersion.BU
             or GameVersion.RB or GameVersion.RBY
-            or GameVersion.YW => false,
-        // Gen VIII BDSP: PokeAPI CDN has no shiny/ subdirectory
-        GameVersion.BD or GameVersion.SP => false,
-        // Gen IX: PokeAPI CDN has no shiny/ subdirectory
-        GameVersion.SL or GameVersion.VL => false,
+            or GameVersion.YW or GameVersion.Gen1 => false,
         _ => true
     };
 
@@ -576,65 +573,89 @@ public static class PokeApiSpriteUrls
     /// <summary>
     /// Returns <see langword="true" /> if the given game version's sprite directory on PokeAPI
     /// includes a <c>female/</c> subdirectory for gender-specific sprites.
-    /// Gen I, II, III, and VIII (SwSh/PLA/BDSP) do not have one.
+    /// Generation IV and later game-specific sets include one.
     /// </summary>
     private static bool HasFemaleGameSprite(GameVersion version) => version switch
     {
         // Gen IV — SAV4DP/HGSS report combined GameVersion.DP / GameVersion.HGSS
         GameVersion.D or GameVersion.P or GameVersion.DP
-            or GameVersion.Pt
+            or GameVersion.Pt or GameVersion.DPPt
             or GameVersion.HG or GameVersion.SS or GameVersion.HGSS => true,
-        GameVersion.B or GameVersion.W or GameVersion.B2 or GameVersion.W2 => true,
-        GameVersion.X or GameVersion.Y or GameVersion.OR or GameVersion.AS => true,
-        GameVersion.SN or GameVersion.MN or GameVersion.US or GameVersion.UM
-            or GameVersion.GP or GameVersion.GE => true,
-        GameVersion.SL or GameVersion.VL => true,
+        GameVersion.B or GameVersion.W or GameVersion.BW
+            or GameVersion.B2 or GameVersion.W2 or GameVersion.B2W2 => true,
+        GameVersion.X or GameVersion.Y or GameVersion.XY
+            or GameVersion.OR or GameVersion.AS or GameVersion.ORAS or GameVersion.ORASDEMO => true,
+        GameVersion.SN or GameVersion.MN or GameVersion.SM
+            or GameVersion.US or GameVersion.UM or GameVersion.USUM
+            or GameVersion.GP or GameVersion.GE or GameVersion.GG => true,
+        GameVersion.SW or GameVersion.SH or GameVersion.SWSH
+            or GameVersion.PLA
+            or GameVersion.BD or GameVersion.SP or GameVersion.BDSP
+            or GameVersion.SL or GameVersion.VL or GameVersion.SV
+            or GameVersion.ZA => true,
         _ => false
     };
 
     /// <summary>
-    /// Maps a <see cref="GameVersion" /> to its PokeAPI versions/ subdirectory path segment,
-    /// or <see langword="null" /> if no game-specific sprite directory exists (e.g. SwSh, PLA).
+    /// Maps a <see cref="GameVersion" /> to its PokeAPI versions/ subdirectory and file format,
+    /// or <see langword="null" /> if no game-specific sprite directory exists.
     /// </summary>
-    private static string? GetPokeApiVersionPath(GameVersion version) => version switch
+    private static GameSpriteSet? GetPokeApiVersionSpriteSet(GameVersion version) => version switch
     {
         // Gen I — SAV1 reports GameVersion.RB for Red/Blue (after game detection) or RBY as fallback
         GameVersion.RD or GameVersion.GN or GameVersion.BU
-            or GameVersion.RB or GameVersion.RBY => "generation-i/red-blue",
-        GameVersion.YW => "generation-i/yellow",
+            or GameVersion.RB or GameVersion.RBY or GameVersion.Gen1 =>
+            new("generation-i/red-blue", "png"),
+        GameVersion.YW => new("generation-i/yellow", "png"),
         // Gen II — SAV2 reports GameVersion.GS for Gold/Silver (combined); use gold as the target dir
-        GameVersion.GD or GameVersion.GS => "generation-ii/gold",
-        GameVersion.SI => "generation-ii/silver",
-        GameVersion.C => "generation-ii/crystal",
+        GameVersion.GD or GameVersion.GS or GameVersion.GSC or GameVersion.Gen2 =>
+            new("generation-ii/gold", "png"),
+        GameVersion.SI => new("generation-ii/silver", "png"),
+        GameVersion.C => new("generation-ii/crystal", "png"),
         // Gen III — SAV3RS reports GameVersion.RS for Ruby/Sapphire (combined)
-        GameVersion.R or GameVersion.S or GameVersion.RS => "generation-iii/ruby-sapphire",
-        GameVersion.E => "generation-iii/emerald",
-        GameVersion.FR or GameVersion.LG => "generation-iii/firered-leafgreen",
+        GameVersion.R or GameVersion.S or GameVersion.RS or GameVersion.RSE or GameVersion.Gen3 =>
+            new("generation-iii/ruby-sapphire", "png"),
+        GameVersion.E => new("generation-iii/emerald", "png"),
+        GameVersion.FR or GameVersion.LG or GameVersion.FRLG =>
+            new("generation-iii/firered-leafgreen", "png"),
         // Gen IV — SAV4DP reports GameVersion.DP, SAV4HGSS reports GameVersion.HGSS (both combined)
-        GameVersion.D or GameVersion.P or GameVersion.DP => "generation-iv/diamond-pearl",
-        GameVersion.Pt => "generation-iv/platinum",
-        GameVersion.HG or GameVersion.SS or GameVersion.HGSS => "generation-iv/heartgold-soulsilver",
+        GameVersion.D or GameVersion.P or GameVersion.DP or GameVersion.DPPt or GameVersion.Gen4 =>
+            new("generation-iv/diamond-pearl", "png"),
+        GameVersion.Pt => new("generation-iv/platinum", "png"),
+        GameVersion.HG or GameVersion.SS or GameVersion.HGSS =>
+            new("generation-iv/heartgold-soulsilver", "png"),
         // Gen V — PokeAPI has no separate B2W2 dir; BW is used for both
-        GameVersion.B or GameVersion.W
-            or GameVersion.B2 or GameVersion.W2 => "generation-v/black-white",
+        GameVersion.B or GameVersion.W or GameVersion.BW
+            or GameVersion.B2 or GameVersion.W2 or GameVersion.B2W2 or GameVersion.Gen5 =>
+            new("generation-v/black-white", "png"),
         // Gen VI
-        GameVersion.X or GameVersion.Y => "generation-vi/x-y",
-        GameVersion.OR or GameVersion.AS => "generation-vi/omegaruby-alphasapphire",
-        // Gen VII — PokeAPI has only USUM; used for SM, USUM, and Let's Go
-        GameVersion.SN or GameVersion.MN
-            or GameVersion.US or GameVersion.UM
-            or GameVersion.GP or GameVersion.GE => "generation-vii/ultra-sun-ultra-moon",
-        // Gen VIII — BDSP only; SwSh and PLA return null so the component falls back to Home sprites
-        GameVersion.BD or GameVersion.SP => "generation-viii/brilliant-diamond-shining-pearl",
+        GameVersion.X or GameVersion.Y or GameVersion.XY or GameVersion.Gen6 =>
+            new("generation-vi/x-y", "png"),
+        GameVersion.OR or GameVersion.AS or GameVersion.ORAS or GameVersion.ORASDEMO =>
+            new("generation-vi/omega-ruby-alpha-sapphire", "png"),
+        // Gen VII — SM uses the USUM set; Let's Go has a separate animated set.
+        GameVersion.SN or GameVersion.MN or GameVersion.SM
+            or GameVersion.US or GameVersion.UM or GameVersion.USUM or GameVersion.Gen7 =>
+            new("generation-vii/ultra-sun-ultra-moon", "gif"),
+        GameVersion.GP or GameVersion.GE or GameVersion.GG =>
+            new("generation-vii/lets-go-pikachu-lets-go-eevee", "gif"),
+        // Gen VIII
+        GameVersion.SW or GameVersion.SH or GameVersion.SWSH =>
+            new("generation-viii/sword-shield", "webp"),
+        GameVersion.PLA => new("generation-viii/legends-arceus", "webp"),
+        GameVersion.BD or GameVersion.SP or GameVersion.BDSP =>
+            new("generation-viii/brilliant-diamond-shining-pearl", "webp"),
         // Gen IX
-        GameVersion.SL or GameVersion.VL => "generation-ix/scarlet-violet",
+        GameVersion.SL or GameVersion.VL or GameVersion.SV =>
+            new("generation-ix/scarlet-violet", "webp"),
+        GameVersion.ZA => new("generation-ix/legends-za", "webp"),
         _ => null
     };
 
     /// <summary>
     /// Gets the game-version-appropriate PokeAPI sprite URL for a Pokémon.
-    /// Uses the pixel-art sprite from the save file's specific game directory on the PokeAPI CDN.
-    /// Returns null when the version has no PokeAPI sprite directory (e.g. SwSh, PLA) or the
+    /// Uses the sprite from the save file's specific game directory on the PokeAPI CDN.
+    /// Returns null when the version has no PokeAPI sprite directory or the
     /// species/form has no sprite in that generation — callers should fall back to the home sprite or
     /// the bundled sprite in those cases.
     /// </summary>
@@ -646,8 +667,8 @@ public static class PokeApiSpriteUrls
             return null;
         }
 
-        var versionPath = GetPokeApiVersionPath(version);
-        if (versionPath is null)
+        var spriteSet = GetPokeApiVersionSpriteSet(version);
+        if (spriteSet is not { } set)
         {
             return null;
         }
@@ -659,7 +680,8 @@ public static class PokeApiSpriteUrls
             form = FormInfo.GetTotemBaseForm(species, form);
         }
 
-        var baseUrl = $"{PokeApiVersionsBaseUrl}{versionPath}/";
+        var baseUrl = $"{PokeApiVersionsBaseUrl}{set.Path}/";
+        var fileExtension = set.FileExtension;
         // Determine the sprite subdirectory prefix:
         //   shiny/       — shiny sprites (Gen II+, where CDN has a shiny/ dir)
         //   transparent/ — Gen I and Gen II non-shiny sprites with transparent backgrounds
@@ -679,7 +701,7 @@ public static class PokeApiSpriteUrls
                 ? (int)arg
                 : 0;
             return
-                $"{baseUrl}{spritePrefix}{species}-{AlcremieCreamNames[creamIdx]}-{AlcremieSweetNames[sweetIdx]}.png";
+                $"{baseUrl}{spritePrefix}{species}-{AlcremieCreamNames[creamIdx]}-{AlcremieSweetNames[sweetIdx]}.{fileExtension}";
         }
 
         // Forms stored as named suffix files (e.g. 201-a.png, 201-b.png)
@@ -688,7 +710,7 @@ public static class PokeApiSpriteUrls
             var femaleSuffixPath = canUseFemale && HasFemaleHomeSprite(species, gender)
                 ? "female/"
                 : string.Empty;
-            return $"{baseUrl}{spritePrefix}{femaleSuffixPath}{species}-{s}.png";
+            return $"{baseUrl}{spritePrefix}{femaleSuffixPath}{species}-{s}.{fileExtension}";
         }
 
         // Forms stored as PokeAPI pokemon IDs (Megas, regionals, gender-as-form, and others)
@@ -697,7 +719,7 @@ public static class PokeApiSpriteUrls
             var femaleIdPath = canUseFemale && gender == (byte)Gender.Female && FemaleFormIds.Contains(pokeApiId)
                 ? "female/"
                 : string.Empty;
-            return $"{baseUrl}{spritePrefix}{femaleIdPath}{pokeApiId}.png";
+            return $"{baseUrl}{spritePrefix}{femaleIdPath}{pokeApiId}.{fileExtension}";
         }
 
         // Maushold: PKHeX form 0 = Family-of-Three (PokeAPI 10257), form 1 = Family-of-Four (base 925)
@@ -706,7 +728,7 @@ public static class PokeApiSpriteUrls
             var mausholdId = form == 0
                 ? "10257"
                 : "925";
-            return $"{baseUrl}{spritePrefix}{mausholdId}.png";
+            return $"{baseUrl}{spritePrefix}{mausholdId}.{fileExtension}";
         }
 
         // Base form (form 0) not in any form dictionary: use species number directly
@@ -715,7 +737,7 @@ public static class PokeApiSpriteUrls
             var femaleBasePath = canUseFemale && HasFemaleHomeSprite(species, gender)
                 ? "female/"
                 : string.Empty;
-            return $"{baseUrl}{spritePrefix}{femaleBasePath}{species}.png";
+            return $"{baseUrl}{spritePrefix}{femaleBasePath}{species}.{fileExtension}";
         }
 
         // Species where all forms share a single sprite: use base species URL
@@ -727,7 +749,7 @@ public static class PokeApiSpriteUrls
         var femaleIndPath = canUseFemale && HasFemaleHomeSprite(species, gender)
             ? "female/"
             : string.Empty;
-        return $"{baseUrl}{spritePrefix}{femaleIndPath}{species}.png";
+        return $"{baseUrl}{spritePrefix}{femaleIndPath}{species}.{fileExtension}";
 
         // form > 0 not in any mapping: no game sprite — fall back to home sprite or bundled
     }
