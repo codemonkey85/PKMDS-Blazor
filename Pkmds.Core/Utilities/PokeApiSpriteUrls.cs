@@ -563,10 +563,10 @@ public static class PokeApiSpriteUrls
     {
         GameVersion.RD or GameVersion.GN or GameVersion.BU
             or GameVersion.RB or GameVersion.RBY
-            or GameVersion.YW => true,
+            or GameVersion.YW or GameVersion.Gen1 => true,
         GameVersion.GD or GameVersion.GS
             or GameVersion.SI
-            or GameVersion.C => true,
+            or GameVersion.C or GameVersion.GSC or GameVersion.Gen2 => true,
         _ => false
     };
 
@@ -580,14 +580,18 @@ public static class PokeApiSpriteUrls
         // Gen IV — SAV4DP/HGSS report combined GameVersion.DP / GameVersion.HGSS
         GameVersion.D or GameVersion.P or GameVersion.DP
             or GameVersion.Pt or GameVersion.DPPt
-            or GameVersion.HG or GameVersion.SS or GameVersion.HGSS => true,
+            or GameVersion.HG or GameVersion.SS or GameVersion.HGSS
+            or GameVersion.Gen4 => true,
         GameVersion.B or GameVersion.W or GameVersion.BW
-            or GameVersion.B2 or GameVersion.W2 or GameVersion.B2W2 => true,
+            or GameVersion.B2 or GameVersion.W2 or GameVersion.B2W2
+            or GameVersion.Gen5 => true,
         GameVersion.X or GameVersion.Y or GameVersion.XY
-            or GameVersion.OR or GameVersion.AS or GameVersion.ORAS or GameVersion.ORASDEMO => true,
+            or GameVersion.OR or GameVersion.AS or GameVersion.ORAS or GameVersion.ORASDEMO
+            or GameVersion.Gen6 => true,
         GameVersion.SN or GameVersion.MN or GameVersion.SM
             or GameVersion.US or GameVersion.UM or GameVersion.USUM
-            or GameVersion.GP or GameVersion.GE or GameVersion.GG => true,
+            or GameVersion.GP or GameVersion.GE or GameVersion.GG
+            or GameVersion.Gen7 => true,
         GameVersion.SW or GameVersion.SH or GameVersion.SWSH
             or GameVersion.PLA
             or GameVersion.BD or GameVersion.SP or GameVersion.BDSP
