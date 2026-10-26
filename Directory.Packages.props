@@ -10,7 +10,7 @@
     <PackageVersion Include="Octokit" Version="14.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="bUnit" Version="2.11.3" />
+    <PackageVersion Include="bUnit" Version="2.13.3" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="FluentAssertions" Version="8.11.0" />
     <PackageVersion Include="Humanizer" Version="3.0.10" />
