@@ -35,7 +35,7 @@
                               @onclick="@(() => selectedForm = formIdx)">
                         <MudStack AlignItems="@AlignItems.Center"
                                   Spacing="0">
-                            <img src="@(HostService.IsEmbedded || failedFormSprites.Contains(formIdx)
+                            <img crossorigin="anonymous" src="@(HostService.IsEmbedded || failedFormSprites.Contains(formIdx)
                                           ? ImageHelper.GetPokemonSpriteFilenameForForm(Pokemon.Species, Pokemon.Context, formIdx)
                                           : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(Pokemon.Species, formIdx, null, isPreviewShiny, Pokemon.Gender)
                                             ?? ImageHelper.GetPokemonSpriteFilenameForForm(Pokemon.Species, Pokemon.Context, formIdx))"

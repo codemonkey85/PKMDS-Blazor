@@ -17,14 +17,6 @@
         {
             var title = GetSpeciesTitle(Pokemon.Species);
             var isShiny = Pokemon.GetIsShinySafe();
-            // In embedded host mode, suppress the high-res PokeAPI overlay so PKMDS
-            // makes no external network requests. See #787.
-            var highResUrl = HostService.IsEmbedded
-                ? null
-                : AppState.SpriteStyle == SpriteStyle.Game
-                    ? ImageHelper.GetPokemonGameSpriteUrl(Pokemon, OwnerVersion)
-                    : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(Pokemon.Species, Pokemon.Form,
-                        Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender);
             <object class="pkm-sprite w-full h-auto object-contain block"
                     style="@(highResLoaded ? "display:none" : string.Empty)"
                     type="image/png"
@@ -37,16 +29,17 @@
                      alt="@title"
                      draggable="false">
             </object>
-            @if (highResUrl is not null)
+            @if (highResUrl is { } spriteUrl)
             {
-                <img @key="@((Pokemon.Species, Pokemon.Form, Pokemon.GetFormArgument(0), isShiny, lastLoadedIsFemale, AppState.SpriteStyle))"
+                <img @key="spriteUrl"
                      class="@($"pkm-sprite-hires {(highResLoaded ? "pkm-sprite-hires--loaded" : string.Empty)}")"
-                     src="@highResUrl"
+                     src="@spriteUrl"
+                     crossorigin="anonymous"
                      title="@title"
                      alt="@title"
                      draggable="false"
-                     @onload="OnHighResSpriteLoaded"
-                     @onerror="OnHighResSpriteError"/>
+                     @onload="@(() => OnHighResSpriteLoaded(spriteUrl))"
+                     @onerror="@(() => OnHighResSpriteError(spriteUrl))"/>
             }
 
             @if (isShiny)

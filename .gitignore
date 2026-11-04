@@ -376,3 +376,6 @@ measurements/
 
 # Playwright MCP working directory (snapshots, console logs, traces)
 .playwright-mcp/
+
+# Local Wrangler state and caches
+.wrangler/

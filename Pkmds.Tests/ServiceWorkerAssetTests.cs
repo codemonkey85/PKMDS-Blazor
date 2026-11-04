@@ -23,7 +23,15 @@ public sealed partial class ServiceWorkerAssetTests
         exclusions.Success.Should().BeTrue();
         exclusions.Value.Should().Contain("^_content\\/Pkmds\\.Rcl\\/sprites\\/");
         serviceWorker.Should().Contain("const bundledSpritePathPrefix = new URL('_content/Pkmds.Rcl/sprites/', baseUrl).href;");
-        serviceWorker.Should().Contain("const cache = await caches.open(isPokeApiSprite ? spriteCacheName : cacheName);");
+        serviceWorker.Should().Contain("cache = await caches.open(isHostedSprite ? spriteCacheName : cacheName);");
+    }
+
+    [Fact]
+    public void PublishedServiceWorkerUsesTheAppsHostedSpriteCollection()
+    {
+        var serviceWorker = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "service-worker.published.js");
+
+        serviceWorker.Should().Contain($"const spritePathPrefix = '{SpriteSource.PokemonBaseUrl}';");
     }
 
     [Fact]

@@ -1,0 +1,87 @@
+[
+  {
+    "key": "pokemon/other/home/0.png",
+    "bytes": 95309,
+    "sha256": "359d9c8465362ab7ebf3e08bf2385682e875a7a1296e49fdb453ed19585e34df"
+  },
+  {
+    "key": "pokemon/other/home/25.png",
+    "bytes": 79086,
+    "sha256": "6a9305fbd6f02345153567f4142faf019380b1a1c839cfa3f2349cc36d536a40"
+  },
+  {
+    "key": "pokemon/other/home/994.png",
+    "bytes": 156385,
+    "sha256": "e03d7e35cfd84ebab9a92535ec04a1746dbd3e72baf23f93fbe5bf85172371fb"
+  },
+  {
+    "key": "pokemon/other/home/shiny/25.png",
+    "bytes": 85503,
+    "sha256": "a13a878c89c78a0eba119f76033041178e7f8ef046a950f1a797eb4a0fe8527b"
+  },
+  {
+    "key": "pokemon/other/home/female/25.png",
+    "bytes": 79250,
+    "sha256": "bf06166063262d2d028de591316f996752da84f9917aa30da6b5c6019807dcb6"
+  },
+  {
+    "key": "pokemon/other/home/201-b.png",
+    "bytes": 79846,
+    "sha256": "10955c03673edd7cdfa8c48dcddaac4c21b1776a0cb678c41e1a0d2e16864591"
+  },
+  {
+    "key": "pokemon/versions/generation-i/red-blue/transparent/25.png",
+    "bytes": 462,
+    "sha256": "eeab99f8942ec54d9d6dc722958b1c16842fee89357c97b077f82fa79d0d1b09"
+  },
+  {
+    "key": "pokemon/versions/generation-ii/gold/shiny/251.png",
+    "bytes": 380,
+    "sha256": "ede2cdd9978e3f5edd8439ddd0059940cf38c6b3f8ec232cbd217cc5d5d61792"
+  },
+  {
+    "key": "pokemon/versions/generation-v/black-white/25.png",
+    "bytes": 597,
+    "sha256": "80d30eb1b9f2a05eb4a216d53034e2a0bb16f2619ec43d281f36d601e5819c2c"
+  },
+  {
+    "key": "pokemon/versions/generation-vii/ultra-sun-ultra-moon/25.gif",
+    "bytes": 74953,
+    "sha256": "6b7b5cea17982a3c0c839faef2001a7b3ba622665b2964bacde7aeabdc022d2a"
+  },
+  {
+    "key": "pokemon/versions/generation-vii/lets-go-pikachu-lets-go-eevee/25.gif",
+    "bytes": 774418,
+    "sha256": "60640e70aee3b249c9e022d8ba6950ab8167b9188a24e45e34dcc3af591e23d2"
+  },
+  {
+    "key": "pokemon/versions/generation-viii/sword-shield/25.webp",
+    "bytes": 521900,
+    "sha256": "822b457acf47ac391ad19c63f78a843b70d31ce62a7015eaa986c20fe8aeecb9"
+  },
+  {
+    "key": "pokemon/versions/generation-viii/brilliant-diamond-shining-pearl/25.webp",
+    "bytes": 545976,
+    "sha256": "6aec9b8188ba720ac4630ffce86bec08899f0de16447be7800d8f35b835aa3ac"
+  },
+  {
+    "key": "pokemon/versions/generation-viii/legends-arceus/25.webp",
+    "bytes": 994886,
+    "sha256": "f4d27e59c32c76c155b12d067eb1cb4ac2eacf58d3d3d97baa666e6ff8260906"
+  },
+  {
+    "key": "pokemon/versions/generation-ix/scarlet-violet/25.webp",
+    "bytes": 945174,
+    "sha256": "2d415a0e3a78da7336378f72b6ebc1737e19f5d74adf094c930db41a37055e1c"
+  },
+  {
+    "key": "pokemon/versions/generation-ix/scarlet-violet/shiny/25.webp",
+    "bytes": 990066,
+    "sha256": "8cfd970b7a9c61fa41c15685777f09871fc2b171fd64ba84c5b0a5338499b1a1"
+  },
+  {
+    "key": "pokemon/versions/generation-ix/legends-za/25.webp",
+    "bytes": 845916,
+    "sha256": "42bcaac96461cb85bf36d0bc7c6f43af8b99a5c777da555259f4948c06a027b9"
+  }
+]

@@ -5,12 +5,7 @@ public partial class TradeSlot : RefreshAwareComponent
     // Sprite cache is shared with PokemonSlotComponent via static helpers so the settings
     // "Clear Sprite Cache" action (which targets PokemonSlotComponent) clears this too.
     private bool highResLoaded;
-    private byte lastLoadedForm;
-    private uint lastLoadedFormArg;
-    private bool lastLoadedIsFemale;
-    private bool lastLoadedIsShiny;
-    private ushort lastLoadedSpecies;
-    private SpriteStyle lastLoadedSpriteStyle;
+    private string? highResUrl;
 
     private LegalityStatus? legalityStatus;
     private string? transferIneligibleReason;
@@ -119,49 +114,29 @@ public partial class TradeSlot : RefreshAwareComponent
 
     private void UpdateSpriteState()
     {
-        var currentIsShiny = Pokemon?.GetIsShinySafe() ?? false;
-        var currentForm = Pokemon?.Form ?? 0;
-        var currentFormArg = Pokemon?.GetFormArgument(0) ?? 0;
-        var currentIsFemale = Pokemon is not null && PokeApiSpriteUrls.HasFemaleHomeSprite(Pokemon.Species, Pokemon.Gender);
-        var currentSpriteStyle = AppState.SpriteStyle;
-        if (Pokemon?.Species == lastLoadedSpecies
-            && currentForm == lastLoadedForm
-            && currentFormArg == lastLoadedFormArg
-            && currentIsShiny == lastLoadedIsShiny
-            && currentIsFemale == lastLoadedIsFemale
-            && currentSpriteStyle == lastLoadedSpriteStyle)
+        var url = ImageHelper.GetPokemonHighResSpriteUrl(Pokemon, AppState.SpriteStyle,
+            OwnerVersion, HostService.IsEmbedded);
+        if (url == highResUrl)
         {
             return;
         }
 
-        lastLoadedSpecies = Pokemon?.Species ?? 0;
-        lastLoadedForm = currentForm;
-        lastLoadedFormArg = currentFormArg;
-        lastLoadedIsShiny = currentIsShiny;
-        lastLoadedIsFemale = currentIsFemale;
-        lastLoadedSpriteStyle = currentSpriteStyle;
-        highResLoaded = lastLoadedSpecies > 0
-                        && PokemonSlotComponent.IsHighResLoaded(lastLoadedSpecies, lastLoadedForm, lastLoadedFormArg,
-                            lastLoadedIsShiny, lastLoadedIsFemale, lastLoadedSpriteStyle);
+        highResUrl = url;
+        highResLoaded = url is not null && PokemonSlotComponent.IsHighResLoaded(url);
     }
 
-    // ReSharper disable once UnusedMember.Local
-    private void OnHighResSpriteLoaded()
+    private void OnHighResSpriteLoaded(string url)
     {
+        if (url != highResUrl) return;
         highResLoaded = true;
-        if (lastLoadedSpecies > 0)
-        {
-            PokemonSlotComponent.MarkHighResLoaded(lastLoadedSpecies, lastLoadedForm, lastLoadedFormArg,
-                lastLoadedIsShiny, lastLoadedIsFemale, lastLoadedSpriteStyle);
-        }
-
-        StateHasChanged();
+        PokemonSlotComponent.MarkHighResLoaded(url);
     }
 
-    // ReSharper disable once UnusedMember.Local
-    private static void OnHighResSpriteError()
+    private void OnHighResSpriteError(string url)
     {
-        /* keep showing the bundled sprite — highResLoaded is already false */
+        if (url != highResUrl) return;
+        highResLoaded = false;
+        PokemonSlotComponent.MarkHighResFailed(url);
     }
 
     private async Task HandleClick() => await OnSlotClick.InvokeAsync();
