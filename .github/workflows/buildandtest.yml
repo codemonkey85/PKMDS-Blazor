@@ -52,3 +52,6 @@ jobs:
 
       - name: Run tests
         run: dotnet test Pkmds.Tests/Pkmds.Tests.csproj --configuration Release
+
+      - name: Test sprite service worker behavior
+        run: node --test tools/tests/service-worker-sprites.test.mjs

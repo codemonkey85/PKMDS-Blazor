@@ -1234,6 +1234,7 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 **Tasks:**
 - [ ] Optimize large box rendering with virtualization
 - [ ] Implement lazy loading for sprites
+- [ ] Complete R2 sprite hosting rollout (#1359): sample collection, app integration and on-demand caching are in UAT; full export/upload, collection verification and production rollout remain. See [SPRITE_HOSTING.md](SPRITE_HOSTING.md).
 - [ ] Add caching for computed values
 - [ ] Optimize search algorithms
 - [ ] Implement web worker for heavy computations

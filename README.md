@@ -22,6 +22,9 @@ NOTE: for a list of supported save files / formats, [see the PKHeX README](https
 
 Sprites from: https://github.com/msikma/pokesprite-spritesheet
 
+HOME and game artwork: https://github.com/codemonkey85/sprites (PokeAPI fork).
+See [sprite hosting UAT](SPRITE_HOSTING.md) for the partial R2 rollout and sample collection.
+
 Some images from: https://github.com/msikma/PokeDings
 
 ## Project Structure

@@ -33,7 +33,7 @@
                                              ? "border: 2px solid var(--mud-palette-primary);"
                                              : "border: 2px solid transparent;")"
                                   @onclick="@(() => SelectCream(creamIdx))">
-                            <img src="@(HostService.IsEmbedded || failedCreamSprites.Contains(creamIdx)
+                            <img crossorigin="anonymous" src="@(HostService.IsEmbedded || failedCreamSprites.Contains(creamIdx)
                                           ? ImageHelper.GetPokemonSpriteFilenameForForm((ushort)Species.Alcremie, Pokemon.Context, creamIdx, selectedDeco)
                                           : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.Alcremie, creamIdx, selectedDeco, isPreviewShiny)
                                             ?? ImageHelper.GetPokemonSpriteFilenameForForm((ushort)Species.Alcremie, Pokemon.Context, creamIdx, selectedDeco))"
@@ -66,7 +66,7 @@
                                              ? "border: 2px solid var(--mud-palette-primary);"
                                              : "border: 2px solid transparent;")"
                                   @onclick="@(() => SelectDeco(decoIdx))">
-                            <img src="@(HostService.IsEmbedded || failedDecoSprites.Contains((int)decoIdx)
+                            <img crossorigin="anonymous" src="@(HostService.IsEmbedded || failedDecoSprites.Contains((int)decoIdx)
                                           ? ImageHelper.GetPokemonSpriteFilenameForForm((ushort)Species.Alcremie, Pokemon.Context, selectedCream, decoIdx)
                                           : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.Alcremie, selectedCream, decoIdx, isPreviewShiny)
                                             ?? ImageHelper.GetPokemonSpriteFilenameForForm((ushort)Species.Alcremie, Pokemon.Context, selectedCream, decoIdx))"
@@ -80,7 +80,7 @@
 
             <MudStack AlignItems="@AlignItems.Center">
                 <MudText Typo="@Typo.caption">Preview</MudText>
-                <img src="@(HostService.IsEmbedded || previewFailed
+                <img crossorigin="anonymous" src="@(HostService.IsEmbedded || previewFailed
                               ? ImageHelper.GetPokemonSpriteFilenameForForm((ushort)Species.Alcremie, Pokemon.Context, selectedCream, selectedDeco)
                               : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.Alcremie, selectedCream, selectedDeco, isPreviewShiny)
                                 ?? ImageHelper.GetPokemonSpriteFilenameForForm((ushort)Species.Alcremie, Pokemon.Context, selectedCream, selectedDeco))"

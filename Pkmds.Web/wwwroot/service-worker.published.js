@@ -58,8 +58,11 @@ self.addEventListener('fetch', event => {
 const cacheNamePrefix = 'offline-cache-';
 const cacheLeaseName = 'pkmds-client-cache-leases-v1';
 const cacheLeasePathPrefix = '/__pkmds-client-cache-lease__/';
-const spriteCacheName = 'pokeapi-sprites-v1';
-const spriteOrigin = 'https://raw.githubusercontent.com';
+const spriteCacheName = 'pkmds-sprites-v2';
+// Keep in sync with SpriteSource.PokemonBaseUrl. Cache only this collection.
+const spritePathPrefix = 'https://sprites.pkmds.app/pokemon/';
+const maxSpriteCacheEntries = 512;
+const pendingSpriteRequests = new Map();
 const CACHE_VERSION = '%%CACHE_VERSION%%'
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}${CACHE_VERSION}`;
 const trackedClientIds = new Set();
@@ -215,25 +218,22 @@ function getClientIdFromLeaseRequest(request) {
 
 async function onFetch(event) {
     // Cache bundled sprites lazily in the current version cache instead of requesting thousands
-    // during worker installation. PokeAPI sprites use a separate cache that survives app updates.
+    // during worker installation. Hosted sprites use a separate cache that survives app updates.
     // Return the promise rather than calling event.respondWith() here: the outer 'fetch' listener
     // already wraps onFetch(event) in respondWith, and double-calling it throws InvalidStateError
     // (and on iOS Safari surfaces as `FetchEvent.respondWith received an error: TypeError: ...`).
-    const isPokeApiSprite = event.request.url.startsWith(spriteOrigin);
+    const isHostedSprite = event.request.url.startsWith(spritePathPrefix);
     const isBundledSprite = event.request.url.startsWith(bundledSpritePathPrefix);
-    if (event.request.method === 'GET' && (isPokeApiSprite || isBundledSprite)) {
-        const cache = await caches.open(isPokeApiSprite ? spriteCacheName : cacheName);
-        const cached = await cache.match(event.request);
-        if (cached) return cached;
-        try {
-            const response = await fetch(event.request);
-            if (response.ok) cache.put(event.request, response.clone());
-            return response;
-        } catch {
-            // Sprite fetch failed offline — return a synthetic empty response so respondWith
-            // resolves cleanly. Callers tolerate a missing sprite image.
-            return new Response('', {status: 504, statusText: 'Sprite fetch failed (offline)'});
+    if (event.request.method === 'GET' && (isHostedSprite || isBundledSprite)) {
+        // A full box can request the same URL concurrently. Share one fetch/cache operation,
+        // but clone its response so each image receives its own consumable body.
+        const key = event.request.url;
+        if (!pendingSpriteRequests.has(key)) {
+            const pending = fetchSprite(event.request, isHostedSprite)
+                .finally(() => pendingSpriteRequests.delete(key));
+            pendingSpriteRequests.set(key, pending);
         }
+        return (await pendingSpriteRequests.get(key)).clone();
     }
 
     let cachedResponse = null;
@@ -264,4 +264,41 @@ async function onFetch(event) {
         }
         return new Response('', {status: 504, statusText: 'Network unavailable'});
     }
+}
+
+async function fetchSprite(request, isHostedSprite) {
+    let cache;
+    try {
+        cache = await caches.open(isHostedSprite ? spriteCacheName : cacheName);
+        const cached = await cache.match(request);
+        if (cached) return cached;
+    } catch {
+        // Private browsing, quota pressure or unavailable Cache Storage must not block images.
+        cache = null;
+    }
+
+    let response;
+    try {
+        response = await fetch(request);
+    } catch {
+        // Image error handlers keep the bundled fallback visible when offline or unavailable.
+        return new Response('', {status: 504, statusText: 'Sprite fetch failed (offline)'});
+    }
+
+    // Anonymous CORS image requests produce readable responses. Never cache opaque responses,
+    // 404s, or an HTML error page returned with status 200.
+    if (cache && response.ok && response.headers.get('Content-Type')?.startsWith('image/')) {
+        try {
+            // Await writes within respondWith's promise so the worker stays alive until done.
+            await cache.put(request, response.clone());
+            if (isHostedSprite) {
+                const keys = await cache.keys();
+                await Promise.all(keys.slice(0, Math.max(0, keys.length - maxSpriteCacheEntries))
+                    .map(key => cache.delete(key)));
+            }
+        } catch {
+            // A failed cache write must still return the successfully downloaded image.
+        }
+    }
+    return response;
 }
