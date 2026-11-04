@@ -62,7 +62,10 @@ public sealed class BenchmarkRunner
         {
             var template = (PK9)sav.BlankPKM.Clone();
             template.Species = species;
-            var enc = EncounterMovesetGenerator.GenerateEncounters(template, sav, ReadOnlyMemory<ushort>.Empty).FirstOrDefault();
+            // Search both SV games so Violet exclusives are included, and avoid older-generation
+            // encounters whose ConvertToPKM result cannot be cast to PK9 (PKHeX 26.10.18).
+            var enc = EncounterMovesetGenerator.GenerateEncounters(template, sav, ReadOnlyMemory<ushort>.Empty,
+                GameVersion.SL, GameVersion.VL).FirstOrDefault();
             if (enc is null)
             {
                 throw new InvalidOperationException($"No encounter generated for species {species} — bench cannot proceed.");
@@ -211,7 +214,10 @@ public sealed class BenchmarkRunner
         foreach (var species in BenchSpecies)
         {
             template.Species = species;
-            foreach (var _ in EncounterMovesetGenerator.GenerateEncounters(template, sav, ReadOnlyMemory<ushort>.Empty))
+            // PKHeX 26.10.18's default cross-game search can reach an unsupported evolution
+            // context. Use the same explicit SV versions as fixture generation for this workload.
+            foreach (var _ in EncounterMovesetGenerator.GenerateEncounters(template, sav, ReadOnlyMemory<ushort>.Empty,
+                         GameVersion.SL, GameVersion.VL))
             {
                 total++;
             }

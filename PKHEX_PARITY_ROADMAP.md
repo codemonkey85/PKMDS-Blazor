@@ -833,7 +833,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Add recently edited Pokemon list
 - [ ] Implement favorite Pokemon marking
 - [ ] Add Pokemon sorting options in boxes
-- [ ] Create box wallpaper customization
+- [x] Create box wallpaper customization (game-specific Gen 3–5 and BDSP labels; Emerald Friends wallpaper supported)
 - [ ] Add grid size options
 - [ ] Implement multi-select for batch operations
 
@@ -861,7 +861,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Add box search/filter
 - [ ] Create box import/export
 - [ ] Add box name editing
-- [ ] Implement box wallpaper selection
+- [x] Implement box wallpaper selection (saved IDs preserved; previews use the selected ID)
 - [ ] Add "Jump to box" quick navigation
 - [ ] Create box comparison tool
 - [ ] Add empty box slots highlighting
