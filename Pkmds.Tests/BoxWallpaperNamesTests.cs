@@ -115,7 +115,8 @@ public sealed class BoxWallpaperNamesTests : IDisposable
         var select = cut.FindComponents<MudSelect<int>>().Single(c => c.Instance.Label == "Wallpaper");
 
         select.Instance.GetState(x => x.Value).Should().Be(24);
-        select.Instance.GetState(x => x.Text).Should().Be("Distortion (Platinum)");
+        // MudSelect renders the selected item's ChildContent; its Text state can remain "24".
+        select.Find("[role='combobox']").TextContent.Should().Be("Distortion (Platinum)");
         cut.Find("img[alt='Wallpaper preview']").GetAttribute("src").Should().EndWith("box_wp25bdsp.png");
         save.GetBoxWallpaper(0).Should().Be(24);
         save.GetBoxWallpaper(1).Should().Be(31);
