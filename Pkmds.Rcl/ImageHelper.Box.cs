@@ -13,6 +13,13 @@ public static partial class ImageHelper
     /// <param name="gameVersion">The game version enum.</param>
     public static string GetBoxWallpaperSpriteFileName(int wallpaperId, GameVersion gameVersion)
     {
+        // Emerald's Friends wallpaper is generated from save-specific pattern/palette data.
+        // Pokemon Box wallpapers also have no bundled preview assets.
+        if ((gameVersion == GameVersion.E && wallpaperId == 16) || gameVersion == GameVersion.RSBOX)
+        {
+            return string.Empty;
+        }
+
         var abbreviation = GetGameVersionAbbreviation(gameVersion);
         if (string.IsNullOrEmpty(abbreviation))
         {

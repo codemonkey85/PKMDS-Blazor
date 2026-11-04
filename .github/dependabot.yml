@@ -13,3 +13,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/tools/bench"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"

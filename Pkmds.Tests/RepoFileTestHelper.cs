@@ -8,6 +8,9 @@ internal static class RepoFileTestHelper
     public static string ReadAllText(params string[] pathSegments) =>
         File.ReadAllText(Path.Combine([RepoRoot, .. pathSegments]));
 
+    public static byte[] ReadAllBytes(params string[] pathSegments) =>
+        File.ReadAllBytes(Path.Combine([RepoRoot, .. pathSegments]));
+
     private static string FindRepoRoot()
     {
         var startingDirectory = AppContext.BaseDirectory;

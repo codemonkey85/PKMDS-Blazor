@@ -2,17 +2,6 @@ namespace Pkmds.Rcl.Components.Dialogs;
 
 public partial class BoxLayoutDialog : BasePkmdsComponent
 {
-    // Gen 3 wallpaper names differ from Gen 4+ for indices 12-15.
-    // PKHeX's wallpapernames text file uses Gen 4 names (POKÉ CENTER, MACHINE, CHECKS,
-    // SIMPLE) for those slots, but Gen 3 has Polka-Dot, PokéCenter, Machine, Simple.
-    private static readonly string[] Gen3WallpaperNames =
-    [
-        "Forest", "City", "Desert", "Savanna",
-        "Crag", "Volcano", "Snow", "Cave",
-        "Beach", "Seafloor", "River", "Sky",
-        "Polka-Dot", "PokéCenter", "Machine", "Simple"
-    ];
-
     private int boxesUnlocked;
     private byte[] boxFlags = [];
     private string[] boxNames = [];
@@ -64,7 +53,7 @@ public partial class BoxLayoutDialog : BasePkmdsComponent
             }
         }
 
-        wallpaperNameList = BuildWallpaperNames(sav);
+        wallpaperNameList = BoxWallpaperNames.GetNames(sav);
         showUnlocked = sav.BoxesUnlocked > 0;
         boxesUnlocked = showUnlocked
             ? sav.BoxesUnlocked
@@ -77,57 +66,6 @@ public partial class BoxLayoutDialog : BasePkmdsComponent
 
         selectedBoxIndex = 0;
         UpdateWallpaperPreview();
-    }
-
-    private static string[] BuildWallpaperNames(SaveFile sav)
-    {
-        if (sav is not IBoxDetailWallpaper)
-        {
-            return [];
-        }
-
-        if (sav.Generation == 3)
-        {
-            return Gen3WallpaperNames;
-        }
-
-        var names = GameInfo.Strings.wallpapernames;
-        var namedCount = sav.Generation switch
-        {
-            4 or 5 or 6 => 24,
-            7 => 16,
-            8 when sav is SAV8BS => 32,
-            _ => 0
-        };
-
-        if (namedCount > 0 && names.Length >= namedCount)
-        {
-            var result = new string[namedCount];
-            Array.Copy(names, result, namedCount);
-            return result;
-        }
-
-        var placeholderCount = sav.Generation switch
-        {
-            8 => 19,
-            9 => 20,
-            _ => 0
-        };
-
-        if (placeholderCount <= 0)
-        {
-            return [];
-        }
-
-        {
-            var result = new string[placeholderCount];
-            for (var i = 0; i < placeholderCount; i++)
-            {
-                result[i] = $"Wallpaper {i + 1}";
-            }
-
-            return result;
-        }
     }
 
     private void SelectBox(int index)
