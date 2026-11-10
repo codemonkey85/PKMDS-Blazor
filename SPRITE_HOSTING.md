@@ -130,7 +130,10 @@ The 17 unversioned trial objects remain for earlier UAT builds and posted links.
 
 The published worker caches sprites on demand in `pkmds-sprites-v2`, shares
 concurrent fetches per URL, and bounds the cache to 512 entries **and 128 MiB**.
-Writes/eviction are serialized. Revisioned URLs isolate updated bytes; old entries
+Writes/eviction are serialized. Each worker reads existing size/order accounting
+once, then updates the index on insertion/eviction instead of rescanning the cache
+for every image. Failed maintenance discards the index so the next write rebuilds
+it from storage. Revisioned URLs isolate updated bytes; old entries
 are evicted within the same budget without deleting a cache an older tab may use.
 Images larger than the budget render from the network but are immediately evicted.
 Cache Storage failures still return downloaded images. Errors, opaque responses,

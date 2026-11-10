@@ -64,6 +64,7 @@ const spritePathPrefix = 'https://sprites.pkmds.app/collections/a7a3d62bb80a654a
 const maxSpriteCacheEntries = 512;
 const maxSpriteCacheBytes = 128 * 1024 * 1024;
 let spriteCacheMaintenance = Promise.resolve();
+let spriteCacheIndex = null;
 const pendingSpriteRequests = new Map();
 const CACHE_VERSION = '%%CACHE_VERSION%%'
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}${CACHE_VERSION}`;
@@ -298,10 +299,7 @@ async function fetchSprite(request, isHostedSprite) {
                 // Serialize writes and eviction so concurrent downloads cannot exceed the budget.
                 // Revisioned URLs isolate updated bytes while sharing a bounded cache across releases.
                 const copy = response.clone();
-                const maintenance = spriteCacheMaintenance.then(async () => {
-                    await cache.put(request, copy);
-                    await trimSpriteCache(cache);
-                });
+                const maintenance = spriteCacheMaintenance.then(() => cacheHostedSprite(cache, request, copy));
                 spriteCacheMaintenance = maintenance.catch(() => {});
                 await maintenance;
             } else {
@@ -314,18 +312,49 @@ async function fetchSprite(request, isHostedSprite) {
     return response;
 }
 
-async function trimSpriteCache(cache) {
+async function getSpriteResponseSize(response) {
+    const length = Number(response.headers.get('Content-Length'));
+    return Number.isSafeInteger(length) && length > 0
+        ? length
+        : (await response.clone().arrayBuffer()).byteLength;
+}
+
+async function readSpriteCacheIndex(cache) {
     const keys = await cache.keys();
-    const sizes = await Promise.all(keys.map(async key => {
+    const entries = await Promise.all(keys.map(async key => {
         const cached = await cache.match(key);
-        if (!cached) return 0;
-        const length = Number(cached.headers.get('Content-Length'));
-        return length > 0 ? length : (await cached.arrayBuffer()).byteLength;
+        return cached ? [key.url, await getSpriteResponseSize(cached)] : null;
     }));
-    let totalBytes = sizes.reduce((total, size) => total + size, 0);
-    for (let index = 0; index < keys.length
-        && (keys.length - index > maxSpriteCacheEntries || totalBytes > maxSpriteCacheBytes); index++) {
-        await cache.delete(keys[index]);
-        totalBytes -= sizes[index];
+    const sizes = new Map(entries.filter(entry => entry !== null));
+    return {sizes, totalBytes: [...sizes.values()].reduce((total, size) => total + size, 0)};
+}
+
+async function cacheHostedSprite(cache, request, response) {
+    try {
+        // A worker restart reads existing entries once. Subsequent writes update the index,
+        // avoiding a full Cache Storage scan for every image in a newly viewed box.
+        spriteCacheIndex ??= await readSpriteCacheIndex(cache);
+        const index = spriteCacheIndex;
+        const size = await getSpriteResponseSize(response);
+        await cache.put(request, response);
+
+        const previousSize = index.sizes.get(request.url);
+        if (previousSize !== undefined) {
+            index.totalBytes -= previousSize;
+            index.sizes.delete(request.url);
+        }
+        index.sizes.set(request.url, size);
+        index.totalBytes += size;
+
+        while (index.sizes.size > maxSpriteCacheEntries || index.totalBytes > maxSpriteCacheBytes) {
+            const oldest = index.sizes.keys().next().value;
+            await cache.delete(oldest);
+            index.totalBytes -= index.sizes.get(oldest);
+            index.sizes.delete(oldest);
+        }
+    } catch (error) {
+        // A failed write/delete may leave storage partly updated. Rebuild on the next attempt.
+        spriteCacheIndex = null;
+        throw error;
     }
 }
