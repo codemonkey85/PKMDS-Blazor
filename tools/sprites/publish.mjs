@@ -147,7 +147,8 @@ if (command === 'manifest') {
     if (listing.length !== expected.size) throw new Error('Remote object count differs from the manifest');
     for (const actual of listing) {
         const item = expected.get(actual.Path);
-        if (!item || actual.Size !== item.bytes || actual.Hashes?.MD5 !== item.md5) throw new Error('Remote object differs: ' + actual.Path);
+        const md5 = actual.Hashes?.md5 ?? actual.Hashes?.MD5;
+        if (!item || actual.Size !== item.bytes || md5 !== item.md5) throw new Error('Remote object differs: ' + actual.Path);
     }
     if (command === 'upload') {
         // Publish the manifest only after every image has passed completeness/checksum verification.
