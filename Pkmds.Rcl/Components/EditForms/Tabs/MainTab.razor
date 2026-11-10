@@ -236,7 +236,10 @@
                                         ToStringFunc="@(i => i < forms.Length ? forms[i] : string.Empty)"
                                         For="@(() => Pokemon.Form)"/>
                 </MudStack>
-                <MudImage Src="@GetFormPreviewSprite()"
+                <MudImage @key="GetFormPreviewSprite()"
+                          crossorigin="anonymous"
+                          Src="@GetFormPreviewSprite()"
+                          FallbackSrc="@GetBundledFormPreviewSprite()"
                           Alt="Form preview"
                           title="@forms.ElementAtOrDefault(Pokemon.Form)"
                           ObjectFit="@ObjectFit.Contain"

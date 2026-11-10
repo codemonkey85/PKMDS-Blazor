@@ -1234,7 +1234,7 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 **Tasks:**
 - [ ] Optimize large box rendering with virtualization
 - [ ] Implement lazy loading for sprites
-- [x] **R2 sprite hosting (#1359)** — published and checksum-verified 30,277-image versioned collection; rclone publishing with incremental server-side reuse, daily upstream change reports, reliable bundled fallbacks, and bounded on-demand offline caching. See [SPRITE_HOSTING.md](SPRITE_HOSTING.md) and PR #1361 for validation evidence.
+- [x] **R2 sprite hosting (#1359)** — published and checksum-verified 30,277-image versioned collection; rclone publishing with incremental server-side reuse, daily upstream change reports, reliable bundled fallbacks, and bounded on-demand offline caching. Legend Arceus uses Normal artwork in the selected HOME/Game style; form-dropdown previews also follow that setting. See [SPRITE_HOSTING.md](SPRITE_HOSTING.md) and PR #1361 for validation evidence.
 - [ ] Add caching for computed values
 - [ ] Optimize search algorithms
 - [ ] Implement web worker for heavy computations

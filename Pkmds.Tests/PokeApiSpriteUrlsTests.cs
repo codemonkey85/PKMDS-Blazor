@@ -6,6 +6,46 @@ public class PokeApiSpriteUrlsTests
         "https://sprites.pkmds.app/collections/a7a3d62bb80a654ab5e01b488659929af0077c31/pokemon/versions/";
 
     [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void LegendArceus_UsesNormalArtworkInSelectedSet(bool isShiny)
+    {
+        var pokemon = new PA8 { Species = (ushort)Species.Arceus, Form = 18 };
+        pokemon.SetIsShiny(isShiny);
+        var shinyPath = isShiny ? "shiny/" : string.Empty;
+
+        PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(pokemon.Species, pokemon.Form, isShiny: isShiny)
+            .Should().Be(SpriteSource.HomeBaseUrl + shinyPath + "493.png");
+        ImageHelper.GetPokemonGameSpriteUrl(pokemon, GameVersion.PLA)
+            .Should().Be(VersionsBaseUrl + "generation-viii/legends-arceus/" + shinyPath + "493.webp");
+        pokemon.Form.Should().Be(18);
+    }
+
+    [Theory]
+    [InlineData((byte)9, "fire")]
+    [InlineData((byte)17, "fairy")]
+    public void TypedArceus_KeepsItsOwnArtwork(byte form, string suffix)
+    {
+        foreach (var isShiny in new[] { false, true })
+        {
+            var shinyPath = isShiny ? "shiny/" : string.Empty;
+            PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.Arceus, form, isShiny: isShiny)
+                .Should().Be(SpriteSource.HomeBaseUrl + shinyPath + $"493-{suffix}.png");
+            PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl((ushort)Species.Arceus, form,
+                    isShiny: isShiny, version: GameVersion.PLA)
+                .Should().Be(VersionsBaseUrl + "generation-viii/legends-arceus/" + shinyPath + $"493-{suffix}.webp");
+        }
+    }
+
+    [Fact]
+    public void UnsupportedArceusForm_StillReturnsNull()
+    {
+        PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.Arceus, 19).Should().BeNull();
+        PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl((ushort)Species.Arceus, 19, version: GameVersion.PLA)
+            .Should().BeNull();
+    }
+
+    [Theory]
     [InlineData(GameVersion.OR, "generation-vi/omega-ruby-alpha-sapphire/25.png")]
     [InlineData(GameVersion.US, "generation-vii/ultra-sun-ultra-moon/25.gif")]
     [InlineData(GameVersion.GP, "generation-vii/lets-go-pikachu-lets-go-eevee/25.gif")]
