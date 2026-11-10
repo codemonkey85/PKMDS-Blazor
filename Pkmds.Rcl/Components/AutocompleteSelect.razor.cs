@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using MudBlazor.Extensions;
 
 namespace Pkmds.Rcl.Components;
 
@@ -113,6 +114,27 @@ public partial class AutocompleteSelect<T>
         {
             wrappedValue = new Option(Value);
             await autocomplete.SelectOptionAsync(wrappedValue);
+        }
+    }
+
+    private void OnOpenChanged(bool open)
+    {
+        if (!open)
+        {
+            RestoreClearedOptionLabel();
+        }
+    }
+
+    private void RestoreClearedOptionLabel()
+    {
+        // Keyboard deletion must stay empty while typing. Once editing ends, show
+        // the reset value if it is a real option. Updating the bound wrapper keeps
+        // suggestion clicks intact instead of closing the menu during input blur.
+        if (ResetValueOnEmptyText && wrappedValue is null &&
+            string.IsNullOrEmpty(autocomplete?.GetState(component => component.Text)) &&
+            (Items ?? []).Any(item => EqualityComparer<T>.Default.Equals(item, Value!)))
+        {
+            wrappedValue = new Option(Value);
         }
     }
 
