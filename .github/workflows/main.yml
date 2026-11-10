@@ -23,6 +23,9 @@ jobs:
     # compatible with a new front-end — so the new front-end must never go live ahead of the
     # function it depends on. If the function deploy fails, the front-end is held back too.
     needs: deploy_functions
+    env:
+      # A rerun uploads a new artifact; deploy only the one from this attempt.
+      PAGES_ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -46,7 +49,7 @@ jobs:
 
       # sets up .NET SDK
       - name: Setup .NET
-        uses: actions/setup-dotnet@v6.0.0
+        uses: actions/setup-dotnet@v6.1.0
         with:
           global-json-file: ./global.json
 
@@ -98,11 +101,14 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5.0.0
         with:
+          name: ${{ env.PAGES_ARTIFACT_NAME }}
           path: release/wwwroot
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5.0.1
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
 
   deploy_functions:
     name: Deploy Azure Functions
@@ -115,7 +121,7 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v6.0.0
+        uses: actions/setup-dotnet@v6.1.0
         with:
           global-json-file: ./global.json
 

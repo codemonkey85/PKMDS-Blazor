@@ -118,11 +118,32 @@ public partial class MainTab : IDisposable
     }
 
     /// <summary>
-    /// Returns the sprite filename for the form-dropdown preview image.
+    /// Returns the selected HOME/game sprite for the form-dropdown preview image.
     /// For Scatterbug and Spewpa, substitutes Vivillon's species so the preview
     /// shows the actual wing pattern rather than an identical caterpillar silhouette.
     /// </summary>
-    private string GetFormPreviewSprite() => Pokemon is null
+    private string GetFormPreviewSprite()
+    {
+        var fallback = GetBundledFormPreviewSprite();
+        if (Pokemon is null || HostService.IsEmbedded)
+        {
+            return fallback;
+        }
+
+        var species = IsVivillon ? (ushort)Species.Vivillon : Pokemon.Species;
+        var isShiny = Pokemon.GetIsShinySafe();
+        var version = AppState.SaveFile?.Version ?? GameVersion.Any;
+        var url = AppState.SpriteStyle == SpriteStyle.Game
+            ? IsVivillon
+                ? PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl(species, Pokemon.Form,
+                    Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender, version)
+                : ImageHelper.GetPokemonGameSpriteUrl(Pokemon, version)
+            : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(species, Pokemon.Form,
+                Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender);
+        return url ?? fallback;
+    }
+
+    private string GetBundledFormPreviewSprite() => Pokemon is null
         ? ImageHelper.PokemonFallbackImageFileName
         : IsVivillon
             ? ImageHelper.GetPokemonSpriteFilenameForForm((ushort)Species.Vivillon, Pokemon.Context, Pokemon.Form)

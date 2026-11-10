@@ -258,6 +258,7 @@ public static class PokeApiSpriteUrls
         { (484, 1), 10246 }, // Palkia-Origin
         { (487, 1), 10007 }, // Giratina-Origin     (PKHeX: 0=Altered, 1=Origin)
         { (492, 1), 10006 }, // Shaymin-Sky         (PKHeX: 0=Land, 1=Sky)
+        { (493, 18), 493 }, // Arceus-Legend has Normal's appearance; preserve the selected sprite set/shininess.
 
         // ── Gen 5 alternate forms ─────────────────────────────────────────────
         { (351, 1), 10013 },

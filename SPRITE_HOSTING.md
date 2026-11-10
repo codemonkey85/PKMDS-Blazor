@@ -4,6 +4,10 @@ HOME artwork and game sprites are served from Cloudflare R2 through
 `https://sprites.pkmds.app/`, with bundled sprites as fallbacks. Embedded hosts
 continue to suppress external sprite requests.
 
+Legend Arceus uses Normal Arceus artwork in the selected HOME or Game style,
+including shiny variants, without changing its stored form. The form-dropdown
+preview also follows the selected style, with the bundled form icon as a fallback.
+
 ## Collection and provenance
 
 The [collection manifest](tools/data/sprite-collection.json) pins
