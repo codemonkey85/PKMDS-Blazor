@@ -1,4 +1,4 @@
-﻿@inherits BasePkmdsComponent
+@inherits BasePkmdsComponent
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
@@ -18,17 +18,6 @@
         @if (Pokemon is not null && Pokemon.Species > 0)
         {
             var title = GetPokemonTitle();
-            var isShiny = Pokemon.GetIsShinySafe();
-            // In embedded host mode, suppress the high-res PokeAPI overlay so PKMDS
-            // makes no external network requests — the embedded base sprite stays
-            // visible as the only render. See #787.
-            var highResUrl = HostService.IsEmbedded
-                ? null
-                : AppState.SpriteStyle == SpriteStyle.Game
-                    ? ImageHelper.GetPokemonGameSpriteUrl(Pokemon,
-                        AppState.SaveFile?.Version ?? GameVersion.Any)
-                    : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(Pokemon.Species, Pokemon.Form,
-                        Pokemon.GetFormArgument(0), isShiny, Pokemon.Gender);
             <object class="pkm-sprite w-full h-auto object-contain block"
                     style="@(highResLoaded
                                ? "display:none"
@@ -43,16 +32,18 @@
                      alt="@title"
                      draggable="false">
             </object>
-            @if (highResUrl is not null)
+            @if (highResUrl is { } spriteUrl)
             {
-                <img @key="@((Pokemon.Species, Pokemon.Form, Pokemon.GetFormArgument(0), isShiny, lastLoadedIsFemale, AppState.SpriteStyle))"
+                @* WebKit starts a request when src is set; establish CORS first (WebKit bug 291793). *@
+                <img @key="spriteUrl"
                      class="@($"pkm-sprite-hires {GetHiResSizeClass()} {(highResLoaded ? "pkm-sprite-hires--loaded" : string.Empty)}")"
-                     src="@highResUrl"
+                     crossorigin="anonymous"
+                     src="@spriteUrl"
                      title="@title"
                      alt="@title"
                      draggable="false"
-                     @onload="OnHighResSpriteLoaded"
-                     @onerror="OnHighResSpriteError"/>
+                     @onload="@(() => OnHighResSpriteLoaded(spriteUrl))"
+                     @onerror="@(() => OnHighResSpriteError(spriteUrl))"/>
             }
 
             @if (Pokemon.GetIsShinySafe())

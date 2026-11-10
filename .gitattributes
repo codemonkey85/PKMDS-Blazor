@@ -3,6 +3,9 @@
 ###############################################################################
 * text=auto eol=lf
 
+# Reproducible sprite inventory; review the publisher and collection summary.
+tools/data/sprite-collection.json linguist-generated=true
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #

@@ -32,6 +32,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7.0.1
 
+      - name: Verify published sprite collection
+        run: node tools/sprites/verify-published.mjs
+
       # sets up .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v6.0.0
@@ -52,3 +55,6 @@ jobs:
 
       - name: Run tests
         run: dotnet test Pkmds.Tests/Pkmds.Tests.csproj --configuration Release
+
+      - name: Test sprite service worker behavior
+        run: node --test tools/tests/service-worker-sprites.test.mjs tools/tests/sprite-upstream.test.mjs tools/tests/sprite-publication.test.mjs

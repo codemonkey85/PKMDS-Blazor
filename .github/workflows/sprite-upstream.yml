@@ -1,0 +1,38 @@
+name: Check sprite repository changes
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 9 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Fetch sprite repository trees
+        run: |
+          git init --bare artifacts/upstream-sprites
+          git -C artifacts/upstream-sprites remote add origin https://github.com/codemonkey85/sprites.git
+          git -C artifacts/upstream-sprites fetch --filter=blob:none --no-tags --depth=1 origin HEAD
+          git -C artifacts/upstream-sprites update-ref HEAD FETCH_HEAD
+      - name: Compare consumed assets with the published revision
+        run: node tools/sprites/check-upstream.mjs --source artifacts/upstream-sprites --fetch-base --fail-on-change
+      - name: Summarize changes
+        if: always()
+        run: |
+          if [ -f artifacts/sprites/upstream-changes.md ]; then
+            cat artifacts/sprites/upstream-changes.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload change report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: sprite-upstream-changes
+          path: artifacts/sprites/upstream-changes.*
+          if-no-files-found: ignore

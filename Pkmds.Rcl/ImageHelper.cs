@@ -42,6 +42,16 @@ public static partial class ImageHelper
     public static string GetPokemonSpriteFilename(PKM? pokemon) =>
         $"{SpritesRoot}{SpritePaths.GetPokemonSprite(pokemon)}";
 
+    /// <summary>Resolves the slot overlay, suppressing external sprites in embedded hosts.</summary>
+    public static string? GetPokemonHighResSpriteUrl(PKM? pokemon, SpriteStyle style,
+        GameVersion version, bool isEmbedded) =>
+        isEmbedded || pokemon is not { Species: > 0 }
+            ? null
+            : style == SpriteStyle.Game
+                ? GetPokemonGameSpriteUrl(pokemon, version)
+                : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(pokemon.Species, pokemon.Form,
+                    pokemon.GetFormArgument(0), pokemon.GetIsShinySafe(), pokemon.Gender);
+
     /// <summary>Gets the game-version sprite URL, using bundled fixes for misaligned CDN sprites.</summary>
     public static string? GetPokemonGameSpriteUrl(PKM pokemon, GameVersion version)
     {

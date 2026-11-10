@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Pkmds.Tests;
@@ -23,7 +24,43 @@ public sealed partial class ServiceWorkerAssetTests
         exclusions.Success.Should().BeTrue();
         exclusions.Value.Should().Contain("^_content\\/Pkmds\\.Rcl\\/sprites\\/");
         serviceWorker.Should().Contain("const bundledSpritePathPrefix = new URL('_content/Pkmds.Rcl/sprites/', baseUrl).href;");
-        serviceWorker.Should().Contain("const cache = await caches.open(isPokeApiSprite ? spriteCacheName : cacheName);");
+        serviceWorker.Should().Contain("cache = await caches.open(isHostedSprite ? spriteCacheName : cacheName);");
+    }
+
+    [Fact]
+    public void PublishedServiceWorkerUsesTheAppsHostedSpriteCollection()
+    {
+        var serviceWorker = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "service-worker.published.js");
+
+        serviceWorker.Should().Contain($"const spritePathPrefix = '{SpriteSource.PokemonBaseUrl}';");
+    }
+
+    [Fact]
+    public void PublishedSpriteManifestMatchesAppAndCoversEveryMappedGameSet()
+    {
+        using var manifest = JsonDocument.Parse(RepoFileTestHelper.ReadAllText("tools", "data", "sprite-collection.json"));
+        var root = manifest.RootElement;
+        var publicBaseUrl = root.GetProperty("publicBaseUrl").GetString()!;
+        var prefix = root.GetProperty("prefix").GetString()!;
+        var images = root.GetProperty("objects").EnumerateArray().ToArray();
+        var urls = images.Select(item => publicBaseUrl + item.GetProperty("key").GetString()![prefix.Length..])
+            .ToHashSet();
+
+        (publicBaseUrl + "pokemon/").Should().Be(SpriteSource.PokemonBaseUrl);
+        prefix.Should().Be($"collections/{root.GetProperty("revision").GetString()}/");
+        images.Length.Should().Be(root.GetProperty("objectCount").GetInt32());
+        images.Sum(item => item.GetProperty("bytes").GetInt64()).Should().Be(root.GetProperty("totalBytes").GetInt64());
+        urls.Should().Contain(SpriteSource.PlaceholderSpriteUrl);
+        urls.Should().Contain(PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.IronMoth)!);
+
+        foreach (var version in Enum.GetValues<GameVersion>())
+        {
+            var url = PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl((ushort)Species.Pikachu, version: version);
+            if (url is not null)
+            {
+                urls.Should().Contain(url, $"the published collection must cover the {version} game mapping");
+            }
+        }
     }
 
     [Fact]
@@ -50,6 +87,7 @@ public sealed partial class ServiceWorkerAssetTests
             workflowContents.Should().Contain("files: 'release/wwwroot/service-worker.js'");
             workflowContents.Should().NotContain("files: 'release/wwwroot/service-worker.published.js'");
             workflowContents.Should().Contain("node tools/verify-service-worker-assets.mjs release/wwwroot");
+            workflowContents.Should().Contain("node tools/sprites/verify-published.mjs");
         }
     }
 

@@ -5,21 +5,12 @@ public partial class PokemonSlotComponent : IDisposable
     // Mirrors PKHeX's internal SaveFile.MaxPartyCount (private there, so we can't reuse it).
     private const int MaxPartyCount = 6;
 
-    // Tracks (species, form, formArg, isShiny, isFemale, spriteStyle) tuples whose high-res sprites have loaded
-    // at least once this session. Shared across all instances so switching boxes doesn't re-flash.
-    // SpriteStyle is included so switching the setting mid-session never shows stale cached state.
-    private static readonly
-        HashSet<(ushort Species, byte Form, uint FormArg, bool IsShiny, bool IsFemale, SpriteStyle Style)>
-        HighResLoadedSpecies = [];
+    // Actual URLs distinguish games, forms, genders and styles, including shared Trade slots.
+    private static readonly HashSet<string> HighResLoadedUrls = new(StringComparer.Ordinal);
 
     private bool highResLoaded;
     private bool isDragOverWithExternalFile;
-    private byte lastLoadedForm;
-    private uint lastLoadedFormArg;
-    private bool lastLoadedIsFemale;
-    private bool lastLoadedIsShiny;
-    private ushort lastLoadedSpecies;
-    private SpriteStyle lastLoadedSpriteStyle;
+    private string? highResUrl;
 
     private LegalityStatus? legalityStatus;
 
@@ -50,18 +41,17 @@ public partial class PokemonSlotComponent : IDisposable
     public void Dispose() =>
         RefreshService.OnAppStateChanged -= RefreshLegality;
 
-    /// <summary>Clears the session sprite cache, forcing all high-res sprites to reload.</summary>
-    public static void ClearSpriteCache() => HighResLoadedSpecies.Clear();
+    /// <summary>Clears the in-memory loaded state; browser image caches are unchanged.</summary>
+    public static void ClearSpriteCache() => HighResLoadedUrls.Clear();
 
-    /// <summary>Returns whether the given sprite combo has loaded high-res in this session.</summary>
-    public static bool IsHighResLoaded(ushort species, byte form, uint formArg, bool isShiny, bool isFemale,
-        SpriteStyle style) =>
-        HighResLoadedSpecies.Contains((species, form, formArg, isShiny, isFemale, style));
+    /// <summary>Returns whether this exact image URL loaded successfully this session.</summary>
+    public static bool IsHighResLoaded(string url) => HighResLoadedUrls.Contains(url);
 
-    /// <summary>Marks the given sprite combo as high-res-loaded for this session.</summary>
-    public static void MarkHighResLoaded(ushort species, byte form, uint formArg, bool isShiny, bool isFemale,
-        SpriteStyle style) =>
-        HighResLoadedSpecies.Add((species, form, formArg, isShiny, isFemale, style));
+    /// <summary>Records a successful load for this exact image URL.</summary>
+    public static void MarkHighResLoaded(string url) => HighResLoadedUrls.Add(url);
+
+    /// <summary>Removes stale success state when an image is unavailable.</summary>
+    public static void MarkHighResFailed(string url) => HighResLoadedUrls.Remove(url);
 
     private async Task HandleClick() =>
         await OnSlotClick.InvokeAsync();
@@ -87,31 +77,15 @@ public partial class PokemonSlotComponent : IDisposable
     // when the sprite style changes mid-session via the settings dialog.
     private void UpdateSpriteState()
     {
-        var currentIsShiny = Pokemon?.GetIsShinySafe() ?? false;
-        var currentForm = Pokemon?.Form ?? 0;
-        var currentFormArg = Pokemon?.GetFormArgument(0) ?? 0;
-        var currentIsFemale = Pokemon is not null && PokeApiSpriteUrls.HasFemaleHomeSprite(Pokemon.Species, Pokemon.Gender);
-        var currentSpriteStyle = AppState.SpriteStyle;
-        if (Pokemon?.Species == lastLoadedSpecies
-            && currentForm == lastLoadedForm
-            && currentFormArg == lastLoadedFormArg
-            && currentIsShiny == lastLoadedIsShiny
-            && currentIsFemale == lastLoadedIsFemale
-            && currentSpriteStyle == lastLoadedSpriteStyle)
+        var url = ImageHelper.GetPokemonHighResSpriteUrl(Pokemon, AppState.SpriteStyle,
+            AppState.SaveFile?.Version ?? GameVersion.Any, HostService.IsEmbedded);
+        if (url == highResUrl)
         {
             return;
         }
 
-        lastLoadedSpecies = Pokemon?.Species ?? 0;
-        lastLoadedForm = currentForm;
-        lastLoadedFormArg = currentFormArg;
-        lastLoadedIsShiny = currentIsShiny;
-        lastLoadedIsFemale = currentIsFemale;
-        lastLoadedSpriteStyle = currentSpriteStyle;
-        // If this combo has already loaded high-res in this session, skip the bundled sprite entirely.
-        highResLoaded = lastLoadedSpecies > 0
-                        && IsHighResLoaded(lastLoadedSpecies, lastLoadedForm, lastLoadedFormArg,
-                            lastLoadedIsShiny, lastLoadedIsFemale, lastLoadedSpriteStyle);
+        highResUrl = url;
+        highResLoaded = url is not null && IsHighResLoaded(url);
     }
 
     // Gen I/II pixel-art sprites are small — scale their canvases to fill the slot.
@@ -135,23 +109,18 @@ public partial class PokemonSlotComponent : IDisposable
         };
     }
 
-    // ReSharper disable once UnusedMember.Local
-    private void OnHighResSpriteLoaded()
+    private void OnHighResSpriteLoaded(string url)
     {
+        if (url != highResUrl) return;
         highResLoaded = true;
-        if (lastLoadedSpecies > 0)
-        {
-            MarkHighResLoaded(lastLoadedSpecies, lastLoadedForm, lastLoadedFormArg, lastLoadedIsShiny,
-                lastLoadedIsFemale, lastLoadedSpriteStyle);
-        }
-
-        StateHasChanged();
+        MarkHighResLoaded(url);
     }
 
-    // ReSharper disable once UnusedMember.Local
-    private static void OnHighResSpriteError()
+    private void OnHighResSpriteError(string url)
     {
-        /* keep showing the bundled sprite — _highResLoaded is already false */
+        if (url != highResUrl) return;
+        highResLoaded = false;
+        MarkHighResFailed(url);
     }
 
     private void RefreshLegality()

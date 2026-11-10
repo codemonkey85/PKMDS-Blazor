@@ -36,7 +36,7 @@
                                                  ? 4
                                                  : 0)"
                                   @onclick="@(() => selectedForm = formIdx)">
-                            <img src="@(HostService.IsEmbedded || failedFormSprites.Contains(formIdx)
+                            <img crossorigin="anonymous" src="@(HostService.IsEmbedded || failedFormSprites.Contains(formIdx)
                                           ? ImageHelper.GetPokemonSpriteFilenameForForm(vivillonSpecies, Pokemon.Context, formIdx)
                                           : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(vivillonSpecies, formIdx, null, isPreviewShiny, Pokemon.Gender)
                                             ?? ImageHelper.GetPokemonSpriteFilenameForForm(vivillonSpecies, Pokemon.Context, formIdx))"
