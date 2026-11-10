@@ -106,7 +106,7 @@ public sealed class BoxWallpaperNamesTests : IDisposable
         var refresh = new TestRefreshService();
         var appService = new AppService(state, refresh, new LegalizationService(state));
         await using var ctx = BunitTestHelpers.CreateBunitContext(state, refresh, appService);
-        ctx.Render<MudPopoverProvider>();
+        var popovers = ctx.Render<MudPopoverProvider>();
         var provider = ctx.Render<MudDialogProvider>();
         var dialogs = ctx.Services.GetService(typeof(IDialogService)) as IDialogService;
         await provider.InvokeAsync(() => dialogs!.ShowAsync<BoxLayoutDialog>("Box Layout"));
@@ -115,8 +115,7 @@ public sealed class BoxWallpaperNamesTests : IDisposable
         var select = cut.FindComponents<MudSelect<int>>().Single(c => c.Instance.Label == "Wallpaper");
 
         select.Instance.GetState(x => x.Value).Should().Be(24);
-        // MudSelect renders the selected item's ChildContent; its Text state can remain "24".
-        select.Find("[role='combobox']").TextContent.Should().Be("Distortion (Platinum)");
+        select.Instance.GetState(x => x.Text).Should().Be("Distortion (Platinum)");
         cut.Find("img[alt='Wallpaper preview']").GetAttribute("src").Should().EndWith("box_wp25bdsp.png");
         save.GetBoxWallpaper(0).Should().Be(24);
         save.GetBoxWallpaper(1).Should().Be(31);
@@ -126,5 +125,15 @@ public sealed class BoxWallpaperNamesTests : IDisposable
         save.GetBoxWallpaper(0).Should().Be(31);
         save.GetBoxWallpaper(1).Should().Be(31);
         cut.Find("img[alt='Wallpaper preview']").GetAttribute("src").Should().EndWith("box_wp32bdsp.png");
+
+        await select.InvokeAsync(() => select.Instance.OpenMenu());
+
+        popovers.WaitForAssertion(() =>
+        {
+            var thumbnails = popovers.FindAll("img[alt='']");
+            thumbnails.Should().HaveCount(32);
+            thumbnails[24].GetAttribute("src").Should().EndWith("box_wp25bdsp.png");
+            thumbnails[31].GetAttribute("src").Should().EndWith("box_wp32bdsp.png");
+        });
     }
 }

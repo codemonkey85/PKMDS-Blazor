@@ -65,6 +65,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 - **Trainer Customization (Phases 1–5)** — expanded Trainer tab with per-gen currency editors (money, coins, BP, Poké Miles, Watts, Festival Coins, Roto Tokens, League Points); Game Sync ID (Gen 5/6/7/7b); Gen 8 SwSh Trainer Card dialog (card name, card number, trainer ID, Roto Rally score); Gen 6 Sayings dialog (read-only view); game start and Hall of Fame timestamps; Gen 3 Game Corner Joyful Records; Gen 4 HGSS NSparkle flag; language dropdown hidden for `ILangDeviantSave` saves (Gen 1–3, Stadium) (#361, #870)
 - **Drag-and-Drop Save Open** — drop save files onto the welcome screen or load dialog to open immediately
 - **New App Layout** — left app bar menu replaces the side drawer; welcoming empty state on no-save
+- **Editor dropdown refinements (#1360)** — species number beside the species selector; nature/stat alignment labels retain stat effects; selected dropdowns reopen with alternatives, capped at 10 suggestions; clear restores valid default options with matching labels
 - **New Branding** — fresh logo, adaptive favicon, and full icon set
 - **Theme Palette Switcher** — segmented-control palette switcher in the app bar (preview)
 - **Import Warning Snackbar** — notifies when imported Pokémon are illegal after a Showdown import
@@ -121,6 +122,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
 **Status:** ⚠️ Partial (Spinda spot preview + species-specific editors for Alcremie/Vivillon/Furfrou/Pumpkaboo/Minior implemented; general form preview UI and form-legality validation remain — #651)
 **Complexity:** Medium
 **Tasks:**
+- [x] Reopen selected forms to browse alternatives, with up to 10 suggestions and type-to-filter search (#1360)
 - [ ] Enhance form selection UI with visual previews (general species)
 - [x] **Spinda spot pattern preview** — renders Spinda's 4 unique spot positions from its PID using bundled sprite assets; shown inline in the Pokémon editor (closes #554)
 - [x] **Alcremie decoration editor** (Gen 8) — `AlcremieEditorDialog` covers all 63 cream × sweet combinations
@@ -833,7 +835,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Add recently edited Pokemon list
 - [ ] Implement favorite Pokemon marking
 - [ ] Add Pokemon sorting options in boxes
-- [x] Create box wallpaper customization (game-specific Gen 3–5 and BDSP labels; Emerald Friends wallpaper supported)
+- [x] Create box wallpaper customization (game-specific Gen 3–5 and BDSP labels; Emerald Friends wallpaper supported; thumbnail previews in the wallpaper selector — #1360)
 - [ ] Add grid size options
 - [ ] Implement multi-select for batch operations
 
@@ -861,7 +863,7 @@ Bring the Mystery Gift Database tab to full parity with PKHeX's `SAV_MysteryGift
 - [ ] Add box search/filter
 - [ ] Create box import/export
 - [ ] Add box name editing
-- [x] Implement box wallpaper selection (saved IDs preserved; previews use the selected ID)
+- [x] Implement box wallpaper selection (saved IDs preserved; previews and selector thumbnails use the selected ID)
 - [ ] Add "Jump to box" quick navigation
 - [ ] Create box comparison tool
 - [ ] Add empty box slots highlighting

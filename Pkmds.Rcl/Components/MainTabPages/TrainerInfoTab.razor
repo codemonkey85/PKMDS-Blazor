@@ -438,6 +438,8 @@
             <div class="form-field">
                 @* ReSharper disable once CSharpWarnings::CS8603 *@
                 <MudAutocomplete T="@ComboItem"
+                                 Strict="false"
+                                 MaxItems="10"
                                  Label="Rival Starter"
                                  Variant="@Variant.Outlined"
                                  @bind-Value:get="@GetGen1RivalStarter(sav1Rival)"
@@ -538,6 +540,8 @@
                 <div class="form-field">
                     @* ReSharper disable once CSharpWarnings::CS8603 *@
                     <MudAutocomplete T="@ComboItem"
+                                     Strict="false"
+                                     MaxItems="10"
                                      Label="@($"Trainer Card {localIndex + 1}")"
                                      Variant="@Variant.Outlined"
                                      @bind-Value:get="@GetTrainerCardPokemon(sav3FrLgTrainerCard, localIndex)"

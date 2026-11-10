@@ -1,0 +1,51 @@
+@inherits BasePkmdsComponent
+
+<PageTitle>Dropdown preview</PageTitle>
+
+<MudContainer MaxWidth="@MaxWidth.Small" Class="py-6">
+    <MudStack Spacing="4">
+        <MudText Typo="@Typo.h4">Dropdown preview</MudText>
+        <MudText>Click a selected field to see alternatives. Type to filter, then choose a suggestion. Each list shows up to 10 suggestions.</MudText>
+        <MudText Typo="@Typo.body2">These sample selections do not change your save file.</MudText>
+
+        <AutocompleteSelect T="@byte"
+                            Label="Rotom form"
+                            @bind-Value="@form"
+                            Items="@Enumerable.Range(0, forms.Length).Select(i => (byte)i)"
+                            ToStringFunc="@(i => forms[i])"/>
+
+        <AutocompleteSelect T="@int"
+                            Label="Species"
+                            @bind-Value="@species"
+                            Items="@Enumerable.Range(1, GameInfo.Strings.Species.Count - 1)"
+                            ToStringFunc="@(i => GameInfo.Strings.Species[i])"/>
+
+        <AutocompleteSelect T="@Nature"
+                            Label="Nature"
+                            @bind-Value="@nature"
+                            Items="@GetNatureItems()"
+                            ToStringFunc="@GetNatureDisplayName"/>
+
+        <AutocompleteSelect T="@(int?)"
+                            Label="Nature filter"
+                            @bind-Value="@natureFilter"
+                            Items="@NatureFilters"
+                            ToStringFunc="@NatureFilterLabel"/>
+
+        <MudText Typo="@Typo.body2">Try reopening Heat, choosing Wash, and typing “Mow”. In Species, try “char”. Nature keeps its stat effects visible after selection.</MudText>
+    </MudStack>
+</MudContainer>
+
+@code {
+    private readonly string[] forms = FormConverter.GetFormList((ushort)Species.Rotom,
+        GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, EntityContext.Gen9);
+    private byte form = 1;
+    private int species = (int)Species.Rotom;
+    private Nature nature = Nature.Adamant;
+    private int? natureFilter;
+
+    private static IEnumerable<int?> NatureFilters =>
+        new int?[] { null }.Concat(GetNatureItems().Select(value => (int?)value));
+
+    private string NatureFilterLabel(int? value) => value is { } id ? GetNatureDisplayName((Nature)id) : "Any";
+}

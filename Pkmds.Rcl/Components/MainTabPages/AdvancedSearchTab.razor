@@ -62,6 +62,8 @@
                                 <MudStack Spacing="2">
 
                                     <MudAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      Label="Species"
                                                      Value="@speciesItem"
                                                      ValueChanged="@(v => speciesItem = v)"
@@ -402,6 +404,8 @@
                                     @* Any-of moves *@
                                     <MudText Typo="@Typo.subtitle2">Has any of these moves</MudText>
                                     <MudAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      @ref="@anyMoveAutoRef"
                                                      Label="Add move…"
                                                      SearchFunc="@SearchMovesAsync"
@@ -430,6 +434,8 @@
                                     @* All-of moves *@
                                     <MudText Typo="@Typo.subtitle2">Has all of these moves</MudText>
                                     <MudAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      @ref="@allMoveAutoRef"
                                                      Label="Add move…"
                                                      SearchFunc="@SearchMovesAsync"
@@ -518,6 +524,8 @@
                                               AlignItems="@AlignItems.Center"
                                               Spacing="1">
                                         <MudAutocomplete T="@ComboItem"
+                                                         Strict="false"
+                                                         MaxItems="10"
                                                          Label="Ability"
                                                          Value="@abilityItem"
                                                          ValueChanged="@OnAbilitySelected"
@@ -548,6 +556,8 @@
                                               Spacing="1">
                                         <MudStack Style="flex: 1; min-width: 0;">
                                             <MudAutocomplete T="@ComboItem"
+                                                             Strict="false"
+                                                             MaxItems="10"
                                                              Label="Held item"
                                                              SearchFunc="@SearchItemsAsync"
                                                              ToStringFunc="@ItemToString"
@@ -621,6 +631,8 @@
                                 <MudStack Spacing="2">
 
                                     <MudAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      Label="Met location"
                                                      Value="@metLocationItem"
                                                      ValueChanged="@(v => metLocationItem = v)"
@@ -683,6 +695,8 @@
 
                                     <MudText Typo="@Typo.subtitle2">Ribbons</MudText>
                                     <MudAutocomplete T="@string"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      Label="Add ribbon…"
                                                      Value="@pendingRibbonName"
                                                      ValueChanged="@AddRibbon"

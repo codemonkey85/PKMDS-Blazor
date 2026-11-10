@@ -2,6 +2,9 @@ namespace Pkmds.Rcl.Components;
 
 public partial class BasePkmdsComponent
 {
+    protected string GetNatureDisplayName(Nature nature) =>
+        $"{GameInfoUtilities.GetNatureName(nature)} {AppService.GetStatModifierString(nature)}";
+
     protected static readonly IReadOnlyDictionary<string, string> FlagLabels =
         new Dictionary<string, string>
         {

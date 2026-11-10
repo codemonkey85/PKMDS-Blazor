@@ -5,11 +5,6 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
     private const string EnglishLang = "en";
     private const string DefaultPkmFileName = "pkm.bin";
 
-    // Number of items to return from Search* methods when the query is empty. The autocomplete
-    // dropdown uses this to populate an initial "preview" list so users see something to pick
-    // from before they start typing. Matches the Ribbons filter's top-N behavior.
-    private const int AutocompleteEmptyQueryTake = 30;
-
     // Block keys duplicated from SaveBlockAccessor8SWSH / SaveBlockAccessor9SV
     // because they are private in PKHeX.Core. Update if upstream changes.
     private const uint SwshTeamNamesKey = 0x1920C1E4;
@@ -110,6 +105,8 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
 
     public string GetPokemonSpeciesName(ushort speciesId) => GetSpeciesComboItem(speciesId).Text;
 
+    // Search helpers return the full set so autocomplete can locate the selected item;
+    // the controls limit rendered suggestions with MaxItems.
     public IEnumerable<ComboItem> SearchPokemonNames(string searchString)
     {
         if (AppState.SaveFile is null)
@@ -121,7 +118,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(species => species.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(species => species.Text).Take(AutocompleteEmptyQueryTake)
+            ? source.OrderBy(species => species.Text)
             : source
                 .Where(species => species.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(species => species.Text);
@@ -142,7 +139,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(item => item.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(item => item.Text).Take(AutocompleteEmptyQueryTake)
+            ? source.OrderBy(item => item.Text)
             : source
                 .Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(item => item.Text);
@@ -196,7 +193,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(l => l.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(l => l.Text).Take(AutocompleteEmptyQueryTake)
+            ? source.OrderBy(l => l.Text)
             : source
                 .Where(l => l.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(l => l.Text);
@@ -220,7 +217,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(move => move.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(move => move.Text).Take(AutocompleteEmptyQueryTake)
+            ? source.OrderBy(move => move.Text)
             : source
                 .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(move => move.Text);

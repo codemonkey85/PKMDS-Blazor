@@ -28,6 +28,8 @@
 
                                     @* Species (required to search) *@
                                     <MudAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      Label="Species (required)"
                                                      Value="@speciesItem"
                                                      ValueChanged="@(v => speciesItem = v)"

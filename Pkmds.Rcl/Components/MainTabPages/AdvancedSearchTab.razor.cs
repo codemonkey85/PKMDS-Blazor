@@ -407,7 +407,7 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             .DistinctBy(a => a.Value);
 
         IEnumerable<ComboItem> results = string.IsNullOrWhiteSpace(search)
-            ? source.OrderBy(a => a.Text).Take(30)
+            ? source.OrderBy(a => a.Text)
             : source
                 .Where(a => a.Text.Contains(search, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(a => a.Text);
@@ -509,13 +509,12 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
         var names = GetAvailableRibbonNames();
         if (string.IsNullOrWhiteSpace(search))
         {
-            return await Task.FromResult(names.Take(30).ToList());
+            return await Task.FromResult(names.ToList());
         }
 
         return await Task.FromResult(names
             .Where(n => RibbonHelper.GetRibbonDisplayName(n)
                 .Contains(search, StringComparison.OrdinalIgnoreCase))
-            .Take(30)
             .ToList());
     }
 

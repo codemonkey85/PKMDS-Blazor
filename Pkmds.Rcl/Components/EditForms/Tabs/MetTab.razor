@@ -64,6 +64,8 @@
         <MudStack Style="flex: 1; min-width: 0;">
             @* ReSharper disable once CSharpWarnings::CS8603 *@
             <MudAutocomplete T="@ComboItem"
+                             Strict="false"
+                             MaxItems="10"
                              Label="Met Location"
                              Variant="@Variant.Outlined"
                              @bind-Value:get="@GetMetLocation()"
@@ -202,6 +204,8 @@
     {
         @* ReSharper disable once CSharpWarnings::CS8603 *@
         <MudAutocomplete T="@ComboItem"
+                         Strict="false"
+                         MaxItems="10"
                          Label="Egg Met Location"
                          Variant="@Variant.Outlined"
                          @bind-Value:get="@GetEggMetLocation()"
