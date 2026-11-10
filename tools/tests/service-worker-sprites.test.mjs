@@ -4,7 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../Pkmds.Web/wwwroot/service-worker.published.js', import.meta.url), 'utf8');
-const root = 'https://sprites.pkmds.app/pokemon/';
+const root = 'https://sprites.pkmds.app/collections/a7a3d62bb80a654ab5e01b488659929af0077c31/pokemon/';
 const image = () => new Response('sprite', {headers: {'Content-Type': 'image/webp'}});
 
 function worker({network = async () => image(), failOpen = false, failWrite = false} = {}) {
@@ -104,12 +104,34 @@ test('only the exact collection prefix uses the hosted sprite cache', async () =
     const sw = worker();
     for (const url of ['https://sprites.pkmds.app/other/image.png',
         'https://sprites.pkmds.app.evil.example/pokemon/25.png',
-        'https://raw.githubusercontent.com/owner/repo/main/image.png']) {
+        'https://raw.githubusercontent.com/owner/repo/main/image.png',
+        'https://sprites.pkmds.app/pokemon/25.png',
+        'https://sprites.pkmds.app/collections/other-revision/pokemon/25.png']) {
         await sw.get(url);
         await sw.get(url);
     }
-    assert.equal(sw.requests(), 6);
+    assert.equal(sw.requests(), 10);
     assert.equal(sw.stores.has('pkmds-sprites-v2'), false);
+});
+
+test('large animations evict oldest sprites by byte budget before reaching the entry limit', async () => {
+    const sw = worker({network: async () => new Response('animation', {
+        headers: {'Content-Type': 'image/webp', 'Content-Length': String(50 * 1024 * 1024)}
+    })});
+    for (let index = 0; index < 4; index++) await sw.get(root + index + '.webp');
+    const cache = sw.stores.get('pkmds-sprites-v2');
+    assert.equal(cache.size, 2);
+    assert.equal(cache.has(root + '0.webp'), false);
+    assert.equal(cache.has(root + '3.webp'), true);
+});
+
+test('concurrent distinct animations finish inside the byte budget', async () => {
+    const sw = worker({network: async () => new Response('animation', {
+        headers: {'Content-Type': 'image/webp', 'Content-Length': String(50 * 1024 * 1024)}
+    })});
+    const responses = await Promise.all(Array.from({length: 10}, (_, index) => sw.get(root + index + '.webp')));
+    assert.equal(responses.every(response => response.ok), true);
+    assert.equal(sw.stores.get('pkmds-sprites-v2').size, 2);
 });
 
 test('bundled sprites are cached lazily in the app cache', async () => {

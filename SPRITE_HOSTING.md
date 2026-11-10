@@ -1,89 +1,121 @@
-# Sprite hosting UAT (#1359)
+# Sprite hosting (#1359)
 
-This is a partial rollout for UAT. The app uses Cloudflare R2 through
-`https://sprites.pkmds.app/pokemon/`, with the existing bundled sprites as fallbacks.
-**Do not merge this rollout to production until the full collection is published and verified.**
+HOME artwork and game sprites are served from Cloudflare R2 through
+`https://sprites.pkmds.app/`, with bundled sprites as fallbacks. Embedded hosts
+continue to suppress external sprite requests.
 
-## Current sample collection
+## Collection and provenance
 
-Bucket: `pkmds-sprites-test`. There are 17 canonical objects, totaling 6,270,107 bytes
-(5.98 MiB), copied without transformation from `codemonkey85/sprites` commit
-`a7a3d62bb80a654ab5e01b488659929af0077c31`.
-[The sample manifest](tools/data/r2-uat-sprites.json) records every object key, byte count,
-and SHA-256. Object keys omit the upstream `sprites/` directory; the public URL is
-the host plus the key. Legacy trial URLs under `/sprites/pokemon/` are not used by the app.
+The [collection manifest](tools/data/sprite-collection.json) pins
+`codemonkey85/sprites` revision `a7a3d62bb80a654ab5e01b488659929af0077c31`.
+It records 30,277 images, 12,602,378,781 bytes (11.74 GiB), with each object key,
+content type, byte count, SHA-256 and MD5 checksum. It includes HOME and all 21
+mapped game directory/format pairs and their available front sprite variants:
+female, shiny, shiny/female and transparent. Files are copied without conversion.
+Back sprites and unused formats are excluded. The image copyright remains with
+The Pokémon Company; see the source repository's `LICENCE.txt` and contributors.
 
-Available examples:
+Bucket: `pkmds-sprites-test`. Collection root:
 
-- HOME: Pikachu (male, female, shiny male), Iron Moth, Unown B, and placeholder 0.
-- Game sprites: male non-shiny Pikachu in Red/Blue, Black/White, Ultra Sun/Ultra Moon,
-  Let's Go, Sword/Shield, BDSP, Legends: Arceus, Scarlet/Violet, and Legends: Z-A.
-- Shiny male Pikachu in Scarlet/Violet; shiny Celebi from Gold (the app retains its
-  existing bundled padded Celebi override).
+```text
+https://sprites.pkmds.app/collections/a7a3d62bb80a654ab5e01b488659929af0077c31/pokemon/
+```
 
-Everything else deliberately exercises the bundled fallback. For example, Bulbasaur,
-shiny female Pikachu, and most form picker previews have no hosted sample.
-No full export/upload pipeline or new sprite conversion is included in this phase.
+Upstream `sprites/pokemon/` maps to `collections/<revision>/pokemon/`.
+Publication status and verification evidence are recorded in PR #1361. A generated
+manifest alone does not prove publication: the publisher uploads the public
+`collections/<revision>/manifest.json` only after all images pass verification.
 
-## Transport and caching
+## Reproduce, upload and verify
 
-`SpriteSource.PokemonBaseUrl` composes the HOME/game URLs. Keep the published service
-worker's `spritePathPrefix` in sync; a test enforces this. Form and game mappings remain
-in `PokeApiSpriteUrls`.
+Use Node 22+ and [rclone 1.59+](https://developers.cloudflare.com/r2/examples/rclone/).
+Cloudflare recommends rclone or another S3-compatible tool for bulk uploads.
+Super Slurper migrates existing cloud buckets; our source files are local.
 
-Remote images use anonymous CORS. The public bucket allows GET/HEAD from any origin
-using [this Wrangler CORS configuration](tools/data/r2-uat-cors.json), including changing
-Azure PR preview origins. These are public images; no cookies or credentials are sent.
-The samples currently use their original PNG/GIF/WebP content types and
-`Cache-Control: public, max-age=3600`.
+1. Sync external repositories with the repository's `sync-repos` skill. Check out
+   the pinned revision in a clean sprite checkout. Upload rejects a different
+   HEAD or local sprite changes.
+2. Generate the deterministic manifest. It derives the game directory/format
+   pairs from `PokeApiSpriteUrls.cs` and selects tracked front sprite variants:
 
-The published service worker caches sprites on demand, coalesces concurrent requests
-for the same URL, and retains at most 512 hosted images in `pkmds-sprites-v2` across
-app updates. It caches successful image responses only. Missing/offline images and
-Cache Storage failures retain the bundled fallback. Bundled sprites are cached on
-demand in the app version cache. Embedded hosts continue to suppress external sprites.
+   ```powershell
+   node tools/sprites/publish.mjs manifest --source C:/Code/sprites
+   ```
 
-The hosted sprite cache is cache-first and does not revalidate existing entries.
-Changing hosted bytes at an existing URL therefore needs an explicit cache migration
-or versioned URL. Final versioning, storage limits and invalidation are part of the
-full rollout; the one-hour CDN TTL alone does not expire service worker entries.
-The settings action "Clear Sprite Cache" clears only the in-memory loaded state,
-not browser HTTP or service worker caches.
+3. In R2's **Manage API Tokens**, create S3 credentials with **Object Read & Write**,
+   scoped to `pkmds-sprites-test`. Prefer a short expiration for a one-time upload.
+   Configure an rclone remote named `pkmdssprites`: provider `Cloudflare`, region
+   `auto`, `no_check_bucket = true`, endpoint
+   `https://5a09f006ed56baba01325764d8215ca7.r2.cloudflarestorage.com`.
+   Never commit credentials or put them in PR comments.
 
-## UAT checklist
+   Windows users can instead run `./tools/sprites/configure-r2.ps1`. It prompts
+   locally and encrypts the secret with Windows DPAPI for the current Windows
+   user/computer in gitignored `artifacts/sprites/r2-credentials.xml`.
 
-The existing PR workflow deploys an Azure Static Web Apps preview for PRs targeting
-`main`; use the URL posted on the PR. Test in a separate browser profile or private
-window, with copies of save files.
+4. Upload. The publisher checks local bytes against the manifest, then runs
+   `rclone copy --checksum --immutable`. Re-run the same command to resume:
 
-1. Open a save with male non-shiny Pikachu. In Settings, test HOME and game sprite
-   styles for the available games above. Confirm PNG, GIF and WebP images render;
-   confirm GIF/WebP animation where present.
-2. Test HOME female Pikachu, shiny male Pikachu, Iron Moth and Unown B. Confirm the
-   correct paths and images; check other species and missing variants retain bundled art.
-3. Switch boxes, sprite styles, saves and the two Trade panes. A loaded sprite in one
-   game must not hide another game's fallback. Form picker failures must also fall back.
-4. Fill a box with identical Pikachu. With the published worker controlling the page,
-   the first concurrent miss should produce one network fetch per distinct URL;
-   gender/shiny/game variants are distinct. Revisit to confirm browser/worker cache reuse.
-5. After the worker is active, view a sample, go offline and revisit it. Viewed hosted
-   images should load from cache; unseen hosted images use bundled art **if that bundled
-   fallback has already been cached**. First-time images cannot be guaranteed offline.
-6. Test a deliberately missing URL (404), a blocked sprite request, and an unavailable
-   Cache Storage environment. A network image should still render when caching fails.
-7. Check an embedded host (`?host=test`): no external sprite requests should occur.
+   ```powershell
+   node tools/sprites/publish.mjs upload --source C:/Code/sprites --concurrency 12
 
-For cache diagnosis use a fresh profile/private window or unregister only the service
-worker. Never clear site data: that destroys save backups and the Pokemon Bank in IndexedDB.
+   # Windows DPAPI option; supply the installed rclone executable:
+   ./tools/sprites/with-r2.ps1 -RclonePath C:/Tools/rclone.exe -PublisherArguments @('upload', '--source', 'C:/Code/sprites', '--concurrency', '12')
+   ```
 
-## Remaining work before production
+   Use `--rclone PATH` for a custom executable or `--remote NAME:BUCKET` for another
+   configured destination. Copy never deletes remote files. `--immutable` fails
+   if an existing object differs. The 256 MiB multipart threshold exceeds the
+   size of every selected image, so their S3 ETags are MD5 hashes.
 
-- Build the full reproducible export/upload process with source revision and manifest,
-  incremental upload/resume, content types, checksums and completeness checks.
-- Choose production URL versioning/cache invalidation and final object cache headers.
-- Publish and verify all required species, forms, genders, shiny variants and game sets.
-- Complete UAT, including Safari/iOS offline behavior and realistic storage pressure.
-- Confirm DNSSEC activation independently; DNSSEC signing does not block sprite UAT.
+5. Independently recheck with `node tools/sprites/publish.mjs verify`. Verification
+   compares every remote MD5 and byte count against the manifest, and requires
+   the exact image count. Reports/checksum results go in `artifacts/sprites/`.
+   Check representative public HTTPS responses for SHA-256, MIME, CORS and cache
+   headers, including Iron Moth HOME (994) and modern animated game sprites.
+6. After publication/validation, change `SpriteSource.PokemonBaseUrl`, the
+   worker's `spritePathPrefix` and explicit URL expectations together; CI checks
+   app/worker agreement. Commit the manifest with that change.
 
-Keep #1359 open for this work. DNS hosting and registrar transfer are already on Cloudflare;
-the full sprite rollout is separate from that completed migration.
+Publishing uses S3 and needs no Worker deployment or `workers.dev` subdomain. The
+account preview subdomain enabled during investigation is independent of delivery.
+
+## Transport, cache limits and rollback
+
+Remote images use anonymous CORS. Public GET/HEAD access allows all origins using
+[this configuration](tools/data/r2-uat-cors.json), including Azure PR preview
+origins. No credentials are sent for public image reads. Uploads preserve the
+PNG/GIF/WebP MIME types and set `Cache-Control: public, max-age=31536000, immutable`.
+
+Never replace bytes at a published revision URL. Publish and verify a new revision
+before changing the app root. Existing clients keep using the previous revision.
+Roll back by restoring the previous app/worker URL constants; retain that collection.
+The 17 unversioned trial objects remain for earlier UAT builds and posted links.
+
+The published worker caches sprites on demand in `pkmds-sprites-v2`, shares
+concurrent fetches per URL, and bounds the cache to 512 entries **and 128 MiB**.
+Writes/eviction are serialized. Revisioned URLs isolate updated bytes; old entries
+are evicted within the same budget without deleting a cache an older tab may use.
+Images larger than the budget render from the network but are immediately evicted.
+Cache Storage failures still return downloaded images. Errors, opaque responses,
+and HTML pages are never cached as sprites.
+
+Bundled sprites are cached lazily in the app version cache. Viewed hosted sprites
+work offline; unseen images can only use bundled art that was already cached.
+Installation does not download 11.74 GiB. “Clear Sprite Cache” currently clears
+only in-memory loaded state, not HTTP or service worker caches.
+
+## UAT and rollout
+
+Use the Azure preview URL posted on PR #1361 and copies of saves in an isolated
+profile/private window. Verify HOME base/female/shiny/shiny-female images, named
+and numeric forms, Iron Moth, Alcremie permutations, early transparent PNG, Gen 7
+GIF and modern animated WebP. Exercise box/party, form pickers, both Trade panes,
+and game/style/save changes. Missing/blocked images must restore bundled art,
+including an error after a previous success. Check identical concurrent sprites,
+offline revisits, byte-budget eviction, Cache Storage failure, update/rollback,
+and embedded mode (`?host=test`). Include Safari/iOS validation where available.
+Confirm CI build/tests, CodeQL and preview deployment before merging.
+
+For cache diagnosis use a hard refresh, a private window, or unregister only the
+service worker. Never clear site data: it destroys IndexedDB backups and the Bank.

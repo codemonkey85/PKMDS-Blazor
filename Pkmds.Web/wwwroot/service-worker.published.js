@@ -60,8 +60,10 @@ const cacheLeaseName = 'pkmds-client-cache-leases-v1';
 const cacheLeasePathPrefix = '/__pkmds-client-cache-lease__/';
 const spriteCacheName = 'pkmds-sprites-v2';
 // Keep in sync with SpriteSource.PokemonBaseUrl. Cache only this collection.
-const spritePathPrefix = 'https://sprites.pkmds.app/pokemon/';
+const spritePathPrefix = 'https://sprites.pkmds.app/collections/a7a3d62bb80a654ab5e01b488659929af0077c31/pokemon/';
 const maxSpriteCacheEntries = 512;
+const maxSpriteCacheBytes = 128 * 1024 * 1024;
+let spriteCacheMaintenance = Promise.resolve();
 const pendingSpriteRequests = new Map();
 const CACHE_VERSION = '%%CACHE_VERSION%%'
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}${CACHE_VERSION}`;
@@ -290,15 +292,38 @@ async function fetchSprite(request, isHostedSprite) {
     if (cache && response.ok && response.headers.get('Content-Type')?.startsWith('image/')) {
         try {
             // Await writes within respondWith's promise so the worker stays alive until done.
-            await cache.put(request, response.clone());
             if (isHostedSprite) {
-                const keys = await cache.keys();
-                await Promise.all(keys.slice(0, Math.max(0, keys.length - maxSpriteCacheEntries))
-                    .map(key => cache.delete(key)));
+                // Serialize writes and eviction so concurrent downloads cannot exceed the budget.
+                // Revisioned URLs isolate updated bytes while sharing a bounded cache across releases.
+                const copy = response.clone();
+                const maintenance = spriteCacheMaintenance.then(async () => {
+                    await cache.put(request, copy);
+                    await trimSpriteCache(cache);
+                });
+                spriteCacheMaintenance = maintenance.catch(() => {});
+                await maintenance;
+            } else {
+                await cache.put(request, response.clone());
             }
         } catch {
             // A failed cache write must still return the successfully downloaded image.
         }
     }
     return response;
+}
+
+async function trimSpriteCache(cache) {
+    const keys = await cache.keys();
+    const sizes = await Promise.all(keys.map(async key => {
+        const cached = await cache.match(key);
+        if (!cached) return 0;
+        const length = Number(cached.headers.get('Content-Length'));
+        return length > 0 ? length : (await cached.arrayBuffer()).byteLength;
+    }));
+    let totalBytes = sizes.reduce((total, size) => total + size, 0);
+    for (let index = 0; index < keys.length
+        && (keys.length - index > maxSpriteCacheEntries || totalBytes > maxSpriteCacheBytes); index++) {
+        await cache.delete(keys[index]);
+        totalBytes -= sizes[index];
+    }
 }

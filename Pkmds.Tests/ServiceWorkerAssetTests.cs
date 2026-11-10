@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Pkmds.Tests;
@@ -32,6 +33,34 @@ public sealed partial class ServiceWorkerAssetTests
         var serviceWorker = RepoFileTestHelper.ReadAllText("Pkmds.Web", "wwwroot", "service-worker.published.js");
 
         serviceWorker.Should().Contain($"const spritePathPrefix = '{SpriteSource.PokemonBaseUrl}';");
+    }
+
+    [Fact]
+    public void PublishedSpriteManifestMatchesAppAndCoversEveryMappedGameSet()
+    {
+        using var manifest = JsonDocument.Parse(RepoFileTestHelper.ReadAllText("tools", "data", "sprite-collection.json"));
+        var root = manifest.RootElement;
+        var publicBaseUrl = root.GetProperty("publicBaseUrl").GetString()!;
+        var prefix = root.GetProperty("prefix").GetString()!;
+        var images = root.GetProperty("objects").EnumerateArray().ToArray();
+        var urls = images.Select(item => publicBaseUrl + item.GetProperty("key").GetString()![prefix.Length..])
+            .ToHashSet();
+
+        (publicBaseUrl + "pokemon/").Should().Be(SpriteSource.PokemonBaseUrl);
+        prefix.Should().Be($"collections/{root.GetProperty("revision").GetString()}/");
+        images.Length.Should().Be(root.GetProperty("objectCount").GetInt32());
+        images.Sum(item => item.GetProperty("bytes").GetInt64()).Should().Be(root.GetProperty("totalBytes").GetInt64());
+        urls.Should().Contain(SpriteSource.PlaceholderSpriteUrl);
+        urls.Should().Contain(PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.IronMoth)!);
+
+        foreach (var version in Enum.GetValues<GameVersion>())
+        {
+            var url = PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl((ushort)Species.Pikachu, version: version);
+            if (url is not null)
+            {
+                urls.Should().Contain(url, $"the published collection must cover the {version} game mapping");
+            }
+        }
     }
 
     [Fact]

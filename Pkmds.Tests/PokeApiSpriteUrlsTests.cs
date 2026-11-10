@@ -3,7 +3,7 @@ namespace Pkmds.Tests;
 public class PokeApiSpriteUrlsTests
 {
     private const string VersionsBaseUrl =
-        "https://sprites.pkmds.app/pokemon/versions/";
+        "https://sprites.pkmds.app/collections/a7a3d62bb80a654ab5e01b488659929af0077c31/pokemon/versions/";
 
     [Theory]
     [InlineData(GameVersion.OR, "generation-vi/omega-ruby-alpha-sapphire/25.png")]
