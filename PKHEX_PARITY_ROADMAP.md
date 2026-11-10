@@ -151,7 +151,7 @@ This roadmap outlines the path to achieving 100% feature parity with PKHeX. Task
   - [x] Nature-locked PID generation
 - [x] Add Encryption Constant (EC) generator (Gen 6+)
 - [x] Implement shiny type selection (Star/Square for Gen 8+)
-- [ ] Add PID-to-IV correlation for Gen 3-4
+- [x] Add PID-to-IV correlation for Gen 3-4 — Method 1/2/4 generation also checks the encounter's RNG frame, preserves the ability slot, and leaves the original unchanged when a search fails (#1363). PID-only actions explain their legality risk.
 - [ ] Create PID reroller for legal PIDs
 
 #### Catch Rate / Status Condition Editor
