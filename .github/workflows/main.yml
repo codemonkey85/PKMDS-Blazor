@@ -41,6 +41,9 @@ jobs:
           persist-credentials: true
           token: ${{ secrets.RELEASE_PAT }}
 
+      - name: Verify published sprite collection
+        run: node tools/sprites/verify-published.mjs
+
       # sets up .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v6.0.0

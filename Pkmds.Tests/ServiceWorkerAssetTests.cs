@@ -87,6 +87,7 @@ public sealed partial class ServiceWorkerAssetTests
             workflowContents.Should().Contain("files: 'release/wwwroot/service-worker.js'");
             workflowContents.Should().NotContain("files: 'release/wwwroot/service-worker.published.js'");
             workflowContents.Should().Contain("node tools/verify-service-worker-assets.mjs release/wwwroot");
+            workflowContents.Should().Contain("node tools/sprites/verify-published.mjs");
         }
     }
 

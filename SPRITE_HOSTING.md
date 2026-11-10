@@ -139,6 +139,10 @@ Hosted cache misses revalidate the browser HTTP cache so an old, cached 404 cann
 hide a newly published image. Always finish publication before exposing a new
 collection URL in the app or preview. An incomplete-upload 404 may otherwise have
 been cached by the browser independently of the service worker.
+Both deployment workflows and PR CI run `node tools/sprites/verify-published.mjs`
+before building/publishing the front end. This gate requires the public immutable
+manifest to match the committed manifest byte-for-byte; a missing or incomplete
+publication blocks the deployment.
 
 Bundled sprites are cached lazily in the app version cache. Viewed hosted sprites
 work offline; unseen images can only use bundled art that was already cached.
