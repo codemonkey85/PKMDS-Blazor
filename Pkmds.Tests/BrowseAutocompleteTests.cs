@@ -138,9 +138,6 @@ public class BrowseAutocompleteTests
         var appState = new TestAppState { SaveFile = new SAV8SWSH() };
         var refreshService = new TestRefreshService();
         var appService = new AppService(appState, refreshService, new LegalizationService(appState));
-        var context = BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
-        context.JSInterop.SetupModule("./_content/Pkmds.Rcl/js/browseAutocomplete.js")
-            .SetupModule("watch", _ => true);
-        return context;
+        return BunitTestHelpers.CreateBunitContext(appState, refreshService, appService);
     }
 }

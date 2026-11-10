@@ -42,6 +42,8 @@ internal static class BunitTestHelpers
     {
         var ctx = new BunitContext();
         ctx.JSInterop.Mode = JSRuntimeMode.Loose;
+        ctx.JSInterop.SetupModule("./_content/Pkmds.Rcl/js/browseAutocomplete.js")
+            .SetupModule("watch", _ => true);
         ctx.Services.AddMudServices();
         ctx.Services.AddSingleton(appState);
         ctx.Services.AddSingleton(refreshService);

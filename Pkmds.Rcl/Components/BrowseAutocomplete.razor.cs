@@ -22,15 +22,21 @@ public partial class BrowseAutocomplete<T>
     private DotNetObjectReference<BrowseAutocomplete<T>>? browseReference;
     private Task? browseEventsInitialization;
     private bool browseDisposed;
+    private bool revealBrowseSelection;
 
     private int BrowsePageSize => Math.Clamp(MaxItems ?? 10, 1, 10);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        if (browseOpen && !browseDisposed)
+        if (!browseDisposed)
         {
             await (browseEventsInitialization ??= InitializeBrowseEventsAsync());
+            if (browseOpen && revealBrowseSelection && browseEvents is not null)
+            {
+                revealBrowseSelection = false;
+                await browseEvents.InvokeVoidAsync("revealSelection");
+            }
         }
     }
 
@@ -148,6 +154,7 @@ public partial class BrowseAutocomplete<T>
             var selected = Array.IndexOf(browseItems, ReadValue!);
             browseStart = Math.Clamp(selected - BrowsePageSize / 2, 0,
                 Math.Max(0, browseItems.Length - BrowsePageSize));
+            revealBrowseSelection = true;
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
         {
@@ -197,6 +204,7 @@ public partial class BrowseAutocomplete<T>
         browseStart = 0;
         browseLoading = false;
         browseFailed = false;
+        revealBrowseSelection = false;
         browseCancellation?.Cancel();
         browseCancellation?.Dispose();
         browseCancellation = null;
