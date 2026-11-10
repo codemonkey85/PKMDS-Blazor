@@ -10,7 +10,7 @@
     <PackageVersion Include="Octokit" Version="14.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="bUnit" Version="2.13.3" />
+    <PackageVersion Include="bUnit" Version="2.14.0" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="FluentAssertions" Version="8.11.0" />
     <PackageVersion Include="Humanizer" Version="3.0.10" />
@@ -26,6 +26,6 @@
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
-    <PackageVersion Include="xunit.v3" Version="4.0.2" />
+    <PackageVersion Include="xunit.v3" Version="4.0.3" />
   </ItemGroup>
 </Project>
