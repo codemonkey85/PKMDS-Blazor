@@ -71,9 +71,10 @@ public class AutocompleteSelectTests
             .Add(component => component.Items, Enumerable.Range(0, forms.Length).Select(i => (byte)i))
             .Add(component => component.Value, selected)
             .Add(component => component.ValueChanged, value => selected = value)
+            .Add(component => component.DebounceInterval, 0)
             .Add(component => component.ToStringFunc, value => forms[value]));
 
-        cut.Find(".mud-input-control").MouseDown();
+        cut.Find("input").Focus();
 
         popovers.WaitForAssertion(() => popovers.FindAll("[role='option']")
             .Select(option => option.TextContent.Trim()).Should().Equal(forms));
@@ -103,9 +104,10 @@ public class AutocompleteSelectTests
             .Add(component => component.Items, Enumerable.Range(1, 100))
             .Add(component => component.MaxItems, maxItems)
             .Add(component => component.Value, 50)
+            .Add(component => component.DebounceInterval, 0)
             .Add(component => component.ToStringFunc, value => $"Item {value}"));
 
-        cut.Find(".mud-input-control").MouseDown();
+        cut.Find("input").Focus();
 
         popovers.WaitForAssertion(() =>
         {
