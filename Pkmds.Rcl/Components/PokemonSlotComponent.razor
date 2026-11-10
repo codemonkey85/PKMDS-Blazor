@@ -34,10 +34,11 @@
             </object>
             @if (highResUrl is { } spriteUrl)
             {
+                @* WebKit starts a request when src is set; establish CORS first (WebKit bug 291793). *@
                 <img @key="spriteUrl"
                      class="@($"pkm-sprite-hires {GetHiResSizeClass()} {(highResLoaded ? "pkm-sprite-hires--loaded" : string.Empty)}")"
-                     src="@spriteUrl"
                      crossorigin="anonymous"
+                     src="@spriteUrl"
                      title="@title"
                      alt="@title"
                      draggable="false"

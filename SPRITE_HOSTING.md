@@ -26,6 +26,12 @@ Publication status and verification evidence are recorded in PR #1361. A generat
 manifest alone does not prove publication: the publisher uploads the public
 `collections/<revision>/manifest.json` only after all images pass verification.
 
+The collection was published on November 10, 2026. All 30,277 image MD5s and byte
+counts matched, and 80 representative public downloads passed SHA-256, MIME, CORS
+and immutable-header checks from the UAT origin. The [public manifest](https://sprites.pkmds.app/collections/a7a3d62bb80a654ab5e01b488659929af0077c31/manifest.json)
+matches the committed file (SHA-256
+`7de228b3c63c005f3a8f52ceae8b728d01dd9a6c33a6030b1dbd32bd31d535dc`).
+
 ## Reproduce, upload and verify
 
 Use Node 22+ and [rclone 1.59+](https://developers.cloudflare.com/r2/examples/rclone/).
@@ -113,6 +119,9 @@ Remote images use anonymous CORS. Public GET/HEAD access allows all origins usin
 [this configuration](tools/data/r2-uat-cors.json), including Azure PR preview
 origins. No credentials are sent for public image reads. Uploads preserve the
 PNG/GIF/WebP MIME types and set `Cache-Control: public, max-age=31536000, immutable`.
+Set the `crossorigin` attribute before `src` when creating image elements; WebKit
+can otherwise start/cache a no-CORS request before the attribute is applied
+([WebKit bug 291793](https://bugs.webkit.org/show_bug.cgi?id=291793)).
 
 Never replace bytes at a published revision URL. Publish and verify a new revision
 before changing the app root. Existing clients keep using the previous revision.

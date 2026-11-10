@@ -27,6 +27,7 @@ public class SpriteLoadingTests
 
             cut.Find("object.pkm-sprite").GetAttribute("style").Should().Be("display:none");
             cut.Find("img.pkm-sprite-hires").GetAttribute("crossorigin").Should().Be("anonymous");
+            AssertCorsPrecedesSource(cut.Find("img.pkm-sprite-hires").OuterHtml);
             await cut.Find("img.pkm-sprite-hires").TriggerEventAsync("onerror", EventArgs.Empty);
 
             cut.Find("object.pkm-sprite").GetAttribute("style").Should().NotBe("display:none");
@@ -51,6 +52,7 @@ public class SpriteLoadingTests
             .Add(c => c.Pokemon, pokemon)
             .Add(c => c.OwnerVersion, GameVersion.SL));
         var oldUrl = cut.Find("img.pkm-sprite-hires").GetAttribute("src")!;
+        AssertCorsPrecedesSource(cut.Find("img.pkm-sprite-hires").OuterHtml);
         var newUrl = ImageHelper.GetPokemonGameSpriteUrl(pokemon, GameVersion.SW)!;
         PokemonSlotComponent.MarkHighResFailed(newUrl);
         try
@@ -92,5 +94,13 @@ public class SpriteLoadingTests
 
         cut.FindAll("img.pkm-sprite-hires").Should().BeEmpty();
         cut.Find("object.pkm-sprite").GetAttribute("data").Should().StartWith("_content/Pkmds.Rcl/sprites/");
+    }
+
+    private static void AssertCorsPrecedesSource(string imageMarkup)
+    {
+        // Safari can cache a no-CORS request before Blazor sets a later crossorigin attribute.
+        imageMarkup.Should().Contain("crossorigin=\"anonymous\"");
+        imageMarkup.IndexOf("crossorigin=", StringComparison.Ordinal).Should()
+            .BeLessThan(imageMarkup.IndexOf("src=", StringComparison.Ordinal));
     }
 }

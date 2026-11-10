@@ -1234,7 +1234,7 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 **Tasks:**
 - [ ] Optimize large box rendering with virtualization
 - [ ] Implement lazy loading for sprites
-- [ ] Complete R2 sprite hosting rollout (#1359): versioned 30,277-image collection, rclone publishing/completeness checks, app integration and bounded on-demand caching; final publication and rollout evidence are tracked in PR #1361. See [SPRITE_HOSTING.md](SPRITE_HOSTING.md).
+- [x] **R2 sprite hosting (#1359)** — published and checksum-verified 30,277-image versioned collection; rclone publishing with incremental server-side reuse, daily upstream change reports, reliable bundled fallbacks, and bounded on-demand offline caching. See [SPRITE_HOSTING.md](SPRITE_HOSTING.md) and PR #1361 for validation evidence.
 - [ ] Add caching for computed values
 - [ ] Optimize search algorithms
 - [ ] Implement web worker for heavy computations
