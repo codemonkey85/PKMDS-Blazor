@@ -153,7 +153,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
     {
         var (up, down) = nature.GetNatureModification();
         return up == down
-            ? "(neutral)"
+            ? "(Neutral)"
             : $"({NatureStatShortNames[up]} ↑, {NatureStatShortNames[down]} ↓)";
     }
 

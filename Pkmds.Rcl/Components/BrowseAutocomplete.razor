@@ -1,0 +1,77 @@
+@typeparam T
+@inherits MudAutocomplete<T>
+
+<div @ref="@browseRoot" class="browse-autocomplete @(browseOpen ? "browse-autocomplete-open" : null)"
+     @onkeydown="@OnBrowseKeyDown">
+    @{ base.BuildRenderTree(__builder); }
+
+    <MudPopover Open="@browseOpen"
+                Class="browse-autocomplete-popover"
+                AnchorOrigin="@AnchorOrigin"
+                TransformOrigin="@TransformOrigin"
+                RelativeWidth="@RelativeWidth"
+                OverflowBehavior="@OverflowBehavior.FlipAlways"
+                Fixed="@PopoverFixed">
+        <div id="@browseContentId" @onkeydown="@OnBrowseKeyDown">
+            <div class="browse-autocomplete-heading">
+                <MudText Typo="@Typo.subtitle2">Choose @(Label ?? "an option")</MudText>
+                <MudText Typo="@Typo.caption">Tap an option to select. Type in the field to search.</MudText>
+            </div>
+            <div @key="@browseStart" id="@(browseContentId + "-list")" class="browse-autocomplete-options" role="listbox" aria-label="@(Label ?? "Options")">
+                @if (browseLoading)
+                {
+                    <MudText Class="pa-4" role="status">Loading options...</MudText>
+                }
+                else if (browseFailed)
+                {
+                    <MudText Class="pa-4" role="status">Could not load options. Close and try again.</MudText>
+                }
+                else if (browseItems.Length == 0)
+                {
+                    <MudText Class="pa-4">No options available</MudText>
+                }
+                else
+                {
+                    @foreach (var item in browseItems.Skip(browseStart).Take(BrowsePageSize))
+                    {
+                        var selected = EqualityComparer<T>.Default.Equals(item, ReadValue);
+                        var disabled = ItemDisabledFunc?.Invoke(item) == true;
+                        <button type="button" role="option"
+                                aria-selected="@(selected ? "true" : "false")"
+                                disabled="@disabled"
+                                class="browse-autocomplete-option @(selected ? "mud-selected-item mud-primary-text" : null)"
+                                @onclick="@(() => SelectBrowseOptionAsync(item))">
+                            @if (disabled && ItemDisabledTemplate is not null)
+                            {
+                                @ItemDisabledTemplate(item)
+                            }
+                            else if (selected && ItemSelectedTemplate is not null)
+                            {
+                                @ItemSelectedTemplate(item)
+                            }
+                            else if (ItemTemplate is not null)
+                            {
+                                @ItemTemplate(item)
+                            }
+                            else
+                            {
+                                @(ToStringFunc is not null ? ToStringFunc(item) : item?.ToString())
+                            }
+                        </button>
+                    }
+                }
+            </div>
+            @if (browseItems.Length > BrowsePageSize)
+            {
+                <div class="browse-autocomplete-paging">
+                    <MudButton Disabled="@(browseStart == 0)" OnClick="@PreviousBrowsePage"
+                               aria-label="@($"Previous {Label} options")">Previous</MudButton>
+                    <MudText Typo="@Typo.caption" aria-live="polite">@(browseStart + 1)–@Math.Min(browseStart + BrowsePageSize, browseItems.Length) of @browseItems.Length</MudText>
+                    <MudButton Disabled="@(browseStart + BrowsePageSize >= browseItems.Length)" OnClick="@NextBrowsePage"
+                               aria-label="@($"Next {Label} options")">Next</MudButton>
+                </div>
+            }
+        </div>
+    </MudPopover>
+</div>
+

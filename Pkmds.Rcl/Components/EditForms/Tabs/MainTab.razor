@@ -60,7 +60,7 @@
 
     @* ReSharper disable once CSharpWarnings::CS8603 *@
     <MudStack Row AlignItems="@AlignItems.Center" Spacing="2">
-        <MudAutocomplete T="@ComboItem"
+        <BrowseAutocomplete T="@ComboItem"
                          Strict="false"
                          MaxItems="10"
                          Label="Species"
@@ -337,7 +337,7 @@
                   AlignItems="@AlignItems.Center">
 
             @* ReSharper disable once CSharpWarnings::CS8603 *@
-            <MudAutocomplete T="@ComboItem"
+            <BrowseAutocomplete T="@ComboItem"
                              Strict="false"
                              MaxItems="10"
                              Label="Held Item"
@@ -364,7 +364,7 @@
                         </MudText>
                     </MudStack>
                 </ItemTemplate>
-            </MudAutocomplete>
+            </BrowseAutocomplete>
 
             @if (Pokemon.HeldItem != 0)
             {
@@ -409,7 +409,7 @@
                       AlignItems="@AlignItems.Center"
                       Spacing="1">
                 <MudStack Style="flex: 1; min-width: 0;">
-                    <MudAutocomplete T="ComboItem"
+                    <BrowseAutocomplete T="ComboItem"
                                      Strict="false"
                                      MaxItems="10"
                                      Label="Ability (HaX — any)"

@@ -1151,3 +1151,89 @@ body, html {
     max-height: calc(100vh - 64px);
     overflow-y: auto;
 }
+
+/* Keep browsing separate from typing on every device, including virtual keyboards. */
+.browse-autocomplete {
+    min-width: 0;
+    width: 100%;
+}
+
+.browse-autocomplete .mud-input-adornment-end .mud-input-adornment-icon-button {
+    min-width: 44px;
+    min-height: 44px;
+    border-inline-start: 1px solid var(--mud-palette-lines-inputs);
+    border-radius: 0;
+    touch-action: manipulation;
+}
+
+.browse-autocomplete-open .mud-input-adornment-end .mud-input-adornment-icon-button {
+    color: var(--mud-palette-primary);
+    background: var(--mud-palette-primary-hover);
+}
+
+.browse-autocomplete-open .mud-input-adornment-end .mud-input-adornment-icon-button svg {
+    transform: rotate(180deg);
+}
+
+.browse-autocomplete-heading {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+}
+
+.browse-autocomplete-heading .mud-typography-caption {
+    color: var(--mud-palette-text-secondary);
+}
+
+.browse-autocomplete-options {
+    max-height: min(300px, 40dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-block: 4px;
+}
+
+.browse-autocomplete-option {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 16px;
+    text-align: start;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.browse-autocomplete-option:hover,
+.browse-autocomplete-option:focus-visible {
+    background: var(--mud-palette-action-default-hover);
+}
+
+.browse-autocomplete-option:focus-visible {
+    outline: 2px solid var(--mud-palette-primary);
+    outline-offset: -2px;
+}
+
+.browse-autocomplete-option[aria-selected="true"] {
+    background: var(--mud-palette-primary-hover);
+}
+
+.browse-autocomplete-option:disabled {
+    color: var(--mud-palette-text-disabled);
+    cursor: default;
+}
+
+.browse-autocomplete-paging {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 4px;
+    border-top: 1px solid var(--mud-palette-lines-default);
+}
+
+.browse-autocomplete-paging .mud-button-root {
+    min-height: 44px;
+    touch-action: manipulation;
+}

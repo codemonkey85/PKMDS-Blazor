@@ -63,7 +63,7 @@
               Spacing="1">
         <MudStack Style="flex: 1; min-width: 0;">
             @* ReSharper disable once CSharpWarnings::CS8603 *@
-            <MudAutocomplete T="@ComboItem"
+            <BrowseAutocomplete T="@ComboItem"
                              Strict="false"
                              MaxItems="10"
                              Label="Met Location"
@@ -203,7 +203,7 @@
     @if (saveGeneration >= 4 && PokemonMetAsEgg)
     {
         @* ReSharper disable once CSharpWarnings::CS8603 *@
-        <MudAutocomplete T="@ComboItem"
+        <BrowseAutocomplete T="@ComboItem"
                          Strict="false"
                          MaxItems="10"
                          Label="Egg Met Location"
