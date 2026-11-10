@@ -80,6 +80,33 @@ Super Slurper migrates existing cloud buckets; our source files are local.
 Publishing uses S3 and needs no Worker deployment or `workers.dev` subdomain. The
 account preview subdomain enabled during investigation is independent of delivery.
 
+## Ongoing source updates
+
+The **Check sprite repository changes** GitHub workflow runs daily at 09:23 UTC
+after it reaches the default branch, and supports manual dispatch. It compares
+the published revision with the latest `codemonkey85/sprites` default branch using
+Git trees, without downloading the image collection. It filters changes to assets
+consumed by this app, records added/changed/removed paths in an artifact and job
+summary, and fails when an update needs review. It does not publish assets or use
+R2 credentials. GitHub's normal workflow notification preferences control alerts.
+
+For a local check after syncing the sprite checkout:
+
+```powershell
+node tools/sprites/check-upstream.mjs --source C:/Code/sprites
+```
+
+For an approved update, preserve the prior manifest, regenerate the new manifest,
+then pass `--previous-manifest PATH` to `upload`. The publisher writes a collection
+delta report and uses rclone `--copy-dest` to copy matching files inside R2. Only
+new or changed files need a local upload. Removed files are absent from the new
+collection because only the new manifest's paths are copied. The old collection
+is retained for rollback; pruning retained collections is a separate deliberate
+operation. Each retained complete collection uses additional storage.
+
+The sprite fork's own upstream sync must keep running: this monitor follows the
+fork that supplies the app, rather than publishing directly from PokeAPI upstream.
+
 ## Transport, cache limits and rollback
 
 Remote images use anonymous CORS. Public GET/HEAD access allows all origins using

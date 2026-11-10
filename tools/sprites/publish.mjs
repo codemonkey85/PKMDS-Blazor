@@ -3,6 +3,7 @@ import {execFileSync, spawn} from 'node:child_process';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {gameSets, isConsumedSprite} from './selection.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
@@ -55,20 +56,9 @@ if (command === 'manifest') {
     const revision = git('rev-parse', 'HEAD');
     checkSource(revision);
     const mapping = await readFile(path.join(repo, 'Pkmds.Core/Utilities/PokeApiSpriteUrls.cs'), 'utf8');
-    const sets = [...mapping.matchAll(/new\("(generation-[^" ]+)", "(png|gif|webp)"\)/g)]
-        .map(([, directory, extension]) => ({directory, extension}));
-    if (sets.length < 20) throw new Error('Could not extract all game sprite sets');
+    const sets = gameSets(mapping);
     const tracked = git('ls-tree', '-r', '--name-only', revision, '--', 'sprites/pokemon').split('\n');
-    const variants = new Set(['', 'female', 'shiny', 'shiny/female', 'transparent', 'transparent/female']);
-    const selected = tracked.filter(file => {
-        if (/^sprites\/pokemon\/other\/home\/(?:shiny\/)?(?:female\/)?[^/]+\.png$/.test(file)) return true;
-        return sets.some(set => {
-            const prefix = 'sprites/pokemon/versions/' + set.directory + '/';
-            if (!file.startsWith(prefix) || !file.endsWith('.' + set.extension)) return false;
-            const relative = file.slice(prefix.length);
-            return variants.has(path.posix.dirname(relative) === '.' ? '' : path.posix.dirname(relative));
-        });
-    }).sort();
+    const selected = tracked.filter(file => isConsumedSprite(file, sets)).sort();
     const prefix = 'collections/' + revision + '/';
     const objects = [];
     await parallel(selected, async file => {
@@ -115,12 +105,35 @@ if (command === 'manifest') {
     await writeFile(sumsPath, manifest.objects.map(item => item.md5 + '  ' + relative(item)).join('\n') + '\n');
     if (command === 'upload') {
         checkSource(manifest.revision);
+        const copyArguments = [];
+        const previousManifestPath = option('previous-manifest');
+        if (previousManifestPath) {
+            const previous = JSON.parse(await readFile(previousManifestPath, 'utf8'));
+            if (!/^[0-9a-f]{40}$/.test(previous.revision) || previous.prefix !== 'collections/' + previous.revision + '/') throw new Error('Invalid previous collection prefix');
+            if (previous.revision === manifest.revision) throw new Error('Previous collection must be a different revision');
+            const old = new Map(previous.objects.map(item => [item.key.slice(previous.prefix.length), item]));
+            const current = new Map(manifest.objects.map(item => [relative(item), item]));
+            const delta = {previousRevision: previous.revision, revision: manifest.revision,
+                added: [], changed: [], removed: [], unchanged: []};
+            for (const [key, item] of current) {
+                const prior = old.get(key);
+                if (!prior) delta.added.push(key);
+                else if (prior.sha256 !== item.sha256) delta.changed.push(key);
+                else delta.unchanged.push(key);
+            }
+            for (const key of old.keys()) if (!current.has(key)) delta.removed.push(key);
+            await json(path.join(outputDirectory, 'collection-delta.json'), delta);
+            console.log(JSON.stringify(Object.fromEntries(Object.entries(delta).map(([key, value]) => [key, Array.isArray(value) ? value.length : value]))));
+            // Matching images are copied inside R2; only added/changed files need a local upload.
+            // The new manifest's file list omits removals without deleting the rollback collection.
+            copyArguments.push('--copy-dest', remote.replace(/\/$/, '') + '/' + previous.prefix);
+        }
         // Bind the copy to the committed manifest, not just to filenames in the current checkout.
         await parallel(manifest.objects, async item => {
             const bytes = await readFile(path.join(source, 'sprites', relative(item)));
             if (bytes.length !== item.bytes || hash(bytes) !== item.sha256 || hash(bytes, 'md5') !== item.md5) throw new Error('Source checksum differs: ' + item.key);
         });
-        await rclone(['copy', path.join(source, 'sprites'), destination, '--files-from-raw', filesPath,
+        await rclone(['copy', path.join(source, 'sprites'), destination, ...copyArguments, '--files-from-raw', filesPath,
             '--checksum', '--immutable', '--fast-list', '--transfers', String(concurrency), '--checkers', '32',
             '--s3-upload-cutoff', '256Mi', '--metadata', '--metadata-set', 'cache-control=' + cacheControl,
             '--metadata-set', 'source-revision=' + manifest.revision, '--stats', '30s', '--stats-one-line', '--stats-log-level', 'NOTICE',
@@ -146,5 +159,5 @@ if (command === 'manifest') {
     await json(reportPath, report);
     console.log(JSON.stringify(report));
 } else {
-    throw new Error('Usage: node tools/sprites/publish.mjs manifest|upload|verify|status [--source PATH] [--manifest PATH] [--report PATH] [--rclone PATH] [--remote NAME:BUCKET] [--concurrency 1..32]');
+    throw new Error('Usage: node tools/sprites/publish.mjs manifest|upload|verify|status [--source PATH] [--manifest PATH] [--previous-manifest PATH] [--report PATH] [--rclone PATH] [--remote NAME:BUCKET] [--concurrency 1..32]');
 }
