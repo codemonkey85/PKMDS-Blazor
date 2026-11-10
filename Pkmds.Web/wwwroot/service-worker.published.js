@@ -281,7 +281,9 @@ async function fetchSprite(request, isHostedSprite) {
 
     let response;
     try {
-        response = await fetch(request);
+        // Hosted cache misses must revalidate the HTTP cache: browsers can retain a 404
+        // from an unfinished upload for hours. Successful sprites still use our cache first.
+        response = await fetch(isHostedSprite ? new Request(request, {cache: 'no-cache'}) : request);
     } catch {
         // Image error handlers keep the bundled fallback visible when offline or unavailable.
         return new Response('', {status: 504, statusText: 'Sprite fetch failed (offline)'});

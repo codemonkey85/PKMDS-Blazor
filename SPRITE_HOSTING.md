@@ -135,6 +135,10 @@ are evicted within the same budget without deleting a cache an older tab may use
 Images larger than the budget render from the network but are immediately evicted.
 Cache Storage failures still return downloaded images. Errors, opaque responses,
 and HTML pages are never cached as sprites.
+Hosted cache misses revalidate the browser HTTP cache so an old, cached 404 cannot
+hide a newly published image. Always finish publication before exposing a new
+collection URL in the app or preview. An incomplete-upload 404 may otherwise have
+been cached by the browser independently of the service worker.
 
 Bundled sprites are cached lazily in the app version cache. Viewed hosted sprites
 work offline; unseen images can only use bundled art that was already cached.

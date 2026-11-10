@@ -72,6 +72,22 @@ test('404s and HTML responses are not cached and may succeed on a later retry', 
     assert.equal(sw.requests(), 3);
 });
 
+test('hosted misses revalidate HTTP caches so previously missing images can recover', async () => {
+    let attempt = 0;
+    const sw = worker({network: async request => {
+        assert.equal(request.cache, 'no-cache');
+        assert.equal(request.mode, 'cors');
+        attempt++;
+        return attempt === 1
+            ? new Response('', {status: 404, headers: {'Cache-Control': 'max-age=14400'}})
+            : image();
+    }});
+    assert.equal((await sw.get()).status, 404);
+    assert.equal((await sw.get()).status, 200);
+    assert.equal((await sw.get()).status, 200);
+    assert.equal(sw.requests(), 2);
+});
+
 test('cached sprites work offline; uncached failures resolve as image errors', async () => {
     let offline = false;
     const sw = worker({network: async () => {
