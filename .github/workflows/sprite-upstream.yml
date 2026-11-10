@@ -31,7 +31,7 @@ jobs:
           fi
       - name: Upload change report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: sprite-upstream-changes
           path: artifacts/sprites/upstream-changes.*
