@@ -145,71 +145,64 @@ public partial class PidEcDialog
         var desiredGender = Pokemon.Gender;
         var isDualGender = Pokemon.PersonalInfo.IsDualGender;
 
-        // Loop until we find a seed whose PID satisfies all checked constraints.
-        // For Gen 3–5, both nature and gender are encoded in the PID, so a random
-        // PID will only match by chance — this avoids the user having to retry manually.
+        // A Method 1/2/4 pair alone does not guarantee a valid wild encounter frame.
+        // Check candidates on copies so failed searches leave the Pokémon untouched (#1363).
         const int maxAttempts = 1_000_000;
-        uint seed;
-        var attempts = 0;
+        const int maxEncounterChecks = 1_000;
+        var encounterChecks = 0;
+        var desiredAbilityBit = Pokemon.PID & 1;
         IsGenerating = true;
         try
         {
-            uint pid;
-            do
+            for (var attempts = 1; attempts <= maxAttempts; attempts++)
             {
-                if (++attempts > maxAttempts)
-                {
-                    Snackbar.Add(
-                        "Could not find a PID satisfying all constraints after 1,000,000 attempts. " +
-                        "Try relaxing the constraints.",
-                        Severity.Warning);
-                    return;
-                }
-
                 if (attempts % YieldInterval == 0)
                 {
                     await Task.Yield();
                 }
 
-                seed = NextRandomUInt32();
-                pid = ClassicEraRNG.GetSequentialPID(ref seed);
-                Pokemon.PID = pid; // needed to evaluate IsShiny
-            } while (
-                KeepNature && pid % 25 != desiredNature ||
-                KeepGender && isDualGender && EntityGender.GetFromPIDAndRatio(pid, genderRatio) != desiredGender ||
-                AvoidShiny && Pokemon.IsShiny ||
-                ForceShiny && !Pokemon.IsShiny
-            );
+                var pair = ClassicPidIvGenerator.Generate(SelectedMethod, NextRandomUInt32());
+                var isShiny = ShinyUtil.GetIsShiny3(Pokemon.ID32, pair.Pid);
+                if ((pair.Pid & 1) != desiredAbilityBit ||
+                    KeepNature && pair.Pid % 25 != desiredNature ||
+                    KeepGender && isDualGender && EntityGender.GetFromPIDAndRatio(pair.Pid, genderRatio) != desiredGender ||
+                    AvoidShiny && isShiny || ForceShiny && !isShiny)
+                {
+                    continue;
+                }
+
+                // Full encounter analysis is more expensive than the PID filters above.
+                if (encounterChecks >= maxEncounterChecks)
+                {
+                    break;
+                }
+
+                if (++encounterChecks % 32 == 0)
+                {
+                    await Task.Yield();
+                }
+
+                if (!ClassicPidIvGenerator.MatchesEncounterRng(Pokemon, pair))
+                {
+                    continue;
+                }
+
+                Pokemon.PID = pair.Pid;
+                Pokemon.SetIVs(pair.Ivs);
+                AppService.LoadPokemonStats(Pokemon);
+                Haptics.Confirm();
+                RefreshService.Refresh();
+                return;
+            }
+
+            Snackbar.Add(
+                "Could not find PID/IVs matching this encounter and the selected constraints. " +
+                "Try relaxing the constraints. The Pokémon was not changed.", Severity.Warning);
         }
         finally
         {
             IsGenerating = false;
         }
-
-        uint ivs;
-        switch (SelectedMethod)
-        {
-            case PIDType.Method_1:
-                ivs = ClassicEraRNG.GetSequentialIVs(ref seed);
-                break;
-            case PIDType.Method_2:
-                LCRNG.Next16(ref seed); // skip one frame between PID and IVs
-                ivs = ClassicEraRNG.GetSequentialIVs(ref seed);
-                break;
-            case PIDType.Method_4:
-                var iv1 = LCRNG.Next15(ref seed);
-                LCRNG.Next16(ref seed); // skip one frame between IV halves
-                var iv2 = LCRNG.Next15(ref seed);
-                ivs = iv1 | iv2 << 15;
-                break;
-            default:
-                return;
-        }
-
-        Pokemon.SetIVs(ivs);
-        AppService.LoadPokemonStats(Pokemon);
-        Haptics.Confirm();
-        RefreshService.Refresh();
     }
 
     private void RandomizeEc()
