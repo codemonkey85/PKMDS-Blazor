@@ -37,13 +37,13 @@ public sealed class TrainerAuditTests
     [InlineData(GameVersion.PLA, true, false, true)]
     [InlineData(GameVersion.SL, true, false, true)]
     [InlineData(GameVersion.ZA, false, false, true)]
-    public void TimestampControls_MatchActualFormatAndRenderingDoesNotWrite(
+    public async Task TimestampControls_MatchActualFormatAndRenderingDoesNotWrite(
         GameVersion version, bool start, bool fame, bool saved)
     {
-        var save = BlankSaveFile.Get(version, "TEST", LanguageID.English);
+        var save = CreateBlankSave(version);
         var before = Snapshot(save);
         var edited = save.State.Edited;
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         context.Render<MudPopoverProvider>();
 
         var tab = context.Render<TrainerInfoTab>();
@@ -70,7 +70,7 @@ public sealed class TrainerAuditTests
         var original = Snapshot(save);
         var appState = new TestAppState { SaveFile = save };
         var refresh = new TestRefreshService();
-        using var context = BunitTestHelpers.CreateBunitContext(appState, refresh,
+        await using var context = BunitTestHelpers.CreateBunitContext(appState, refresh,
             new AppService(appState, refresh, new LegalizationService(appState)));
         context.Render<MudPopoverProvider>();
         var tab = context.Render<TrainerInfoTab>();
@@ -98,18 +98,19 @@ public sealed class TrainerAuditTests
     }
 
     [Theory]
-    [InlineData(GameVersion.D)]
-    [InlineData(GameVersion.B)]
-    [InlineData(GameVersion.X)]
-    [InlineData(GameVersion.US)]
-    [InlineData(GameVersion.GP)]
-    [InlineData(GameVersion.SW)]
-    [InlineData(GameVersion.BD)]
-    [InlineData(GameVersion.PLA)]
-    [InlineData(GameVersion.SL)]
-    public void GameStart_RoundTripsNativePrecisionThroughExport(GameVersion version)
+    [InlineData("Manaphy Pearl.sav")]
+    [InlineData("Black - Full Completion.sav")]
+    [InlineData("x.sav")]
+    [InlineData("ultra sun.sav")]
+    [InlineData("Lets-Go-Pikachu-All-Pokemon.bin")]
+    [InlineData("Test-Save-Shield.sav")]
+    [InlineData("bdsp.bin")]
+    [InlineData("legends-arceus")]
+    [InlineData("Test-Save-Scarlet.sav")]
+    public void GameStart_RoundTripsNativePrecisionThroughExport(string fileName)
     {
-        var save = BlankSaveFile.Get(version, "TEST", LanguageID.English);
+        // Blank Core saves may lack the backing buffers or typed blocks required for export.
+        var (save, _, _, _) = BunitTestHelpers.LoadSave(fileName);
         var date = new DateTime(2024, 6, 7, 12, 34, 56);
         var money = save.Money;
         TrainerTimestamps.SetGameStart(save, date).Should().BeTrue();
@@ -117,21 +118,10 @@ public sealed class TrainerAuditTests
         TrainerTimestamps.GetGameStart(save).Should().Be(expected);
 
         var exported = save.Write().ToArray();
-        SaveFile reloaded = save switch
-        {
-            SAV4DP => new SAV4DP(exported),
-            SAV5BW => new SAV5BW(exported),
-            SAV6XY => new SAV6XY(exported),
-            SAV7USUM => new SAV7USUM(exported),
-            SAV7b => new SAV7b(exported),
-            SAV8SWSH => new SAV8SWSH(exported),
-            SAV8BS => new SAV8BS(exported),
-            SAV8LA => new SAV8LA(exported),
-            SAV9SV => new SAV9SV(exported),
-            _ => throw new InvalidOperationException(),
-        };
-        TrainerTimestamps.GetGameStart(reloaded).Should().Be(expected);
-        reloaded.Money.Should().Be(money);
+        SaveUtil.TryGetSaveFile(exported, out var reloaded, fileName).Should().BeTrue();
+        reloaded.Should().BeOfType(save.GetType());
+        TrainerTimestamps.GetGameStart(reloaded!).Should().Be(expected);
+        reloaded!.Money.Should().Be(money);
     }
 
     [Fact]
@@ -187,7 +177,7 @@ public sealed class TrainerAuditTests
     [InlineData(GameVersion.ZA)]
     public void LastSaved_RoundTripsWithSupportedPrecision(GameVersion version)
     {
-        var save = BlankSaveFile.Get(version, "TEST", LanguageID.English);
+        var save = CreateBlankSave(version);
         var date = new DateTime(2024, 6, 7, 12, 34, 56);
         TrainerTimestamps.SetLastSaved(save, date).Should().BeTrue();
         var expected = TrainerTimestamps.LastSavedHasSeconds(save) ? date : date.AddSeconds(-56);
@@ -200,7 +190,7 @@ public sealed class TrainerAuditTests
     [InlineData(GameVersion.BATREV)]
     public void ChangingHours_PreservesMinutesSecondsAndFractions(GameVersion version)
     {
-        var save = BlankSaveFile.Get(version, "TEST", LanguageID.English);
+        var save = CreateBlankSave(version);
         save.PlayedMinutes = 23;
         save.PlayedSeconds = 45;
         var offset = save is SAV4BR ? 0x388 : 0xD8;
@@ -236,13 +226,13 @@ public sealed class TrainerAuditTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void StorageFormats_DoNotExposePlaceholderTrainerFields(bool ranch)
+    public async Task StorageFormats_DoNotExposePlaceholderTrainerFields(bool ranch)
     {
         SaveFile save = ranch ? new SAV4Ranch(new byte[SaveUtil.SIZE_G4RANCH]) : new SAV1Stadium();
         TrainerCapabilities.HasIdentity(save).Should().BeFalse();
         TrainerCapabilities.HasCoins(save).Should().BeFalse();
         TrainerCapabilities.HasPlaytime(save).Should().Be(ranch);
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         var tab = context.Render<TrainerInfoTab>();
         tab.FindAll("#game-start, #hall-of-fame, #last-saved").Should().BeEmpty();
         tab.FindComponents<MudTextField<string>>().Should().BeEmpty();
@@ -250,10 +240,10 @@ public sealed class TrainerAuditTests
     }
 
     [Fact]
-    public void Gen2_StereoIsDisplayedUsingStoredValueTwo()
+    public async Task Gen2_StereoIsDisplayedUsingStoredValueTwo()
     {
         var save = new SAV2 { Sound = 2 };
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         context.Render<MudPopoverProvider>();
         var tab = context.Render<TrainerInfoTab>();
         var sound = tab.FindComponents<MudSelect<int>>().Single(c => c.Instance.Label == "Sound Type");
@@ -262,11 +252,11 @@ public sealed class TrainerAuditTests
     }
 
     [Fact]
-    public void RaidDialog_DisposalRestoresOnlyRaidBlocks()
+    public async Task RaidDialog_DisposalRestoresOnlyRaidBlocks()
     {
         var save = new SAV9SV();
         var seed = save.RaidPaldea.CurrentSeed;
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         context.Render<MudPopoverProvider>();
         var dialog = context.Render<Raid9Dialog>(p => p.Add(c => c.SaveFile, save));
         save.RaidPaldea.CurrentSeed = 12345;
@@ -277,11 +267,11 @@ public sealed class TrainerAuditTests
     }
 
     [Fact]
-    public void DonutDialog_DisposalRestoresOnlyDonutBlock()
+    public async Task DonutDialog_DisposalRestoresOnlyDonutBlock()
     {
         var save = new SAV9ZA();
         var before = save.Donuts.Data.ToArray();
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         context.Render<MudPopoverProvider>();
         var dialog = context.Render<Donut9Dialog>(p => p.Add(c => c.SaveFile, save));
         save.Donuts.GetDonut(0).Berry1 = 123;
@@ -295,7 +285,7 @@ public sealed class TrainerAuditTests
     public async Task PokeMilesEdit_MirrorsCurrentAndTotalRecords()
     {
         var save = new SAV6XY();
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         context.Render<MudPopoverProvider>();
         var tab = context.Render<TrainerInfoTab>();
         var miles = tab.FindComponents<MudNumericField<uint>>().Single(c => c.Instance.Label == "Poké Miles");
@@ -311,7 +301,7 @@ public sealed class TrainerAuditTests
     [InlineData(GameVersion.RSBOX)]
     public void SideStorageFormats_HaveNoPlaceholderEditors(GameVersion version)
     {
-        var save = BlankSaveFile.Get(version, "TEST", LanguageID.English);
+        var save = CreateBlankSave(version);
         TrainerCapabilities.HasIdentity(save).Should().BeFalse();
         TrainerCapabilities.HasGender(save).Should().BeFalse();
         TrainerCapabilities.HasCoins(save).Should().BeFalse();
@@ -325,8 +315,8 @@ public sealed class TrainerAuditTests
         [
             new Bank3(new byte[SaveUtil.SIZE_G4BANK]),
             new Bank4(new byte[SaveUtil.SIZE_G4BANK]),
-            Bank7.GetBank7(new byte[SaveUtil.SIZE_G7BANK_1]),
-            Bank7.GetBank7(new byte[SaveUtil.SIZE_G7BANK_2]),
+            CreateBank(BankRevision.Gen6),
+            CreateBank(BankRevision.Gen7),
         ];
         foreach (var save in saves)
         {
@@ -359,7 +349,7 @@ public sealed class TrainerAuditTests
         save.SetBoxSlotAtIndex(other, 0, 1, EntityImportSettings.None);
         var otherBytes = save.GetBoxSlotAtIndex(0, 1).Data.ToArray();
         var captures = save.GetRecord(7);
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         context.Render<MudPopoverProvider>();
         var tab = context.Render<TrainerInfoTab>();
         var name = tab.FindComponents<MudTextField<string>>().Single(c => c.Instance.Label == "Name");
@@ -370,12 +360,12 @@ public sealed class TrainerAuditTests
     }
 
     [Fact]
-    public void Bdsp_RenderPreservesSubsecondTimestampData()
+    public async Task Bdsp_RenderPreservesSubsecondTimestampData()
     {
         var save = new SAV8BS();
         save.System.LocalTimestampStart = new DateTime(2024, 6, 7, 8, 9, 10, DateTimeKind.Local).AddTicks(12345);
         var before = Snapshot(save);
-        using var context = CreateContext(save);
+        await using var context = CreateContext(save);
         context.Render<MudPopoverProvider>();
         var tab = context.Render<TrainerInfoTab>();
         tab.Render();
@@ -391,7 +381,7 @@ public sealed class TrainerAuditTests
         var originalName = br.CurrentOT;
         var originalId = br.TID16;
         br.CurrentSlot = 1;
-        using var context = BunitTestHelpers.CreateBunitContext(state, refresh, service);
+        await using var context = BunitTestHelpers.CreateBunitContext(state, refresh, service);
         context.Render<MudPopoverProvider>();
         var tab = context.Render<TrainerInfoTab>();
         var name = tab.FindComponents<MudTextField<string>>().Single(c => c.Instance.Label == "Name");
@@ -408,6 +398,106 @@ public sealed class TrainerAuditTests
         reloaded.TID16.Should().Be(originalId);
     }
 
+    [Theory]
+    [InlineData(GameVersion.D, "Language", 3)]
+    [InlineData(GameVersion.D, "Country", 1)]
+    [InlineData(GameVersion.D, "Region", 1)]
+    [InlineData(GameVersion.B, "Country", 1)]
+    [InlineData(GameVersion.B, "Region", 1)]
+    [InlineData(GameVersion.X, "Country", 1)]
+    [InlineData(GameVersion.X, "Region", 1)]
+    [InlineData(GameVersion.X, "3DS Region", 0)]
+    [InlineData(GameVersion.SN, "Language", 3)]
+    [InlineData(GameVersion.SN, "Country", 1)]
+    [InlineData(GameVersion.SN, "Region", 1)]
+    [InlineData(GameVersion.SN, "3DS Region", 0)]
+    [InlineData(GameVersion.RD, "Battle Style", 0)]
+    [InlineData(GameVersion.RD, "Text Speed", 3)]
+    [InlineData(GameVersion.GD, "Battle Style", 0)]
+    [InlineData(GameVersion.GD, "Text Speed", 3)]
+    [InlineData(GameVersion.GD, "Sound Type", 2)]
+    public async Task SelectCallback_MarksSaveEditedAndRefreshesWithoutDomChange(
+        GameVersion version, string label, int value)
+    {
+        var save = CreateBlankSave(version);
+        var state = new TestAppState { SaveFile = save };
+        var refresh = new TestRefreshService();
+        await using var context = BunitTestHelpers.CreateBunitContext(state, refresh,
+            new AppService(state, refresh, new LegalizationService(state)));
+        context.Render<MudPopoverProvider>();
+        var tab = context.Render<TrainerInfoTab>();
+        save.State.Edited = false;
+        var before = Snapshot(save);
+        var refreshes = refresh.RefreshCount;
+
+        // Invoke only the component callback: MudSelect emits no native DOM change event.
+        if (label == "Battle Style")
+        {
+            var select = tab.FindComponents<MudSelect<bool>>().Single(c => c.Instance.Label == label);
+            await tab.InvokeAsync(() => select.Instance.ValueChanged.InvokeAsync(value != 0));
+        }
+        else if (save is IRegionOrigin && label != "Language")
+        {
+            var select = tab.FindComponents<MudSelect<byte>>().Single(c => c.Instance.Label == label);
+            await tab.InvokeAsync(() => select.Instance.ValueChanged.InvokeAsync((byte)value));
+        }
+        else
+        {
+            var select = tab.FindComponents<MudSelect<int>>().Single(c => c.Instance.Label == label);
+            await tab.InvokeAsync(() => select.Instance.ValueChanged.InvokeAsync(value));
+        }
+
+        Snapshot(save).Should().NotEqual(before);
+        save.State.Edited.Should().BeTrue();
+        refresh.RefreshCount.Should().BeGreaterThan(refreshes);
+    }
+
+    [Fact]
+    public async Task ThrowStyleCallback_MarksSaveEditedAndRefreshesWithoutDomChange()
+    {
+        var save = new SAV9SV();
+        save.SaveRevision.Should().BeGreaterThanOrEqualTo(2);
+        var state = new TestAppState { SaveFile = save };
+        var refresh = new TestRefreshService();
+        await using var context = BunitTestHelpers.CreateBunitContext(state, refresh,
+            new AppService(state, refresh, new LegalizationService(state)));
+        context.Render<MudPopoverProvider>();
+        var section = context.Render<TrainerInfoSav9SvSection>(p => p.Add(c => c.SaveFile, save));
+        save.State.Edited = false;
+        var refreshes = refresh.RefreshCount;
+        var select = section.FindComponents<MudSelect<ThrowStyle9>>()
+            .Single(c => c.Instance.Label == "Throw Style");
+
+        await section.InvokeAsync(() => select.Instance.ValueChanged.InvokeAsync(ThrowStyle9.NinjaStyle));
+
+        save.ThrowStyle.Should().Be(ThrowStyle9.NinjaStyle);
+        save.State.Edited.Should().BeTrue();
+        refresh.RefreshCount.Should().BeGreaterThan(refreshes);
+    }
+
+    private static SaveFile CreateBlankSave(GameVersion version) => version switch
+    {
+        // Core 26.10.18 does not map these GameVersion values to a SaveFileType.
+        GameVersion.COLO => new SAV3Colosseum(),
+        GameVersion.XD => new SAV3XD(),
+        GameVersion.RSBOX => new SAV3RSBox(),
+        GameVersion.ORASDEMO => new SAV6AODemo(),
+        GameVersion.StadiumJ => new SAV1StadiumJ(),
+        GameVersion.Stadium => new SAV1Stadium(),
+        GameVersion.Stadium2 => new SAV2Stadium(),
+        _ => BlankSaveFile.Get(version, "TEST", LanguageID.English),
+    };
+
+    private static Bank7 CreateBank(BankRevision revision)
+    {
+        var size = revision == BankRevision.Gen6 ? SaveUtil.SIZE_G7BANK_1 : SaveUtil.SIZE_G7BANK_2;
+        var data = new byte[size];
+        WriteUInt16LittleEndian(data.AsSpan(0x15C), (ushort)revision);
+        WriteUInt16LittleEndian(data.AsSpan(0x15E), Bank7.FixedBoxCount);
+        Bank7.IsBank(data).Should().BeTrue();
+        return Bank7.GetBank7(data);
+    }
+
     private static BunitContext CreateContext(SaveFile save)
     {
         var state = new TestAppState { SaveFile = save };
@@ -416,7 +506,11 @@ public sealed class TrainerAuditTests
             new AppService(state, refresh, new LegalizationService(state)));
     }
 
-    private static byte[] Snapshot(SaveFile save) => save is ISCBlockArray blocks
-        ? blocks.AllBlocks.SelectMany(b => new[] { (byte)b.Type }.Concat(b.Raw.ToArray())).ToArray()
-        : save.Data.ToArray();
+    private static byte[] Snapshot(SaveFile save) => save switch
+    {
+        ISCBlockArray blocks => blocks.AllBlocks.SelectMany(b => new[] { (byte)b.Type }.Concat(b.Raw.ToArray())).ToArray(),
+        // Blank Gen 4 saves keep trainer data in a separate general buffer.
+        SAV4 gen4 => [.. gen4.Data, .. gen4.General],
+        _ => save.Data.ToArray(),
+    };
 }

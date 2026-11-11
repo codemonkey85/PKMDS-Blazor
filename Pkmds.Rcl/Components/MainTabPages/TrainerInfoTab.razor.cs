@@ -86,6 +86,7 @@ public partial class TrainerInfoTab : IDisposable
     {
         save.Region = 0;
         UpdateCountry();
+        MarkEdited();
     }
 
     private void OnMegaEvolutionChanged(SAV7 save, bool enabled)
@@ -102,12 +103,14 @@ public partial class TrainerInfoTab : IDisposable
         // list; mirror the OtMiscTab.SetRegionOriginCountry pattern and zero it.
         sav5.Region = 0;
         UpdateCountry();
+        MarkEdited();
     }
 
     private void OnRegionOriginCountryChanged(IRegionOrigin regionSave)
     {
         regionSave.Region = 0;
         UpdateCountry();
+        MarkEdited();
     }
 
     private void UpdateCountry()
@@ -158,8 +161,10 @@ public partial class TrainerInfoTab : IDisposable
 
     private void MarkEdited()
     {
-        if (AppState.SaveFile is { } save)
-            save.State.Edited = true;
+        if (AppState.SaveFile is not { } save)
+            return;
+        save.State.Edited = true;
+        RefreshService.Refresh();
     }
 
     private async Task RunSyncAsync(string message, Action sync)

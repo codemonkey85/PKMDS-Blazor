@@ -6,6 +6,12 @@ public partial class TrainerInfoSav9SvSection
     [EditorRequired]
     public SAV9SV SaveFile { get; set; } = null!;
 
+    private void MarkEdited()
+    {
+        SaveFile.State.Edited = true;
+        RefreshService.Refresh();
+    }
+
     private static double GetSvRotation(SAV9SV sv) =>
         Math.Atan2(sv.RZ, sv.RW) * 360.0 / Math.PI;
 

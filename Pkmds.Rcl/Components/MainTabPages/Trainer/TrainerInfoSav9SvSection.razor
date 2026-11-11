@@ -29,7 +29,8 @@
         <MudSelect Label="Throw Style"
                    Variant="@Variant.Outlined"
                    T="@ThrowStyle9"
-                   @bind-Value="@SaveFile.ThrowStyle">
+                   @bind-Value="@SaveFile.ThrowStyle"
+                   @bind-Value:after="@MarkEdited">
             @foreach (var style in Enum.GetValues<ThrowStyle9>())
             {
                 <MudSelectItem Value="@style"

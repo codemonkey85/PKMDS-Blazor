@@ -129,6 +129,7 @@
                     <MudSelect Label="Language"
                                Variant="@Variant.Outlined"
                                @bind-Value="@saveFile.Language"
+                               @bind-Value:after="@MarkEdited"
                                For="@(() => saveFile.Language)">
                         @foreach (var language in Languages)
                         {
@@ -162,6 +163,7 @@
                     <MudSelect Label="Region"
                                Variant="@Variant.Outlined"
                                @bind-Value="@sav4Geo.Region"
+                               @bind-Value:after="@MarkEdited"
                                For="@(() => sav4Geo.Region)">
                         @foreach (var region in Regions)
                         {
@@ -195,6 +197,7 @@
                     <MudSelect Label="Region"
                                Variant="@Variant.Outlined"
                                @bind-Value="@sav5Geo.Region"
+                               @bind-Value:after="@MarkEdited"
                                For="@(() => sav5Geo.Region)">
                         @foreach (var region in Regions)
                         {
@@ -230,6 +233,7 @@
                                Variant="@Variant.Outlined"
                                T="@byte"
                                @bind-Value="@regionSave.Region"
+                               @bind-Value:after="@MarkEdited"
                                For="@(() => regionSave.Region)">
                         @foreach (var region in Regions)
                         {
@@ -245,6 +249,7 @@
                                Variant="@Variant.Outlined"
                                T="@byte"
                                @bind-Value="@regionSave.ConsoleRegion"
+                               @bind-Value:after="@MarkEdited"
                                For="@(() => regionSave.ConsoleRegion)">
                         @foreach (var consoleRegion in ConsoleRegions)
                         {
@@ -624,6 +629,7 @@
                 <MudSelect Label="Battle Style"
                            Variant="@Variant.Outlined"
                            @bind-Value="@sav1Options.BattleStyleSwitch"
+                           @bind-Value:after="@MarkEdited"
                            For="@(() => sav1Options.BattleStyleSwitch)">
                     <MudSelectItem Value="@true"
                                    @key="@true">
@@ -640,6 +646,7 @@
                 <MudSelect Label="Text Speed"
                            Variant="@Variant.Outlined"
                            @bind-Value="@sav1Options.TextSpeed"
+                           @bind-Value:after="@MarkEdited"
                            For="@(() => sav1Options.TextSpeed)">
                     <MudSelectItem Value="0"
                                    @key="0">
@@ -689,6 +696,7 @@
                 <MudSelect Label="Battle Style"
                            Variant="@Variant.Outlined"
                            @bind-Value="@sav2.BattleStyleSwitch"
+                           @bind-Value:after="@MarkEdited"
                            For="@(() => sav2.BattleStyleSwitch)">
                     <MudSelectItem Value="@true"
                                    @key="@true">
@@ -705,6 +713,7 @@
                 <MudSelect Label="Text Speed"
                            Variant="@Variant.Outlined"
                            @bind-Value="@sav2.TextSpeed"
+                           @bind-Value:after="@MarkEdited"
                            For="@(() => sav2.TextSpeed)">
                     <MudSelectItem Value="0"
                                    @key="0">
@@ -745,7 +754,7 @@
                 <MudSelect Label="Sound Type"
                            Variant="@Variant.Outlined"
                            @bind-Value:get="@(sav2.Sound > 0 ? 2 : 0)"
-                           @bind-Value:set="@(value => sav2.Sound = value)"
+                           @bind-Value:set="@(value => { sav2.Sound = value; MarkEdited(); })"
                            For="@(() => sav2.Sound)">
                     <MudSelectItem Value="0"
                                    @key="0">

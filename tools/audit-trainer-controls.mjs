@@ -1,6 +1,7 @@
 // Rebuild the concrete Trainer control inventory used by docs/TRAINER_AUDIT.md.
 // No dependencies or private save data are needed.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { parseOpeningTags } from './razor-control-parser.mjs';
 
 const main = 'Pkmds.Rcl/Components/MainTabPages/';
 const dialogs = 'Pkmds.Rcl/Components/Dialogs/';
@@ -21,19 +22,13 @@ const rows = [['Source', 'Control', 'Label or title', 'Read value', 'Write or ac
 for (const [name, dir, scope] of files) {
     const path = `${dir}${name}.razor`;
     const text = readFileSync(path, 'utf8');
-    // Component tags finish at /> or at the end of a line; ignore C# lambda arrows.
-    const re = new RegExp(`<(${tags})\\b([\\s\\S]*?)(?:\\/>|(?<!=)>[ \\t]*\\r?\\n)`, 'g');
-    for (const match of text.matchAll(re)) {
-        const attrs = new Map();
-        const attr = /([@\w:-]+)="([\s\S]*?)"(?=\s+[@\w:-]+\s*=|\s*\/?[>]|\s*$)/g;
-        for (const m of match[2].matchAll(attr))
-            attrs.set(m[1], m[2].replace(/\s+/g, ' '));
+    for (const { name: tag, index, end, attrs } of parseOpeningTags(text, tags)) {
         let label = attrs.get('Label') ?? attrs.get('Title') ?? attrs.get('Text') ?? attrs.get('aria-label') ?? attrs.get('id') ?? '';
-        if (!label && ['MudButton', 'MudTabPanel'].includes(match[1]))
-            label = text.slice(match.index + match[0].length).split(`</${match[1]}>`)[0].trim().replace(/\s+/g, ' ');
+        if (!label && ['MudButton', 'MudTabPanel'].includes(tag))
+            label = text.slice(end).split(`</${tag}>`)[0].trim().replace(/\s+/g, ' ');
         rows.push([
-            `${path}:${text.slice(0, match.index).split('\n').length}`,
-            match[1], label,
+            `${path}:${text.slice(0, index).split('\n').length}`,
+            tag, label,
             attrs.get('@bind-Value:get') ?? attrs.get('@bind-Value') ?? attrs.get('Value') ?? attrs.get('Gender') ?? attrs.get('Property') ?? attrs.get('ActivePanelIndex') ?? '',
             attrs.get('@bind-Value:set') ?? attrs.get('ValueChanged') ?? attrs.get('OnClick') ?? attrs.get('OnChange') ?? attrs.get('ActivePanelIndexChanged') ?? (attrs.has('@bind-Value') ? 'two-way binding' : ''),
             ['Min', 'Max', 'MaxLength', 'step'].filter(a => attrs.has(a)).map(a => `${a}=${attrs.get(a)}`).join('; '),
