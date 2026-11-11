@@ -12,7 +12,7 @@ public partial class TrainerInfoSav9SvSection
     private static void SetSvRotation(SAV9SV sv, double angle)
     {
         var rad = angle * Math.PI / 360.0;
-        sv.SetPlayerRotation(0, (float)Math.Sin(rad), 0, (float)Math.Cos(rad));
+        sv.SetPlayerRotation(0, 0, (float)Math.Sin(rad), (float)Math.Cos(rad));
     }
 
     private static string GetThrowStyleName(ThrowStyle9 style) => style switch
@@ -76,6 +76,8 @@ public partial class TrainerInfoSav9SvSection
             if (accessor.TryGetBlock(name, out var block))
                 block.ChangeBooleanType(SCTypeCode.Bool2);
         }
+        SaveFile.State.Edited = true;
+        RefreshService.Refresh();
         Snackbar.Add("Unlocked all fly locations.", Severity.Success);
     }
 
@@ -89,6 +91,8 @@ public partial class TrainerInfoSav9SvSection
         accessor.GetBlock("FSYS_RIDE_CLIMB_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
         if (accessor.TryGetBlock("FSYS_RIDE_FLIGHT_ENABLE", out var fly))
             fly.ChangeBooleanType(SCTypeCode.Bool2);
+        SaveFile.State.Edited = true;
+        RefreshService.Refresh();
         Snackbar.Add("Unlocked all ride upgrades.", Severity.Success);
     }
 

@@ -133,6 +133,7 @@ public partial class BadgesComponent : IDisposable
         }
 
         Haptics.Tap();
+        saveFile.State.Edited = true;
 
         switch (saveFile.Context)
         {

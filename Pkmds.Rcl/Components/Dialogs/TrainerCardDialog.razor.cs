@@ -4,8 +4,10 @@ public partial class TrainerCardDialog
 {
     private string cardOt = string.Empty;
     private int cardNumber;
+    private int originalCardNumber;
     private int trainerId;
     private int rotoRallyScore;
+    private SAV8SWSH? loadedSave;
 
     [Parameter]
     [EditorRequired]
@@ -16,14 +18,16 @@ public partial class TrainerCardDialog
 
     protected override void OnParametersSet()
     {
-        if (Save is null)
+        if (Save is null || ReferenceEquals(loadedSave, Save))
         {
             return;
         }
 
+        loadedSave = Save;
         var card = Save.Blocks.TrainerCard;
         cardOt = card.OT;
         cardNumber = int.TryParse(card.Number, out var n) ? n : 0;
+        originalCardNumber = cardNumber;
         trainerId = card.TrainerID;
         rotoRallyScore = card.RotoRallyScore;
     }
@@ -45,12 +49,18 @@ public partial class TrainerCardDialog
         // PKHeX writes Number to both MyStatus and TrainerCard to keep them in sync —
         // mismatch leaves the in-game card displaying a different number than the trainer.
         var cardNumberStr = cardNumber.ToString("D3");
-        Save.Blocks.MyStatus.Number = cardNumberStr;
-        card.Number = cardNumberStr;
+        if (cardNumber != originalCardNumber)
+        {
+            Save.Blocks.MyStatus.Number = cardNumberStr;
+            card.Number = cardNumberStr;
+        }
 
-        card.TrainerID = trainerId;
+        if (card.TrainerID != trainerId)
+            card.TrainerID = trainerId;
         // Setter auto-mirrors to the KRotoRally record block.
-        card.RotoRallyScore = rotoRallyScore;
+        if (card.RotoRallyScore != rotoRallyScore)
+            card.RotoRallyScore = rotoRallyScore;
+        Save.State.Edited = true;
 
         Haptics.Confirm();
         MudDialog?.Close(DialogResult.Ok(true));

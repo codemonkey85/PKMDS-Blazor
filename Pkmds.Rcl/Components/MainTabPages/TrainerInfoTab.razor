@@ -12,7 +12,7 @@
     </MudStack>
 </MudOverlay>
 
-<div class="form-grid">
+<div class="form-grid" @onchange="@MarkEdited">
 
     @if (AppState.SaveFile is
              {
@@ -23,358 +23,369 @@
                  Generation: var saveGeneration
              } saveFile)
     {
-        <div class="form-field">
-            @if (saveFile is SAV4BR battleRevolution)
-            {
-                <MudTextField Label="Name"
-                              Variant="@Variant.Outlined"
-                              MaxLength="@battleRevolution.MaxStringLengthTrainer"
-                              @bind-Value:get="@battleRevolution.CurrentOT"
-                              @bind-Value:set="@(value => OnBattleRevolutionNameChanged(battleRevolution, value))"/>
-            }
-            else
-            {
-                <MudTextField Label="Name"
-                              Variant="@Variant.Outlined"
-                              MaxLength="@saveFile.MaxStringLengthTrainer"
-                              @bind-Value:get="@saveFile.OT"
-                              @bind-Value:set="@(async value => await OnOTNameChangedAsync(saveFile, value))"
-                              For="@(() => saveFile.OT)"/>
-            }
-        </div>
-
-        @switch (saveFile.GetTrainerIDFormat())
+        @if (TrainerCapabilities.HasIdentity(saveFile))
         {
-            case TrainerIDFormat.SixteenBit:
-            {
-                <div class="form-field">
-                    <MudNumericField Label="ID"
-                                     Variant="@Variant.Outlined"
-                                     @bind-Value:get="@saveFile.TID16"
-                                     @bind-Value:set="@(async value => await OnTID16ChangedAsync(saveFile, value))"
-                                     Format="@AppService.GetIdFormatString()"
-                                     For="@(() => saveFile.TID16)"/>
-                </div>
+            <div class="form-field">
+                @if (saveFile is SAV4BR battleRevolution)
+                {
+                    <MudTextField Label="Name"
+                                  Variant="@Variant.Outlined"
+                                  MaxLength="@battleRevolution.MaxStringLengthTrainer"
+                                  @bind-Value:get="@battleRevolution.CurrentOT"
+                                  @bind-Value:set="@(value => OnBattleRevolutionNameChanged(battleRevolution, value))"/>
+                }
+                else
+                {
+                    <MudTextField Label="Name"
+                                  Variant="@Variant.Outlined"
+                                  MaxLength="@saveFile.MaxStringLengthTrainer"
+                                  @bind-Value:get="@saveFile.OT"
+                                  @bind-Value:set="@(async value => await OnOTNameChangedAsync(saveFile, value))"
+                                  For="@(() => saveFile.OT)"/>
+                }
+            </div>
 
-                @if (saveGeneration >= 3)
+            @switch (saveFile.GetTrainerIDFormat())
+            {
+                case TrainerIDFormat.SixteenBit:
                 {
                     <div class="form-field">
-                        <MudNumericField Label="SID"
+                        <MudNumericField Label="ID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value:get="@saveFile.SID16"
-                                         @bind-Value:set="@(async value => await OnSID16ChangedAsync(saveFile, value))"
-                                         Format="@AppService.GetIdFormatString(true)"
-                                         For="@(() => saveFile.SID16)"/>
+                                         @bind-Value:get="@saveFile.TID16"
+                                         @bind-Value:set="@(async value => await OnTID16ChangedAsync(saveFile, value))"
+                                         Format="@AppService.GetIdFormatString()"
+                                         For="@(() => saveFile.TID16)"/>
                     </div>
+
+                    @if (saveGeneration >= 3)
+                    {
+                        <div class="form-field">
+                            <MudNumericField Label="SID"
+                                             Variant="@Variant.Outlined"
+                                             @bind-Value:get="@saveFile.SID16"
+                                             @bind-Value:set="@(async value => await OnSID16ChangedAsync(saveFile, value))"
+                                             Format="@AppService.GetIdFormatString(true)"
+                                             For="@(() => saveFile.SID16)"/>
+                        </div>
+                    }
                 }
-            }
-                break;
+                    break;
 
-            case TrainerIDFormat.SixDigit:
-            {
-                <div class="form-field">
-                    <MudNumericField Label="ID"
-                                     Variant="@Variant.Outlined"
-                                     @bind-Value:get="@saveFile.TrainerTID7"
-                                     @bind-Value:set="@(async value => await OnTrainerTID7ChangedAsync(saveFile, value))"
-                                     Format="@AppService.GetIdFormatString()"
-                                     For="@(() => saveFile.TrainerTID7)"/>
-                </div>
-
-                @if (saveGeneration >= 3)
+                case TrainerIDFormat.SixDigit:
                 {
                     <div class="form-field">
-                        <MudNumericField Label="SID"
+                        <MudNumericField Label="ID"
                                          Variant="@Variant.Outlined"
-                                         @bind-Value:get="@saveFile.TrainerSID7"
-                                         @bind-Value:set="@(async value => await OnTrainerSID7ChangedAsync(saveFile, value))"
-                                         Format="@AppService.GetIdFormatString(true)"
-                                         For="@(() => saveFile.TrainerSID7)"/>
+                                         Min="0"
+                                         Max="@Math.Min(999_999U, uint.MaxValue - saveFile.TrainerSID7 * 1_000_000)"
+                                         T="@uint"
+                                         @bind-Value:get="@saveFile.TrainerTID7"
+                                         @bind-Value:set="@(async value => await OnTrainerTID7ChangedAsync(saveFile, value))"
+                                         Format="@AppService.GetIdFormatString()"
+                                         For="@(() => saveFile.TrainerTID7)"/>
                     </div>
+
+                    @if (saveGeneration >= 3)
+                    {
+                        <div class="form-field">
+                            <MudNumericField Label="SID"
+                                             Variant="@Variant.Outlined"
+                                             Min="0"
+                                             Max="@((uint.MaxValue - saveFile.TrainerTID7) / 1_000_000)"
+                                             T="@uint"
+                                             @bind-Value:get="@saveFile.TrainerSID7"
+                                             @bind-Value:set="@(async value => await OnTrainerSID7ChangedAsync(saveFile, value))"
+                                             Format="@AppService.GetIdFormatString(true)"
+                                             For="@(() => saveFile.TrainerSID7)"/>
+                        </div>
+                    }
                 }
+                    break;
             }
-                break;
+
+            @if (saveGeneration >= 3 && GetTrainerShinyValue(saveFile) is { } tsv)
+            {
+                <div class="form-field">
+                    <MudTextField Label="TSV (Shiny Value)"
+                                  Variant="@Variant.Outlined"
+                                  Value="@($"{tsv:D4}")"
+                                  ReadOnly="true"
+                                  HelperText="Trainer Shiny Value (read-only)"/>
+                </div>
+            }
+
+            @if (TrainerCapabilities.HasGender(saveFile))
+            {
+                <div class="form-field">
+                    <GenderDisplayComponent Gender="@((Gender)saveFile.Gender)"
+                                            OnChange="@OnGenderToggleAsync"/>
+                </div>
+            }
+
+            @if (Languages.Count > 0)
+            {
+                <div class="form-field">
+                    <MudSelect Label="Language"
+                               Variant="@Variant.Outlined"
+                               @bind-Value="@saveFile.Language"
+                               For="@(() => saveFile.Language)">
+                        @foreach (var language in Languages)
+                        {
+                            <MudSelectItem Value="@language.Value"
+                                           @key="@language.Value">
+                                @language.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+            }
+
+            @if (saveFile is SAV4 sav4Geo)
+            {
+                <div class="form-field">
+                    <MudSelect Label="Country"
+                               Variant="@Variant.Outlined"
+                               @bind-Value="@sav4Geo.Country"
+                               @bind-Value:after="@(() => OnSav4CountryChanged(sav4Geo))"
+                               For="@(() => sav4Geo.Country)">
+                        @foreach (var country in Countries.OrderBy(c => c.Text))
+                        {
+                            <MudSelectItem Value="@country.Value"
+                                           @key="@country.Value">
+                                @country.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+                <div class="form-field">
+                    <MudSelect Label="Region"
+                               Variant="@Variant.Outlined"
+                               @bind-Value="@sav4Geo.Region"
+                               For="@(() => sav4Geo.Region)">
+                        @foreach (var region in Regions)
+                        {
+                            <MudSelectItem Value="@region.Value"
+                                           @key="@region.Value">
+                                @region.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+            }
+
+            @if (saveFile is SAV5 sav5Geo)
+            {
+                <div class="form-field">
+                    <MudSelect Label="Country"
+                               Variant="@Variant.Outlined"
+                               @bind-Value="@sav5Geo.Country"
+                               @bind-Value:after="@(() => OnSav5CountryChanged(sav5Geo))"
+                               For="@(() => sav5Geo.Country)">
+                        @foreach (var country in Countries.OrderBy(c => c.Text))
+                        {
+                            <MudSelectItem Value="@country.Value"
+                                           @key="@country.Value">
+                                @country.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+                <div class="form-field">
+                    <MudSelect Label="Region"
+                               Variant="@Variant.Outlined"
+                               @bind-Value="@sav5Geo.Region"
+                               For="@(() => sav5Geo.Region)">
+                        @foreach (var region in Regions)
+                        {
+                            <MudSelectItem Value="@region.Value"
+                                           @key="@region.Value">
+                                @region.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+            }
+
+            @if (saveFile is IRegionOrigin regionSave)
+            {
+                <div class="form-field">
+                    <MudSelect Label="Country"
+                               Variant="@Variant.Outlined"
+                               T="@byte"
+                               @bind-Value="@regionSave.Country"
+                               @bind-Value:after="@(() => OnRegionOriginCountryChanged(regionSave))"
+                               For="@(() => regionSave.Country)">
+                        @foreach (var country in Countries.OrderBy(c => c.Text))
+                        {
+                            <MudSelectItem Value="@((byte)country.Value)"
+                                           @key="@country.Value">
+                                @country.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+                <div class="form-field">
+                    <MudSelect Label="Region"
+                               Variant="@Variant.Outlined"
+                               T="@byte"
+                               @bind-Value="@regionSave.Region"
+                               For="@(() => regionSave.Region)">
+                        @foreach (var region in Regions)
+                        {
+                            <MudSelectItem Value="@((byte)region.Value)"
+                                           @key="@region.Value">
+                                @region.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+                <div class="form-field">
+                    <MudSelect Label="3DS Region"
+                               Variant="@Variant.Outlined"
+                               T="@byte"
+                               @bind-Value="@regionSave.ConsoleRegion"
+                               For="@(() => regionSave.ConsoleRegion)">
+                        @foreach (var consoleRegion in ConsoleRegions)
+                        {
+                            <MudSelectItem Value="@((byte)consoleRegion.Value)"
+                                           @key="@consoleRegion.Value">
+                                @consoleRegion.Text
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+            }
+
+            @if (saveFile is SAV5 sav5GameSync)
+            {
+                <div class="form-field">
+                    <MudNumericField Label="Game Sync ID"
+                                     T="@uint"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     @bind-Value="@sav5GameSync.PlayerData.GameSyncID"
+                                     For="@(() => sav5GameSync.PlayerData.GameSyncID)"/>
+                </div>
+            }
+
+            @if (saveFile is IGameSync gameSync && saveFile is not (SAV7b or SAV6AODemo))
+            {
+                <div class="form-field">
+                    <MudTextField Label="Game Sync ID"
+                                  Variant="@Variant.Outlined"
+                                  MaxLength="@gameSync.GameSyncIDSize"
+                                  Placeholder="@($"{gameSync.GameSyncIDSize}-char hex")"
+                                  @bind-Value:get="@gameSync.GameSyncID"
+                                  @bind-Value:set="@(value => SetGameSyncId(gameSync, value))"
+                                  Validation="@(new Func<string, string?>(v => ValidateHexString(v, gameSync.GameSyncIDSize)))"
+                                  For="@(() => gameSync.GameSyncID)"/>
+                </div>
+            }
+
+            @if (saveFile is SAV7 sav7Nex)
+            {
+                <div class="form-field">
+                    <MudTextField Label="Nex Unique ID"
+                                  Variant="@Variant.Outlined"
+                                  MaxLength="@MyStatus7.NexUniqueIDSize"
+                                  Placeholder="@($"{MyStatus7.NexUniqueIDSize}-char hex")"
+                                  @bind-Value:get="@sav7Nex.MyStatus.NexUniqueID"
+                                  @bind-Value:set="@(value => SetNexUniqueId(sav7Nex.MyStatus, value))"
+                                  Validation="@(new Func<string, string?>(v => ValidateHexString(v, MyStatus7.NexUniqueIDSize)))"
+                                  For="@(() => sav7Nex.MyStatus.NexUniqueID)"/>
+                </div>
+            }
+
         }
 
-        @if (saveGeneration >= 3 && GetTrainerShinyValue(saveFile) is { } tsv)
+        @if (TrainerCapabilities.HasPlaytime(saveFile))
         {
-            <div class="form-field">
-                <MudTextField Label="TSV (Shiny Value)"
-                              Variant="@Variant.Outlined"
-                              Value="@($"{tsv:D4}")"
-                              ReadOnly="true"
-                              HelperText="Trainer Shiny Value (read-only)"/>
+            <div class="form-field playtime-group">
+                <div class="playtime-header">
+                    <span class="playtime-label">Playtime</span>
+                    <span class="playtime-readout">@FormatPlaytime(saveFile)</span>
+                    <MudTooltip Text="Reset to 0:00:00">
+                        <MudIconButton Icon="@Icons.Material.Filled.RestartAlt"
+                                       Size="@Size.Small"
+                                       OnClick="@(() => ResetPlaytime(saveFile))"
+                                       aria-label="Reset playtime"/>
+                    </MudTooltip>
+                </div>
+                <div class="playtime-inputs">
+                    <MudNumericField Label="Hours"
+                                     T="@int"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="@TrainerCapabilities.MaxPlayedHours(saveFile)"
+                                     @bind-Value:get="@saveFile.PlayedHours"
+                                     @bind-Value:set="@(value => TrainerPlaytime.SetHours(saveFile, value))"
+                                     For="@(() => saveFile.PlayedHours)"/>
+                    <MudNumericField Label="Minutes"
+                                     T="@int"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="59"
+                                     @bind-Value="@saveFile.PlayedMinutes"
+                                     For="@(() => saveFile.PlayedMinutes)"/>
+                    <MudNumericField Label="Seconds"
+                                     T="@int"
+                                     Variant="@Variant.Outlined"
+                                     Min="0"
+                                     Max="59"
+                                     @bind-Value="@saveFile.PlayedSeconds"
+                                     For="@(() => saveFile.PlayedSeconds)"/>
+                </div>
             </div>
+
         }
 
-        @if (saveGeneration >= 2 && saveFile is not SAV4BR)
+        @if (TrainerTimestamps.HasGameStart(saveFile))
         {
             <div class="form-field">
-                <GenderDisplayComponent Gender="@((Gender)saveFile.Gender)"
-                                        OnChange="@OnGenderToggleAsync"/>
-            </div>
-        }
-
-        @if (Languages.Count > 0)
-        {
-            <div class="form-field">
-                <MudSelect Label="Language"
-                           Variant="@Variant.Outlined"
-                           @bind-Value="@saveFile.Language"
-                           For="@(() => saveFile.Language)">
-                    @foreach (var language in Languages)
-                    {
-                        <MudSelectItem Value="@language.Value"
-                                       @key="@language.Value">
-                            @language.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-        }
-
-        @if (saveFile is SAV4 sav4Geo)
-        {
-            <div class="form-field">
-                <MudSelect Label="Country"
-                           Variant="@Variant.Outlined"
-                           @bind-Value="@sav4Geo.Country"
-                           @bind-Value:after="@UpdateCountry"
-                           For="@(() => sav4Geo.Country)">
-                    @foreach (var country in Countries.OrderBy(c => c.Text))
-                    {
-                        <MudSelectItem Value="@country.Value"
-                                       @key="@country.Value">
-                            @country.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-            <div class="form-field">
-                <MudSelect Label="Region"
-                           Variant="@Variant.Outlined"
-                           @bind-Value="@sav4Geo.Region"
-                           For="@(() => sav4Geo.Region)">
-                    @foreach (var region in Regions)
-                    {
-                        <MudSelectItem Value="@region.Value"
-                                       @key="@region.Value">
-                            @region.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-        }
-
-        @if (saveFile is SAV5 sav5Geo)
-        {
-            <div class="form-field">
-                <MudSelect Label="Country"
-                           Variant="@Variant.Outlined"
-                           @bind-Value="@sav5Geo.Country"
-                           @bind-Value:after="@(() => OnSav5CountryChanged(sav5Geo))"
-                           For="@(() => sav5Geo.Country)">
-                    @foreach (var country in Countries.OrderBy(c => c.Text))
-                    {
-                        <MudSelectItem Value="@country.Value"
-                                       @key="@country.Value">
-                            @country.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-            <div class="form-field">
-                <MudSelect Label="Region"
-                           Variant="@Variant.Outlined"
-                           @bind-Value="@sav5Geo.Region"
-                           For="@(() => sav5Geo.Region)">
-                    @foreach (var region in Regions)
-                    {
-                        <MudSelectItem Value="@region.Value"
-                                       @key="@region.Value">
-                            @region.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-        }
-
-        @if (saveFile is IRegionOrigin regionSave)
-        {
-            <div class="form-field">
-                <MudSelect Label="Country"
-                           Variant="@Variant.Outlined"
-                           T="@byte"
-                           @bind-Value="@regionSave.Country"
-                           @bind-Value:after="@(() => OnRegionOriginCountryChanged(regionSave))"
-                           For="@(() => regionSave.Country)">
-                    @foreach (var country in Countries.OrderBy(c => c.Text))
-                    {
-                        <MudSelectItem Value="@((byte)country.Value)"
-                                       @key="@country.Value">
-                            @country.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-            <div class="form-field">
-                <MudSelect Label="Region"
-                           Variant="@Variant.Outlined"
-                           T="@byte"
-                           @bind-Value="@regionSave.Region"
-                           For="@(() => regionSave.Region)">
-                    @foreach (var region in Regions)
-                    {
-                        <MudSelectItem Value="@((byte)region.Value)"
-                                       @key="@region.Value">
-                            @region.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-            <div class="form-field">
-                <MudSelect Label="3DS Region"
-                           Variant="@Variant.Outlined"
-                           T="@byte"
-                           @bind-Value="@regionSave.ConsoleRegion"
-                           For="@(() => regionSave.ConsoleRegion)">
-                    @foreach (var consoleRegion in ConsoleRegions)
-                    {
-                        <MudSelectItem Value="@((byte)consoleRegion.Value)"
-                                       @key="@consoleRegion.Value">
-                            @consoleRegion.Text
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-            </div>
-        }
-
-        @if (saveFile is SAV5 sav5GameSync)
-        {
-            <div class="form-field">
-                <MudNumericField Label="Game Sync ID"
-                                 T="@uint"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 @bind-Value="@sav5GameSync.PlayerData.GameSyncID"
-                                 For="@(() => sav5GameSync.PlayerData.GameSyncID)"/>
-            </div>
-        }
-
-        @if (saveFile is IGameSync gameSync)
-        {
-            <div class="form-field">
-                <MudTextField Label="Game Sync ID"
-                              Variant="@Variant.Outlined"
-                              MaxLength="@gameSync.GameSyncIDSize"
-                              Placeholder="@($"{gameSync.GameSyncIDSize}-char hex")"
-                              @bind-Value:get="@gameSync.GameSyncID"
-                              @bind-Value:set="@(value => SetGameSyncId(gameSync, value))"
-                              Validation="@(new Func<string, string?>(v => ValidateHexString(v, gameSync.GameSyncIDSize)))"
-                              For="@(() => gameSync.GameSyncID)"/>
-            </div>
-        }
-
-        @if (saveFile is SAV7 sav7Nex)
-        {
-            <div class="form-field">
-                <MudTextField Label="Nex Unique ID"
-                              Variant="@Variant.Outlined"
-                              MaxLength="@MyStatus7.NexUniqueIDSize"
-                              Placeholder="@($"{MyStatus7.NexUniqueIDSize}-char hex")"
-                              @bind-Value:get="@sav7Nex.MyStatus.NexUniqueID"
-                              @bind-Value:set="@(value => SetNexUniqueId(sav7Nex.MyStatus, value))"
-                              Validation="@(new Func<string, string?>(v => ValidateHexString(v, MyStatus7.NexUniqueIDSize)))"
-                              For="@(() => sav7Nex.MyStatus.NexUniqueID)"/>
-            </div>
-        }
-
-        <div class="form-field playtime-group">
-            <div class="playtime-header">
-                <span class="playtime-label">Playtime</span>
-                <span class="playtime-readout">@FormatPlaytime(saveFile)</span>
-                <MudTooltip Text="Reset to 0:00:00">
-                    <MudIconButton Icon="@Icons.Material.Filled.RestartAlt"
-                                   Size="@Size.Small"
-                                   OnClick="@(() => ResetPlaytime(saveFile))"
-                                   aria-label="Reset playtime"/>
-                </MudTooltip>
-            </div>
-            <div class="playtime-inputs">
-                <MudNumericField Label="Hours"
-                                 T="@int"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="@ushort.MaxValue"
-                                 @bind-Value="@saveFile.PlayedHours"
-                                 For="@(() => saveFile.PlayedHours)"/>
-                <MudNumericField Label="Minutes"
-                                 T="@int"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="59"
-                                 @bind-Value="@saveFile.PlayedMinutes"
-                                 For="@(() => saveFile.PlayedMinutes)"/>
-                <MudNumericField Label="Seconds"
-                                 T="@int"
-                                 Variant="@Variant.Outlined"
-                                 Min="0"
-                                 Max="59"
-                                 @bind-Value="@saveFile.PlayedSeconds"
-                                 For="@(() => saveFile.PlayedSeconds)"/>
-            </div>
-        </div>
-
-        @if (saveGeneration >= 4 && saveFile is not SAV4BR)
-        {
-            <div class="form-field">
-                <label for="game-start">
-                    Game Start
-                </label>
+                <label for="game-start">Game Start</label>
                 <InputDate Type="@GameStartType"
                            id="game-start"
+                           min="@(GameStartType == InputDateType.Date ? "2000-01-01" : "2000-01-01T00:00:00")"
+                           max="@(GameStartType == InputDateType.Date ? "2099-12-31" : "2099-12-31T23:59:59")"
+                           step="1"
                            @bind-Value="@GameStartedDate"/>
             </div>
+        }
 
-            @if (saveGeneration <= 7)
-            {
-                <div class="form-field">
-                    <label for="hall-of-fame">
-                        Hall of Fame
-                    </label>
-                    <InputDate Type="@InputDateType.DateTimeLocal"
-                               id="hall-of-fame"
-                               @bind-Value="@HallOfFameDate"/>
-                </div>
-            }
+        @if (TrainerTimestamps.HasHallOfFame(saveFile))
+        {
+            <div class="form-field">
+                <label for="hall-of-fame">Hall of Fame</label>
+                <InputDate Type="@InputDateType.DateTimeLocal"
+                           id="hall-of-fame"
+                           min="2000-01-01T00:00:00"
+                           max="2099-12-31T23:59:59"
+                           step="1"
+                           @bind-Value="@HallOfFameDate"/>
+            </div>
+        }
 
-            @if (saveFile is SAV9SV sv9)
-            {
-                <div class="form-field">
-                    <label for="last-saved">
-                        Last Saved
-                    </label>
-                    <InputDate Type="@InputDateType.DateTimeLocal"
-                               id="last-saved"
-                               @bind-Value="@sv9.LastSaved.Timestamp"/>
-                </div>
-            }
-
-            @if (saveFile is SAV9ZA za9LastSaved)
-            {
-                <div class="form-field">
-                    <label for="za-last-saved">
-                        Last Saved
-                    </label>
-                    <InputDate Type="@InputDateType.DateTimeLocal"
-                               id="za-last-saved"
-                               @bind-Value="@za9LastSaved.LastSaved.Timestamp"/>
-                </div>
-            }
+        @if (TrainerTimestamps.HasLastSaved(saveFile))
+        {
+            <div class="form-field">
+                <label for="last-saved">Last Saved</label>
+                <InputDate Type="@InputDateType.DateTimeLocal"
+                           id="last-saved"
+                           min="2000-01-01T00:00:00"
+                           max="2099-12-31T23:59:59"
+                           step="@(TrainerTimestamps.LastSavedHasSeconds(saveFile) ? 1 : 60)"
+                           @bind-Value="@LastSavedDate"/>
+            </div>
         }
 
         @if (saveFile is SAV7 sav7Festa)
         {
+            <div class="form-field">
+                <MudCheckBox Label="Mega Evolution Unlocked"
+                             Value="@sav7Festa.MyStatus.MegaUnlocked"
+                             ValueChanged="@((bool enabled) => OnMegaEvolutionChanged(sav7Festa, enabled))"/>
+            </div>
             <div class="form-field">
                 <MudTextField Label="Festival Plaza Name"
                               Variant="@Variant.Outlined"
@@ -449,6 +460,16 @@
             </div>
         }
 
+        @if (saveFile is SAV7b lgpeRival)
+        {
+            <div class="form-field">
+                <MudTextField Label="Rival Name"
+                              Variant="@Variant.Outlined"
+                              MaxLength="@lgpeRival.MaxStringLengthTrainer"
+                              @bind-Value="@lgpeRival.Misc.RivalName"/>
+            </div>
+        }
+
         @if (saveFile is SAV2 sav2Rival)
         {
             <div class="form-field">
@@ -471,19 +492,23 @@
             </div>
         }
 
-        <div class="form-field">
-            <MudNumericField Label="Money"
-                             T="@uint"
-                             Variant="@Variant.Outlined"
-                             Adornment="@Adornment.Start"
-                             AdornmentIcon="@Constants.PokeDollarSvg"
-                             Min="0"
-                             Max="@((uint)saveFile.MaxMoney)"
-                             @bind-Value="@saveFile.Money"
-                             For="@(() => saveFile.Money)"/>
-        </div>
+        @if (TrainerCapabilities.HasIdentity(saveFile))
+        {
+            <div class="form-field">
+                <MudNumericField Label="Money"
+                                 T="@uint"
+                                 Variant="@Variant.Outlined"
+                                 Adornment="@Adornment.Start"
+                                 AdornmentIcon="@Constants.PokeDollarSvg"
+                                 Min="0"
+                                 Max="@((uint)saveFile.MaxMoney)"
+                                 @bind-Value="@saveFile.Money"
+                                 For="@(() => saveFile.Money)"/>
+            </div>
 
-        @if (saveGeneration <= 4 && saveFile is not SAV4BR)
+        }
+
+        @if (TrainerCapabilities.HasCoins(saveFile))
         {
             <div class="form-field">
                 <MudNumericField Label="Coins"
@@ -719,14 +744,15 @@
             <div class="form-field">
                 <MudSelect Label="Sound Type"
                            Variant="@Variant.Outlined"
-                           @bind-Value="@sav2.Sound"
+                           @bind-Value:get="@(sav2.Sound > 0 ? 2 : 0)"
+                           @bind-Value:set="@(value => sav2.Sound = value)"
                            For="@(() => sav2.Sound)">
                     <MudSelectItem Value="0"
                                    @key="0">
                         Mono
                     </MudSelectItem>
-                    <MudSelectItem Value="1"
-                                   @key="1">
+                    <MudSelectItem Value="2"
+                                   @key="2">
                         Stereo
                     </MudSelectItem>
                 </MudSelect>
