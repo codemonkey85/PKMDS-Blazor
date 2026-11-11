@@ -40,7 +40,7 @@ public sealed class TrainerAuditTests
     public async Task TimestampControls_MatchActualFormatAndRenderingDoesNotWrite(
         GameVersion version, bool start, bool fame, bool saved)
     {
-        var save = CreateBlankSave(version);
+        var save = CreateSave(version);
         var before = Snapshot(save);
         var edited = save.State.Edited;
         await using var context = CreateContext(save);
@@ -113,8 +113,10 @@ public sealed class TrainerAuditTests
         var (save, _, _, _) = BunitTestHelpers.LoadSave(fileName);
         var date = new DateTime(2024, 6, 7, 12, 34, 56);
         var money = save.Money;
+        var fractionalTicks = save is SAV8BS bdsp
+            ? bdsp.System.LocalTimestampStart.Ticks % TimeSpan.TicksPerSecond : 0;
         TrainerTimestamps.SetGameStart(save, date).Should().BeTrue();
-        var expected = TrainerTimestamps.IsDateOnlyStart(save) ? date.Date : date;
+        var expected = TrainerTimestamps.IsDateOnlyStart(save) ? date.Date : date.AddTicks(fractionalTicks);
         TrainerTimestamps.GetGameStart(save).Should().Be(expected);
 
         var exported = save.Write().ToArray();
@@ -177,7 +179,7 @@ public sealed class TrainerAuditTests
     [InlineData(GameVersion.ZA)]
     public void LastSaved_RoundTripsWithSupportedPrecision(GameVersion version)
     {
-        var save = CreateBlankSave(version);
+        var save = CreateSave(version);
         var date = new DateTime(2024, 6, 7, 12, 34, 56);
         TrainerTimestamps.SetLastSaved(save, date).Should().BeTrue();
         var expected = TrainerTimestamps.LastSavedHasSeconds(save) ? date : date.AddSeconds(-56);
@@ -190,7 +192,7 @@ public sealed class TrainerAuditTests
     [InlineData(GameVersion.BATREV)]
     public void ChangingHours_PreservesMinutesSecondsAndFractions(GameVersion version)
     {
-        var save = CreateBlankSave(version);
+        var save = CreateSave(version);
         save.PlayedMinutes = 23;
         save.PlayedSeconds = 45;
         var offset = save is SAV4BR ? 0x388 : 0xD8;
@@ -260,10 +262,10 @@ public sealed class TrainerAuditTests
         context.Render<MudPopoverProvider>();
         var dialog = context.Render<Raid9Dialog>(p => p.Add(c => c.SaveFile, save));
         save.RaidPaldea.CurrentSeed = 12345;
-        save.Money = 999;
+        save.ID32 = 999;
         dialog.Instance.Dispose(); // Also runs for X/Escape dismissal.
         save.RaidPaldea.CurrentSeed.Should().Be(seed);
-        save.Money.Should().Be(999);
+        save.ID32.Should().Be(999);
     }
 
     [Fact]
@@ -275,10 +277,10 @@ public sealed class TrainerAuditTests
         context.Render<MudPopoverProvider>();
         var dialog = context.Render<Donut9Dialog>(p => p.Add(c => c.SaveFile, save));
         save.Donuts.GetDonut(0).Berry1 = 123;
-        save.Money = 999;
+        save.ID32 = 999;
         dialog.Instance.Dispose();
         save.Donuts.Data.ToArray().Should().Equal(before);
-        save.Money.Should().Be(999);
+        save.ID32.Should().Be(999);
     }
 
     [Fact]
@@ -301,7 +303,7 @@ public sealed class TrainerAuditTests
     [InlineData(GameVersion.RSBOX)]
     public void SideStorageFormats_HaveNoPlaceholderEditors(GameVersion version)
     {
-        var save = CreateBlankSave(version);
+        var save = CreateSave(version);
         TrainerCapabilities.HasIdentity(save).Should().BeFalse();
         TrainerCapabilities.HasGender(save).Should().BeFalse();
         TrainerCapabilities.HasCoins(save).Should().BeFalse();
@@ -419,7 +421,7 @@ public sealed class TrainerAuditTests
     public async Task SelectCallback_MarksSaveEditedAndRefreshesWithoutDomChange(
         GameVersion version, string label, int value)
     {
-        var save = CreateBlankSave(version);
+        var save = CreateSave(version);
         var state = new TestAppState { SaveFile = save };
         var refresh = new TestRefreshService();
         await using var context = BunitTestHelpers.CreateBunitContext(state, refresh,
@@ -455,8 +457,10 @@ public sealed class TrainerAuditTests
     [Fact]
     public async Task ThrowStyleCallback_MarksSaveEditedAndRefreshesWithoutDomChange()
     {
-        var save = new SAV9SV();
+        var (loaded, _, _, _) = BunitTestHelpers.LoadSave("violet_main");
+        var save = (SAV9SV)loaded;
         save.SaveRevision.Should().BeGreaterThanOrEqualTo(2);
+        save.ThrowStyle = ThrowStyle9.OriginalStyle;
         var state = new TestAppState { SaveFile = save };
         var refresh = new TestRefreshService();
         await using var context = BunitTestHelpers.CreateBunitContext(state, refresh,
@@ -475,14 +479,20 @@ public sealed class TrainerAuditTests
         refresh.RefreshCount.Should().BeGreaterThan(refreshes);
     }
 
-    private static SaveFile CreateBlankSave(GameVersion version) => version switch
+    private static SaveFile CreateSave(GameVersion version) => version switch
     {
+        // Core's modern blank blocks have no scalar types; use real fixtures when rendering.
+        GameVersion.PLA => BunitTestHelpers.LoadSave("legends-arceus").SaveFile,
+        GameVersion.SL => BunitTestHelpers.LoadSave("Test-Save-Scarlet.sav").SaveFile,
+        GameVersion.ZA => BunitTestHelpers.LoadSave("legends-za").SaveFile,
         // Core 26.10.18 does not map these GameVersion values to a SaveFileType.
-        GameVersion.COLO => new SAV3Colosseum(),
+        // Its blank Colosseum constructor also throws while setting the region.
+        GameVersion.COLO => BunitTestHelpers.LoadSave("01-GC6J-pokemon_colosseum.gci").SaveFile,
         GameVersion.XD => new SAV3XD(),
         GameVersion.RSBOX => new SAV3RSBox(),
         GameVersion.ORASDEMO => new SAV6AODemo(),
-        GameVersion.StadiumJ => new SAV1StadiumJ(),
+        // The blank StadiumJ constructor fails inside ClearBoxes; capability checks need only a buffer.
+        GameVersion.StadiumJ => new SAV1StadiumJ(new byte[SaveUtil.SIZE_G1STAD]),
         GameVersion.Stadium => new SAV1Stadium(),
         GameVersion.Stadium2 => new SAV2Stadium(),
         _ => BlankSaveFile.Get(version, "TEST", LanguageID.English),
