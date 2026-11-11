@@ -62,12 +62,27 @@
                                    @key="@($"wallpaper-{selectedBoxIndex}")"
                                    Value="@wallpaperIds[selectedBoxIndex]"
                                    ValueChanged="@(id => OnWallpaperChanged(id))"
+                                   ToStringFunc="@(id => wallpaperNameList.ElementAtOrDefault(id) ?? id.ToString())"
                                    Label="Wallpaper"
                                    Class="mb-3">
                             @for (var i = 0; i < wallpaperNameList.Length; i++)
                             {
                                 var localId = i;
-                                <MudSelectItem Value="@localId">@wallpaperNameList[localId]</MudSelectItem>
+                                var thumbnailUrl = ImageHelper.GetBoxWallpaperSpriteFileName(localId, saveFile.Version);
+                                <MudSelectItem Value="@localId">
+                                    <MudStack Row AlignItems="@AlignItems.Center" Spacing="2">
+                                        @if (!string.IsNullOrEmpty(thumbnailUrl))
+                                        {
+                                            <img src="@thumbnailUrl"
+                                                 alt=""
+                                                 loading="lazy"
+                                                 width="48"
+                                                 height="40"
+                                                 style="object-fit: contain; flex-shrink: 0;"/>
+                                        }
+                                        <span>@wallpaperNameList[localId]</span>
+                                    </MudStack>
+                                </MudSelectItem>
                             }
                         </MudSelect>
 

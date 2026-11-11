@@ -276,7 +276,7 @@ public partial class MainTab : IDisposable
             .OrderBy(item => item.Text);
 
         IEnumerable<ComboItem> results = string.IsNullOrWhiteSpace(searchString)
-            ? source.Take(30)
+            ? source
             : source.Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 
         return Task.FromResult(results);

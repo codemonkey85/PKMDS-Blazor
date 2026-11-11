@@ -1,6 +1,7 @@
 @typeparam T
 
-<MudAutocomplete T="@Option"
+<BrowseAutocomplete T="@Option"
+                 @ref="@autocomplete"
                  Label="@Label"
                  Variant="@Variant"
                  Margin="@Margin"
@@ -12,11 +13,14 @@
                  ItemTemplate="@WrappedItemTemplate"
                  Disabled="@Disabled"
                  Clearable="@Clearable"
+                 OnClearButtonClick="@OnClearButtonClick"
+                 OnBlur="@RestoreClearedOptionLabel"
+                 OpenChanged="@OnOpenChanged"
                  OpenOnFocus="@OpenOnFocus"
                  CoerceText="@CoerceText"
                  ResetValueOnEmptyText="@ResetValueOnEmptyText"
                  Strict="@Strict"
-                 MaxItems="@MaxItems"
+                 MaxItems="@(Math.Clamp(MaxItems ?? 10, 1, 10))"
                  DebounceInterval="@DebounceInterval"
                  Class="@Class"
                  Style="@Style"/>

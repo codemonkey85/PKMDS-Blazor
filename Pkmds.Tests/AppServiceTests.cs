@@ -26,8 +26,13 @@ public class AppServiceTests
         fileName.Should().Be("Lucario_B06DDFAD.pk5");
     }
 
-    [Fact]
-    public void GetStatModifierString_NeutralNature_ReturnsNeutral()
+    [Theory]
+    [InlineData(Nature.Hardy)]
+    [InlineData(Nature.Docile)]
+    [InlineData(Nature.Serious)]
+    [InlineData(Nature.Bashful)]
+    [InlineData(Nature.Quirky)]
+    public void GetStatModifierString_NeutralNature_ReturnsNeutral(Nature nature)
     {
         // Arrange
         var appState = new TestAppState();
@@ -35,10 +40,10 @@ public class AppServiceTests
         var appService = new AppService(appState, refreshService, new LegalizationService(appState));
 
         // Act
-        var result = appService.GetStatModifierString(Nature.Hardy);
+        var result = appService.GetStatModifierString(nature);
 
         // Assert
-        result.Should().Be("(neutral)");
+        result.Should().Be("(Neutral)");
     }
 
     [Fact]

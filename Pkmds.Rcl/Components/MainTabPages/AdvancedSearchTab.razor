@@ -61,7 +61,9 @@
                             <MudExpansionPanel Text="Basic">
                                 <MudStack Spacing="2">
 
-                                    <MudAutocomplete T="@ComboItem"
+                                    <BrowseAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      Label="Species"
                                                      Value="@speciesItem"
                                                      ValueChanged="@(v => speciesItem = v)"
@@ -401,7 +403,9 @@
 
                                     @* Any-of moves *@
                                     <MudText Typo="@Typo.subtitle2">Has any of these moves</MudText>
-                                    <MudAutocomplete T="@ComboItem"
+                                    <BrowseAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      @ref="@anyMoveAutoRef"
                                                      Label="Add move…"
                                                      SearchFunc="@SearchMovesAsync"
@@ -412,7 +416,7 @@
                                         <ItemTemplate Context="move">
                                             @MoveAutocompleteItemTemplate(move)
                                         </ItemTemplate>
-                                    </MudAutocomplete>
+                                    </BrowseAutocomplete>
                                     <MudStack Row
                                               Wrap="@Wrap.Wrap"
                                               Spacing="1">
@@ -429,7 +433,9 @@
 
                                     @* All-of moves *@
                                     <MudText Typo="@Typo.subtitle2">Has all of these moves</MudText>
-                                    <MudAutocomplete T="@ComboItem"
+                                    <BrowseAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      @ref="@allMoveAutoRef"
                                                      Label="Add move…"
                                                      SearchFunc="@SearchMovesAsync"
@@ -440,7 +446,7 @@
                                         <ItemTemplate Context="move">
                                             @MoveAutocompleteItemTemplate(move)
                                         </ItemTemplate>
-                                    </MudAutocomplete>
+                                    </BrowseAutocomplete>
                                     <MudStack Row
                                               Wrap="@Wrap.Wrap"
                                               Spacing="1">
@@ -517,7 +523,9 @@
                                     <MudStack Row
                                               AlignItems="@AlignItems.Center"
                                               Spacing="1">
-                                        <MudAutocomplete T="@ComboItem"
+                                        <BrowseAutocomplete T="@ComboItem"
+                                                         Strict="false"
+                                                         MaxItems="10"
                                                          Label="Ability"
                                                          Value="@abilityItem"
                                                          ValueChanged="@OnAbilitySelected"
@@ -547,7 +555,9 @@
                                               AlignItems="@AlignItems.Center"
                                               Spacing="1">
                                         <MudStack Style="flex: 1; min-width: 0;">
-                                            <MudAutocomplete T="@ComboItem"
+                                            <BrowseAutocomplete T="@ComboItem"
+                                                             Strict="false"
+                                                             MaxItems="10"
                                                              Label="Held item"
                                                              SearchFunc="@SearchItemsAsync"
                                                              ToStringFunc="@ItemToString"
@@ -574,7 +584,7 @@
                                                         <MudText>@item.Text</MudText>
                                                     </MudStack>
                                                 </ItemTemplate>
-                                            </MudAutocomplete>
+                                            </BrowseAutocomplete>
                                         </MudStack>
                                         @if (heldItemId is > 0 && AppState.SaveFile is { } heldItemSf)
                                         {
@@ -620,7 +630,9 @@
                             <MudExpansionPanel Text="Origin">
                                 <MudStack Spacing="2">
 
-                                    <MudAutocomplete T="@ComboItem"
+                                    <BrowseAutocomplete T="@ComboItem"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      Label="Met location"
                                                      Value="@metLocationItem"
                                                      ValueChanged="@(v => metLocationItem = v)"
@@ -682,7 +694,9 @@
                                     }
 
                                     <MudText Typo="@Typo.subtitle2">Ribbons</MudText>
-                                    <MudAutocomplete T="@string"
+                                    <BrowseAutocomplete T="@string"
+                                                     Strict="false"
+                                                     MaxItems="10"
                                                      Label="Add ribbon…"
                                                      Value="@pendingRibbonName"
                                                      ValueChanged="@AddRibbon"

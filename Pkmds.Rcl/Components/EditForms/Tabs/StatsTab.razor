@@ -795,7 +795,7 @@
                             @bind-Value:get="@Pokemon.Nature"
                             @bind-Value:set="@OnNatureSet"
                             Items="@GetNatureItems()"
-                            ToStringFunc="@GetNatureName"
+                            ToStringFunc="@GetNatureDisplayName"
                             For="@(() => Pokemon.Nature)">
             <ItemTemplate Context="nature">
                 <MudStack Row>
@@ -817,7 +817,7 @@
                             @bind-Value:get="@Pokemon.StatAlignment"
                             @bind-Value:set="@OnStatAlignmentSet"
                             Items="@GetNatureItems()"
-                            ToStringFunc="@GetNatureName"
+                            ToStringFunc="@GetNatureDisplayName"
                             For="@(() => Pokemon.StatAlignment)">
             <ItemTemplate Context="nature">
                 <MudStack Row>

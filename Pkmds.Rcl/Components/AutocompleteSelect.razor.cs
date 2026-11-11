@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using MudBlazor.Extensions;
 
 namespace Pkmds.Rcl.Components;
 
@@ -28,13 +29,13 @@ public partial class AutocompleteSelect<T>
 
     [Parameter] public bool ResetValueOnEmptyText { get; set; } = true;
 
-    [Parameter] public bool Strict { get; set; } = true;
+    // Reopening a selected value should offer alternatives; typing still filters the list.
+    [Parameter] public bool Strict { get; set; }
 
     [Parameter] public bool SelectExactMatchOnTextChange { get; set; }
 
-    // Keep MudAutocomplete's own bounded default. Leaving this null overrides MudBlazor's
-    // default of 10 and renders every match, which made one-letter item searches stall for
-    // several seconds on mobile devices (issue #1122).
+    // Allow smaller previews, but cap rendering at 10 even if a caller passes null.
+    // Unbounded one-letter item searches stalled mobile devices (issue #1122).
     [Parameter] public int? MaxItems { get; set; } = 10;
 
     [Parameter] public int DebounceInterval { get; set; } = 100;
@@ -56,13 +57,29 @@ public partial class AutocompleteSelect<T>
     // flowing through our ToStringFunc / ItemTemplate unchanged.
     private sealed record Option(T? Value);
 
-    private Option WrappedValue => new(Value);
+    private Option? wrappedValue;
+    private MudAutocomplete<Option>? autocomplete;
+    private T? previousValue;
+    private bool hasParameters;
+
+    protected override void OnParametersSet()
+    {
+        if (!hasParameters || !EqualityComparer<T>.Default.Equals(Value!, previousValue!))
+        {
+            wrappedValue = new Option(Value);
+        }
+
+        previousValue = Value;
+        hasParameters = true;
+    }
+
+    private Option? WrappedValue => wrappedValue;
 
     private IEnumerable<Option> WrappedItems =>
         (Items ?? []).Select(v => new Option(v));
 
     private Func<Option?, string?> WrappedToStringFunc =>
-        opt => EffectiveToStringFunc(opt is null ? default : opt.Value);
+        opt => opt is null ? string.Empty : EffectiveToStringFunc(opt.Value);
 
     private RenderFragment<Option> WrappedItemTemplate =>
         opt => EffectiveItemTemplate(opt.Value!);
@@ -77,8 +94,48 @@ public partial class AutocompleteSelect<T>
     private async Task OnWrappedValueChanged(Option? opt)
     {
         var newValue = opt is null ? default : opt.Value;
+        var valueChanged = !EqualityComparer<T>.Default.Equals(Value!, newValue!);
+        // A cleared input is different from selecting a real default-valued option
+        // (e.g. Normal form, Hardy nature, or a wrapped null sentinel such as "Any").
+        wrappedValue = opt;
         Value = newValue;
-        await ValueChanged.InvokeAsync(newValue);
+        previousValue = newValue;
+        if (valueChanged)
+        {
+            await ValueChanged.InvokeAsync(newValue);
+        }
+    }
+
+    private async Task OnClearButtonClick()
+    {
+        // MudAutocomplete clears its text after raising ValueChanged. Restore the label
+        // only after that completes, and only if the reset value is an actual option.
+        if (autocomplete is not null && (Items ?? []).Any(item => EqualityComparer<T>.Default.Equals(item, Value!)))
+        {
+            wrappedValue = new Option(Value);
+            await autocomplete.SelectOptionAsync(wrappedValue);
+        }
+    }
+
+    private void OnOpenChanged(bool open)
+    {
+        if (!open)
+        {
+            RestoreClearedOptionLabel();
+        }
+    }
+
+    private void RestoreClearedOptionLabel()
+    {
+        // Keyboard deletion must stay empty while typing. Once editing ends, show
+        // the reset value if it is a real option. Updating the bound wrapper keeps
+        // suggestion clicks intact instead of closing the menu during input blur.
+        if (ResetValueOnEmptyText && wrappedValue is null &&
+            string.IsNullOrEmpty(autocomplete?.GetState(component => component.Text)) &&
+            (Items ?? []).Any(item => EqualityComparer<T>.Default.Equals(item, Value!)))
+        {
+            wrappedValue = new Option(Value);
+        }
     }
 
     private async Task OnWrappedTextChanged(string? text)
@@ -107,7 +164,7 @@ public partial class AutocompleteSelect<T>
             foundMatch = true;
         }
 
-        if (!foundMatch || EqualityComparer<T>.Default.Equals(Value!, match!))
+        if (!foundMatch || wrappedValue is not null && EqualityComparer<T>.Default.Equals(Value!, match!))
         {
             return;
         }
@@ -124,18 +181,15 @@ public partial class AutocompleteSelect<T>
     private Func<string?, CancellationToken, Task<IEnumerable<T>>> EffectiveSearchFunc =>
         SearchFunc ?? DefaultSearchAsync;
 
-    // How many items to preview in the dropdown when the user hasn't typed anything yet.
-    // Keeps large source lists (moves, items, species) from rendering hundreds of rows on
-    // focus, while letting small lists (balls, natures, types) show all their items.
-    private const int EmptyQueryPreview = 30;
-
     private Task<IEnumerable<T>> DefaultSearchAsync(string? query, CancellationToken _)
     {
         var source = Items ?? [];
 
         if (string.IsNullOrWhiteSpace(query))
         {
-            return Task.FromResult<IEnumerable<T>>(source.Take(EmptyQueryPreview).ToList());
+            // MudAutocomplete needs the full list to locate the selected value. MaxItems
+            // bounds the rendered suggestions after centering them on that selection.
+            return Task.FromResult(source);
         }
 
         var toString = EffectiveToStringFunc;

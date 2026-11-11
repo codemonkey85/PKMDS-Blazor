@@ -66,7 +66,9 @@
                 bytes set during a typical catch.
             </MudText>
             <MudStack Spacing="2">
-                <MudAutocomplete T="@ComboItem"
+                <BrowseAutocomplete T="@ComboItem"
+                                 Strict="false"
+                                 MaxItems="10"
                                  Label="Species"
                                  Variant="@Variant.Outlined"
                                  Margin="@Margin.Dense"
