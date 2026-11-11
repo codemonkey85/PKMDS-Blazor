@@ -18,6 +18,7 @@ public partial class Fashion9Dialog
     // dialog open blocks the WASM main thread long enough for Chrome to offer to kill
     // the page.
     private int _activePanelIndex;
+    private SaveFile? loadedSave;
 
     private static readonly (uint Key, string Label)[] SvSectionDefs =
     [
@@ -67,14 +68,16 @@ public partial class Fashion9Dialog
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (ReferenceEquals(loadedSave, SaveFile))
+            return;
+        loadedSave = SaveFile;
         BuildDescriptors();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        if (firstRender)
-            await EnsureActiveSectionLoadedAsync();
+        await EnsureActiveSectionLoadedAsync();
     }
 
     // Builds the per-tab descriptors with `Items = null`; actual data parsing happens
@@ -177,7 +180,8 @@ public partial class Fashion9Dialog
     private static void SetAllOwned(List<FashionItem9aModel> items)
     {
         foreach (var item in items)
-            item.IsOwned = true;
+            if (!item.IsEmpty)
+                item.IsOwned = true;
     }
 
     // Force-loads every clothing tab so "Set All Owned (All Tabs)" applies across all
@@ -204,6 +208,8 @@ public partial class Fashion9Dialog
                 break;
         }
 
+        if (SaveFile is { } save)
+            save.State.Edited = true;
         RefreshService.Refresh();
         Haptics.Confirm();
         MudDialog?.Close(DialogResult.Ok(true));

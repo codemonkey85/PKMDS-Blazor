@@ -1,10 +1,19 @@
 namespace Pkmds.Rcl.Components.Dialogs;
 
-public partial class Donut9Dialog
+public partial class Donut9Dialog : IDisposable
 {
     [Parameter]
     [EditorRequired]
     public SAV9ZA? SaveFile { get; set; }
+
+    private SAV9ZA? loadedSave;
+    private bool committed;
+
+    public void Dispose()
+    {
+        if (!committed)
+            RestoreSnapshot();
+    }
 
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
@@ -30,6 +39,13 @@ public partial class Donut9Dialog
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (ReferenceEquals(loadedSave, SaveFile))
+            return;
+        if (!committed)
+            RestoreSnapshot();
+        _donutsSnapshot = null;
+        committed = false;
+        loadedSave = SaveFile;
         LoadData();
     }
 
@@ -198,18 +214,25 @@ public partial class Donut9Dialog
 
     private void Save()
     {
+        committed = true;
+        if (SaveFile is { } save)
+            save.State.Edited = true;
         RefreshService.Refresh();
         Haptics.Confirm();
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
+    private void RestoreSnapshot()
+    {
+        if (loadedSave is not null && _donutsSnapshot is not null)
+        {
+            _donutsSnapshot.CopyTo(loadedSave.Donuts.Data);
+        }
+    }
+
     private void Cancel()
     {
-        if (SaveFile is not null && _donutsSnapshot is not null)
-        {
-            _donutsSnapshot.CopyTo(SaveFile.Donuts.Data);
-            RefreshService.Refresh();
-        }
+        RestoreSnapshot();
         MudDialog?.Close(DialogResult.Cancel());
     }
 }

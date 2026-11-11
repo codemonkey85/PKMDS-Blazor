@@ -15,6 +15,8 @@ public partial class TrainerInfoSav9ZaSection
     private void CollectZaTechnicalMachines()
     {
         var count = TechnicalMachine9a.SetAllTechnicalMachines(SaveFile, true);
+        SaveFile.State.Edited = true;
+        RefreshService.Refresh();
         Snackbar.Add(count == 0
             ? "All Technical Machines already collected."
             : $"Collected Technical Machines ×{count}.", Severity.Success);
@@ -23,6 +25,8 @@ public partial class TrainerInfoSav9ZaSection
     private void CollectZaColorfulScrews()
     {
         var count = ColorfulScrew9a.CollectScrews(SaveFile);
+        SaveFile.State.Edited = true;
+        RefreshService.Refresh();
         Snackbar.Add(count == 0
             ? "All Colorful Screws already collected."
             : $"Collected Colorful Screws ×{count}.", Severity.Success);

@@ -2,11 +2,20 @@ using System.Globalization;
 
 namespace Pkmds.Rcl.Components.Dialogs;
 
-public partial class Raid9Dialog
+public partial class Raid9Dialog : IDisposable
 {
     [Parameter]
     [EditorRequired]
     public SAV9SV? SaveFile { get; set; }
+
+    private SAV9SV? loadedSave;
+    private bool committed;
+
+    public void Dispose()
+    {
+        if (!committed)
+            RestoreSnapshot();
+    }
 
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
@@ -36,6 +45,15 @@ public partial class Raid9Dialog
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (ReferenceEquals(loadedSave, SaveFile))
+            return;
+        if (!committed)
+            RestoreSnapshot();
+        _paldeaSnapshot = _kitakamiSnapshot = _blueberrySnapshot = null;
+        _sevenStarCapturedSnapshot = _sevenStarDefeatedSnapshot = null;
+        _paldeaRaids = _kitakamiRaids = _blueberryRaids = [];
+        committed = false;
+        loadedSave = SaveFile;
         LoadData();
     }
 
@@ -106,22 +124,29 @@ public partial class Raid9Dialog
 
     private void Save()
     {
+        committed = true;
+        if (SaveFile is { } save)
+            save.State.Edited = true;
         RefreshService.Refresh();
         Haptics.Confirm();
         MudDialog?.Close(DialogResult.Ok(true));
     }
 
+    private void RestoreSnapshot()
+    {
+        if (loadedSave is not null)
+        {
+            _paldeaSnapshot?.CopyTo(loadedSave.RaidPaldea.Data);
+            _kitakamiSnapshot?.CopyTo(loadedSave.RaidKitakami.Data);
+            _blueberrySnapshot?.CopyTo(loadedSave.RaidBlueberry.Data);
+            _sevenStarCapturedSnapshot?.CopyTo(loadedSave.RaidSevenStar.Captured.Data);
+            _sevenStarDefeatedSnapshot?.CopyTo(loadedSave.RaidSevenStar.Defeated.Data);
+        }
+    }
+
     private void Cancel()
     {
-        if (SaveFile is not null)
-        {
-            _paldeaSnapshot?.CopyTo(SaveFile.RaidPaldea.Data);
-            _kitakamiSnapshot?.CopyTo(SaveFile.RaidKitakami.Data);
-            _blueberrySnapshot?.CopyTo(SaveFile.RaidBlueberry.Data);
-            _sevenStarCapturedSnapshot?.CopyTo(SaveFile.RaidSevenStar.Captured.Data);
-            _sevenStarDefeatedSnapshot?.CopyTo(SaveFile.RaidSevenStar.Defeated.Data);
-            RefreshService.Refresh();
-        }
+        RestoreSnapshot();
         MudDialog?.Close(DialogResult.Cancel());
     }
 }

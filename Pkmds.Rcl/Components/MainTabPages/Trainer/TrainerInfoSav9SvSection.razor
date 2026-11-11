@@ -29,7 +29,8 @@
         <MudSelect Label="Throw Style"
                    Variant="@Variant.Outlined"
                    T="@ThrowStyle9"
-                   @bind-Value="@SaveFile.ThrowStyle">
+                   @bind-Value="@SaveFile.ThrowStyle"
+                   @bind-Value:after="@MarkEdited">
             @foreach (var style in Enum.GetValues<ThrowStyle9>())
             {
                 <MudSelectItem Value="@style"
@@ -78,7 +79,7 @@
                      @bind-Value="@SaveFile.Z"/>
 </div>
 <div class="form-field">
-    <MudNumericField Label="Map Rotation"
+    <MudNumericField Label="Map Rotation (degrees)"
                      T="@double"
                      Variant="@Variant.Outlined"
                      @bind-Value:get="@GetSvRotation(SaveFile)"
@@ -92,7 +93,7 @@
                      T="@uint"
                      Variant="@Variant.Outlined"
                      Min="@((uint)0)"
-                     Max="@uint.MaxValue"
+                     Max="@((uint)9_999_999)"
                      @bind-Value="@LeaguePoints"/>
 </div>
 @if (SaveFile.SaveRevision >= 2)
@@ -102,7 +103,7 @@
                          T="@uint"
                          Variant="@Variant.Outlined"
                          Min="@((uint)0)"
-                         Max="@uint.MaxValue"
+                         Max="@((uint)9_999_999)"
                          @bind-Value="@BlueberryPoints"/>
     </div>
 }
@@ -119,31 +120,34 @@
 <div class="form-field">
     <MudButton Variant="@Variant.Filled"
                Color="@Color.Primary"
-               OnClick="@(() => { SaveFile.CollectAllStakes(); Snackbar.Add("Collected all shrine stakes.", Severity.Success); })">
+               OnClick="@(() => { SaveFile.CollectAllStakes(); SaveFile.State.Edited = true; RefreshService.Refresh(); Snackbar.Add("Collected all shrine stakes.", Severity.Success); })">
         Collect All Shrine Stakes
     </MudButton>
 </div>
 <div class="form-field">
     <MudButton Variant="@Variant.Filled"
                Color="@Color.Primary"
-               OnClick="@(() => { SaveFile.UnlockAllTMRecipes(); Snackbar.Add("Unlocked all TM recipes.", Severity.Success); })">
+               OnClick="@(() => { SaveFile.UnlockAllTMRecipes(); SaveFile.State.Edited = true; RefreshService.Refresh(); Snackbar.Add("Unlocked all TM recipes.", Severity.Success); })">
         Unlock All TM Recipes
     </MudButton>
 </div>
-<div class="form-field">
-    <MudButton Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               OnClick="@(() => { SaveFile.ActivateSnacksworthLegendaries(); Snackbar.Add("Activated Snacksworth legendaries.", Severity.Success); })">
-        Activate Snacksworth Legendaries
-    </MudButton>
-</div>
-<div class="form-field">
-    <MudButton Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               OnClick="@(() => { SaveFile.UnlockAllCoaches(); Snackbar.Add("Unlocked all coaches.", Severity.Success); })">
-        Unlock All Coaches
-    </MudButton>
-</div>
+@if (SaveFile.SaveRevision >= 2)
+{
+    <div class="form-field">
+        <MudButton Variant="@Variant.Filled"
+                   Color="@Color.Primary"
+                   OnClick="@(() => { SaveFile.ActivateSnacksworthLegendaries(); SaveFile.State.Edited = true; RefreshService.Refresh(); Snackbar.Add("Activated Snacksworth legendaries.", Severity.Success); })">
+            Activate Snacksworth Legendaries
+        </MudButton>
+    </div>
+    <div class="form-field">
+        <MudButton Variant="@Variant.Filled"
+                   Color="@Color.Primary"
+                   OnClick="@(() => { SaveFile.UnlockAllCoaches(); SaveFile.State.Edited = true; RefreshService.Refresh(); Snackbar.Add("Unlocked all coaches.", Severity.Success); })">
+            Unlock All Coaches
+        </MudButton>
+    </div>
+}
 <div class="form-field">
     <MudButton Variant="@Variant.Filled"
                Color="@Color.Primary"
@@ -156,7 +160,7 @@
     <div class="form-field">
         <MudButton Variant="@Variant.Filled"
                    Color="@Color.Primary"
-                   OnClick="@(() => { SaveFile.UnlockAllThrowStyles(); Snackbar.Add("Unlocked all throw styles.", Severity.Success); })">
+                   OnClick="@(() => { SaveFile.UnlockAllThrowStyles(); SaveFile.State.Edited = true; RefreshService.Refresh(); Snackbar.Add("Unlocked all throw styles.", Severity.Success); })">
             Unlock All Throw Styles
         </MudButton>
     </div>
@@ -164,7 +168,7 @@
 <div class="form-field">
     <MudButton Variant="@Variant.Filled"
                Color="@Color.Primary"
-               OnClick="@(() => { PlayerFashionUnlock9.UnlockBase(SaveFile.Accessor, SaveFile.Gender); Snackbar.Add("Unlocked base clothing.", Severity.Success); })">
+               OnClick="@(() => { PlayerFashionUnlock9.UnlockBase(SaveFile.Accessor, SaveFile.Gender); SaveFile.State.Edited = true; RefreshService.Refresh(); Snackbar.Add("Unlocked base clothing.", Severity.Success); })">
         Unlock Base Clothing
     </MudButton>
 </div>

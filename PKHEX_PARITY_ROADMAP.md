@@ -1126,16 +1126,21 @@ Three parallel tracks — wiki content authoring, in-app help links (code), and 
 
 ### 6.1 Trainer Customization Enhancements
 **Status:** ⚠️ Partial (phases 1–5 implemented — #361, #870; trainer appearance/avatar editor remains — #873)
-**Tracks:** #41, #361
+**Tracks:** #41, #361, #1376, #1378, #1381
 **Tasks:**
 - [ ] Add trainer appearance/avatar editor — #873
 - [x] Implement trainer card customization — Gen 8 SwSh `TrainerCardDialog` (card name, card number 0–999, trainer ID, Roto Rally score)
-- [x] Add money/BP/currency editors for all types — per-gen currency editors: Gen 3 (money, coins, BP), Gen 4 (money, coins, BP, Watts HGSS), Gen 5 (money, coins, BP), Gen 6 (money, coins, BP, Poké Miles), Gen 7 (money, coins, BP, Festival Coins), Gen 7b (money, coins, BP), Gen 8 SwSh (money, coins, BP, Watts, Roto Tokens), Gen 8 BDSP (money, coins, BP), Gen 8 LA (money, Poké Miles), Gen 9 (money, coins, BP, League Points)
+- [ ] Complete remaining currency editors — consolidated in #1381 after the #1376 audit; current supported set is documented in [the Trainer audit](docs/TRAINER_AUDIT.md).
+- [x] Add per-format currency editors for Money/Coins, Emerald BP/earned BP, HGSS Pokéathlon Points, Subway BP, Gen 6 BP/Poké Miles, Gen 7 BP/Festival Coins, SWSH BP/Watts, BDSP BP, LA Merit Points, SV LP/BP, and ZA Royale/Hyperspace points. See the audit for exact limits and side effects.
 - [x] Create playtime editor — hours/minutes/seconds numeric fields with reset button
 - [x] Add language selection — shown for Gen 4+ saves; hidden for `ILangDeviantSave` saves (Gen 1–3 R/S/E/FR/LG, Stadium)
-- [x] Implement game sync ID editor — Gen 5/6/7/7b with copy-to-clipboard
-- [x] Game start timestamp editor — `DateTimeLocal` picker for Gen 4–8 LA; date-only for SwSh/SV; time portion correctly persisted
-- [x] Hall of Fame timestamp editor — Gen 4–7
+- [x] Implement Game Sync ID editor — Gen 5 uint; Gen 6/7 fixed-width hex; unused LGPE control removed (#1376). Nex Unique ID is fixed-width hex in Gen 7.
+- [x] Game start timestamp editor — backed Gen 4–7 fields, LGPE and LA epoch-1970 timestamps, BDSP local FILETIME with fractional-tick preservation, SWSH/SV date-only; ZA unused start hidden (#1376).
+- [x] Hall of Fame timestamp editor — Gen 4–7, preserving seconds and blank/uninitialized state (#1376)
+- [x] Last Saved timestamp editors — Gen 6/7, LGPE, SWSH, BDSP, LA, SV, ZA with native precision; read-only rendering (#1376)
+- [x] Gen 7 Mega Evolution unlock toggle — SM/USUM status bit, independent of Key Stone inventory (#1378)
+- [x] Trainer audit fixes — capability-based visibility, subdivision refresh, native playtime/rotation handling, currency mirrors/bounds, and dialog dismissal rollback (#1376)
+- [ ] Remaining WinForms Trainer parity — consolidated in [#1381](https://github.com/codemonkey85/PKMDS-Blazor/issues/1381), with the [per-format inventory and follow-up details](docs/TRAINER_AUDIT.md#cross-cutting-findings-and-remaining-parity-work); reconcile redundant appearance, badge, generation, and nested-editor issues using its cleanup checklist
 - [x] Gen 6 Trainer Card Sayings viewer — read-only display (free-form text is view-only to avoid abuse vectors)
 - [x] Gen 3 Game Corner Joyful Records editor — closes #870
 - [x] Gen 4 HGSS NSparkle (National Park Sparkle) flag
