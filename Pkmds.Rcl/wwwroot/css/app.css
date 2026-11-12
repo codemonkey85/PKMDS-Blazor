@@ -1158,10 +1158,24 @@ body, html {
     width: 100%;
 }
 
+.browse-autocomplete .mud-input-adornment-end {
+    /* Let the divider use the positioned input as its containing block. */
+    position: static;
+}
+
+/* Size the divider from the field, not the 44px touch target (which can be taller
+   than a dense input). Keep the same inset in dense and regular fields. */
+.browse-autocomplete .mud-input-adornment-end::before {
+    content: "";
+    position: absolute;
+    inset-block: 8px;
+    border-inline-start: 1px solid var(--mud-palette-lines-inputs);
+    pointer-events: none;
+}
+
 .browse-autocomplete .mud-input-adornment-end .mud-input-adornment-icon-button {
     min-width: 44px;
     min-height: 44px;
-    border-inline-start: 1px solid var(--mud-palette-lines-inputs);
     border-radius: 0;
     touch-action: manipulation;
 }
