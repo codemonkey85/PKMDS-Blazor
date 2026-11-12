@@ -47,8 +47,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore Pkmds.Web/Pkmds.Web.csproj -p:SelfContained=true
 
-      - name: Build Web
-        run: dotnet build Pkmds.Web/Pkmds.Web.csproj --configuration Release --no-restore
+      - name: Publish Web
+        run: dotnet publish Pkmds.Web/Pkmds.Web.csproj --configuration Release --no-restore -o release
+
+      - name: Verify service worker assets
+        run: node tools/verify-service-worker-assets.mjs release/wwwroot
 
       - name: Build Functions
         run: dotnet build Pkmds.Functions/Pkmds.Functions.csproj --configuration Release

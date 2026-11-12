@@ -106,6 +106,17 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Verify Azure Functions runtime
+        if: >-
+          github.event.pull_request.user.login != 'dependabot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          runtime=$(az functionapp config show --name pkmds-functions --resource-group pkmds-bug-reports --query netFrameworkVersion --output tsv)
+          if [ "$runtime" != "v11.0" ]; then
+            echo "::error::pkmds-functions is configured for '$runtime'. Coordinate selecting .NET 11 Isolated with the backend deployment before deploying this package."
+            exit 1
+          fi
+
       - name: Deploy to Azure Functions
         if: >-
           github.event.pull_request.user.login != 'dependabot[bot]' &&

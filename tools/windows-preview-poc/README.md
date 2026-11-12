@@ -88,7 +88,7 @@ tools/windows-preview-poc/
 
 ## Prerequisites
 
-- **Windows 10/11**, .NET SDK from `global.json` (net10.0).
+- **Windows 10/11**, .NET SDK from `global.json` (net11.0).
 - **MSVC / C++ toolchain** — Visual Studio (or Build Tools) with the **"Desktop development with
   C++"** workload, to build the shim. `build-shim.ps1` locates it via `vswhere`.
 - **WebView2 Runtime** — ships with Windows 11 / recent Windows 10; else [aka.ms/webview2](https://developer.microsoft.com/microsoft-edge/webview2/).

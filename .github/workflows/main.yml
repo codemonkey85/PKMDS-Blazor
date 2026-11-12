@@ -144,6 +144,14 @@ jobs:
             --policy @Pkmds.Functions/report-retention-policy.json \
             --output none
 
+      - name: Verify Azure Functions runtime
+        run: |
+          runtime=$(az functionapp config show --name pkmds-functions --resource-group pkmds-bug-reports --query netFrameworkVersion --output tsv)
+          if [ "$runtime" != "v11.0" ]; then
+            echo "::error::pkmds-functions is configured for '$runtime'. Coordinate selecting .NET 11 Isolated with the backend deployment before deploying this package."
+            exit 1
+          fi
+
       - name: Deploy to Azure Functions
         run: |
           az functionapp deployment source config-zip \

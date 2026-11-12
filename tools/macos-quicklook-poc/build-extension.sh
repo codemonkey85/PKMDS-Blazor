@@ -17,7 +17,7 @@ FIXTURE="${1:-$REPO_ROOT/TestFiles/Lucario_B06DDFAD.pk5}"
 GCI_FIXTURE="$REPO_ROOT/TestFiles/Test-Save-Moon.gci"
 
 CSPROJ="$SCRIPT_DIR/PkmdsNative/PkmdsNative.csproj"
-PUBLISH_DIR="$SCRIPT_DIR/PkmdsNative/bin/Release/net10.0/$RID/publish"
+PUBLISH_DIR="$SCRIPT_DIR/PkmdsNative/bin/Release/net11.0/$RID/publish"
 DYLIB_SRC="$PUBLISH_DIR/PkmdsNative.dylib"
 DYLIB_DEST="$SCRIPT_DIR/build-resources/PkmdsNative.dylib"
 

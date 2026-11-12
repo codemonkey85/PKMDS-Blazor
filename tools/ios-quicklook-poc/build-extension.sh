@@ -35,15 +35,15 @@ CSPROJ="$SCRIPT_DIR/PkmdsQuickLook/PkmdsQuickLook.csproj"
 THUMB_CSPROJ="$SCRIPT_DIR/PkmdsQuickLookThumbnail/PkmdsQuickLookThumbnail.csproj"
 if [[ "$TARGET_DEVICE" -eq 1 ]]; then
     DOTNET_CMD=(publish -c Release -r ios-arm64)
-    DOTNET_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLook/bin/Release/net10.0-ios/ios-arm64"
-    THUMB_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLookThumbnail/bin/Release/net10.0-ios/ios-arm64"
+    DOTNET_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLook/bin/Release/net11.0-ios/ios-arm64"
+    THUMB_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLookThumbnail/bin/Release/net11.0-ios/ios-arm64"
     XCODE_DEST="generic/platform=iOS"
     XCODE_PRODUCTS_DIR="Release-iphoneos"
     XCODE_CONFIG="Release"
 else
     DOTNET_CMD=(build -c Debug -r iossimulator-arm64)
-    DOTNET_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLook/bin/Debug/net10.0-ios/iossimulator-arm64"
-    THUMB_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLookThumbnail/bin/Debug/net10.0-ios/iossimulator-arm64"
+    DOTNET_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLook/bin/Debug/net11.0-ios/iossimulator-arm64"
+    THUMB_OUT_DIR="$SCRIPT_DIR/PkmdsQuickLookThumbnail/bin/Debug/net11.0-ios/iossimulator-arm64"
     XCODE_PRODUCTS_DIR="Debug-iphonesimulator"
     XCODE_CONFIG="Debug"
 fi

@@ -34,7 +34,15 @@ public partial class App : IDisposable
             return;
         }
 
-        await JsRuntime.InvokeVoidAsync("addUpdateListener");
+        try
+        {
+            await JsRuntime.InvokeVoidAsync("addUpdateListener");
+        }
+        catch (Microsoft.JSInterop.JSException exception)
+        {
+            // Update notifications are optional; a stale script must not prevent startup.
+            Log.Warning(exception, "Could not register the app update listener.");
+        }
 
         if (mudThemeProvider is not null)
         {

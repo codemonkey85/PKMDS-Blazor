@@ -33,7 +33,7 @@ Some images from: https://github.com/msikma/PokeDings
 - **Pkmds.Rcl**: Razor Class Library containing Blazor UI components and services
 - **Pkmds.Web**: Blazor WebAssembly application (the main web app)
 - **Pkmds.Tests**: Unit tests for the application
-- **tools/**: .NET 10 file-based scripts for regenerating static JSON data files (see [AGENTS.md](AGENTS.md#data-generation-tools))
+- **tools/**: .NET 11 file-based scripts for regenerating static JSON data files (see [AGENTS.md](AGENTS.md#data-generation-tools))
 
 [![Build and Test](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml)
 
