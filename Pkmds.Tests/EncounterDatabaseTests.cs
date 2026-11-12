@@ -24,6 +24,47 @@ public class EncounterDatabaseTests
 
     // ── SearchEncounters ──────────────────────────────────────────────────
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData(GameVersion.VL)]
+    public void SearchEncounters_ModernSave_ReturnsPikachuEncounters(GameVersion? version)
+    {
+        var save = new SAV9SV();
+        var state = new TestAppState { SaveFile = save };
+        var service = new AppService(state, new TestRefreshService(), new LegalizationService(state));
+
+        var results = service.SearchEncounters(new EncounterSearchFilter
+        {
+            Species = (ushort)Species.Pikachu,
+            Version = version,
+        }).ToList();
+
+        results.Should().NotBeEmpty();
+        results.Should().Contain(result => result.Encounter.Species == (ushort)Species.Pikachu);
+        results.Should().AllSatisfy(result =>
+        {
+            result.Encounter.Context.Should().NotBe(EntityContext.None);
+        });
+        if (version is { } selectedVersion)
+        {
+            results.Should().AllSatisfy(result => result.Encounter.Version.Contains(selectedVersion).Should().BeTrue());
+        }
+        save.PartyCount.Should().Be(0, "searching must not add Pokémon to the loaded save");
+    }
+
+    [Fact]
+    public void SearchEncounters_UnsupportedVersion_ReturnsEmpty()
+    {
+        var state = new TestAppState { SaveFile = new SAV9SV() };
+        var service = new AppService(state, new TestRefreshService(), new LegalizationService(state));
+
+        service.SearchEncounters(new EncounterSearchFilter
+        {
+            Species = (ushort)Species.Pikachu,
+            Version = GameVersion.Any,
+        }).Should().BeEmpty();
+    }
+
     [Fact]
     public void SearchEncounters_NullSpecies_ReturnsEmpty()
     {

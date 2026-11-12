@@ -153,6 +153,25 @@ machine before making build-time claims. Allocation/GC, peak memory, isolated
 startup, large-list responsiveness, description loading, bulk Bank import, and
 archive throughput are not measured by these runs.
 
+## Encounter-search and contained-error follow-up
+
+The maintainer found an `ArgumentOutOfRangeException` searching Pikachu in a
+Violet save. PKHeX.Core 26.10.18 includes transfer-only version IDs with
+`EntityContext.None` in its modern game range, but its encounter search cannot
+build evolution chains for those IDs. The app now filters that explicit version
+list before generation, while retaining trainer optimization and compatible
+historical encounters. Newer PKHeX source guards its memory overload, but the
+shipped package still requires this filter. Regression cases cover modern-save
+all-game/version-specific searches and unsupported versions.
+
+The local Violet UI search returned 1,346 compatible encounters, or 561 with
+Violet selected. Tab error panels now offer **Report this error**, opening the
+existing report dialog with the original exception, stack trace, and tab name
+prefilled. Users review the report before submitting; attachments remain opt-in.
+Opening and cancelling the dialog were checked locally without sending a report.
+A component regression test verifies exception/context forwarding and no automatic
+submission. Tests compile locally and run only in CI.
+
 ## Remaining release gates
 
 - CI tests (including archive-integrity cases), CodeQL, and UAT deployment/load.
