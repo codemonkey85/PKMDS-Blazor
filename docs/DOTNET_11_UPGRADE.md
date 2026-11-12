@@ -12,15 +12,29 @@ DevServer, with `StaticWebAssetSpaFallbackEnabled` enabled for direct navigation
 to `/bench` and other app routes. Both watch scripts continue to use `dotnet
 watch`; launch URLs are unchanged. Production still publishes static files.
 
-Functions also inherits `net11.0`. The maintainer's Azure portal screenshot
-confirms that the deployed `pkmds-functions` app offers **.NET 11 Isolated**;
-the screenshot still shows **.NET 10 Isolated** selected. Coordinate selecting
-and saving .NET 11 Isolated with the backend deployment before releasing the
-upgraded frontend. The portal setting has not been changed by this work.
+Functions also inherits `net11.0`. The deployed `pkmds-functions` app is now
+configured for **.NET 11 Isolated**, as confirmed by the deployment preflight
+and subsequent read-only Azure inspection. The agent did not change that setting.
 Both deployment workflows check the Windows Function App's `netFrameworkVersion`
 before ZIP deployment and stop if it is not `v11.0`. The UAT frontend job remains
 independent, so a runtime mismatch blocks backend replacement without blocking
 the static preview publish.
+
+Both workflows publish Functions with `-r win-x64 --self-contained true`. A
+successful ZIP deployment alone did not establish worker health: UAT report
+submission returned HTTP 500, and Application Insights showed worker startup
+failing because the Windows instance had `11.0.0-rc.3.26522.148`, but lacked the
+required stable `Microsoft.NETCore.App` 11.0.0. The portal's v11.0 selection did
+not guarantee stable runtime availability on that instance.
+
+The self-contained package includes stable .NET/ASP.NET Core 11.0.0 and its own
+Windows executable; `worker.config.json` launches that executable rather than
+the instance's `dotnet.exe`. This increases deployment size and makes runtime
+servicing dependent on republishing with updated runtime packs. After deploying,
+`tools/verify-functions-health.mjs` sends an empty, non-form request and requires
+the endpoint's expected HTTP 400 validation response. It exercises worker startup,
+DI, and HTTP binding without creating a GitHub report or uploading user content.
+The probe retries for cold start and fails deployment validation on worker errors.
 
 Functions uses `Azure.Functions.Sdk` 1.0.1, pinned through `global.json` so both
 the main project and generated extension project can resolve it. This replaces

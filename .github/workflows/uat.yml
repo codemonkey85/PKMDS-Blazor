@@ -93,7 +93,7 @@ jobs:
           global-json-file: ./global.json
 
       - name: Publish Functions
-        run: dotnet publish Pkmds.Functions/Pkmds.Functions.csproj -c Release -o functions-publish --nologo
+        run: dotnet publish Pkmds.Functions/Pkmds.Functions.csproj -c Release -r win-x64 --self-contained true -o functions-publish --nologo
 
       - name: Zip publish output
         run: cd functions-publish && zip -r ../functions.zip .
@@ -126,3 +126,9 @@ jobs:
             --name pkmds-functions \
             --resource-group pkmds-bug-reports \
             --src functions.zip
+
+      - name: Verify Functions worker is healthy
+        if: >-
+          github.event.pull_request.user.login != 'dependabot[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        run: node tools/verify-functions-health.mjs https://pkmds-functions.azurewebsites.net
