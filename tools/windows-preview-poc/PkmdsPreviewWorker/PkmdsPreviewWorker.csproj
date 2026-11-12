@@ -8,7 +8,7 @@
             prevhost), CoreCLR + WebView2 start fine. It reparents its WebView2 window into the
             HWND the shim passes on the command line and renders via the shared HtmlRenderer.
         -->
-        <TargetFramework>net10.0-windows</TargetFramework>
+        <TargetFramework>net11.0-windows</TargetFramework>
         <OutputType>WinExe</OutputType>
         <RootNamespace>Pkmds.Preview.Windows.Worker</RootNamespace>
         <AssemblyName>PkmdsPreviewWorker</AssemblyName>

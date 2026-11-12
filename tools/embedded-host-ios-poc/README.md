@@ -26,7 +26,7 @@ tools/embedded-host-ios-poc/
 ## Prerequisites
 
 - **Xcode** with the iOS Simulator runtime installed (`xcode-select -p` must point at `/Applications/Xcode.app/Contents/Developer`).
-- **.NET SDK** matching `global.json` (net10.0).
+- **.NET SDK** matching `global.json` (net11.0).
 - **xcodegen** — `brew install xcodegen`.
 - **wasm tools workload** — `dotnet workload install wasm-tools` (one-time).
 

@@ -14,7 +14,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B2F1C0A4-1D2E-4C3B-9A6F-7E8D9C0A1B2C}</ProjectGuid>
     <RootNamespace>PkmdsPreviewShim</RootNamespace>
-    <!-- Standalone PoC project: do not inherit the repo's Directory.Build.props (net10.0, etc.). -->
+    <!-- Standalone PoC project: do not inherit the repo's Directory.Build.props (net11.0, etc.). -->
     <ImportDirectoryBuildProps>false</ImportDirectoryBuildProps>
     <ImportDirectoryBuildTargets>false</ImportDirectoryBuildTargets>
     <!-- "10.0" = whatever Windows 10/11 SDK the machine has installed (don't pin a specific one). -->

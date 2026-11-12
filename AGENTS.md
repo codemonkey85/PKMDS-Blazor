@@ -6,7 +6,8 @@ Guidance for AI agents and coding assistants working in this repository.
 
 Prereqs
 - Install the .NET SDK from `global.json`: `dotnet --list-sdks` to verify.
-- Install Blazor WASM tooling once: `dotnet workload install wasm-tools`.
+- Functions uses .NET 11 and `Azure.Functions.Sdk` pinned in `global.json`; coordinate the Azure .NET 11 Isolated stack setting with deployment (see `docs/DOTNET_11_UPGRADE.md`).
+- Install Blazor WASM tooling for the selected SDK (repeat after a major SDK upgrade): `dotnet workload install wasm-tools`.
 - IDE users can open `Pkmds.slnx`. CLI builds target individual projects (e.g., `Pkmds.Web.csproj`).
 
 Local dev (Blazor WASM)
@@ -50,13 +51,13 @@ Publish locally (static site)
 
 ## Project layout and build
 
-- `Directory.Build.props`: sets global `TargetFramework` to `net10.0`, repo metadata, nullable + implicit usings, and `TreatWarningsAsErrors` in Debug.
+- `Directory.Build.props`: sets global `TargetFramework` to `net11.0`, repo metadata, nullable + implicit usings, and `TreatWarningsAsErrors` in Debug.
 - `Directory.Packages.props`: central package management (PKHeX.Core, MudBlazor, Serilog, FileSystemAccess, etc.).
 - Projects
   - `Pkmds.Core/` (Class Library): PKHeX utilities and extensions. Reusable, UI-independent logic for working with PKHeX.Core (species validation, shiny handling, markings, etc.).
   - `Pkmds.Rcl/` (Razor Class Library): shared UI/components and services. Tailwind integrated via `Tailwind.targets` (input at `Pkmds.Rcl/wwwroot/css/tailwind.input.css`). References `Pkmds.Core`.
   - `Pkmds.Web/` (Blazor WebAssembly): PWA host. Linking and compression enabled; service worker assets generated on publish. JS libs via `libman.json` (crypto-js).
-  - `Pkmds.Tests/` (tests): `net10.0`, references RCL and Core.
+  - `Pkmds.Tests/` (tests): `net11.0`, references RCL and Core.
 
 Runtime wiring (Web)
 - Serilog to Browser Console with adjustable level (via `LoggingLevelSwitch`).
@@ -126,7 +127,7 @@ The default build (no flag) is completely unaffected.
 
 ## Data generation tools
 
-Static JSON data files consumed by `DescriptionService` are generated from external sources using .NET 10 file-based apps in `tools/`. Run them whenever the upstream data changes.
+Static JSON data files consumed by `DescriptionService` are generated from external sources using .NET 11 file-based apps in `tools/`. Run them whenever the upstream data changes.
 
 ### `tools/generate-descriptions.cs`
 
@@ -229,7 +230,7 @@ The `measurements/` directory is gitignored — these reports are local diagnost
 
 Drives the hidden `/bench` route in headless Chromium against a published build and appends runtime numbers to the same `measurements/<Label>.md` report.
 
-- `Pkmds.Rcl/Components/Pages/Benchmark.razor` — unlinked `/bench` page that runs four PKHeX hot-path workloads (legality analysis, encryption roundtrip, search filter over a full populated SAV, encounter generation) and reports JSON via `#bench-result` + `console.log`.
+- `Pkmds.Rcl/Components/Pages/Benchmark.razor` — unlinked `/bench` page that runs five PKHeX hot-path workloads (legality analysis, encryption roundtrip, search filter over a full populated SAV, encounter generation, batch lookup) and reports JSON via `#bench-result` + `console.log`.
 - `Pkmds.Rcl/Services/BenchmarkRunner.cs` — synthetic SAV9SV factory + per-workload iteration + summary stats (mean/min/max/stddev/ops-per-sec).
 - `tools/bench/run-bench.mjs` — Node script that serves the published `wwwroot`, launches Chromium, navigates to `/bench`, waits for `data-bench-state="done"`, scrapes the JSON, and appends a markdown section.
 

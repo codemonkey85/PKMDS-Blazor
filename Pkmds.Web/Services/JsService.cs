@@ -27,7 +27,7 @@ public class JsService(IJSRuntime js)
         var originHex = Convert.ToHexString(origin.ToArray());
         var keyHex = Convert.ToHexString(key.ToArray());
 
-        var encryptedHex = SyncJs.Invoke<string>("encryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant());
+        var encryptedHex = InvokeCrypto("encryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant());
 
         var encryptedBytes = ConvertHexStringToByteArray(encryptedHex);
         encryptedBytes.CopyTo(destination);
@@ -45,7 +45,7 @@ public class JsService(IJSRuntime js)
         var originHex = Convert.ToHexString(origin.ToArray());
         var keyHex = Convert.ToHexString(key.ToArray());
 
-        var decryptedHex = SyncJs.Invoke<string>("decryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant());
+        var decryptedHex = InvokeCrypto("decryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant());
 
         var decryptedBytes = ConvertHexStringToByteArray(decryptedHex);
         decryptedBytes.CopyTo(destination);
@@ -75,7 +75,20 @@ public class JsService(IJSRuntime js)
     public byte[] Md5Hash(byte[] toArray)
     {
         var toBeHashedHexString = Convert.ToHexString(toArray.ToArray());
-        var hashedHexString = SyncJs.Invoke<string>("md5Hash", toBeHashedHexString);
+        var hashedHexString = InvokeCrypto("md5Hash", toBeHashedHexString);
         return ConvertHexStringToByteArray(hashedHexString);
+    }
+
+    private string InvokeCrypto(string identifier, params object?[] args)
+    {
+        try
+        {
+            return SyncJs.Invoke<string>(identifier, args);
+        }
+        catch (JSException exception)
+        {
+            // Fail the save operation rather than returning incomplete or unencrypted data.
+            throw new CryptographicException($"JavaScript cryptographic operation '{identifier}' failed.", exception);
+        }
     }
 }

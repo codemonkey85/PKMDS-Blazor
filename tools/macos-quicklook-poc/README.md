@@ -35,7 +35,7 @@ tools/macos-quicklook-poc/
   ```sh
   sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
   ```
-- **.NET SDK** matching `global.json` (net10.0)
+- **.NET SDK** matching `global.json` (net11.0)
 - **xcodegen** — `brew install xcodegen`
 
 ## Build & run

@@ -1,8 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Azure.Functions.Sdk">
 
     <PropertyGroup>
-        <AzureFunctionsVersion>v4</AzureFunctionsVersion>
-        <OutputType>Exe</OutputType>
         <RootNamespace>Pkmds.Functions</RootNamespace>
     </PropertyGroup>
 
@@ -10,7 +8,6 @@
         <PackageReference Include="Azure.Storage.Blobs"/>
         <PackageReference Include="Microsoft.Azure.Functions.Worker"/>
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore"/>
-        <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" PrivateAssets="all"/>
         <PackageReference Include="Octokit"/>
     </ItemGroup>
 

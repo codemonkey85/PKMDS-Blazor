@@ -75,6 +75,9 @@ public partial class BugReportDialog
     [Parameter]
     public Exception? CapturedException { get; set; }
 
+    [Parameter]
+    public string? ErrorContext { get; set; }
+
     [Inject]
     private IBugReportService BugReportService { get; set; } = null!;
 
@@ -86,6 +89,7 @@ public partial class BugReportDialog
             // the pre-filled details through the single "actual" field.
             category = BugReportCategory.Bug;
             actual =
+                (string.IsNullOrWhiteSpace(ErrorContext) ? string.Empty : $"Area: {ErrorContext}\n\n") +
                 $"[Crash] {CapturedException.GetType().Name}: {CapturedException.Message}" +
                 $"\n\nStack trace:\n{CapturedException.StackTrace}" +
                 "\n\n--- Additional details ---\nPlease describe what you were doing when this crash occurred:\n\n";

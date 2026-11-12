@@ -126,7 +126,7 @@ jobs:
           global-json-file: ./global.json
 
       - name: Publish Functions
-        run: dotnet publish Pkmds.Functions/Pkmds.Functions.csproj -c Release -o functions-publish --nologo
+        run: dotnet publish Pkmds.Functions/Pkmds.Functions.csproj -c Release -r win-x64 --self-contained true -o functions-publish --nologo
 
       - name: Zip publish output
         run: cd functions-publish && zip -r ../functions.zip .
@@ -144,9 +144,20 @@ jobs:
             --policy @Pkmds.Functions/report-retention-policy.json \
             --output none
 
+      - name: Verify Azure Functions runtime
+        run: |
+          runtime=$(az functionapp config show --name pkmds-functions --resource-group pkmds-bug-reports --query netFrameworkVersion --output tsv)
+          if [ "$runtime" != "v11.0" ]; then
+            echo "::error::pkmds-functions is configured for '$runtime'. Coordinate selecting .NET 11 Isolated with the backend deployment before deploying this package."
+            exit 1
+          fi
+
       - name: Deploy to Azure Functions
         run: |
           az functionapp deployment source config-zip \
             --name pkmds-functions \
             --resource-group pkmds-bug-reports \
             --src functions.zip
+
+      - name: Verify Functions worker is healthy
+        run: node tools/verify-functions-health.mjs https://pkmds-functions.azurewebsites.net

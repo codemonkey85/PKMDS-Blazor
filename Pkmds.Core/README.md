@@ -55,4 +55,4 @@ using Pkmds.Core.Utilities;
 ## Dependencies
 
 - PKHeX.Core
-- .NET 10.0
+- .NET 11.0

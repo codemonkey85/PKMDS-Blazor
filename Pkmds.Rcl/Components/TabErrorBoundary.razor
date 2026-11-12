@@ -18,6 +18,12 @@
                            OnClick="@Recover">
                     Try again
                 </MudButton>
+                <MudButton Variant="@Variant.Outlined"
+                           Color="@Color.Primary"
+                           StartIcon="@Icons.Material.Filled.BugReport"
+                           OnClick="@(() => ReportErrorAsync(exception))">
+                    Report this error
+                </MudButton>
             </MudStack>
         </MudAlert>
     </ErrorContent>

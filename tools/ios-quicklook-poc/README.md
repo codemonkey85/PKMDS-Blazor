@@ -11,7 +11,7 @@ tools/ios-quicklook-poc/
 ├── PkmdsQuickLook/                           # C# iOS app extension (Microsoft.iOS.Sdk)
 │   ├── PreviewViewController.cs              # UIViewController + IQLPreviewingController + WKWebView
 │   ├── Info.plist                            # NSExtension dict + QL principal class
-│   └── PkmdsQuickLook.csproj                 # net10.0-ios + IsAppExtension=true + PublishAot=true
+│   └── PkmdsQuickLook.csproj                 # net11.0-ios + IsAppExtension=true + PublishAot=true
 ├── xcode/
 │   ├── project.yml                           # xcodegen — host SwiftUI app only
 │   └── PkmdsHost/PkmdsHostApp.swift          # Minimal placeholder
@@ -24,7 +24,7 @@ tools/ios-quicklook-poc/
 ## Prerequisites
 
 - **Xcode** (full install, not just Command Line Tools) with the iOS Simulator runtime.
-- **.NET SDK** matching `global.json` (net10.0).
+- **.NET SDK** matching `global.json` (net11.0).
 - **`ios` .NET workload** — `sudo dotnet workload install ios` (one-time).
 - **xcodegen** — `brew install xcodegen`.
 

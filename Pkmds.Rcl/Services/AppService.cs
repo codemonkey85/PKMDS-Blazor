@@ -1517,14 +1517,24 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             blankPkm.Form = form;
         }
 
-        // When Version is null, pass an empty array so GenerateEncounters searches all
-        // versions compatible with the PKM's format internally.
-        var versions = filter.Version is { } v
+        var candidateVersions = filter.Version is { } v
             ? new[] { v }
-            : [];
+            : GameUtil.GetVersionsWithinRange(blankPkm, blankPkm.Context);
 
+        // PKHeX.Core 26.10.18 includes transfer-only IDs with Context.None in the HOME
+        // version range, but its encounter generator cannot search their evolution chains.
+        // Newer source guards the memory overload; filter explicitly for the shipped package.
+        ReadOnlyMemory<GameVersion> versions = candidateVersions
+            .Where(static version => version.Context != EntityContext.None).ToArray();
+        if (versions.IsEmpty)
+        {
+            yield break;
+        }
+
+        // Match WinForms: optimize separately and supply the explicit compatible game list.
+        EncounterMovesetGenerator.OptimizeCriteria(blankPkm, sav);
         var encounters =
-            EncounterMovesetGenerator.GenerateEncounters(blankPkm, sav, ReadOnlyMemory<ushort>.Empty, versions);
+            EncounterMovesetGenerator.GenerateEncounters(blankPkm, ReadOnlyMemory<ushort>.Empty, versions);
 
         // Deduplicate by reference: WC8/MysteryGift objects are classes and the generator can
         // return the same instance multiple times (once per compatible game version, e.g. SW and SH).

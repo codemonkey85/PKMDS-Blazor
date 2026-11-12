@@ -1,5 +1,5 @@
 #:project ../preview-shared/Pkmds.Preview.csproj
-#:property TargetFramework=net10.0-windows
+#:property TargetFramework=net11.0-windows
 
 // Registers / unregisters the PKMDS Windows Explorer preview handler.
 //

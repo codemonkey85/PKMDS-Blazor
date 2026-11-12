@@ -15,7 +15,7 @@ SAV_FIXTURE="${2:-$REPO_ROOT/TestFiles/Test-Save-Scarlet.sav}"
 RID="${3:-osx-arm64}"
 
 CSPROJ="$SCRIPT_DIR/PkmdsNative/PkmdsNative.csproj"
-PUBLISH_DIR="$SCRIPT_DIR/PkmdsNative/bin/Release/net10.0/$RID/publish"
+PUBLISH_DIR="$SCRIPT_DIR/PkmdsNative/bin/Release/net11.0/$RID/publish"
 DYLIB="$PUBLISH_DIR/PkmdsNative.dylib"
 
 echo "==> dotnet publish ($RID, AOT)"
