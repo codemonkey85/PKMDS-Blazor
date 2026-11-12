@@ -15,7 +15,7 @@ const repoRoot = resolve(__dirname, '..', '..');
 const args = parseArgs(process.argv.slice(2));
 const label = args.label;
 if (!label) {
-    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br]');
+    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br] [--suite hotpaths|application]');
     process.exit(2);
 }
 const siteDir = resolve(args.site ?? join(repoRoot, 'release', 'wwwroot'));
@@ -23,10 +23,12 @@ const outputPath = resolve(args.output ?? join(repoRoot, 'measurements', `${labe
 const benchTimeoutMs = Number(args.timeout ?? 300_000);
 const runs = Number(args.runs ?? 3);
 const compression = args.compression ?? 'identity';
+const suite = args.suite ?? 'hotpaths';
 if (!Number.isInteger(runs) || runs < 1 || runs > 100 || !Number.isFinite(benchTimeoutMs) || benchTimeoutMs <= 0 || !['identity', 'br'].includes(compression)) {
     throw new Error('Expected runs=1..100, a positive timeout, and compression=identity|br.');
 }
 if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(label)) throw new Error('Label must be a filename-safe identifier.');
+if (!['hotpaths', 'application'].includes(suite)) throw new Error('Expected suite=hotpaths|application.');
 
 await stat(siteDir).catch(() => {
     console.error(`Site directory not found: ${siteDir}`);
@@ -148,13 +150,14 @@ try {
         });
         const report = await inFreshPage(async page => {
             const navStart = performance.now();
-            await page.goto(`${baseUrl}/bench`, { waitUntil: 'load', timeout: 60_000 });
+            await page.goto(`${baseUrl}/bench?suite=${suite}`, { waitUntil: 'load', timeout: 60_000 });
             await page.waitForSelector('#bench-root[data-bench-state="done"], #bench-root[data-bench-state="error"]', { timeout: benchTimeoutMs });
             const elapsedMs = performance.now() - navStart;
             if (await page.getAttribute('#bench-root', 'data-bench-state') === 'error') {
                 throw new Error(`Bench page reported error:\n${await page.textContent('#bench-error')}`);
             }
             const result = JSON.parse(await page.textContent('#bench-result'));
+            if ((result.Suite ?? 'hotpaths') !== suite) throw new Error('Published app did not run the requested suite.');
             if (!result.Results?.length || result.Results.some(value =>
                 ![value.TotalMs, value.MeanMs, value.MinMs, value.MaxMs, value.StdDevMs].every(Number.isFinite) ||
                 !Number.isInteger(value.Iterations) || value.Iterations <= 0 ||
@@ -176,7 +179,7 @@ try {
 }
 
 const measurement = {
-    SchemaVersion: 1, Label: label, Site: siteDir, Date: new Date().toISOString(),
+    SchemaVersion: 1, Label: label, Site: siteDir, Date: new Date().toISOString(), Suite: suite,
     BrowserVersion: browser?.version(), NodeVersion: process.version,
     Machine: { OS: platform(), Release: release(), Architecture: arch(), CPU: cpus()[0]?.model, LogicalProcessors: cpus().length, TotalMemoryBytes: totalmem() },
     CachePolicy: 'Fresh nonpersistent context per navigation; service workers blocked; no-store HTTP; browser process reused; engine/OS/server filesystem caches not reset.',
@@ -195,6 +198,11 @@ async function inFreshPage(action) {
     const errors = [];
     try {
         const page = await context.newPage();
+        if (suite === 'application') {
+            // Fresh nonpersistent context, a random loopback port, and an explicit
+            // marker are all required before the opt-in Bank benchmark can run.
+            await page.addInitScript(() => { globalThis.pkmdsBenchmarkIsolation = true; });
+        }
         page.on('pageerror', error => errors.push(error.message));
         page.on('console', message => {
             if (message.type() === 'error') console.error('[page console]', message.text());
@@ -219,7 +227,7 @@ function parseArgs(argv) {
         const arg = argv[i];
         const key = arg.slice(2);
         const next = argv[++i];
-        if (!arg.startsWith('--') || !['label', 'site', 'output', 'timeout', 'runs', 'compression'].includes(key) ||
+        if (!arg.startsWith('--') || !['label', 'site', 'output', 'timeout', 'runs', 'compression', 'suite'].includes(key) ||
             Object.hasOwn(out, key) || !next || next.startsWith('--')) throw new Error(`Invalid argument: ${arg}`);
         out[key] = next;
     }
@@ -236,6 +244,8 @@ function renderMarkdown(label, report) {
     lines.push(`- Navigation → welcome DOM: **${report.WelcomeDomReadyMs.toFixed(1)} ms** (separate fresh-context home load; not time to interactive/paint)`);
     lines.push(`- Navigation → benchmark complete: **${report.NavToBenchmarkDoneMs.toFixed(1)} ms** (includes workloads; not startup)`);
     lines.push(`- UA: \`${report.UserAgent}\``);
+    lines.push(`- Suite: ${report.Suite ?? 'hotpaths'}`);
+    if (report.Notes) lines.push(`- Scope: ${report.Notes}`);
     lines.push('');
     lines.push('| Workload | Iter | Ops/iter | Mean (ms) | Min (ms) | Max (ms) | StdDev (ms) | Ops/sec |');
     lines.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');
@@ -244,6 +254,16 @@ function renderMarkdown(label, report) {
         lines.push(
             `| ${r.Name} | ${r.Iterations} | ${r.OpsPerIteration} | ${r.MeanMs.toFixed(3)} | ${r.MinMs.toFixed(3)} | ${r.MaxMs.toFixed(3)} | ${r.StdDevMs.toFixed(3)} | ${opsPerSec.toFixed(0)} |`
         );
+    }
+    if (report.Results.some(result => result.Notes)) {
+        lines.push('');
+        lines.push('| Workload | Managed allocation delta, bytes (timed operations) | GC collections by generation | Heap before / after, bytes (snapshots) | Max timer delay, ms (whole batch) | Timer samples |');
+        lines.push('| --- | ---: | --- | --- | ---: | ---: |');
+        for (const result of report.Results) {
+            lines.push(`| ${result.Name} | ${result.ManagedAllocatedBytes ?? 'unavailable'} | ${result.CollectionsByGeneration?.join('/') ?? 'unavailable'} | ${result.ManagedHeapBeforeBytes ?? 'unavailable'} / ${result.ManagedHeapAfterBytes ?? 'unavailable'} | ${result.MaxEventLoopDelayMs?.toFixed(2) ?? 'unavailable'} | ${result.EventLoopSamples ?? 'unavailable'} |`);
+        }
+        lines.push('');
+        for (const result of report.Results) if (result.Notes) lines.push(`- ${result.Name}: ${result.Notes}`);
     }
     lines.push('');
     return lines.join('\n');

@@ -97,10 +97,84 @@ visibility; requests still in flight are not included. Do not treat them as the
 entire site's eventual traffic. Failed invocations retain completed repetitions
 and an error in JSON; failures do not append successful-looking Markdown.
 
-The timings do not establish managed allocations, GC cost, peak memory, or UI
-responsiveness. Description loading, Bank bulk import, archive operations, and
-large-list interaction measurements remain separate work in #1387/#1374.
+The default hot-path timings do not establish managed allocations, GC cost,
+peak memory, or UI responsiveness. The opt-in application suite below adds
+separate diagnostics; large-list interactions remain outside this harness.
 
 Run `node tools/verify-service-worker-assets.mjs <site>` after publishing as a
 separate integrity check. Browser harness validation is not a substitute for CI
 tests or platform/data-preservation smoke checks.
+
+## Opt-in application suite (#1387)
+
+```powershell
+node tools/bench/run-bench.mjs --label application-net11 --site release/wwwroot `
+    --suite application --runs 3 --compression br `
+    --output measurements/application-net11.md
+```
+
+The normal `/bench` route and the default CLI suite still run the five existing
+hot paths. `--suite application` requests `/bench?suite=application` and installs
+an explicit harness marker in each fresh context. Before any Bank API is called,
+the application bridge requires that marker, WebDriver automation, a loopback
+hostname, and **no existing IndexedDB database**. It refuses existing Bank data
+even in an automated local context. This is an accidental-use guard, not an
+authentication mechanism. Never run this suite with a real user profile.
+
+The suite uses the production service/interop/IndexedDB paths and appends
+synthetic rows. The runner issues no explicit clear/delete operation. Production
+Bank reads retain their normal malformed-record cleanup behavior; the fresh
+context guard is required before any Bank read too. Each context is discarded
+after the run. Appending is deliberate: repeated measured imports
+must preserve existing rows, just as the real import contract does.
+
+| Workload | Input and timing boundary |
+| --- | --- |
+| `description-first-load` | Fresh `DescriptionService`, three HTTP/JSON loads and first Tackle/Overgrow/Master Ball queries. Service caches start empty; HTTP/server cache and compression follow harness policy. |
+| `bank-add-range` | 1,000 fixed PK9 records; stored-data extraction, Base64, source-generated JSON, Blazor interop, and one committed IndexedDB transaction. |
+| `bank-json-import` | Fixed synthetic 1,000-record JSON export; byte-array interop, JS decoding/parsing, and one committed transaction. |
+| `bank-read` | All 8,000 synthetic rows, including JSON/Base64/PKM rehydration through `BankService`. |
+| `generic-zip-load` / `manic-load` | Production save loader, wrapper detection, and parsing of a loadable synthetic Gen 7 save. |
+| `generic-zip-export` / `manic-export` | Production archive writer replacing edited save bytes while retaining metadata, paths, and timestamps. |
+
+There is one warm-up per workload, then three measured iterations (five for each
+archive workload). Bank starts empty: warm-up plus measured add-range calls
+produce 4,000 rows; warm-up plus measured JSON imports produce another 4,000.
+The initial database/module open is outside timing. Verification reads happen
+between iterations and can influence subsequent GC/cache state; no forced GC is
+used. These are representative boundary workloads, not isolated engine timings.
+
+Every Bank step verifies row count, distinct IDs, all Pokémon bytes, tag/source,
+and imported timestamps. The real export path is checked outside the timed
+operations. Archive export checks edited bytes, reload/edited money, wrapper
+kind, every entry/path, ZIP clock timestamps, metadata, and unchanged input
+buffers. ZIP timestamps have no timezone offset. The synthetic save initializes
+the footer marker omitted by PKHeX.Core 26.10.18's blank constructor; production
+loading/export code is unchanged. Fixtures are loadable test data, not playable
+game progress. Fixture SHA-256 values and Bank JSON length are retained in raw
+reports to validate matched comparisons.
+
+Application diagnostics are separate fields in each workload result:
+
+- `ManagedAllocatedBytes`: sum of process-wide allocation-counter deltas around
+  timed operations, after probing that a known allocation advances the counter.
+  Null means unavailable/failed calibration. The precise reads occur outside the
+  stopwatch. They include managed harness/other managed activity and exclude
+  JavaScript/native allocations; dividing by iterations gives a per-call estimate.
+- `CollectionsByGeneration`: runtime-reported process-wide collection-count
+  deltas around timed operations. These counts are not GC pause durations.
+- `ManagedHeapBeforeBytes` / `ManagedHeapAfterBytes`: `GC.GetTotalMemory(false)`
+  snapshots before/after the measured batch, including validation activity. They
+  exclude fragmentation and do not force a collection. They are not peak or
+  retained-memory measurements and need not match allocation deltas.
+- `MaxEventLoopDelayMs` / `EventLoopSamples`: maximum lateness of a 16 ms JS timer
+  during the whole measured batch, including validation and counter overhead.
+  A batch that blocks the event loop can produce a large delay with few samples.
+  This is an instrumentation-dependent scheduling diagnostic, not scrolling,
+  interaction latency, or a per-operation responsiveness guarantee.
+
+Total browser/WASM/JS/native peak memory is **not measured** by these APIs.
+Use separate profiling passes for that question; do not infer a memory improvement
+from one heap snapshot, a zero collection count, or managed-only import costs.
+References: [process allocation counter](https://learn.microsoft.com/dotnet/api/system.gc.gettotalallocatedbytes),
+[managed heap snapshots](https://learn.microsoft.com/en-us/dotnet/api/system.gc.gettotalmemory).

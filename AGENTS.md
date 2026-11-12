@@ -244,6 +244,8 @@ Pop-Location
 
 The bench page is hidden — no nav link, just reachable by typing `/bench`. Triggered automatically by `measure-publish.ps1 -RunBenchmark`.
 
+Opt-in application suite: `node tools/bench/run-bench.mjs --label app --suite application --runs 3 --compression br`. This requires fresh automated loopback contexts with no IndexedDB databases; it uses synthetic Bank rows and archives. The default suite remains the five hot paths. See `tools/bench/README.md` for isolation, correctness checks, managed-counter/heap/timer scopes, and peak-memory limitations.
+
 ## MudBlazor and Razor gotchas
 
 - `ComboItem` (PKHeX) is a **sealed record** (reference type). Using `ComboItem?` in a Razor `@bind-Value` triggers CS8669 in the Razor-generated code — use `int?` with `.Value` for select bindings instead.

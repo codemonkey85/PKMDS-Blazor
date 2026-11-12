@@ -1,5 +1,6 @@
 @page "/bench"
 @layout MinimalLayout
+@inject HttpClient Http
 
 <PageTitle>Benchmark</PageTitle>
 
@@ -14,6 +15,9 @@
 </div>
 
 @code {
+    [SupplyParameterFromQuery(Name = "suite")]
+    public string? Suite { get; set; }
+
     private string state = "init";
     private string? error;
     private string resultJson = "";
@@ -31,8 +35,12 @@
 
         try
         {
-            var runner = new BenchmarkRunner();
-            var report = runner.Run();
+            var report = Suite switch
+            {
+                null or "hotpaths" => new BenchmarkRunner().Run(),
+                "application" => await new ApplicationBenchmarkRunner(Http, JSRuntime).RunAsync(),
+                _ => throw new InvalidOperationException("Unknown benchmark suite."),
+            };
             // UserAgent is filled in by the Playwright runner via page.evaluate
             // — keeping that out of C# avoids one more IJSRuntime.InvokeAsync<T>
             // call site that the trimmer flags as reflection-unsafe.

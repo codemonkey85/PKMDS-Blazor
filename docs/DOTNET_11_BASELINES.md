@@ -120,8 +120,10 @@ Use these results to compare focused future changes, reporting startup/size
 alongside steady-state behavior.
 
 This closes the missing clean-publish comparison and adds a separate welcome-DOM
-measurement. #1387 remains open for representative description loading, synthetic
-Bank bulk import, archive operations, managed allocation/GC/peak-memory data, and
-responsiveness. Browser/device breadth, existing-profile update validation, and
+measurement. The subsequent [application suite](DOTNET_11_APPLICATION_BENCHMARKS.md)
+adds representative description loading, synthetic Bank bulk import/read, archive
+operations, managed counters/heap snapshots, and a scheduling diagnostic. Total
+peak memory and real UI responsiveness remain follow-up work in #1387/#1374.
+Browser/device breadth, existing-profile update validation, and
 other deployment checks remain in #1390. Larger experiments are linked from
 #1374; no allocation or memory improvement is claimed here.
