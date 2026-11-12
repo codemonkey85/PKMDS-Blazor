@@ -8,6 +8,33 @@ public class PokeApiSpriteUrlsTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
+    public void VivillonMeadow_UsesBaseHomeFilename(bool isShiny)
+    {
+        var shinyPath = isShiny ? "shiny/" : string.Empty;
+        PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl((ushort)Species.Vivillon, 6, isShiny: isShiny)
+            .Should().Be(SpriteSource.HomeBaseUrl + shinyPath + "666.png");
+    }
+
+    [Theory]
+    [InlineData(GameVersion.X, "generation-vi/x-y", "png")]
+    [InlineData(GameVersion.OR, "generation-vi/omega-ruby-alpha-sapphire", "png")]
+    [InlineData(GameVersion.US, "generation-vii/ultra-sun-ultra-moon", "gif")]
+    [InlineData(GameVersion.VL, "generation-ix/scarlet-violet", "webp")]
+    [InlineData(GameVersion.ZA, "generation-ix/legends-za", "webp")]
+    public void VivillonMeadow_UsesBaseGameFilename(GameVersion version, string directory, string extension)
+    {
+        foreach (var isShiny in new[] { false, true })
+        {
+            var shinyPath = isShiny ? "shiny/" : string.Empty;
+            PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl((ushort)Species.Vivillon, 6,
+                    isShiny: isShiny, version: version)
+                .Should().Be(VersionsBaseUrl + directory + "/" + shinyPath + "666." + extension);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
     public void LegendArceus_UsesNormalArtworkInSelectedSet(bool isShiny)
     {
         var pokemon = new PA8 { Species = (ushort)Species.Arceus, Form = 18 };

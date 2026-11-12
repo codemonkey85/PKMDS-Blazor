@@ -112,14 +112,13 @@ public static class PokeApiSpriteUrls
         { (649, 2), "chill" },
         { (649, 3), "douse" },
         { (649, 4), "shock" },
-        // Vivillon (666) — all 20 patterns are named; no plain base URL exists
+        // Vivillon (666) — Meadow (form 6) uses the base numeric filename; see PokeApiFormIds.
         { (666, 0), "icy-snow" },
         { (666, 1), "polar" },
         { (666, 2), "tundra" },
         { (666, 3), "continental" },
         { (666, 4), "garden" },
         { (666, 5), "elegant" },
-        { (666, 6), "meadow" },
         { (666, 7), "modern" },
         { (666, 8), "marine" },
         { (666, 9), "archipelago" },
@@ -278,6 +277,7 @@ public static class PokeApiSpriteUrls
         // ── Gen 6 alternate forms ─────────────────────────────────────────────
         { (658, 1), 10116 },
         { (658, 2), 10117 }, // Greninja-Battle-Bond / -Ash
+        { (666, 6), 666 }, // Vivillon-Meadow uses 666, not 666-meadow, including shiny sprites.
         { (670, 5), 10061 }, // Floette-Eternal
         { (681, 1), 10026 }, // Aegislash-Blade      (PKHeX: 0=Shield, 1=Blade)
         { (710, 1), 10027 },
