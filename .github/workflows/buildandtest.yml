@@ -60,4 +60,4 @@ jobs:
         run: dotnet test Pkmds.Tests/Pkmds.Tests.csproj --configuration Release
 
       - name: Test JavaScript behavior
-        run: node --test tools/tests/service-worker-sprites.test.mjs tools/tests/sprite-upstream.test.mjs tools/tests/sprite-publication.test.mjs tools/tests/browse-autocomplete.test.mjs tools/tests/razor-control-parser.test.mjs
+        run: node --test tools/tests/service-worker-sprites.test.mjs tools/tests/sprite-upstream.test.mjs tools/tests/sprite-publication.test.mjs tools/tests/browse-autocomplete.test.mjs tools/tests/razor-control-parser.test.mjs tools/tests/benchmark-isolation.test.mjs

@@ -286,7 +286,7 @@ public sealed class BenchmarkRunner
         return Summarize("batch-lookup", timings, opsPerIteration: BatchLookupProperties.Length);
     }
 
-    private static BenchmarkResult Summarize(string name, double[] timings, int opsPerIteration)
+    internal static BenchmarkResult Summarize(string name, double[] timings, int opsPerIteration)
     {
         var total = 0.0;
         var min = double.MaxValue;

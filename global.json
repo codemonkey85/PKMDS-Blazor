@@ -5,7 +5,7 @@
     "version": "11.0.100"
   },
   "msbuild-sdks": {
-    "Azure.Functions.Sdk": "1.0.1"
+    "Azure.Functions.Sdk": "1.0.2"
   },
   "test": {
     "runner": "Microsoft.Testing.Platform"

@@ -120,6 +120,10 @@ Core, rather than leaving incompatible .NET 10 consumers of a .NET 11 library.
 
 ### Initial performance observations
 
+This is the pre-merge measurement snapshot. The subsequent clean-publish and
+separate welcome-DOM comparison is recorded in
+[the baseline follow-up](DOTNET_11_BASELINES.md).
+
 The unchanged source at `1ce1b2fe90eb0285d9b5615e7fcce16fbf7034dd` was exported
 to a separate directory and published with SDK 10.0.403 / Mono 10.0.14. The
 migration was published with SDK 11.0.100 / Mono 11.0.0. Both retained full trim,
@@ -172,16 +176,41 @@ Opening and cancelling the dialog were checked locally without sending a report.
 A component regression test verifies exception/context forwarding and no automatic
 submission. Tests compile locally and run only in CI.
 
-## Remaining release gates
+## Status after migration merge
 
-- CI tests (including archive-integrity cases), CodeQL, and UAT deployment/load.
-- Broader save-generation coverage, legalization outcome presentation, explicit
-  AES/MD5 vectors through the .NET bridge, and embedded-host interop.
-- Pokédex variable-height scrolling, rendered rows, memory, selection/drag, and
-  Safari compatibility; IDE debugging and local-PKHeX watch.
-- Controlled cached/new frontend contract checks against the shared Functions
-  backend, coordinated Azure .NET 11 stack selection/deployment, and macOS/iOS
-  native builds.
+The maintainer approved merging #1384 on November 12, 2026; merge commit
+`326729f1ec581489a1a145bdf7252ed0aab55e0f` contains the framework migration.
+Build/Test, CodeQL, UAT deployment/fresh load, Functions deployment/health probing,
+and maintainer report submission passed. Functional crypto save exports and Bank
+export/import also passed maintainer UAT checks. The maintainer subsequently
+confirmed Pokédex scrolling and drag-and-drop on UAT.
+
+Production [run 43296894527](https://github.com/codemonkey85/PKMDS-Blazor/actions/runs/43296894527)
+initially failed when Pages could not discover the just-uploaded artifact. After
+the maintainer approved retrying only the failed Pages job, attempt 2 succeeded.
+A fresh isolated Chromium load of `https://pkmds.app/` displayed the welcome UI
+without page exceptions or Blazor error UI, with an active controlling service
+worker and the expected deployment cache version. Existing-profile update and
+cached-frontend contract checks remain open.
+
+Issue #1374 remains the tracker for the remaining work:
+
+- #1387: reproducible clean publish/browser baselines, then representative
+  description, Bank, archive, memory, and responsiveness measurements.
+- #1388: a C# 15 legalization result union/closed-case prototype with call-site
+  and allocation comparisons, preserving best-effort Pokémon and HaX warnings.
+- #1389: Gateway IDE debugging/watch checks and file-based tooling evaluation.
+- #1390: existing-profile deployed-origin update, cached/new frontend backend
+  contracts, Safari/native builds, embedded-host/broader save checks, explicit
+  .NET crypto vectors, selection, and deployed contained-error reporting.
+- #1391: Runtime Async investigation limited to Functions/CoreCLR tools.
+- #883: browser runtime alternatives, AOT, and SIMD; #497/#498: Advanced Search
+  and Encounter Database virtualization. Existing pagination does not become
+  virtualization automatically. Further Bank/batch-preview work needs evidence.
+
+Scrolling/drag functional confirmation does not establish rendered-element or
+memory improvements. Previously reviewed syntax, stream adapters, and JSON/Base64
+replacements remain deferred without a concrete readability/measured benefit.
 
 ### Published-app smoke checks after fixture approval
 

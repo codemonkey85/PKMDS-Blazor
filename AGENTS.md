@@ -209,7 +209,7 @@ Used to compare WASM build configs (AOT, SIMD, trim, ...) on build time, deploy 
 
 ### `measure-publish.ps1`
 
-Publishes `Pkmds.Web` in Release with optional MSBuild args, measures publish time and output size, and writes a labeled markdown report to `measurements/<Label>.md`. Cleans `release/` AND `obj/Release` for each project before publishing so build-time numbers reflect a true cold build.
+Publishes `Pkmds.Web` in Release with optional MSBuild args, measures publish time and output size, and writes Markdown plus exact metadata to `measurements/<Label>.md` and `<Label>.publish.json`. Cleans the chosen publish directory and Web/RCL/Core Release `bin/` and `obj/` before publishing. SDK/NuGet/build-server/OS caches remain warm; this is a clean project-output build, not a machine-cache-cold build. Use a unique label per publish. See `tools/bench/README.md` for matched-worktree measurements with `-ProjectRoot` and `-DotNetPath`.
 
 ```powershell
 # Baseline (current settings)
@@ -232,7 +232,7 @@ Drives the hidden `/bench` route in headless Chromium against a published build 
 
 - `Pkmds.Rcl/Components/Pages/Benchmark.razor` — unlinked `/bench` page that runs five PKHeX hot-path workloads (legality analysis, encryption roundtrip, search filter over a full populated SAV, encounter generation, batch lookup) and reports JSON via `#bench-result` + `console.log`.
 - `Pkmds.Rcl/Services/BenchmarkRunner.cs` — synthetic SAV9SV factory + per-workload iteration + summary stats (mean/min/max/stddev/ops-per-sec).
-- `tools/bench/run-bench.mjs` — Node script that serves the published `wwwroot`, launches Chromium, navigates to `/bench`, waits for `data-bench-state="done"`, scrapes the JSON, and appends a markdown section.
+- `tools/bench/run-bench.mjs` — Node script that serves published `wwwroot` and repeats isolated Chromium context loads of `/` (welcome DOM timing) and `/bench` (workload completion). Appends Markdown and raw `.runtime.jsonl` records with environment/cache/compression details. Defaults to three repetitions and uncompressed HTTP; `--compression br` serves published Brotli siblings. These timings do not measure allocations, peak memory, or time to interactive.
 
 One-time setup:
 ```powershell
@@ -243,6 +243,8 @@ Pop-Location
 ```
 
 The bench page is hidden — no nav link, just reachable by typing `/bench`. Triggered automatically by `measure-publish.ps1 -RunBenchmark`.
+
+Opt-in application suite: `node tools/bench/run-bench.mjs --label app --suite application --runs 3 --compression br`. This requires fresh automated loopback contexts with no IndexedDB databases; it uses synthetic Bank rows and archives. The default suite remains the five hot paths. See `tools/bench/README.md` for isolation, correctness checks, managed-counter/heap/timer scopes, and peak-memory limitations.
 
 ## MudBlazor and Razor gotchas
 
