@@ -24,6 +24,8 @@ public partial class PidEcDialog
 
     private bool KeepGender { get; set; } = true;
 
+    private bool KeepIVs { get; set; }
+
     private bool AvoidShiny
     {
         get => avoidShiny;
@@ -151,17 +153,21 @@ public partial class PidEcDialog
         const int maxEncounterChecks = 1_000;
         var encounterChecks = 0;
         var desiredAbilityBit = Pokemon.PID & 1;
+        var exactPairs = KeepIVs ? ClassicPidIvGenerator.GenerateForIVs(SelectedMethod, Pokemon.GetIVs()) : null;
+        var attemptLimit = exactPairs?.Length ?? maxAttempts;
         IsGenerating = true;
         try
         {
-            for (var attempts = 1; attempts <= maxAttempts; attempts++)
+            for (var attempts = 1; attempts <= attemptLimit; attempts++)
             {
                 if (attempts % YieldInterval == 0)
                 {
                     await Task.Yield();
                 }
 
-                var pair = ClassicPidIvGenerator.Generate(SelectedMethod, NextRandomUInt32());
+                var pair = exactPairs is not null
+                    ? exactPairs[attempts - 1]
+                    : ClassicPidIvGenerator.Generate(SelectedMethod, NextRandomUInt32());
                 var isShiny = ShinyUtil.GetIsShiny3(Pokemon.ID32, pair.Pid);
                 if ((pair.Pid & 1) != desiredAbilityBit ||
                     KeepNature && pair.Pid % 25 != desiredNature ||
@@ -196,7 +202,9 @@ public partial class PidEcDialog
             }
 
             Snackbar.Add(
-                "Could not find PID/IVs matching this encounter and the selected constraints. " +
+                (KeepIVs
+                    ? "No PID matches the exact current IVs, selected method, encounter, and constraints. "
+                    : "Could not find PID/IVs matching this encounter and the selected constraints. ") +
                 "Try relaxing the constraints. The Pokémon was not changed.", Severity.Warning);
         }
         finally

@@ -6,6 +6,33 @@ public class ClassicPidIvGeneratorTests
     [InlineData(PIDType.Method_1)]
     [InlineData(PIDType.Method_2)]
     [InlineData(PIDType.Method_4)]
+    public void GenerateForIVs_RecoversOriginalPairsAndPreservesEveryIV(PIDType method)
+    {
+        // Include both high-bit variants and several IV spreads to catch RNG
+        // rewind errors and Method 4's skipped call.
+        foreach (var seed in new uint[] { 0, 1, 0x12345678, 0x92345678, uint.MaxValue })
+        {
+            var original = ClassicPidIvGenerator.Generate(method, seed);
+            var pairs = ClassicPidIvGenerator.GenerateForIVs(method, original.Ivs);
+
+            pairs.Should().Contain(original);
+            pairs.Should().OnlyContain(pair => pair.Ivs == original.Ivs);
+            pairs.Should().OnlyHaveUniqueItems();
+        }
+    }
+
+    [Fact]
+    public void GenerateForIVs_RejectsUnsupportedMethods()
+    {
+        var generate = () => ClassicPidIvGenerator.GenerateForIVs(PIDType.None, 0);
+
+        generate.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Theory]
+    [InlineData(PIDType.Method_1)]
+    [InlineData(PIDType.Method_2)]
+    [InlineData(PIDType.Method_4)]
     public void Generate_ProducesTheSelectedCorrelation(PIDType method)
     {
         var pair = ClassicPidIvGenerator.Generate(method, 0x12345678);

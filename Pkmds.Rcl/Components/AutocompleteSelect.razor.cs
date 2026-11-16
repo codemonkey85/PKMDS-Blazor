@@ -9,6 +9,11 @@ public partial class AutocompleteSelect<T>
 
     [Parameter] public T? Value { get; set; }
 
+    // Some editors store a real sentinel (e.g. move 0 / "(None)") when cleared.
+    // Use that same value locally so the parent's normalized value cannot restore
+    // its label in the middle of keyboard deletion (#1397).
+    [Parameter] public T? ClearValue { get; set; }
+
     [Parameter] public EventCallback<T?> ValueChanged { get; set; }
 
     [Parameter] public Expression<Func<T>>? For { get; set; }
@@ -93,7 +98,7 @@ public partial class AutocompleteSelect<T>
 
     private async Task OnWrappedValueChanged(Option? opt)
     {
-        var newValue = opt is null ? default : opt.Value;
+        var newValue = opt is null ? ClearValue : opt.Value;
         var valueChanged = !EqualityComparer<T>.Default.Equals(Value!, newValue!);
         // A cleared input is different from selecting a real default-valued option
         // (e.g. Normal form, Hardy nature, or a wrapped null sentinel such as "Any").

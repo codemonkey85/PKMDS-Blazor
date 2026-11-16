@@ -18,7 +18,7 @@
                 {
                     <MudAlert Severity="@Severity.Warning" Class="mb-3">
                         Generating only a PID leaves IVs unchanged and can cause legality warnings.
-                        Use Generate PID + IVs to check the encounter's RNG requirements; this also changes IVs.
+                        Use Generate PID + IVs to check the encounter's RNG requirements; this can also change IVs.
                         Changing a held item does not require a new PID.
                     </MudAlert>
                 }
@@ -81,6 +81,16 @@
                     <MudText Typo="@Typo.subtitle2"
                              Class="mb-2">
                         Gen 3/4 Method with IV Correlation
+                    </MudText>
+
+                    <HapticCheckBox T="@bool"
+                                    @bind-Value="@KeepIVs"
+                                    Disabled="@IsGenerating"
+                                    Label="Keep exact current IVs"
+                                    Color="@Color.Primary"/>
+                    <MudText Typo="@Typo.caption" Class="mb-2">
+                        Set your desired IVs in Stats first. Some IV spreads cannot match the selected nature
+                        and encounter. If no match exists, the Pokémon stays unchanged.
                     </MudText>
 
                     <MudStack Row

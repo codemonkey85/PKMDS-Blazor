@@ -49,6 +49,7 @@
                             }
                             <MudStack Style="flex: 1; min-width: 0;">
                                 <AutocompleteSelect T="@ComboItem"
+                                                    ClearValue="@AppService.GetMoveComboItem(0)"
                                                     Label="@($"Move {displayNumber}")"
                                                     Margin="@Margin.Dense"
                                                     @bind-Value:get="@(AppService.GetMoveComboItem(moveId))"
@@ -417,6 +418,7 @@
                                       Spacing="1">
                                 <MudStack Style="flex: 1; min-width: 0;">
                                     <AutocompleteSelect T="@ComboItem"
+                                                        ClearValue="@AppService.GetMoveComboItem(0)"
                                                         Label="@($"Relearn {displayNumber}")"
                                                         Margin="@Margin.Dense"
                                                         @bind-Value:get="@(AppService.GetMoveComboItem(relearnMoveId))"
@@ -533,6 +535,7 @@
                                       Style="width: 100%;">
                                 <MudStack Style="flex: 1; min-width: 0;">
                                     <AutocompleteSelect T="@ComboItem"
+                                                        ClearValue="@AppService.GetMoveComboItem(0)"
                                                         Label="Alpha Move"
                                                         Margin="@Margin.Dense"
                                                         @bind-Value:get="@(AppService.GetMoveComboItem(alphaMoveId))"

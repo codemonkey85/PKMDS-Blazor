@@ -134,6 +134,9 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
 
         // Build game version list, newest-first.
         var versions = GameUtil.GetVersionsWithinRange(probe)
+            // PKHeX.Core 26.10.18 includes transfer-only IDs with Context.None;
+            // its evolution-chain search throws for those versions (#1399).
+            .Where(static version => version.Context != EntityContext.None)
             .OrderByDescending(v => (int)v)
             .ToArray();
 
