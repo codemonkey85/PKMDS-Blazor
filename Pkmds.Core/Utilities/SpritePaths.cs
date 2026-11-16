@@ -84,7 +84,6 @@ public static class SpritePaths
     public static string GetItemSprite(int item, EntityContext context) => context switch
     {
         EntityContext.Gen1 or EntityContext.Gen2 => ItemFallbackFile, // TODO: Gen I/II item sprites
-        EntityContext.Gen3 => ItemFallbackFile,                       // TODO: Gen III item sprites
         EntityContext.Gen9 or EntityContext.Gen9a => $"ai/aitem_{GetItemIdString(item, context)}.png",
         _ => $"bi/bitem_{GetItemIdString(item, context)}.png"
     };
@@ -97,13 +96,34 @@ public static class SpritePaths
         _ => false
     };
 
-    private static string GetItemIdString(int item, EntityContext context) =>
-        HeldItemLumpUtil.GetIsLump(item, context) switch
+    private static string GetItemIdString(int item, EntityContext context)
+    {
+        if (IsItemMail(item, context))
+        {
+            return "unk";
+        }
+
+        if (context == EntityContext.Gen3)
+        {
+            if ((uint)item > ushort.MaxValue)
+            {
+                return "unk";
+            }
+
+            // Like PKHeX's PK3.SpriteItem, use modern IDs for the shared sprite set.
+            // Normalize before detecting TMs, whose Gen III IDs also differ.
+            item = ItemConverter.GetItemDisplay(item, context);
+            if (item != 0 && !ItemConverter.IsItemTransferable34((ushort)item))
+            {
+                return "unk";
+            }
+        }
+
+        return HeldItemLumpUtil.GetIsLump(item, context) switch
         {
             HeldItemLumpImage.TechnicalMachine => "tm",
             HeldItemLumpImage.TechnicalRecord => "tr",
-            _ => IsItemMail(item, context)
-                ? "unk"
-                : item.ToString()
+            _ => item.ToString()
         };
+    }
 }
