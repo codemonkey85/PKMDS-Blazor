@@ -25,8 +25,9 @@ public class HaXAbilityEditorTests
         ability.Find("input").Input("Wonder Guard");
         popovers.WaitForAssertion(() => popovers.FindAll("[role='option']")
             .Should().ContainSingle(option => option.TextContent.Trim() == "Wonder Guard"));
-        popovers.FindAll("[role='option']").Single(option => option.TextContent.Trim() == "Wonder Guard").Click();
+        await popovers.FindAll("[role='option']").Single(option => option.TextContent.Trim() == "Wonder Guard")
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs());
 
-        pokemon.Ability.Should().Be((ushort)Ability.WonderGuard);
+        cut.WaitForAssertion(() => pokemon.Ability.Should().Be((ushort)Ability.WonderGuard));
     }
 }
