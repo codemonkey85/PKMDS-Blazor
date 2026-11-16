@@ -5,6 +5,37 @@ namespace Pkmds.Tests;
 
 public class AutocompleteSelectTests
 {
+    [Theory]
+    [InlineData(0)]
+    [InlineData(33)]
+    public async Task ClearingMove_WithParentNormalization_AllowsTypingAReplacement(int initialMove)
+    {
+        var state = new TestAppState { SaveFile = new SAV2(version: GameVersion.S) };
+        var refresh = new TestRefreshService();
+        var service = new AppService(state, refresh, new LegalizationService(state));
+        await using var ctx = BunitTestHelpers.CreateBunitContext(state, refresh, service);
+        var popovers = ctx.Render<MudPopoverProvider>();
+        var none = new ComboItem("(None)", 0);
+        var tackle = new ComboItem("Tackle", 33);
+        var cut = ctx.Render<AutocompleteSelect<ComboItem>>(parameters => parameters
+            .Add(component => component.Items, new[] { none, tackle })
+            .Add(component => component.Value, initialMove == 0 ? none : tackle)
+            .Add(component => component.ClearValue, none)
+            .Add(component => component.DebounceInterval, 0)
+            .Add(component => component.ToStringFunc, move => move?.Text));
+        cut.Render(parameters => parameters.Add(component => component.ValueChanged, value =>
+            cut.Render(next => next.Add(component => component.Value, value ?? none))));
+
+        cut.Find("input").Focus();
+        cut.Find("input").Input(string.Empty);
+        cut.WaitForAssertion(() => cut.Find("input").GetAttribute("value").Should().BeNullOrEmpty());
+        cut.Find("input").Input("Tack");
+        popovers.WaitForAssertion(() => popovers.FindAll("[role='option']")
+            .Should().ContainSingle(option => option.TextContent.Trim() == "Tackle"));
+        popovers.Find("[role='option']").Click();
+        cut.WaitForAssertion(() => cut.Find("input").GetAttribute("value").Should().Be("Tackle"));
+    }
+
     [Fact]
     public Task KeyboardClearingForm_RestoresNormalAfterBlur() =>
         AssertKeyboardClearRestoresLabelAsync<byte>(1, 0, [0, 1, 2],

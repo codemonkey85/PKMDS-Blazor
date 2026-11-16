@@ -5,6 +5,32 @@ public static class ClassicPidIvGenerator
 {
     public readonly record struct PidIvPair(uint Pid, uint Ivs);
 
+    /// <summary>Finds every pair for the exact IV spread without a random seed search.</summary>
+    public static PidIvPair[] GenerateForIVs(PIDType method, uint ivs)
+    {
+        if (method is not (PIDType.Method_1 or PIDType.Method_2 or PIDType.Method_4))
+        {
+            throw new ArgumentOutOfRangeException(nameof(method));
+        }
+
+        Span<uint> seeds = stackalloc uint[LCRNG.MaxCountSeedsIV];
+        var first = (ivs & 0x7FFF) << 16;
+        var second = ((ivs >> 15) & 0x7FFF) << 16;
+        var count = method == PIDType.Method_4
+            ? LCRNGReversalSkip.GetSeedsIVs(seeds, first, second)
+            : LCRNGReversal.GetSeedsIVs(seeds, first, second);
+        var pairs = new PidIvPair[count];
+        for (var i = 0; i < count; i++)
+        {
+            // Reversal returns the state just before the first IV call. Undo
+            // the two PID calls, plus Method 2's intervening call.
+            var origin = method == PIDType.Method_2 ? LCRNG.Prev3(seeds[i]) : LCRNG.Prev2(seeds[i]);
+            pairs[i] = Generate(method, origin);
+        }
+
+        return pairs;
+    }
+
     public static PidIvPair Generate(PIDType method, uint seed)
     {
         var pid = ClassicEraRNG.GetSequentialPID(ref seed);

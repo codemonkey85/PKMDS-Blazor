@@ -424,13 +424,14 @@
                 @if (Pokemon.Format >= 6)
                 {
                     @* Gen 6+: AbilityNumber is independently stored and freely writable *@
-                    <AutocompleteSelect T="@int"
-                                        Label="Slot"
-                                        Style="max-width: 110px;"
-                                        Value="@Pokemon.AbilityNumber"
-                                        ValueChanged="@SetDevAbilityNumber"
-                                        Items="@GetAbilityNumberItems().Select(s => s.Value)"
-                                        ToStringFunc="@(v => GetAbilityNumberItems().FirstOrDefault(s => s.Value == v)?.Text ?? v.ToString())"/>
+                    <div style="flex: 0 0 110px; min-width: 0;">
+                        <AutocompleteSelect T="@int"
+                                            Label="Slot"
+                                            Value="@Pokemon.AbilityNumber"
+                                            ValueChanged="@SetDevAbilityNumber"
+                                            Items="@GetAbilityNumberItems().Select(s => s.Value)"
+                                            ToStringFunc="@(v => GetAbilityNumberItems().FirstOrDefault(s => s.Value == v)?.Text ?? v.ToString())"/>
+                    </div>
                 }
                 <LegalityPopover Result="@LegalityHelpers.GetCheckResult(Analysis, CheckIdentifier.Ability)"
                                  Analysis="@Analysis"
