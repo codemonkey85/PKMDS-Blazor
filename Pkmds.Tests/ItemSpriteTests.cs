@@ -3,6 +3,7 @@ namespace Pkmds.Tests;
 public sealed class ItemSpriteTests
 {
     [Theory]
+    [InlineData(0, "bi/bitem_unk.png")] // No item: keep the bundled fallback
     [InlineData(29, "bi/bitem_33.png")] // Moomoo Milk
     [InlineData(68, "bi/bitem_50.png")] // Rare Candy
     [InlineData(200, "bi/bitem_234.png")] // Leftovers

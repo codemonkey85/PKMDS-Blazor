@@ -113,7 +113,7 @@ public static class SpritePaths
             // Like PKHeX's PK3.SpriteItem, use modern IDs for the shared sprite set.
             // Normalize before detecting TMs, whose Gen III IDs also differ.
             item = ItemConverter.GetItemDisplay(item, context);
-            if (item != 0 && !ItemConverter.IsItemTransferable34((ushort)item))
+            if (!ItemConverter.IsItemTransferable34((ushort)item))
             {
                 return "unk";
             }
