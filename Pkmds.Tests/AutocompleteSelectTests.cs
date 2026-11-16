@@ -10,7 +10,7 @@ public class AutocompleteSelectTests
     [InlineData(33)]
     public async Task ClearingMove_WithParentNormalization_AllowsTypingAReplacement(int initialMove)
     {
-        var state = new TestAppState { SaveFile = new SAV2(version: GameVersion.S) };
+        var state = new TestAppState { SaveFile = new SAV2(version: GameVersion.SI) };
         var refresh = new TestRefreshService();
         var service = new AppService(state, refresh, new LegalizationService(state));
         await using var ctx = BunitTestHelpers.CreateBunitContext(state, refresh, service);
