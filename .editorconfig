@@ -278,3 +278,10 @@ resharper_partial_type_with_single_part_highlighting = none
 
 [*.{razor,js,css,html}]
 insert_final_newline = true
+
+[Pkmds.Rcl/**/*.cs]
+# .NET 11 introduces these advisories when MudBlazor selects its net11.0 target.
+# Keep them visible in the IDE while preserving intermediate progress renders
+# and JS exceptions that are handled by service callers.
+dotnet_diagnostic.BL0012.severity = suggestion
+dotnet_diagnostic.BL0016.severity = suggestion
