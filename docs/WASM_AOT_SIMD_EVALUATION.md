@@ -566,6 +566,11 @@ On source base `397aee4d`, with `WasmEnableSIMD=true` and AOT disabled:
 - .NET/xUnit execution is delegated to the PR's Build and Test workflow under
   `AGENTS.md`; local browser probes do not substitute for that suite.
 
+CodeQL subsequently caught case-sensitive script-tag extraction in the regression
+test fixtures. The shared extractor now handles mixed-case names, whitespace, and
+closing-tag attributes, with a regression case. All 52 JavaScript tests pass after
+that correction; this changes fixture extraction, not the production startup gate.
+
 These checks validate the selected rollout build. They do not repeat the four-way
 performance experiment on the newer dependency graph or close the physical-device,
 minimum-version, memory, or historical-runtime gaps above.

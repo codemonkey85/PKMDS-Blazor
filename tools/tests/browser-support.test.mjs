@@ -6,9 +6,22 @@ import vm from 'node:vm';
 const root = new URL('../../', import.meta.url);
 const source = readFileSync(new URL('Pkmds.Web/wwwroot/js/browser-support.boot.js', root), 'utf8');
 const index = readFileSync(new URL('Pkmds.Web/wwwroot/index.html', root), 'utf8');
-const boot = [...index.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
+const boot = lastScriptBody(index);
 const fallback = readFileSync(new URL('Pkmds.Web/wwwroot/BrowserNotSupported.html', root), 'utf8');
-const fallbackScript = [...fallback.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
+const fallbackScript = lastScriptBody(fallback);
+
+// Both owned fixtures end with the inline script exercised below.
+function lastScriptBody(html) {
+    const match = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\b[^>]*>/gi)].at(-1);
+    assert.ok(match, 'Expected a script in the HTML fixture');
+    return match[1];
+}
+
+test('fixture extraction handles mixed-case tags, whitespace, and closing-tag attributes', () => {
+    const html = '<script>first()</script><ScRiPt \n>last()</sCrIpT data-extra="accepted">';
+    assert.equal(lastScriptBody(html), 'last()');
+    assert.throws(() => lastScriptBody('<p>No script</p>'), /Expected a script/);
+});
 
 function fixture({exceptions = true, simd = true, wasm = true, blocked = false,
     requirements = {exceptionHandling: true, simd: true}, helper = true} = {}) {
