@@ -8,6 +8,7 @@ import { cpus, totalmem, platform, release, arch } from 'node:os';
 import { join, resolve, relative, isAbsolute, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { profileBankUi } from './bank-ui.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..', '..');
@@ -15,7 +16,7 @@ const repoRoot = resolve(__dirname, '..', '..');
 const args = parseArgs(process.argv.slice(2));
 const label = args.label;
 if (!label) {
-    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br] [--suite hotpaths|application]');
+    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br] [--suite hotpaths|application|bank|bank-ui]');
     process.exit(2);
 }
 const siteDir = resolve(args.site ?? join(repoRoot, 'release', 'wwwroot'));
@@ -28,7 +29,7 @@ if (!Number.isInteger(runs) || runs < 1 || runs > 100 || !Number.isFinite(benchT
     throw new Error('Expected runs=1..100, a positive timeout, and compression=identity|br.');
 }
 if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(label)) throw new Error('Label must be a filename-safe identifier.');
-if (!['hotpaths', 'application'].includes(suite)) throw new Error('Expected suite=hotpaths|application.');
+if (!['hotpaths', 'application', 'bank', 'bank-ui'].includes(suite)) throw new Error('Expected suite=hotpaths|application|bank|bank-ui.');
 
 await stat(siteDir).catch(() => {
     console.error(`Site directory not found: ${siteDir}`);
@@ -149,6 +150,7 @@ try {
             }));
         });
         const report = await inFreshPage(async page => {
+            if (suite === 'bank-ui') return profileBankUi(page, baseUrl, benchTimeoutMs);
             const navStart = performance.now();
             await page.goto(`${baseUrl}/bench?suite=${suite}`, { waitUntil: 'load', timeout: 60_000 });
             await page.waitForSelector('#bench-root[data-bench-state="done"], #bench-root[data-bench-state="error"]', { timeout: benchTimeoutMs });
@@ -198,7 +200,7 @@ async function inFreshPage(action) {
     const errors = [];
     try {
         const page = await context.newPage();
-        if (suite === 'application') {
+        if (['application', 'bank', 'bank-ui'].includes(suite)) {
             // Fresh nonpersistent context, a random loopback port, and an explicit
             // marker are all required before the opt-in Bank benchmark can run.
             await page.addInitScript(() => { globalThis.pkmdsBenchmarkIsolation = true; });
@@ -246,6 +248,7 @@ function renderMarkdown(label, report) {
     lines.push(`- UA: \`${report.UserAgent}\``);
     lines.push(`- Suite: ${report.Suite ?? 'hotpaths'}`);
     if (report.Notes) lines.push(`- Scope: ${report.Notes}`);
+    if (report.UiObservations) lines.push(`- UI observations: \`${JSON.stringify(report.UiObservations)}\``);
     lines.push('');
     lines.push('| Workload | Iter | Ops/iter | Mean (ms) | Min (ms) | Max (ms) | StdDev (ms) | Ops/sec |');
     lines.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');

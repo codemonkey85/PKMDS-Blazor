@@ -8,8 +8,11 @@ namespace Pkmds.Tests;
 
 public class ApplicationBenchmarkTests
 {
-    [Fact]
-    public async Task RunAsync_RefusedContext_DoesNotOpenBank()
+    [Theory]
+    [InlineData("application")]
+    [InlineData("bank")]
+    [InlineData("bank-ui")]
+    public async Task RunAsync_RefusedContext_DoesNotOpenBank(string suite)
     {
         using var context = new BunitContext();
         context.JSInterop.SetupModule("./js/benchmark.js")
@@ -18,7 +21,9 @@ public class ApplicationBenchmarkTests
         using var http = new HttpClient();
         var runner = new ApplicationBenchmarkRunner(http, context.Services.GetRequiredService<IJSRuntime>());
 
-        var action = () => runner.RunAsync(new ApplicationBenchmarkRunner.Config(1, 3, 1));
+        var action = () => suite == "bank-ui"
+            ? runner.PrepareBankUiAsync()
+            : runner.RunAsync(new ApplicationBenchmarkRunner.Config(1, 3, 1, BankOnly: suite == "bank"));
 
         await action.Should().ThrowAsync<JSException>().WithMessage("Existing database refused.");
         context.JSInterop.Invocations.Should().NotContain(invocation =>

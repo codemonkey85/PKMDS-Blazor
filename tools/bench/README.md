@@ -104,7 +104,8 @@ and an error in JSON; failures do not append successful-looking Markdown.
 
 The default hot-path timings do not establish managed allocations, GC cost,
 peak memory, or UI responsiveness. The opt-in application suite below adds
-separate diagnostics; large-list interactions remain outside this harness.
+separate diagnostics; the focused Bank suites below add actual component
+interactions with explicit limits.
 
 Run `node tools/verify-service-worker-assets.mjs <site>` after publishing as a
 separate integrity check. Browser harness validation is not a substitute for CI
@@ -183,3 +184,33 @@ Use separate profiling passes for that question; do not infer a memory improveme
 from one heap snapshot, a zero collection count, or managed-only import costs.
 References: [process allocation counter](https://learn.microsoft.com/dotnet/api/system.gc.gettotalallocatedbytes),
 [managed heap snapshots](https://learn.microsoft.com/en-us/dotnet/api/system.gc.gettotalmemory).
+
+## Focused Bank suites
+
+```powershell
+node tools/bench/run-bench.mjs --label bank --site release/wwwroot --suite bank --runs 3 --compression br
+node tools/bench/run-bench.mjs --label bank-ui --site release/wwwroot --suite bank-ui --runs 3 --compression br
+```
+
+`bank` runs the application's add-range, JSON import and 8,000-row read workloads,
+with the same warm-up, fixtures, counters and data verification. It skips
+description/archive work to isolate Bank comparisons. The full application and
+default hot-path suites retain their existing workload definitions.
+
+`bank-ui` uses the production Bank component with 8,000 synthetic imported rows.
+It checks 20/100-card pagination, exact nickname filtering, selection across
+pages, 60-frame programmatic scrolling, and unchanged complete export hashes.
+It records attached Bank element counts, CDP DOM/JS-heap snapshots, every frame
+interval, and interaction timings including Playwright wait/observation overhead.
+Snapshots are not total or peak memory; scrolling is headless/programmatic,
+with no loaded save, touch/drag, Safari or mobile coverage. The fixture uses the
+diagnostic layout at 1280×720, not the full save/editor layout. Navigation to
+cards includes fixture seeding and bootstrap, not isolated Bank-opening time.
+
+Both suites require the same initially empty marked automated loopback context
+as `application`. They refuse existing IndexedDB databases before seeding or
+mounting Bank. Never use an existing user profile. Each fresh context is discarded
+after observations; there is no clear-site-data operation.
+
+[Bank UTF-8 read observations and decision](../../docs/BANK_READ_PERFORMANCE.md)
+record the .NET 11 control/refactor comparison and remaining profiling gaps.
