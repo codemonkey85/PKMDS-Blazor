@@ -241,3 +241,21 @@ attribution. Use a new trace path; prior files cannot be overwritten.
 [Description and memory findings](../../docs/DESCRIPTION_MEMORY_PROFILING.md)
 record buffer/completion-turn tuning, the historical request-abort signal, failed
 experiments, sampled memory observations and remaining #1387 gaps.
+# Crypto bridge verification and worker prototype
+
+The `crypto` suite runs known answers through the published app's configured
+.NET providers and normal Blazor interop, using a fresh guarded loopback context:
+
+```sh
+node tools/bench/run-bench.mjs --label crypto --site release/wwwroot --suite crypto --runs 1 --compression br
+```
+
+It checks NIST AES-128 ECB/CBC encryption and decryption and RFC 1321 MD5
+empty/short/multi-block inputs. Its `Fixtures` contain the verified results;
+`Results` is empty because these are correctness checks, not speed measurements.
+It does not touch Bank, backups or user saves. CI runs this after publishing.
+
+The separate [legalization worker prototype](../legalization-worker/README.md)
+uses its own host, runner and output files. It is not part of the production
+site. See the [worker investigation](../../docs/LEGALIZATION_WORKER_PROTOTYPE.md)
+for cost, cancellation and integration limits.

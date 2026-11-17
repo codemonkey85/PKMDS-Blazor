@@ -17,7 +17,7 @@ const repoRoot = resolve(__dirname, '..', '..');
 const args = parseArgs(process.argv.slice(2));
 const label = args.label;
 if (!label) {
-    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br] [--suite hotpaths|application|bank|bank-ui|descriptions] [--memory-sampling-ms 100..5000]');
+    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br] [--suite hotpaths|application|bank|bank-ui|descriptions|crypto] [--memory-sampling-ms 100..5000]');
     process.exit(2);
 }
 const siteDir = resolve(args.site ?? join(repoRoot, 'release', 'wwwroot'));
@@ -35,7 +35,7 @@ if (!Number.isInteger(runs) || runs < 1 || runs > 100 || !Number.isFinite(benchT
     throw new Error('Expected runs=1..100, a positive timeout, and compression=identity|br.');
 }
 if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(label)) throw new Error('Label must be a filename-safe identifier.');
-if (!['hotpaths', 'application', 'bank', 'bank-ui', 'descriptions'].includes(suite)) throw new Error('Expected suite=hotpaths|application|bank|bank-ui|descriptions.');
+if (!['hotpaths', 'application', 'bank', 'bank-ui', 'descriptions', 'crypto'].includes(suite)) throw new Error('Expected suite=hotpaths|application|bank|bank-ui|descriptions|crypto.');
 
 await stat(siteDir).catch(() => {
     console.error(`Site directory not found: ${siteDir}`);
@@ -171,7 +171,14 @@ try {
             }
             const result = JSON.parse(await page.textContent('#bench-result'));
             if ((result.Suite ?? 'hotpaths') !== suite) throw new Error('Published app did not run the requested suite.');
-            if (!result.Results?.length || result.Results.some(value =>
+            if (suite === 'crypto') {
+                const required = ['aes-ECB-encrypt', 'aes-ECB-decrypt', 'aes-CBC-encrypt',
+                    'aes-CBC-decrypt', 'md5-0-bytes', 'md5-3-bytes', 'md5-80-bytes'];
+                if (result.Results?.length !== 0 || Object.keys(result.Fixtures ?? {}).length !== required.length ||
+                    required.some(key => !/^[0-9a-f]+$/i.test(result.Fixtures?.[key] ?? ''))) {
+                    throw new Error('Invalid crypto known-answer results.');
+                }
+            } else if (!result.Results?.length || result.Results.some(value =>
                 ![value.TotalMs, value.MeanMs, value.MinMs, value.MaxMs, value.StdDevMs].every(Number.isFinite) ||
                 !Number.isInteger(value.Iterations) || value.Iterations <= 0 ||
                 !Number.isInteger(value.OpsPerIteration) || value.OpsPerIteration <= 0)) {
@@ -216,7 +223,7 @@ async function inFreshPage(action) {
         if (memoryIntervalMs !== null) stopMemoryTrace = await startBrowserMemoryTrace(browser,
             outputPath.replace(/\.md$/i, '') + `.page-${++pageOrdinal}.${label}.${invocationId}.memory.trace.json`, memoryIntervalMs);
         const page = await context.newPage();
-        if (['application', 'bank', 'bank-ui', 'descriptions'].includes(suite)) {
+        if (['application', 'bank', 'bank-ui', 'descriptions', 'crypto'].includes(suite)) {
             // Fresh nonpersistent context, a random loopback port, and an explicit
             // marker are all required before the opt-in Bank benchmark can run.
             await page.addInitScript(() => { globalThis.pkmdsBenchmarkIsolation = true; });

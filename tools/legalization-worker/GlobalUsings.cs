@@ -1,0 +1,12 @@
+global using System.Diagnostics.CodeAnalysis;
+global using System.Globalization;
+global using System.Reflection;
+global using System.Security.Cryptography;
+global using System.Text;
+global using Microsoft.JSInterop;
+global using PKHeX.Core;
+global using Pkmds.Core.Extensions;
+global using Pkmds.Core.Utilities;
+global using Pkmds.Rcl;
+global using Pkmds.Rcl.Models;
+global using Pkmds.Rcl.Services;

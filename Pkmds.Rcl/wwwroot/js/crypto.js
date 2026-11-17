@@ -1,27 +1,37 @@
-window.encryptAes = function (key, data, modeString) {
+globalThis.encryptAes = function (key, data, modeString, iv) {
+    requireCbcIv(modeString, iv);
     const keyHex = CryptoJS.enc.Hex.parse(key);
     const encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Hex.parse(data), keyHex, {
         mode: getMode(modeString),
-        padding: CryptoJS.pad.NoPadding
+        padding: CryptoJS.pad.NoPadding,
+        ...(iv ? { iv: CryptoJS.enc.Hex.parse(iv) } : {})
     });
     return encrypted.ciphertext.toString(CryptoJS.enc.Hex);
 };
 
-window.decryptAes = function (key, data, modeString) {
+globalThis.decryptAes = function (key, data, modeString, iv) {
+    requireCbcIv(modeString, iv);
     var keyHex = CryptoJS.enc.Hex.parse(key);
     var encryptedHexStr = CryptoJS.enc.Hex.parse(data);
     var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
     var decrypted = CryptoJS.AES.decrypt(encryptedBase64Str, keyHex, {
         mode: getMode(modeString),
-        padding: CryptoJS.pad.NoPadding
+        padding: CryptoJS.pad.NoPadding,
+        ...(iv ? { iv: CryptoJS.enc.Hex.parse(iv) } : {})
     });
     return decrypted.toString(CryptoJS.enc.Hex);
 };
 
-window.md5Hash = function (data) {
+globalThis.md5Hash = function (data) {
     const parsedHexString = CryptoJS.enc.Hex.parse(data);
     var hash = CryptoJS.MD5(parsedHexString);
     return hash.toString(CryptoJS.enc.Hex);
+};
+
+function requireCbcIv(mode, iv) {
+    if (mode === 'cbc' && (typeof iv !== 'string' || !/^[0-9a-f]{32}$/i.test(iv))) {
+        throw new Error('AES-CBC requires a 16-byte initialization vector.');
+    }
 }
 
 function getMode(modeString) {

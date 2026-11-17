@@ -13,6 +13,22 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
 
     private const int WarmupIterations = 1;
 
+    /// <summary>Checks the actual app's configured .NET-to-JS crypto providers.</summary>
+    public async Task<BenchmarkReport> RunCryptoAsync()
+    {
+        await using var bridge = await js.InvokeAsync<IJSObjectReference>("import", "./js/benchmark.js");
+        await bridge.InvokeVoidAsync("requireIsolatedContext");
+        return new BenchmarkReport
+        {
+            Date = DateTimeOffset.UtcNow,
+            UserAgent = "",
+            Suite = "crypto",
+            Results = [],
+            Fixtures = CryptoBridgeChecks.Run(),
+            Notes = "NIST AES-128 ECB/CBC encrypt/decrypt and RFC 1321 MD5 known answers through the app's configured .NET browser providers. No user storage or saves. No performance measurements."
+        };
+    }
+
     /// <summary>Profiles each description dataset and the normalized item index separately.</summary>
     public async Task<BenchmarkReport> RunDescriptionsAsync()
     {
