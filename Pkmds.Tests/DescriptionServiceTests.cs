@@ -5,6 +5,43 @@ namespace Pkmds.Tests;
 
 public class DescriptionServiceTests
 {
+    [Fact]
+    public async Task ConcurrentItemQueries_ShareDownloadAndPreserveUnicode()
+    {
+        var handler = new PendingDataHandler();
+        using var client = new HttpClient(handler) { BaseAddress = new Uri("https://pkmds.test/") };
+        var service = new DescriptionService(client, NullLogger<DescriptionService>.Instance);
+
+        var first = service.GetItemInfoAsync("Potion", GameVersion.SL);
+        var second = service.GetItemInfoAsync("Potion", GameVersion.SL);
+        handler.Response.SetResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("""{"potion":{"name":"Potion","description":"Pokémon café — 回復"}}""", System.Text.Encoding.UTF8)
+        });
+
+        var results = await Task.WhenAll(first, second);
+
+        handler.Requests.Should().Be(1);
+        results.Should().OnlyContain(result => result != null && result.Description == "Pokémon café — 回復");
+        (await service.GetItemInfoAsync("Potion", GameVersion.SL))!.Description.Should().Be(results[0]!.Description);
+        handler.Requests.Should().Be(1);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.OK, "not-json")]
+    [InlineData(HttpStatusCode.InternalServerError, "{}")]
+    public async Task FailedItemDownload_UsesExistingCachedEmptyFallback(HttpStatusCode status, string data)
+    {
+        var handler = new PendingDataHandler();
+        using var client = new HttpClient(handler) { BaseAddress = new Uri("https://pkmds.test/") };
+        var service = new DescriptionService(client, NullLogger<DescriptionService>.Instance);
+        handler.Response.SetResult(new HttpResponseMessage(status) { Content = new StringContent(data) });
+
+        (await service.GetItemInfoAsync("Potion", GameVersion.SL)).Should().BeNull();
+        (await service.GetItemInfoAsync("Potion", GameVersion.SL)).Should().BeNull();
+        handler.Requests.Should().Be(1);
+    }
+
     [Theory]
     [InlineData("Black Augurite", "Evolves Scyther into Kleavor when used.")]
     [InlineData("Peat Block", "Evolves Ursaring into Ursaluna when used during a full moon.")]
@@ -52,6 +89,19 @@ public class DescriptionServiceTests
         {
             request.RequestUri!.AbsolutePath.Should().Be("/_content/Pkmds.Rcl/data/item-info.json");
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(json) });
+        }
+    }
+
+    private sealed class PendingDataHandler : HttpMessageHandler
+    {
+        internal TaskCompletionSource<HttpResponseMessage> Response { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal int Requests { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            request.RequestUri!.AbsolutePath.Should().Be("/_content/Pkmds.Rcl/data/item-info.json");
+            Requests++;
+            return Response.Task;
         }
     }
 }

@@ -92,7 +92,7 @@ streams are unchanged. IndexedDB schemas and serialization formats are unchanged
 | Labeled break/continue | Nested storage/legalization loops | Existing early returns and loops do not justify new control flow in the migration. | Defer |
 | Extension indexers/other C# 15 syntax | Shared helpers | No concrete use outweighs extra API/call-site review; memory-safety previews are outside scope. | Defer |
 | Read-only stream adapters | `SaveArchiveHelper`, `ManicEmuSaveHelper` | Existing array-backed `MemoryStream` readers already avoid copying input; snapshots and expandable writers remain necessary. | Retain current streams |
-| JSON/Base64 APIs | Description, Bank, Backup, embedded host | Existing source generation and trim-safe `JsonElement` interop preserve persisted formats and stale-JS compatibility. No measured benefit from replacement. | Defer |
+| JSON/Base64 APIs | Description, Bank, Backup, embedded host | Source generation and trim-safe interop preserve persisted formats. [Bank reads](BANK_READ_PERFORMANCE.md) reuse the existing UTF-8 export path with measured lower managed allocation/read time and legacy fallbacks. | Adopt Bank byte-array read; defer other replacements |
 | Virtualization | Pokédex grid; Bank/search/encounter tables | Only the Pokédex currently opts into virtualization. Variable-height behavior and increased framework overscan need UI/memory checks; pagination does not become virtualization automatically. | Retain UI; defer larger changes |
 | File-based `#:include` | Data generators/diagnostics | No generator refactor needed for retargeting; generated output must stay stable. | Defer helper extraction |
 | Runtime Async | Functions/tools | Requires a compatible CoreCLR host and separate cancellation/exception measurements; inappropriate as a global Mono WASM switch. | Defer |
@@ -201,6 +201,11 @@ Issue #1374 remains the tracker for the remaining work:
 
 - #1387: reproducible clean publish/browser baselines, then representative
   description, Bank, archive, memory, and responsiveness measurements.
+  [Bank UTF-8 read and component observations](BANK_READ_PERFORMANCE.md) show a
+  focused improvement; total peak-memory and broader interactions remain open.
+  [Description/memory profiling](DESCRIPTION_MEMORY_PROFILING.md) records larger
+  streaming buffers, a tested browser-completion mitigation and scoped Chromium
+  process-memory samples. Resident/total peak-memory and broader platform gaps remain open.
 - #1388: a C# 15 legalization result union/closed-case prototype with call-site
   and allocation comparisons, preserving best-effort Pokémon and HaX warnings.
 - #1389: Gateway IDE debugging/watch checks and file-based tooling evaluation.

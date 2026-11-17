@@ -9,9 +9,73 @@ namespace Pkmds.Rcl.Services;
 /// </summary>
 public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
 {
-    public sealed record Config(int Iterations = 3, int PokemonCount = 1000, int ArchiveIterations = 5);
+    public sealed record Config(int Iterations = 3, int PokemonCount = 1000, int ArchiveIterations = 5, bool BankOnly = false);
 
     private const int WarmupIterations = 1;
+
+    /// <summary>Profiles each description dataset and the normalized item index separately.</summary>
+    public async Task<BenchmarkReport> RunDescriptionsAsync()
+    {
+        await using var bridge = await js.InvokeAsync<IJSObjectReference>("import", "./js/benchmark.js");
+        await bridge.InvokeVoidAsync("requireIsolatedContext");
+        var measure = new Measurement(bridge);
+        var results = new List<BenchmarkResult>();
+        var fixtures = new Dictionary<string, string>();
+        foreach (var name in new[] { "move-info.json", "ability-info.json", "item-info.json" })
+        {
+            var bytes = await http.GetByteArrayAsync($"_content/Pkmds.Rcl/data/{name}");
+            fixtures[name] = await bridge.InvokeAsync<string>("fingerprint", bytes);
+        }
+
+        foreach (var workload in new[] { "moves", "abilities", "items", "normalized-items", "all" })
+        {
+            var signature = new List<string>();
+            string? expectedSignature = null;
+            results.Add(await measure.RunAsync($"description-{workload}", 3, 1, async () =>
+            {
+                var descriptions = new DescriptionService(http, NullLogger<DescriptionService>.Instance);
+                signature.Clear();
+                if (workload is "moves" or "all")
+                {
+                    var move = await descriptions.GetMoveInfoAsync(33, GameVersion.SL);
+                    if (move?.Name != "Tackle" || string.IsNullOrWhiteSpace(move.Description))
+                        throw new InvalidOperationException("Move description fixture failed.");
+                    signature.Add($"{move.Name}|{move.Description}");
+                }
+                if (workload is "abilities" or "all")
+                {
+                    var ability = await descriptions.GetAbilityInfoAsync(65, GameVersion.SL);
+                    if (ability?.Name != "Overgrow" || string.IsNullOrWhiteSpace(ability.Description))
+                        throw new InvalidOperationException("Ability description fixture failed.");
+                    signature.Add($"{ability.Name}|{ability.Description}");
+                }
+                if (workload is "items" or "normalized-items" or "all")
+                {
+                    var item = await descriptions.GetItemInfoAsync(workload == "normalized-items" ? "MasterBall" : "Master Ball", GameVersion.SL);
+                    if (item?.Name != "Master Ball" || string.IsNullOrWhiteSpace(item.Description))
+                        throw new InvalidOperationException("Item description fixture failed.");
+                    signature.Add($"{item.Name}|{item.Description}");
+                }
+            }, () =>
+            {
+                var actual = string.Join("\n", signature);
+                expectedSignature ??= actual;
+                if (actual != expectedSignature) throw new InvalidOperationException("Description output changed.");
+                return Task.CompletedTask;
+            }, "Fresh production DescriptionService; complete dataset loading and lookup. Output validation/signature construction are included; equivalence comparison is outside timing."));
+            fixtures[$"output-{workload}"] = await bridge.InvokeAsync<string>("fingerprint", Encoding.UTF8.GetBytes(expectedSignature!));
+        }
+
+        return new BenchmarkReport
+        {
+            Date = DateTimeOffset.UtcNow,
+            UserAgent = "",
+            Suite = "descriptions",
+            Results = results,
+            Fixtures = fixtures,
+            Notes = "One warm-up and three measured fresh-service loads per workload. Dataset hashes are read before measurement; HTTP/server cache policy follows the harness. No Bank API or user storage is used. Allocation counters exclude JS/native memory; trace-enabled timings are profiling observations only."
+        };
+    }
 
     public async Task<BenchmarkReport> RunAsync(Config? config = null)
     {
@@ -27,31 +91,35 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
         var results = new List<BenchmarkResult>();
         var fixtures = new Dictionary<string, string>();
 
-        // New service instance per iteration: include all three HTTP reads, JSON
-        // source-gen deserialization, item index construction, and first queries.
-        string? descriptionSignature = null;
-        MoveSummary? move = null;
-        AbilitySummary? ability = null;
-        ItemSummary? item = null;
-        results.Add(await measure.RunAsync("description-first-load", config.Iterations, 3, async () =>
+        if (!config.BankOnly)
         {
-            var descriptions = new DescriptionService(http, NullLogger<DescriptionService>.Instance);
-            move = await descriptions.GetMoveInfoAsync(33, GameVersion.SL);
-            ability = await descriptions.GetAbilityInfoAsync(65, GameVersion.SL);
-            item = await descriptions.GetItemInfoAsync("Master Ball", GameVersion.SL);
-        }, () =>
-        {
-            if (move is null || ability is null || item is null ||
-                string.IsNullOrWhiteSpace(move.Description) || string.IsNullOrWhiteSpace(ability.Description) ||
-                string.IsNullOrWhiteSpace(item.Description))
+            // New service instance per iteration: include all three HTTP reads, JSON
+            // source-gen deserialization, item index construction, and first queries.
+            string? descriptionSignature = null;
+            MoveSummary? move = null;
+            AbilitySummary? ability = null;
+            ItemSummary? item = null;
+            results.Add(await measure.RunAsync("description-first-load", config.Iterations, 3, async () =>
             {
-                throw new InvalidOperationException("Description fixture lookup returned missing data.");
-            }
-            var actualDescriptionSignature = $"{move.Name}|{move.Description}|{ability.Name}|{ability.Description}|{item.Name}|{item.Description}";
-            descriptionSignature ??= actualDescriptionSignature;
-            if (actualDescriptionSignature != descriptionSignature) throw new InvalidOperationException("Descriptions changed between iterations.");
-            return Task.CompletedTask;
-        }, "Fresh DescriptionService; three datasets/first queries. HTTP/server caches follow harness policy."));
+                var descriptions = new DescriptionService(http, NullLogger<DescriptionService>.Instance);
+                move = await descriptions.GetMoveInfoAsync(33, GameVersion.SL);
+                ability = await descriptions.GetAbilityInfoAsync(65, GameVersion.SL);
+                item = await descriptions.GetItemInfoAsync("Master Ball", GameVersion.SL);
+            }, () =>
+            {
+                if (move is null || ability is null || item is null ||
+                    string.IsNullOrWhiteSpace(move.Description) || string.IsNullOrWhiteSpace(ability.Description) ||
+                    string.IsNullOrWhiteSpace(item.Description))
+                {
+                    throw new InvalidOperationException("Description fixture lookup returned missing data.");
+                }
+                var actualDescriptionSignature = $"{move.Name}|{move.Description}|{ability.Name}|{ability.Description}|{item.Name}|{item.Description}";
+                descriptionSignature ??= actualDescriptionSignature;
+                if (actualDescriptionSignature != descriptionSignature) throw new InvalidOperationException("Descriptions changed between iterations.");
+                return Task.CompletedTask;
+            }, "Fresh DescriptionService; three datasets/first queries. HTTP/server caches follow harness policy."));
+
+        }
 
         var pokemon = ApplicationBenchmarkFixtures.CreatePokemon(config.PokemonCount);
         var expectedBytes = ApplicationBenchmarkFixtures.GetStoredBytes(pokemon);
@@ -105,52 +173,83 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
                 throw new InvalidOperationException("Bank export changed Pokémon bytes or metadata.");
         }
 
-        foreach (var manic in new[] { false, true })
+        if (!config.BankOnly)
         {
-            var kind = manic ? SaveArchiveKind.ManicEmu : SaveArchiveKind.GenericZip;
-            var prefix = manic ? "manic" : "generic-zip";
-            var originalSave = ApplicationBenchmarkFixtures.CreateSave(12345);
-            var editedSave = ApplicationBenchmarkFixtures.CreateSave(23456);
-            var input = ApplicationBenchmarkFixtures.CreateArchive(originalSave, manic);
-            var inputSnapshot = (byte[])input.Clone();
-            fixtures[$"{prefix}-input-sha256"] = await bridge.InvokeAsync<string>("fingerprint", input);
-            fixtures[$"{prefix}-save-sha256"] = await bridge.InvokeAsync<string>("fingerprint", originalSave);
-            SaveFile? loaded = null;
-            SaveArchiveContext? context = null;
-            results.Add(await measure.RunAsync($"{prefix}-load", config.ArchiveIterations, 1, () =>
+            foreach (var manic in new[] { false, true })
             {
-                if (!SaveFileLoader.TryLoad(input, "benchmark.3ds.sav", out loaded, out context))
-                    throw new InvalidOperationException("Synthetic archive could not be loaded.");
-                return Task.CompletedTask;
-            }, () =>
-            {
-                if (loaded is not SAV7SM || loaded.Money != 12345 || context?.Kind != kind)
-                    throw new InvalidOperationException("Archive load lost its save or wrapper context.");
-                if (!input.AsSpan().SequenceEqual(inputSnapshot)) throw new InvalidOperationException("Archive input mutated.");
-                return Task.CompletedTask;
-            }, $"{input.Length}-byte archive, {originalSave.Length}-byte synthetic Gen 7 save; production loader includes wrapper detection."));
+                var kind = manic ? SaveArchiveKind.ManicEmu : SaveArchiveKind.GenericZip;
+                var prefix = manic ? "manic" : "generic-zip";
+                var originalSave = ApplicationBenchmarkFixtures.CreateSave(12345);
+                var editedSave = ApplicationBenchmarkFixtures.CreateSave(23456);
+                var input = ApplicationBenchmarkFixtures.CreateArchive(originalSave, manic);
+                var inputSnapshot = (byte[])input.Clone();
+                fixtures[$"{prefix}-input-sha256"] = await bridge.InvokeAsync<string>("fingerprint", input);
+                fixtures[$"{prefix}-save-sha256"] = await bridge.InvokeAsync<string>("fingerprint", originalSave);
+                SaveFile? loaded = null;
+                SaveArchiveContext? context = null;
+                results.Add(await measure.RunAsync($"{prefix}-load", config.ArchiveIterations, 1, () =>
+                {
+                    if (!SaveFileLoader.TryLoad(input, "benchmark.3ds.sav", out loaded, out context))
+                        throw new InvalidOperationException("Synthetic archive could not be loaded.");
+                    return Task.CompletedTask;
+                }, () =>
+                {
+                    if (loaded is not SAV7SM || loaded.Money != 12345 || context?.Kind != kind)
+                        throw new InvalidOperationException("Archive load lost its save or wrapper context.");
+                    if (!input.AsSpan().SequenceEqual(inputSnapshot)) throw new InvalidOperationException("Archive input mutated.");
+                    return Task.CompletedTask;
+                }, $"{input.Length}-byte archive, {originalSave.Length}-byte synthetic Gen 7 save; production loader includes wrapper detection."));
 
-            byte[] rebuilt = [];
-            results.Add(await measure.RunAsync($"{prefix}-export", config.ArchiveIterations, 1, () =>
-            {
-                rebuilt = SaveArchiveHelper.RebuildZip(context!, editedSave);
-                return Task.CompletedTask;
-            }, () =>
-            {
-                ApplicationBenchmarkFixtures.VerifyArchive(rebuilt, editedSave, kind, 23456);
-                if (!input.AsSpan().SequenceEqual(inputSnapshot)) throw new InvalidOperationException("Archive export mutated its original buffer.");
-                return Task.CompletedTask;
-            }, "Production archive rebuild; edited save bytes, metadata, paths, timestamps, wrapper kind and reload validated outside timing."));
+                byte[] rebuilt = [];
+                results.Add(await measure.RunAsync($"{prefix}-export", config.ArchiveIterations, 1, () =>
+                {
+                    rebuilt = SaveArchiveHelper.RebuildZip(context!, editedSave);
+                    return Task.CompletedTask;
+                }, () =>
+                {
+                    ApplicationBenchmarkFixtures.VerifyArchive(rebuilt, editedSave, kind, 23456);
+                    if (!input.AsSpan().SequenceEqual(inputSnapshot)) throw new InvalidOperationException("Archive export mutated its original buffer.");
+                    return Task.CompletedTask;
+                }, "Production archive rebuild; edited save bytes, metadata, paths, timestamps, wrapper kind and reload validated outside timing."));
+            }
+
         }
 
         return new BenchmarkReport
         {
             Date = DateTimeOffset.UtcNow,
             UserAgent = "",
-            Suite = "application",
+            Suite = config.BankOnly ? "bank" : "application",
             Results = results,
             Fixtures = fixtures,
             Notes = "One warm-up per workload. Timings and managed counters exclude validation. Allocation deltas are process-wide, include harness/other managed activity, and exclude JS/native allocations. Heap values are snapshots without forced GC, not peak memory. Event-loop delay covers each whole measured batch including validation/counter overhead; it is not a real large-list interaction test. Bank is append-only in an initially empty harness context; discard the context to clean up.",
+        };
+    }
+
+    /// <summary>Seeds the real Bank component in an isolated benchmark context.</summary>
+    public async Task<BenchmarkReport> PrepareBankUiAsync()
+    {
+        await using var bridge = await js.InvokeAsync<IJSObjectReference>("import", "./js/benchmark.js");
+        await bridge.InvokeVoidAsync("requireIsolatedContext");
+        var pokemon = ApplicationBenchmarkFixtures.CreatePokemon(1000);
+        var bytes = ApplicationBenchmarkFixtures.CreateBankImport(pokemon, ApplicationBenchmarkFixtures.GetStoredBytes(pokemon));
+        await using var bank = new BankService(js);
+        for (var i = 0; i < 8; i++)
+        {
+            await bank.ImportAsync(bytes);
+        }
+        return new BenchmarkReport
+        {
+            Date = DateTimeOffset.UtcNow,
+            UserAgent = "",
+            Suite = "bank-ui",
+            Results = [],
+            Fixtures = new()
+            {
+                ["bank-json-sha256"] = await bridge.InvokeAsync<string>("fingerprint", bytes),
+                ["bank-rows"] = "8000"
+            },
+            Notes = "Real Bank component with 8,000 synthetic rows in a fresh guarded context. No save loaded; no send-to-save or drag behavior is measured."
         };
     }
 
