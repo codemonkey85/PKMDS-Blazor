@@ -1,5 +1,6 @@
 #!/usr/bin/env dotnet-run
 #:property PublishAot=false
+#:include shared/ToolPaths.cs
 /*
  * Scrape pokemondb.net for item and move descriptions that are missing from the
  * generated JSON data (PokeAPI + Showdown). Produces a cache file consumed by
@@ -76,24 +77,13 @@ for (var i = 0; i < args.Length; i++)
     }
 }
 
-var repoRoot = FindRepoRoot() ?? throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory.");
+var repoRoot = Pkmds.Tools.ToolPaths.FindRepositoryRoot() ?? throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory.");
 var dataDir = dataArg is not null ? Path.GetFullPath(dataArg) : Path.Combine(repoRoot, "Pkmds.Rcl", "wwwroot", "data");
 var outputPath = outputArg is not null
     ? Path.GetFullPath(outputArg)
     : Path.Combine(repoRoot, "tools", "data", "description-overrides.json");
 
 Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
-
-static string? FindRepoRoot()
-{
-    var dir = Environment.CurrentDirectory;
-    while (dir is not null)
-    {
-        if (Directory.Exists(Path.Combine(dir, "Pkmds.Rcl"))) return dir;
-        dir = Path.GetDirectoryName(dir);
-    }
-    return null;
-}
 
 // ---------------------------------------------------------------------------
 // Load existing cache

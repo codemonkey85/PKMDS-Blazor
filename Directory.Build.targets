@@ -10,18 +10,16 @@
          projects that actually consume it. Without this guard the ItemGroup below
          runs for every project that imports Directory.Build.targets, unnecessarily
          coupling them to the local PKHeX checkout.
-         We build a sentinel-delimited string from the PackageReference identity list
-         and use a property function Contains check to avoid MSBuild restrictions on
-         built-in metadata (%(Identity)) in item element conditions (MSB4190). -->
-    <PropertyGroup Condition="'$(UseLocalPKHeX)' == 'true'">
-        <_PKHeXCoreSentinel>;@(PackageReference->'%(Identity)');</_PKHeXCoreSentinel>
-        <_HasPKHeXCoreRef Condition="$(_PKHeXCoreSentinel.Contains(';PKHeX.Core;'))">true</_HasPKHeXCoreRef>
-    </PropertyGroup>
+         Select the package during item evaluation. Properties are evaluated before
+         items, so a property containing @(PackageReference) cannot detect it. -->
+    <ItemGroup Condition="'$(UseLocalPKHeX)' == 'true'">
+        <_LocalPKHeXPackage Include="@(PackageReference->WithMetadataValue('Identity', 'PKHeX.Core'))"/>
+    </ItemGroup>
 
     <!-- Swap NuGet PKHeX.Core for a local project reference.
          Usage: dotnet build ... -p:UseLocalPKHeX=true
          Override path: -p:PKHeXSourcePath=/path/to/PKHeX.Core.csproj -->
-    <ItemGroup Condition="'$(UseLocalPKHeX)' == 'true' And '$(_HasPKHeXCoreRef)' == 'true'">
+    <ItemGroup Condition="'$(UseLocalPKHeX)' == 'true' And '@(_LocalPKHeXPackage)' != ''">
         <PackageReference Remove="PKHeX.Core"/>
         <ProjectReference Include="$(PKHeXSourcePath)"/>
     </ItemGroup>

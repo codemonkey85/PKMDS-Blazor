@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Use this instead of watch.ps1 when you need to manually test the UI against a
-    local PKHeX dev build. Passes -p:UseLocalPKHeX=true to dotnet watch run, which
+    local PKHeX dev build. Passes --property:UseLocalPKHeX=true to dotnet watch run, which
     swaps the NuGet package for a ProjectReference (see Directory.Build.targets).
 
 .PARAMETER PKHeXSourcePath
@@ -24,9 +24,10 @@ param(
     [string]$PKHeXSourcePath = ""
 )
 
-$extraArgs = @("-p:UseLocalPKHeX=true")
+# dotnet watch interprets the short -p spelling as --project in .NET 11.
+$extraArgs = @("--property:UseLocalPKHeX=true")
 if ($PKHeXSourcePath -ne "") {
-    $extraArgs += "-p:PKHeXSourcePath=$PKHeXSourcePath"
+    $extraArgs += "--property:PKHeXSourcePath=$PKHeXSourcePath"
 }
 
 try {

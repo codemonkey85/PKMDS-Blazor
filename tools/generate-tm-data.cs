@@ -1,5 +1,6 @@
 #!/usr/bin/env dotnet-run
 #:property PublishAot=false
+#:include shared/ToolPaths.cs
 /*
  * Generate tm-data.json from the Bulbapedia "List of TMs" page.
  *
@@ -48,6 +49,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Pkmds.Tools;
 
 // ---------------------------------------------------------------------------
 // Sword/Shield TR move IDs (TR00-TR99)
@@ -92,7 +94,8 @@ for (var i = 0; i < args.Length; i++)
 
 var outputDir = outputArg is not null
     ? Path.GetFullPath(outputArg)
-    : FindDefaultOutputDir();
+    : ToolPaths.FindDataDirectory()
+      ?? throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory. Use --output to specify the output path.");
 
 Directory.CreateDirectory(outputDir);
 
@@ -183,22 +186,6 @@ Dictionary<string, string> BuildSwshTrMap(JsonObject moveInfo)
             result[$"TR{i:D2}"] = nameVal.GetValue<string>();
     }
     return result;
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-string FindDefaultOutputDir()
-{
-    var dir = Environment.CurrentDirectory;
-    while (dir is not null)
-    {
-        if (Directory.Exists(Path.Combine(dir, "Pkmds.Rcl")))
-            return Path.Combine(dir, "Pkmds.Rcl", "wwwroot", "data");
-        dir = Path.GetDirectoryName(dir);
-    }
-    throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory. Use --output to specify the output path.");
 }
 
 // ---------------------------------------------------------------------------

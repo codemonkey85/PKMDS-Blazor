@@ -35,6 +35,9 @@ Some images from: https://github.com/msikma/PokeDings
 - **Pkmds.Tests**: Unit tests for the application
 - **tools/**: .NET 11 file-based scripts for regenerating static JSON data files (see [AGENTS.md](AGENTS.md#data-generation-tools))
 
+See [developer tooling](docs/DOTNET_11_TOOLING.md) for Gateway/watch observations,
+the local PKHeX override and file-based tool build/format commands.
+
 [![Build and Test](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/buildandtest.yml)
 
 [![Deploy to GitHub Pages](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml/badge.svg)](https://github.com/codemonkey85/PKMDS-Blazor/actions/workflows/main.yml)
