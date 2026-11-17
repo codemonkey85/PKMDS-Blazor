@@ -1,5 +1,6 @@
 #!/usr/bin/env dotnet-run
 #:property PublishAot=false
+#:include shared/ToolPaths.cs
 /*
  * Generate flat JSON description files from PokeAPI CSV data for PKMDS-Blazor.
  *
@@ -50,6 +51,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Pkmds.Tools;
 
 // ---------------------------------------------------------------------------
 // Args
@@ -99,7 +101,8 @@ if (!Directory.Exists(csvDir))
 
 var outputDir = outputArg is not null
     ? Path.GetFullPath(outputArg)
-    : FindDefaultOutputDir();
+    : ToolPaths.FindDataDirectory()
+      ?? throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory. Use --output to specify the output path.");
 
 Directory.CreateDirectory(outputDir);
 
@@ -138,20 +141,6 @@ if (overridesArg is not null && File.Exists(overridesArg))
                 abilityFlavorRemove[k] = [.. arr.OfType<JsonValue>().Select(x => x.GetValue<string>())];
     Console.WriteLine($"  → {itemOverrides.Count} item, {moveOverrides.Count} move, {abilityOverrides.Count} ability description overrides loaded ({abilityFlavorRemove.Count} ability flavor edits)");
     Console.WriteLine();
-}
-
-// Walk up from the working directory to find the repo root (contains Pkmds.Rcl/).
-string FindDefaultOutputDir()
-{
-    var dir = Environment.CurrentDirectory;
-    while (dir is not null)
-    {
-        var candidate = Path.Combine(dir, "Pkmds.Rcl", "wwwroot", "data");
-        if (Directory.Exists(Path.Combine(dir, "Pkmds.Rcl")))
-            return candidate;
-        dir = Path.GetDirectoryName(dir);
-    }
-    throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory. Use --output to specify the output path.");
 }
 
 // ---------------------------------------------------------------------------

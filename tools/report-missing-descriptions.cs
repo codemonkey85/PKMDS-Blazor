@@ -1,5 +1,6 @@
 #!/usr/bin/env dotnet-run
 #:property PublishAot=false
+#:include shared/ToolPaths.cs
 /*
  * Report entries in ability-info.json / move-info.json / item-info.json that are
  * missing a description, per-gen flavor, or both.
@@ -29,6 +30,7 @@
 
 using System.Text;
 using System.Text.Json.Nodes;
+using Pkmds.Tools;
 
 string? dataArg = null;
 string? outputArg = null;
@@ -38,7 +40,10 @@ for (var i = 0; i < args.Length; i++)
     else if (args[i] == "--output" && i + 1 < args.Length) outputArg = args[++i];
 }
 
-var dataDir = dataArg is not null ? Path.GetFullPath(dataArg) : FindDefaultDataDir();
+var dataDir = dataArg is not null
+    ? Path.GetFullPath(dataArg)
+    : ToolPaths.FindDataDirectory()
+      ?? throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory. Use --data to specify the data path.");
 if (!Directory.Exists(dataDir))
 {
     Console.Error.WriteLine($"ERROR: data directory not found: {dataDir}");
@@ -48,27 +53,9 @@ if (!Directory.Exists(dataDir))
 var outputPath = outputArg switch
 {
     "-"  => null,
-    null => Path.Combine(FindRepoRoot() ?? Environment.CurrentDirectory, "missing-flavor-report.txt"),
+    null => Path.Combine(ToolPaths.FindRepositoryRoot() ?? Environment.CurrentDirectory, "missing-flavor-report.txt"),
     _    => Path.GetFullPath(outputArg),
 };
-
-static string? FindRepoRoot()
-{
-    var dir = Environment.CurrentDirectory;
-    while (dir is not null)
-    {
-        if (Directory.Exists(Path.Combine(dir, "Pkmds.Rcl"))) return dir;
-        dir = Path.GetDirectoryName(dir);
-    }
-    return null;
-}
-
-string FindDefaultDataDir()
-{
-    var root = FindRepoRoot()
-        ?? throw new DirectoryNotFoundException("Could not find Pkmds.Rcl/ in any parent directory. Use --data to specify the data path.");
-    return Path.Combine(root, "Pkmds.Rcl", "wwwroot", "data");
-}
 
 static bool IsEmpty(string? s) => string.IsNullOrWhiteSpace(s);
 

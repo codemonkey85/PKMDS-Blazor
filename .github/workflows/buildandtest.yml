@@ -43,6 +43,16 @@ jobs:
 
       - name: Install WASM workload
         run: dotnet workload install wasm-tools
+
+      - name: Verify local PKHeX reference selection
+        run: node --test tools/tests/local-pkhex-reference.test.mjs
+
+      - name: Build file-based data tools and check shared formatting
+        run: |
+          for tool in generate-descriptions generate-tm-data report-missing-descriptions scrape-pokemondb-descriptions; do
+            dotnet build "tools/$tool.cs" -c Debug
+          done
+          dotnet format tools/generate-descriptions.cs --no-restore --verify-no-changes --include tools/shared/ToolPaths.cs
   
       - name: Restore dependencies
         run: dotnet restore Pkmds.Web/Pkmds.Web.csproj -p:SelfContained=true
