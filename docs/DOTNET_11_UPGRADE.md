@@ -87,7 +87,7 @@ streams are unchanged. IndexedDB schemas and serialization formats are unchanged
 | Gateway | Web, launch profiles, watch scripts | Supported standalone host; direct-route and framework-asset HTTP checks pass. IDE debugger attachment still needs verification. | Adopt |
 | JS interop diagnostics | `JsService`, `App.OnAfterRenderAsync` | Explicit crypto failure and resilient notification setup; no ignored results changed blindly. | Adopt BL0016 handling |
 | ZIP integrity | Generic/Manic readers, Bank import | Reject invalid checksums; malformed archive paths must fail without writing user records. | Adopt runtime behavior; add regression coverage |
-| Union types/closed cases | `LegalizationResult`, legalization call sites | Case-specific payloads could improve correctness, but require a separate prototype preserving best-effort Pokémon, change summaries, timeout, and HaX warnings. No allocation benefit established. | Defer prototype |
+| Union types/closed cases | `LegalizationResult`, legalization call sites | [Stable C# 15 prototype](CSHARP_15_LEGALIZATION_OUTCOMES.md) demonstrates exhaustive cases and matched CoreCLR model allocations; browser/engine effects remain unmeasured. Closed records retain common best-effort Pokémon access. | Prefer closed hierarchy; defer production adoption |
 | Collection expression arguments | `AppService` encounter set, `DescriptionService` index | Existing constructors expose reference-identity/ordinal comparers and capacity clearly; shorter syntax has no measured benefit. | Retain constructors |
 | Labeled break/continue | Nested storage/legalization loops | Existing early returns and loops do not justify new control flow in the migration. | Defer |
 | Extension indexers/other C# 15 syntax | Shared helpers | No concrete use outweighs extra API/call-site review; memory-safety previews are outside scope. | Defer |
@@ -201,8 +201,9 @@ Issue #1374 remains the tracker for the remaining work:
 
 - #1387: reproducible clean publish/browser baselines, then representative
   description, Bank, archive, memory, and responsiveness measurements.
-- #1388: a C# 15 legalization result union/closed-case prototype with call-site
-  and allocation comparisons, preserving best-effort Pokémon and HaX warnings.
+- #1388: [C# 15 legalization result prototype](CSHARP_15_LEGALIZATION_OUTCOMES.md)
+  compares union/closed-case callers and CoreCLR model allocations, preserving
+  best-effort Pokémon and HaX warnings. Production adoption remains deferred.
 - #1389: Gateway IDE debugging/watch checks and file-based tooling evaluation.
 - #1390: existing-profile deployed-origin update, cached/new frontend backend
   contracts, Safari/native builds, embedded-host/broader save checks, explicit
