@@ -155,7 +155,16 @@ public sealed partial class DescriptionService(HttpClient http, ILogger<Descript
         try
         {
             await using var stream = await http.GetStreamAsync(path);
-            return await JsonSerializer.DeserializeAsync(stream, typeInfo) ?? new T();
+            var result = await JsonSerializer.DeserializeAsync(stream, typeInfo);
+            if (OperatingSystem.IsBrowser())
+            {
+                // In published .NET 11/Chromium observations, immediate disposal
+                // can report ERR_ABORTED after complete JSON was returned. Allow
+                // a browser timer turn before disposing the fetch stream; Yield
+                // alone stays in the current WASM macrotask. See profiling notes.
+                await Task.Delay(1);
+            }
+            return result ?? new T();
         }
         catch (Exception ex)
         {
@@ -416,7 +425,9 @@ public sealed partial class DescriptionService(HttpClient http, ILogger<Descript
     // wwwroot/data/*.json. Nested so it can reference the private records
     // above. PropertyNameCaseInsensitive matches the prior JsonSerializerOptions
     // behavior (data files are camelCase; record properties are PascalCase).
-    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+    // Larger reads reduce browser stream continuations without buffering a whole
+    // dataset. See docs/DESCRIPTION_MEMORY_PROFILING.md for measurements and limits.
+    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true, DefaultBufferSize = 128 * 1024)]
     [JsonSerializable(typeof(Dictionary<string, JsonAbilityEntry>), TypeInfoPropertyName = "Abilities")]
     [JsonSerializable(typeof(Dictionary<string, JsonMoveEntry>), TypeInfoPropertyName = "Moves")]
     [JsonSerializable(typeof(Dictionary<string, JsonItemEntry>), TypeInfoPropertyName = "Items")]

@@ -104,7 +104,8 @@ and an error in JSON; failures do not append successful-looking Markdown.
 
 The default hot-path timings do not establish managed allocations, GC cost,
 peak memory, or UI responsiveness. The opt-in application suite below adds
-separate diagnostics; large-list interactions remain outside this harness.
+separate diagnostics; the focused Bank suites below add actual component
+interactions with explicit limits.
 
 Run `node tools/verify-service-worker-assets.mjs <site>` after publishing as a
 separate integrity check. Browser harness validation is not a substitute for CI
@@ -183,3 +184,60 @@ Use separate profiling passes for that question; do not infer a memory improveme
 from one heap snapshot, a zero collection count, or managed-only import costs.
 References: [process allocation counter](https://learn.microsoft.com/dotnet/api/system.gc.gettotalallocatedbytes),
 [managed heap snapshots](https://learn.microsoft.com/en-us/dotnet/api/system.gc.gettotalmemory).
+
+## Focused Bank suites
+
+```powershell
+node tools/bench/run-bench.mjs --label bank --site release/wwwroot --suite bank --runs 3 --compression br
+node tools/bench/run-bench.mjs --label bank-ui --site release/wwwroot --suite bank-ui --runs 3 --compression br
+```
+
+`bank` runs the application's add-range, JSON import and 8,000-row read workloads,
+with the same warm-up, fixtures, counters and data verification. It skips
+description/archive work to isolate Bank comparisons. The full application and
+default hot-path suites retain their existing workload definitions.
+
+`bank-ui` uses the production Bank component with 8,000 synthetic imported rows.
+It checks 20/100-card pagination, exact nickname filtering, selection across
+pages, 60-frame programmatic scrolling, and unchanged complete export hashes.
+It records attached Bank element counts, CDP DOM/JS-heap snapshots, every frame
+interval, and interaction timings including Playwright wait/observation overhead.
+Snapshots are not total or peak memory; scrolling is headless/programmatic,
+with no loaded save, touch/drag, Safari or mobile coverage. The fixture uses the
+diagnostic layout at 1280×720, not the full save/editor layout. Navigation to
+cards includes fixture seeding and bootstrap, not isolated Bank-opening time.
+
+Both suites require the same initially empty marked automated loopback context
+as `application`. They refuse existing IndexedDB databases before seeding or
+mounting Bank. Never use an existing user profile. Each fresh context is discarded
+after observations; there is no clear-site-data operation.
+
+[Bank UTF-8 read observations and decision](../../docs/BANK_READ_PERFORMANCE.md)
+record the .NET 11 control/refactor comparison and remaining profiling gaps.
+
+## Description and browser-memory profiling
+
+```powershell
+node tools/bench/run-bench.mjs --label descriptions --site release/wwwroot --suite descriptions --runs 3 --compression br
+node tools/bench/calibrate-memory.mjs measurements/new-calibration.trace.json > measurements/new-calibration.json
+node tools/bench/run-bench.mjs --label memory --site release/wwwroot --suite bank-ui --runs 3 --compression br --memory-sampling-ms 250
+```
+
+`descriptions` uses fresh production service instances for moves, abilities,
+items, normalized item lookup and combined loading, retaining input/output
+fingerprints. It uses the fresh-context guard and no Bank API. Completed results
+from invocations rejected for browser asset failures are retained separately as
+`FailedObservation`; they are never reclassified as successful runs.
+
+Memory tracing is opt-in (100–5000 ms requested interval), Chromium-only and a
+separate diagnostic pass. It records filtered background memory-infra dumps,
+every reported process counter and a uniquely named raw trace. Incomplete/lost
+captures fail. It never forces GC or adds allocator sizes to process totals.
+Summed private process footprint is not exact resident/total browser peak memory;
+missing counters remain unavailable. Traced timings include profiler overhead.
+Calibration detects a touched 32 MiB renderer allocation without claiming exact
+attribution. Use a new trace path; prior files cannot be overwritten.
+
+[Description and memory findings](../../docs/DESCRIPTION_MEMORY_PROFILING.md)
+record buffer/completion-turn tuning, the historical request-abort signal, failed
+experiments, sampled memory observations and remaining #1387 gaps.

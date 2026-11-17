@@ -83,27 +83,23 @@ public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
             return [];
         }
 
-        // Prefer the *Json variant (JSON string → source-gen deserialize). If a stale
-        // cached bank.js without the *Json export is served during a service-worker
-        // rollout, getAllPokemonJson will throw "is not a function"; fall back to the
-        // legacy getAllPokemon (returns the raw array, marshalled here as JsonElement
-        // — a trim-safe primitive — then source-gen deserialized).
+        // exportAll already returns the complete JSON as UTF-8 Uint8Array. Blazor's
+        // byte[] interop avoids marshaling that document as an escaped JSON string
+        // and allocating a second UTF-16 copy before source-gen deserialization.
+        // This is the same read-only IndexedDB query and persisted format.
         RawEntry[] raw;
         try
         {
-            var rawJson = await module.InvokeAsync<string>("getAllPokemonJson");
-            if (string.IsNullOrEmpty(rawJson))
+            var rawUtf8 = await module.InvokeAsync<byte[]>("exportAll");
+            if (rawUtf8.Length == 0)
             {
                 return [];
             }
-            raw = JsonSerializer.Deserialize(rawJson, BankJsonContext.Default.RawEntryArray) ?? [];
+            raw = JsonSerializer.Deserialize(rawUtf8, BankJsonContext.Default.RawEntryArray) ?? [];
         }
         catch (JSException ex) when (ex.Message.Contains("is not a function", StringComparison.OrdinalIgnoreCase))
         {
-            var element = await module.InvokeAsync<JsonElement>("getAllPokemon");
-            raw = element.ValueKind == JsonValueKind.Array
-                ? element.Deserialize(BankJsonContext.Default.RawEntryArray) ?? []
-                : [];
+            raw = await ReadLegacyEntriesAsync(module);
         }
 
         if (raw.Length == 0)
@@ -166,6 +162,26 @@ public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
         }
 
         return results;
+    }
+
+    private static async Task<RawEntry[]> ReadLegacyEntriesAsync(IJSObjectReference bankModule)
+    {
+        // Preserve both older read contracts during service-worker rollouts.
+        // Only missing exports trigger fallback; storage/JSON failures propagate.
+        try
+        {
+            var json = await bankModule.InvokeAsync<string>("getAllPokemonJson");
+            return string.IsNullOrEmpty(json)
+                ? []
+                : JsonSerializer.Deserialize(json, BankJsonContext.Default.RawEntryArray) ?? [];
+        }
+        catch (JSException ex) when (ex.Message.Contains("is not a function", StringComparison.OrdinalIgnoreCase))
+        {
+            var element = await bankModule.InvokeAsync<JsonElement>("getAllPokemon");
+            return element.ValueKind == JsonValueKind.Array
+                ? element.Deserialize(BankJsonContext.Default.RawEntryArray) ?? []
+                : [];
+        }
     }
 
     public async Task DeleteAsync(long id)
