@@ -244,8 +244,12 @@ async function onFetch(event) {
         // For all navigation requests, try to serve index.html from cache,
         // unless that request is for an offline resource.
         // If you need some URLs to be server-rendered, edit the following check to exclude those URLs
+        const requestUrl = new URL(event.request.url);
+        // Navigation requests can retain fragments, while manifest/cache keys do
+        // not. Match the resource URL so fallback guidance is served offline too.
+        requestUrl.hash = '';
         const shouldServeIndexHtml = event.request.mode === 'navigate'
-            && !manifestUrlList.some(url => url === event.request.url);
+            && !manifestUrlList.some(url => url === requestUrl.href);
 
         const request = shouldServeIndexHtml ? 'index.html' : event.request;
         const cache = await caches.open(cacheName);

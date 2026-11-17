@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <!-- SIMD disabled to restore compatibility with iOS < 16.4 / Safari < 16.4.
-             Re-enable (with the SIMD probe in index.html) if perf measurements
-             justify the browser support trade-off. See issue #883. -->
-        <WasmEnableSIMD>false</WasmEnableSIMD>
+        <!-- Enable SIMD independently of AOT after the matched #883 evaluation.
+             Final exception handling already sets a later browser feature floor.
+             See docs/WASM_AOT_SIMD_EVALUATION.md and docs/BROWSER_SUPPORT.md. -->
+        <WasmEnableSIMD>true</WasmEnableSIMD>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -42,8 +42,8 @@
              were hardened. -->
         <TrimMode>full</TrimMode>
         <PublishTrimmed>true</PublishTrimmed>
-        <!-- AOT disabled alongside SIMD. Re-enable both together once the
-             browser compatibility impact of SIMD is better understood. -->
+        <!-- Evaluate AOT separately from SIMD using matched performance and
+             application checks before changing the production default (#883). -->
         <RunAOTCompilation>false</RunAOTCompilation>
     </PropertyGroup>
 
@@ -68,6 +68,33 @@
         <TrimmerRootDescriptor Include="PreservePkmTypes.xml"/>
         <TrimmerRootDescriptor Include="PreserveJSInvokable.xml"/>
     </ItemGroup>
+
+    <!-- Require boot-script fingerprints in the published static site; let the
+         development server use the SDK's default asset naming and mapping. -->
+    <ItemGroup Condition="'$(_IsPublishing)' == 'true'">
+        <StaticWebAssetFingerprintPattern Include="BootScripts" Pattern="*.boot.js" Expression="#[.{fingerprint}]!"/>
+    </ItemGroup>
+
+    <!-- Generate a static asset from the resolved SDK properties, including CLI
+         overrides. Keep it in the normal fingerprint/service-worker pipeline. -->
+    <Target Name="GenerateBrowserRequirements" BeforeTargets="ResolveProjectStaticWebAssets">
+        <PropertyGroup>
+            <_BrowserRequiresExceptions>false</_BrowserRequiresExceptions>
+            <_BrowserRequiresExceptions Condition="'$(WasmEnableExceptionHandling)' == 'true'">true</_BrowserRequiresExceptions>
+            <_BrowserRequiresSIMD>false</_BrowserRequiresSIMD>
+            <_BrowserRequiresSIMD Condition="'$(WasmEnableSIMD)' == 'true'">true</_BrowserRequiresSIMD>
+            <_BrowserRequirementsRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'browser-support'))</_BrowserRequirementsRoot>
+            <_BrowserRequirementsFile>$(_BrowserRequirementsRoot)js/browser-requirements.boot.js</_BrowserRequirementsFile>
+        </PropertyGroup>
+        <MakeDir Directories="$(_BrowserRequirementsRoot)js"/>
+        <WriteLinesToFile File="$(_BrowserRequirementsFile)"
+                          Lines="window.pkmdsBrowserRequirements = { exceptionHandling: $(_BrowserRequiresExceptions), simd: $(_BrowserRequiresSIMD) }%3B"
+                          Overwrite="true" WriteOnlyWhenDifferent="true"/>
+        <ItemGroup>
+            <Content Include="$(_BrowserRequirementsFile)" Link="wwwroot/js/browser-requirements.boot.js" ContentRoot="$(_BrowserRequirementsRoot)"/>
+            <FileWrites Include="$(_BrowserRequirementsFile)"/>
+        </ItemGroup>
+    </Target>
 
     <Target Name="CopyServiceWorkerPublished" AfterTargets="Publish">
         <Copy SourceFiles="wwwroot\service-worker.published.js" DestinationFiles="$(PublishDir)wwwroot\service-worker.published.js"/>
