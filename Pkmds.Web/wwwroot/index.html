@@ -195,7 +195,9 @@
         // window.location to a string and concatenating produced broken URLs
         // like /benchBrowserNotSupported.html or /?x=yBrowserNotSupported.html.
         const fallback = new URL("BrowserNotSupported.html", document.baseURI);
-        fallback.searchParams.set('reason', browserFailure);
+        // Keep the reason out of the query. The worker ignores fragments when
+        // matching manifest assets, and Cache Storage ignores them in cache keys.
+        fallback.hash = 'reason=' + encodeURIComponent(browserFailure);
         window.location.replace(fallback.href);
     }
 </script>

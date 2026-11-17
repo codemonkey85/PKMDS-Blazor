@@ -9,6 +9,7 @@ const index = readFileSync(new URL('Pkmds.Web/wwwroot/index.html', root), 'utf8'
 const boot = lastScriptBody(index);
 const fallback = readFileSync(new URL('Pkmds.Web/wwwroot/BrowserNotSupported.html', root), 'utf8');
 const fallbackScript = lastScriptBody(fallback);
+const workerSource = readFileSync(new URL('Pkmds.Web/wwwroot/service-worker.published.js', root), 'utf8');
 
 // Both owned fixtures end with the inline script exercised below.
 function lastScriptBody(html) {
@@ -24,14 +25,15 @@ test('fixture extraction handles mixed-case tags, whitespace, and closing-tag at
 });
 
 function fixture({exceptions = true, simd = true, wasm = true, blocked = false,
-    requirements = {exceptionHandling: true, simd: true}, helper = true} = {}) {
+    requirements = {exceptionHandling: true, simd: true}, helper = true,
+    baseURI = 'https://example.test/pkmds/'} = {}) {
     let starts = 0;
     let redirect;
     let bootOptions;
     const probes = [];
     const context = {
         URL, Uint8Array,
-        document: {baseURI: 'https://example.test/pkmds/'},
+        document: {baseURI},
         location: {
             href: 'https://example.test/pkmds/bench?old=1#fragment',
             replace: value => { redirect = value; }
@@ -122,7 +124,7 @@ for (const [reason, options] of [
         const subject = fixture(options);
         subject.boot();
         assert.equal(subject.starts(), 0);
-        assert.equal(subject.redirect(), `https://example.test/pkmds/BrowserNotSupported.html?reason=${reason}`);
+        assert.equal(subject.redirect(), `https://example.test/pkmds/BrowserNotSupported.html#reason=${reason}`);
     });
 }
 
@@ -140,7 +142,8 @@ function renderFallback(reason) {
     const elements = Object.fromEntries(['support-title', 'support-detail', 'browser-guidance']
         .map(id => [id, {textContent: '', hidden: false}]));
     vm.runInNewContext(fallbackScript, {
-        URL, window: {location: {href: `https://example.test/BrowserNotSupported.html?reason=${encodeURIComponent(reason)}`}},
+        URL, URLSearchParams,
+        window: {location: {href: `https://example.test/BrowserNotSupported.html#reason=${encodeURIComponent(reason)}`}},
         document: {getElementById: id => elements[id]}
     });
     return elements;
@@ -153,10 +156,57 @@ test('missing build metadata gets reload guidance instead of an outdated-browser
     assert.equal(elements['browser-guidance'].hidden, true);
 });
 
-test('fallback explains the detected feature and ignores arbitrary query text', () => {
+test('fallback explains the detected feature and ignores arbitrary fragment text', () => {
     assert.match(renderFallback('exceptions')['support-detail'].textContent, /exception handling/);
     assert.match(renderFallback('simd')['support-detail'].textContent, /SIMD/);
     for (const reason of ['<script>alert(1)</script>', '__proto__', 'toString']) {
         assert.equal(renderFallback(reason)['support-detail'].textContent, '');
     }
 });
+
+async function controlledNavigation(url, offline) {
+    const origin = 'https://example.test';
+    const cache = new Map([
+        [new URL('index.html', origin).href, new Response(index)],
+        [new URL('BrowserNotSupported.html', origin).href, new Response(fallback)]
+    ]);
+    let networkRequests = 0;
+    const context = vm.createContext({
+        URL, Request, Response, console,
+        self: {origin, assetsManifest: {version: 'test', assets: [
+            {url: 'index.html'}, {url: 'BrowserNotSupported.html'}
+        ]}, importScripts() {}, addEventListener() {}},
+        caches: {open: async () => ({
+            match: async request => {
+                const key = new URL(typeof request === 'string' ? request : request.url, origin);
+                key.hash = ''; // Cache Storage ignores fragments, even when request.url retains one.
+                return cache.get(key.href)?.clone();
+            }
+        })},
+        fetch: async () => {
+            networkRequests++;
+            if (offline) throw new TypeError('Offline');
+            return new Response('Network fallback');
+        }
+    });
+    vm.runInContext(workerSource, context);
+    // Chromium retains the fragment on the worker's navigation request.
+    const response = await context.onFetch({request: {url, method: 'GET', mode: 'navigate'}});
+    return {body: await response.text(), networkRequests};
+}
+
+for (const offline of [false, true]) {
+    for (const [reason, options] of [
+        ['webassembly', {wasm: false}], ['exceptions', {exceptions: false}],
+        ['simd', {simd: false}], ['configuration', {requirements: null}]
+    ]) {
+        test(`controlled worker serves the cached fallback for ${reason}, offline=${offline}`, async () => {
+            const subject = fixture({...options, baseURI: 'https://example.test/'});
+            subject.boot();
+            const result = await controlledNavigation(subject.redirect(), offline);
+            assert.equal(result.body.includes('id="support-title"'), true, 'Expected the fallback, not the app shell');
+            assert.equal(result.networkRequests, 0);
+            assert.equal(subject.starts(), 0);
+        });
+    }
+}

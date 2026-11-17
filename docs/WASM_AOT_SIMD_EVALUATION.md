@@ -571,6 +571,25 @@ test fixtures. The shared extractor now handles mixed-case names, whitespace, an
 closing-tag attributes, with a regression case. All 52 JavaScript tests pass after
 that correction; this changes fixture extraction, not the production startup gate.
 
+Copilot's controlled-client review then exposed a fallback-routing gap: a reason
+query fails the worker's exact manifest match and serves the app shell instead of
+guidance. The reason now uses `#reason=...`, and the worker ignores fragments in
+its manifest comparison. Chromium 155 retained the fragment in
+`FetchEvent.request.url`, even though Cache Storage and response URLs omitted it;
+moving the reason alone was insufficient. A real-browser check caught that initial
+assumption, and the worker regression fixture was corrected to model it.
+
+All 60 JavaScript tests now pass, including eight worker-handler regressions that
+failed before the routing correction. A fresh Release publish verifies all 3,472
+asset hashes (manifest `p+XAmOxt`); formatting and zero-warning solution Debug
+build also pass. Fresh Chromium contexts, each installed and controlled by the
+published worker before fault injection, verified all four failure reasons online
+and offline. Every case received the cached fallback, displayed the correct
+guidance, made zero observed WASM requests, retained a synthetic IndexedDB
+sentinel, and had no page exceptions. Ordinary online/offline startup still passes.
+The diagnostic driver and final JSON remain in the ignored
+`measurements/browser-support-validation/controlled-fallback*/` directories.
+
 These checks validate the selected rollout build. They do not repeat the four-way
 performance experiment on the newer dependency graph or close the physical-device,
 minimum-version, memory, or historical-runtime gaps above.

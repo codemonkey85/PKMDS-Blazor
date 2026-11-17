@@ -101,7 +101,7 @@
 </p>
 <script>
     (function () {
-        var reason = new URL(window.location.href).searchParams.get('reason');
+        var reason = new URLSearchParams(new URL(window.location.href).hash.slice(1)).get('reason');
         var messages = {
             webassembly: 'WebAssembly is unavailable or blocked in this browser.',
             exceptions: 'This browser lacks the WebAssembly exception handling required by PKMDS.',

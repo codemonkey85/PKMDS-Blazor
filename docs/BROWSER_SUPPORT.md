@@ -54,6 +54,10 @@ also prevents startup, with a separate reload message rather than incorrectly
 claiming that the browser is too old. The checks do not cover all runtime errors,
 available memory, storage access, or application behavior.
 
+The reason is carried in a URL fragment (`#reason=...`). The worker ignores
+fragments when matching navigations to manifest assets, so controlled clients
+receive the cached fallback. A reason query would trigger SPA-shell routing.
+
 The fallback does not change IndexedDB, caches, or service-worker registration.
 For startup troubleshooting, use a hard refresh, unregister only the service
 worker, or diagnose in a fresh private session. Never clear the origin's site
