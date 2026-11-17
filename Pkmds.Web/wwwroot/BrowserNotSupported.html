@@ -6,13 +6,13 @@
     <meta content="width=device-width, initial-scale=1.0"
           name="viewport"/>
     <title>PKMDS: Pokémon Save Editor for Web — Browser Not Supported</title>
-    <link href="icon-512.png"
+    <link href="_content/Pkmds.Rcl/icon-512.png"
           rel="apple-touch-icon"
           sizes="512x512"/>
-    <link href="icon-192.png"
+    <link href="_content/Pkmds.Rcl/icon-192.png"
           rel="apple-touch-icon"
           sizes="192x192"/>
-    <link href="icon-512.png"
+    <link href="_content/Pkmds.Rcl/icon-512.png"
           rel="icon"
           type="image/png"/>
     <style>
@@ -44,31 +44,33 @@
 <body>
 <h1>PKMDS: Pokémon Save Editor for Web</h1>
 
-<p>
-    Your browser isn't recent enough to run PKMDS. We need
-    <a href="https://webassembly.org/" target="_blank" rel="noopener">WebAssembly</a>
-    with the <a href="https://github.com/WebAssembly/simd" target="_blank" rel="noopener">SIMD</a>
-    extension — used to accelerate save-file parsing, encryption, and legality
-    checks.
+<h2 id="support-title">Your browser cannot run this version of PKMDS</h2>
+<p id="support-detail">
+    PKMDS needs browser features that are unavailable or disabled in this browser.
 </p>
 
-<p>Any of these (or newer) will work:</p>
-
-<ul>
-    <li>Chrome / Edge / Brave / Opera 91+ (May 2021)</li>
-    <li>Firefox 89+ (June 2021)</li>
-    <li>Safari 16.4+ on macOS, iPadOS, or iOS (March 2023)</li>
-</ul>
+<div id="browser-guidance">
+    <p>
+        Update to the latest stable Chrome, Edge, Firefox, or Safari. The current
+        runtime requires WebAssembly exception handling, introduced in Chrome 137,
+        Firefox 131, and Safari 18.4. These are feature requirements, not a guarantee
+        that every PKMDS feature has been tested on those exact versions.
+    </p>
+    <p>
+        On iPhone or iPad, update iOS or iPadOS to 18.4 or later. If your device
+        cannot install that update, use a supported device. Installing a different
+        browser that uses the same system browser engine will not add the missing feature.
+    </p>
+    <p>
+        See the <a href="https://github.com/codemonkey85/PKMDS-Blazor/blob/main/docs/BROWSER_SUPPORT.md"
+                   target="_blank" rel="noopener">browser support policy</a> for requirements and validation limits.
+    </p>
+</div>
 
 <p>
-    If you're on an older iPhone or iPad that can't update to iOS 16.4 or
-    later, unfortunately Apple no longer ships browser updates for that
-    device and PKMDS can't run there.
-</p>
-
-<p>
-    Want the gritty details? Check
-    <a href="https://caniuse.com/wasm-simd" target="_blank" rel="noopener">caniuse.com/wasm-simd</a>.
+    Your local save backups and Pokémon Bank have not been removed. They belong
+    to this browser profile and do not automatically appear in another browser,
+    private window, or device. Keep this profile if you need to recover them.
 </p>
 
 <hr style="margin: 2rem 0; border: none; border-top: 1px solid #d1d5db;"/>
@@ -89,7 +91,7 @@
         <br/>
         <em>Do not use "Clear site data" — that also wipes your local backups and Bank.</em>
     </li>
-    <li><strong>Incognito / private window</strong> — bypasses the service worker entirely to confirm the issue is cache-related.</li>
+    <li><strong>Incognito / private window</strong> — try a fresh session to check whether the problem is specific to your regular profile. Existing backups and Bank will not appear there.</li>
 </ol>
 
 <p>
@@ -97,6 +99,24 @@
     <a href="https://github.com/codemonkey85/PKMDS-Blazor/issues" target="_blank" rel="noopener">open an issue</a>
     and describe what you see (stuck spinner, error bar, or this page).
 </p>
+<script>
+    (function () {
+        var reason = new URL(window.location.href).searchParams.get('reason');
+        var messages = {
+            webassembly: 'WebAssembly is unavailable or blocked in this browser.',
+            exceptions: 'This browser lacks the WebAssembly exception handling required by PKMDS.',
+            simd: 'This build of PKMDS requires WebAssembly SIMD, which is unavailable in this browser.',
+            configuration: 'The browser compatibility check could not load. Try the reload steps below.'
+        };
+        if (Object.prototype.hasOwnProperty.call(messages, reason)) {
+            document.getElementById('support-detail').textContent = messages[reason];
+        }
+        if (reason === 'configuration') {
+            document.getElementById('support-title').textContent = 'PKMDS could not check your browser';
+            document.getElementById('browser-guidance').hidden = true;
+        }
+    })();
+</script>
 </body>
 
 </html>

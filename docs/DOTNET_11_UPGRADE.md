@@ -61,9 +61,13 @@ bUnit 2.15.2, and FileSystemAccess 4.0.0. Their successful compilation does not
 establish every browser or native-platform behavior. Dependencies remain at
 their existing versions to keep this migration focused.
 
-The SDK continues to select Mono for browser WASM. AOT and SIMD remain disabled;
+The SDK continues to select Mono for browser WASM. SIMD is now enabled following
+the [independent AOT/SIMD evaluation](WASM_AOT_SIMD_EVALUATION.md). AOT remains disabled;
 full trimming and the existing reflection/JS-invokable roots remain enabled.
 No Runtime Async or CoreCLR-specific optimization is enabled in shared projects.
+Mono still requires final WebAssembly exception handling even with both flags
+disabled. See [browser support](BROWSER_SUPPORT.md) for feature floors, startup
+checks, and the limits of current browser validation.
 
 New BL0016 diagnostics exposed unguarded interop in Web. The crypto bridge now
 translates `JSException` into `CryptographicException`, preserving the original
@@ -92,7 +96,7 @@ streams are unchanged. IndexedDB schemas and serialization formats are unchanged
 | Virtualization | Pokédex grid; Bank/search/encounter tables | Only the Pokédex currently opts into virtualization. Variable-height behavior and increased framework overscan need UI/memory checks; pagination does not become virtualization automatically. | Retain UI; defer larger changes |
 | File-based `#:include` | Data generators/diagnostics | No generator refactor needed for retargeting; generated output must stay stable. | Defer helper extraction |
 | Runtime Async | Functions/tools | Requires a compatible CoreCLR host and separate cancellation/exception measurements; inappropriate as a global Mono WASM switch. | Defer |
-| CoreCLR-on-WASM, AOT, SIMD | Web publish settings | Runtime support, startup, download size, and Safari support need separate evidence. | Retain current settings |
+| CoreCLR-on-WASM, AOT, SIMD | Web publish settings | Evaluate runtime support, startup, download size, and Safari support independently. | SIMD enabled after [#883 evaluation](WASM_AOT_SIMD_EVALUATION.md); AOT and CoreCLR deferred |
 
 ## Local validation, November 12, 2026
 

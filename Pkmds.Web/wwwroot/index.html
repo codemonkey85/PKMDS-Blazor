@@ -113,6 +113,8 @@
 <!-- Must load before blazor.webassembly.js so the error listeners are
      registered before the WASM / AOT bootstrap can throw. -->
 <script src="js/error-reporting.js"></script>
+<script src="js/browser-requirements#[.{fingerprint}].boot.js"></script>
+<script src="js/browser-support#[.{fingerprint}].boot.js"></script>
 
 <!--prevent autostarting-->
 <script autostart="false"
@@ -123,24 +125,11 @@
 <script src="_content/Pkmds.Rcl/js/crypto.js"></script>
 
 <script>
-    // Baseline WebAssembly support.
-    const webassemblySupported = (function () {
-        try {
-            if (typeof WebAssembly === "object"
-                && typeof WebAssembly.instantiate === "function") {
-                const module = new WebAssembly.Module(
-                    Uint8Array.of(0x0, 0x61, 0x73, 0x6d,
-                        0x01, 0x00, 0x00, 0x00));
-                if (module instanceof WebAssembly.Module)
-                    return new WebAssembly.Instance(module)
-                        instanceof WebAssembly.Instance;
-            }
-        } catch (e) {
-        }
-        return false;
-    })();
+    const browserFailure = typeof window.pkmdsCheckBrowser === 'function'
+        ? window.pkmdsCheckBrowser(window.pkmdsBrowserRequirements)
+        : 'configuration';
 
-    if (webassemblySupported) {
+    if (browserFailure === null) {
         // Retry boot-resource fetches with exponential backoff. Blazor does not
         // retry boot resources by default, so a single transient network blip
         // during startup (common on mobile connections, especially first load
@@ -205,7 +194,9 @@
         // fallback regardless of the current path / query / hash. Coercing
         // window.location to a string and concatenating produced broken URLs
         // like /benchBrowserNotSupported.html or /?x=yBrowserNotSupported.html.
-        window.location.href = new URL("BrowserNotSupported.html", document.baseURI).href;
+        const fallback = new URL("BrowserNotSupported.html", document.baseURI);
+        fallback.searchParams.set('reason', browserFailure);
+        window.location.replace(fallback.href);
     }
 </script>
 

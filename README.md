@@ -149,11 +149,11 @@ A: Yes, there are a few known limitations:
 
 Q: What are the system requirements for PKMDS?
 
-A: PKMDS is a web app, so it can be used on any device that has a web browser. You can use PKMDS on a desktop computer, laptop, tablet, or smartphone. Please note that the app runs best in Google Chrome or Chromium-based browsers - I've noticed some UI bugs in Safari for instance.
+A: Use the latest stable Chrome, Edge, Firefox, or Safari. The current runtime requires modern WebAssembly exception handling (introduced in Chrome 137, Firefox 131, and Safari 18.4). On iPhone and iPad, this requires iOS/iPadOS 18.4 or later. See the [browser support policy](docs/BROWSER_SUPPORT.md) for requirements and testing limits.
 
 Q: Can I use PKMDS on my mobile device?
 
-A: Yes, you can use PKMDS on your mobile device. The web app is designed to be responsive, so it will work on any device that has a web browser.
+A: Yes, on a mobile device with a supported browser. See the [browser support policy](docs/BROWSER_SUPPORT.md); older iPhones and iPads that cannot update to iOS/iPadOS 18.4 cannot run the current runtime.
 
 Q: Can I use PKMDS on my Nintendo Switch?
 
@@ -161,7 +161,7 @@ A: No, you cannot use PKMDS on your Nintendo Switch. The web app is designed to 
 
 Q: Can I use PKMDS on my Mac?
 
-A: Yes, you can use PKMDS on your Mac. The web app is designed to be used on any device that has a web browser, including Mac computers.
+A: Yes, with a supported browser, including Safari 18.4 or later. See the [browser support policy](docs/BROWSER_SUPPORT.md).
 
 </details>
 

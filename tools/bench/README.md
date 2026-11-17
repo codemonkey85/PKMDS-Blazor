@@ -5,6 +5,11 @@ builds or browser benchmarks. Keep the application inputs, dependencies,
 publish settings, hardware, and browser version matched. Retain every run;
 report ranges and outliers rather than selecting the fastest result.
 
+The [AOT/SIMD evaluation](../../docs/WASM_AOT_SIMD_EVALUATION.md) records the
+Windows and Mac results, compatibility findings, rollout decisions, failed
+instrumentation, and remaining validation gaps. See also the
+[browser support policy](../../docs/BROWSER_SUPPORT.md).
+
 ## Setup
 
 Use the SDK/workloads selected by the source checkout's `global.json`. Restore
