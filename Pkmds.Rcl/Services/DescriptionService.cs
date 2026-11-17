@@ -155,7 +155,16 @@ public sealed partial class DescriptionService(HttpClient http, ILogger<Descript
         try
         {
             await using var stream = await http.GetStreamAsync(path);
-            return await JsonSerializer.DeserializeAsync(stream, typeInfo) ?? new T();
+            var result = await JsonSerializer.DeserializeAsync(stream, typeInfo);
+            if (OperatingSystem.IsBrowser())
+            {
+                // In published .NET 11/Chromium observations, immediate disposal
+                // can report ERR_ABORTED after complete JSON was returned. Allow
+                // a browser timer turn before disposing the fetch stream; Yield
+                // alone stays in the current WASM macrotask. See profiling notes.
+                await Task.Delay(1);
+            }
+            return result ?? new T();
         }
         catch (Exception ex)
         {

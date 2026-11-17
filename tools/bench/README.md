@@ -239,5 +239,5 @@ Calibration detects a touched 32 MiB renderer allocation without claiming exact
 attribution. Use a new trace path; prior files cannot be overwritten.
 
 [Description and memory findings](../../docs/DESCRIPTION_MEMORY_PROFILING.md)
-record the proposed buffer tuning, unresolved request-abort signal, failed
+record buffer/completion-turn tuning, the historical request-abort signal, failed
 experiments, sampled memory observations and remaining #1387 gaps.

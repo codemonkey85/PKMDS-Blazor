@@ -50,6 +50,23 @@ jobs:
       - name: Publish Web
         run: dotnet publish Pkmds.Web/Pkmds.Web.csproj --configuration Release --no-restore -o release
 
+      - name: Install browser smoke dependencies
+        working-directory: tools/bench
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Verify published description loading in Chromium
+        run: node tools/bench/run-bench.mjs --label ci-descriptions --site release/wwwroot --suite descriptions --runs 1 --compression br --output measurements/ci-descriptions.md
+
+      - name: Upload description browser observations
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: description-browser-smoke
+          path: measurements/ci-descriptions*
+          if-no-files-found: ignore
+
       - name: Verify service worker assets
         run: node tools/verify-service-worker-assets.mjs release/wwwroot
 

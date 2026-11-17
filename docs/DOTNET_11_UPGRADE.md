@@ -203,9 +203,9 @@ Issue #1374 remains the tracker for the remaining work:
   description, Bank, archive, memory, and responsiveness measurements.
   [Bank UTF-8 read and component observations](BANK_READ_PERFORMANCE.md) show a
   focused improvement; total peak-memory and broader interactions remain open.
-  [Description/memory profiling](DESCRIPTION_MEMORY_PROFILING.md) records a draft
-  streaming-buffer proposal and scoped Chromium process-memory samples; the
-  description-request abort and resident/total peak-memory gaps remain open.
+  [Description/memory profiling](DESCRIPTION_MEMORY_PROFILING.md) records larger
+  streaming buffers, a tested browser-completion mitigation and scoped Chromium
+  process-memory samples. Resident/total peak-memory and broader platform gaps remain open.
 - #1388: a C# 15 legalization result union/closed-case prototype with call-site
   and allocation comparisons, preserving best-effort Pokémon and HaX warnings.
 - #1389: Gateway IDE debugging/watch checks and file-based tooling evaluation.
