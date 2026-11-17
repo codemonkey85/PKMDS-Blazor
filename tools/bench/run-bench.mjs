@@ -9,6 +9,7 @@ import { join, resolve, relative, isAbsolute, extname, dirname } from 'node:path
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { profileBankUi } from './bank-ui.mjs';
+import { startBrowserMemoryTrace } from './browser-memory.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..', '..');
@@ -16,7 +17,7 @@ const repoRoot = resolve(__dirname, '..', '..');
 const args = parseArgs(process.argv.slice(2));
 const label = args.label;
 if (!label) {
-    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br] [--suite hotpaths|application|bank|bank-ui]');
+    console.error('usage: node run-bench.mjs --label <name> [--site <path>] [--output <path>] [--timeout <ms>] [--runs <count>] [--compression identity|br] [--suite hotpaths|application|bank|bank-ui|descriptions] [--memory-sampling-ms 100..5000]');
     process.exit(2);
 }
 const siteDir = resolve(args.site ?? join(repoRoot, 'release', 'wwwroot'));
@@ -25,11 +26,16 @@ const benchTimeoutMs = Number(args.timeout ?? 300_000);
 const runs = Number(args.runs ?? 3);
 const compression = args.compression ?? 'identity';
 const suite = args.suite ?? 'hotpaths';
+const invocationId = new Date().toISOString().replace(/[:.]/g, '-');
+const memoryIntervalMs = args['memory-sampling-ms'] === undefined ? null : Number(args['memory-sampling-ms']);
+if (memoryIntervalMs !== null && (!Number.isInteger(memoryIntervalMs) || memoryIntervalMs < 100 || memoryIntervalMs > 5000)) {
+    throw new Error('Memory sampling interval must be 100..5000 ms.');
+}
 if (!Number.isInteger(runs) || runs < 1 || runs > 100 || !Number.isFinite(benchTimeoutMs) || benchTimeoutMs <= 0 || !['identity', 'br'].includes(compression)) {
     throw new Error('Expected runs=1..100, a positive timeout, and compression=identity|br.');
 }
 if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(label)) throw new Error('Label must be a filename-safe identifier.');
-if (!['hotpaths', 'application', 'bank', 'bank-ui'].includes(suite)) throw new Error('Expected suite=hotpaths|application|bank|bank-ui.');
+if (!['hotpaths', 'application', 'bank', 'bank-ui', 'descriptions'].includes(suite)) throw new Error('Expected suite=hotpaths|application|bank|bank-ui|descriptions.');
 
 await stat(siteDir).catch(() => {
     console.error(`Site directory not found: ${siteDir}`);
@@ -122,6 +128,7 @@ console.log(`Serving ${siteDir} on ${baseUrl}`);
 
 let browser;
 let failure;
+let pageOrdinal = 0;
 const reports = [];
 try {
     browser = await chromium.launch({ headless: true });
@@ -149,6 +156,10 @@ try {
                 })),
             }));
         });
+        if (startup.BrowserMemory) {
+            startup.StartupBrowserMemory = startup.BrowserMemory;
+            delete startup.BrowserMemory;
+        }
         const report = await inFreshPage(async page => {
             if (suite === 'bank-ui') return profileBankUi(page, baseUrl, benchTimeoutMs);
             const navStart = performance.now();
@@ -185,7 +196,8 @@ const measurement = {
     BrowserVersion: browser?.version(), NodeVersion: process.version,
     Machine: { OS: platform(), Release: release(), Architecture: arch(), CPU: cpus()[0]?.model, LogicalProcessors: cpus().length, TotalMemoryBytes: totalmem() },
     CachePolicy: 'Fresh nonpersistent context per navigation; service workers blocked; no-store HTTP; browser process reused; engine/OS/server filesystem caches not reset.',
-    Compression: compression, Runs: reports, Error: failure?.message,
+    Compression: compression, MemorySamplingIntervalMs: memoryIntervalMs,
+    Runs: reports, Error: failure?.message, FailedObservation: failure?.benchmarkObservation,
 };
 await mkdir(dirname(outputPath), { recursive: true });
 // JSON Lines retains prior invocations as well as every raw sample in this one.
@@ -198,9 +210,13 @@ console.log(`Appended ${runs} runtime runs to ${outputPath} and ${rawPath}`);
 async function inFreshPage(action) {
     const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 720 } });
     const errors = [];
+    let stopMemoryTrace;
+    let memoryFinished = false;
     try {
+        if (memoryIntervalMs !== null) stopMemoryTrace = await startBrowserMemoryTrace(browser,
+            outputPath.replace(/\.md$/i, '') + `.page-${++pageOrdinal}.${label}.${invocationId}.memory.trace.json`, memoryIntervalMs);
         const page = await context.newPage();
-        if (['application', 'bank', 'bank-ui'].includes(suite)) {
+        if (['application', 'bank', 'bank-ui', 'descriptions'].includes(suite)) {
             // Fresh nonpersistent context, a random loopback port, and an explicit
             // marker are all required before the opt-in Bank benchmark can run.
             await page.addInitScript(() => { globalThis.pkmdsBenchmarkIsolation = true; });
@@ -216,10 +232,19 @@ async function inFreshPage(action) {
             if (request.url().startsWith(baseUrl + '/')) errors.push(`${request.url()}: ${request.failure()?.errorText}`);
         });
         const result = await action(page);
-        if (errors.length) throw new Error(`Browser errors:\n${errors.join('\n')}`);
+        if (stopMemoryTrace) {
+            memoryFinished = true;
+            result.BrowserMemory = await stopMemoryTrace();
+        }
+        if (errors.length) {
+            const error = new Error(`Browser errors:\n${errors.join('\n')}`);
+            error.benchmarkObservation = result;
+            throw error;
+        }
         return result;
     } finally {
-        await context.close();
+        try { if (stopMemoryTrace && !memoryFinished) await stopMemoryTrace(); }
+        finally { await context.close(); }
     }
 }
 
@@ -229,7 +254,7 @@ function parseArgs(argv) {
         const arg = argv[i];
         const key = arg.slice(2);
         const next = argv[++i];
-        if (!arg.startsWith('--') || !['label', 'site', 'output', 'timeout', 'runs', 'compression', 'suite'].includes(key) ||
+        if (!arg.startsWith('--') || !['label', 'site', 'output', 'timeout', 'runs', 'compression', 'suite', 'memory-sampling-ms'].includes(key) ||
             Object.hasOwn(out, key) || !next || next.startsWith('--')) throw new Error(`Invalid argument: ${arg}`);
         out[key] = next;
     }
@@ -249,6 +274,7 @@ function renderMarkdown(label, report) {
     lines.push(`- Suite: ${report.Suite ?? 'hotpaths'}`);
     if (report.Notes) lines.push(`- Scope: ${report.Notes}`);
     if (report.UiObservations) lines.push(`- UI observations: \`${JSON.stringify(report.UiObservations)}\``);
+    if (report.BrowserMemory) lines.push(`- Chromium memory: ${report.BrowserMemory.SampleCount} samples; peak reported private footprint ${report.BrowserMemory.PeakReportedPrivateFootprintBytes ?? 'unavailable'} bytes; peak reported resident ${report.BrowserMemory.PeakReportedResidentBytes ?? 'unavailable'} bytes. Trace-enabled timings include profiler overhead. Raw trace: ${report.BrowserMemory.TracePath}`);
     lines.push('');
     lines.push('| Workload | Iter | Ops/iter | Mean (ms) | Min (ms) | Max (ms) | StdDev (ms) | Ops/sec |');
     lines.push('| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |');

@@ -416,7 +416,9 @@ public sealed partial class DescriptionService(HttpClient http, ILogger<Descript
     // wwwroot/data/*.json. Nested so it can reference the private records
     // above. PropertyNameCaseInsensitive matches the prior JsonSerializerOptions
     // behavior (data files are camelCase; record properties are PascalCase).
-    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
+    // Larger reads reduce browser stream continuations without buffering a whole
+    // dataset. See docs/DESCRIPTION_MEMORY_PROFILING.md for measurements and limits.
+    [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true, DefaultBufferSize = 128 * 1024)]
     [JsonSerializable(typeof(Dictionary<string, JsonAbilityEntry>), TypeInfoPropertyName = "Abilities")]
     [JsonSerializable(typeof(Dictionary<string, JsonMoveEntry>), TypeInfoPropertyName = "Moves")]
     [JsonSerializable(typeof(Dictionary<string, JsonItemEntry>), TypeInfoPropertyName = "Items")]

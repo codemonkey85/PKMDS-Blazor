@@ -214,3 +214,30 @@ after observations; there is no clear-site-data operation.
 
 [Bank UTF-8 read observations and decision](../../docs/BANK_READ_PERFORMANCE.md)
 record the .NET 11 control/refactor comparison and remaining profiling gaps.
+
+## Description and browser-memory profiling
+
+```powershell
+node tools/bench/run-bench.mjs --label descriptions --site release/wwwroot --suite descriptions --runs 3 --compression br
+node tools/bench/calibrate-memory.mjs measurements/new-calibration.trace.json > measurements/new-calibration.json
+node tools/bench/run-bench.mjs --label memory --site release/wwwroot --suite bank-ui --runs 3 --compression br --memory-sampling-ms 250
+```
+
+`descriptions` uses fresh production service instances for moves, abilities,
+items, normalized item lookup and combined loading, retaining input/output
+fingerprints. It uses the fresh-context guard and no Bank API. Completed results
+from invocations rejected for browser asset failures are retained separately as
+`FailedObservation`; they are never reclassified as successful runs.
+
+Memory tracing is opt-in (100–5000 ms requested interval), Chromium-only and a
+separate diagnostic pass. It records filtered background memory-infra dumps,
+every reported process counter and a uniquely named raw trace. Incomplete/lost
+captures fail. It never forces GC or adds allocator sizes to process totals.
+Summed private process footprint is not exact resident/total browser peak memory;
+missing counters remain unavailable. Traced timings include profiler overhead.
+Calibration detects a touched 32 MiB renderer allocation without claiming exact
+attribution. Use a new trace path; prior files cannot be overwritten.
+
+[Description and memory findings](../../docs/DESCRIPTION_MEMORY_PROFILING.md)
+record the proposed buffer tuning, unresolved request-abort signal, failed
+experiments, sampled memory observations and remaining #1387 gaps.

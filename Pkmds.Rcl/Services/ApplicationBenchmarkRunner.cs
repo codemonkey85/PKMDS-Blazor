@@ -13,6 +13,70 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
 
     private const int WarmupIterations = 1;
 
+    /// <summary>Profiles each description dataset and the normalized item index separately.</summary>
+    public async Task<BenchmarkReport> RunDescriptionsAsync()
+    {
+        await using var bridge = await js.InvokeAsync<IJSObjectReference>("import", "./js/benchmark.js");
+        await bridge.InvokeVoidAsync("requireIsolatedContext");
+        var measure = new Measurement(bridge);
+        var results = new List<BenchmarkResult>();
+        var fixtures = new Dictionary<string, string>();
+        foreach (var name in new[] { "move-info.json", "ability-info.json", "item-info.json" })
+        {
+            var bytes = await http.GetByteArrayAsync($"_content/Pkmds.Rcl/data/{name}");
+            fixtures[name] = await bridge.InvokeAsync<string>("fingerprint", bytes);
+        }
+
+        foreach (var workload in new[] { "moves", "abilities", "items", "normalized-items", "all" })
+        {
+            var signature = new List<string>();
+            string? expectedSignature = null;
+            results.Add(await measure.RunAsync($"description-{workload}", 3, 1, async () =>
+            {
+                var descriptions = new DescriptionService(http, NullLogger<DescriptionService>.Instance);
+                signature.Clear();
+                if (workload is "moves" or "all")
+                {
+                    var move = await descriptions.GetMoveInfoAsync(33, GameVersion.SL);
+                    if (move?.Name != "Tackle" || string.IsNullOrWhiteSpace(move.Description))
+                        throw new InvalidOperationException("Move description fixture failed.");
+                    signature.Add($"{move.Name}|{move.Description}");
+                }
+                if (workload is "abilities" or "all")
+                {
+                    var ability = await descriptions.GetAbilityInfoAsync(65, GameVersion.SL);
+                    if (ability?.Name != "Overgrow" || string.IsNullOrWhiteSpace(ability.Description))
+                        throw new InvalidOperationException("Ability description fixture failed.");
+                    signature.Add($"{ability.Name}|{ability.Description}");
+                }
+                if (workload is "items" or "normalized-items" or "all")
+                {
+                    var item = await descriptions.GetItemInfoAsync(workload == "normalized-items" ? "MasterBall" : "Master Ball", GameVersion.SL);
+                    if (item?.Name != "Master Ball" || string.IsNullOrWhiteSpace(item.Description))
+                        throw new InvalidOperationException("Item description fixture failed.");
+                    signature.Add($"{item.Name}|{item.Description}");
+                }
+            }, () =>
+            {
+                var actual = string.Join("\n", signature);
+                expectedSignature ??= actual;
+                if (actual != expectedSignature) throw new InvalidOperationException("Description output changed.");
+                return Task.CompletedTask;
+            }, "Fresh production DescriptionService; complete dataset loading and lookup. Output validation/signature construction are included; equivalence comparison is outside timing."));
+            fixtures[$"output-{workload}"] = await bridge.InvokeAsync<string>("fingerprint", Encoding.UTF8.GetBytes(expectedSignature!));
+        }
+
+        return new BenchmarkReport
+        {
+            Date = DateTimeOffset.UtcNow,
+            UserAgent = "",
+            Suite = "descriptions",
+            Results = results,
+            Fixtures = fixtures,
+            Notes = "One warm-up and three measured fresh-service loads per workload. Dataset hashes are read before measurement; HTTP/server cache policy follows the harness. No Bank API or user storage is used. Allocation counters exclude JS/native memory; trace-enabled timings are profiling observations only."
+        };
+    }
+
     public async Task<BenchmarkReport> RunAsync(Config? config = null)
     {
         config ??= new Config();

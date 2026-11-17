@@ -12,6 +12,7 @@ public class ApplicationBenchmarkTests
     [InlineData("application")]
     [InlineData("bank")]
     [InlineData("bank-ui")]
+    [InlineData("descriptions")]
     public async Task RunAsync_RefusedContext_DoesNotOpenBank(string suite)
     {
         using var context = new BunitContext();
@@ -21,9 +22,12 @@ public class ApplicationBenchmarkTests
         using var http = new HttpClient();
         var runner = new ApplicationBenchmarkRunner(http, context.Services.GetRequiredService<IJSRuntime>());
 
-        var action = () => suite == "bank-ui"
-            ? runner.PrepareBankUiAsync()
-            : runner.RunAsync(new ApplicationBenchmarkRunner.Config(1, 3, 1, BankOnly: suite == "bank"));
+        var action = () => suite switch
+        {
+            "bank-ui" => runner.PrepareBankUiAsync(),
+            "descriptions" => runner.RunDescriptionsAsync(),
+            _ => runner.RunAsync(new ApplicationBenchmarkRunner.Config(1, 3, 1, BankOnly: suite == "bank"))
+        };
 
         await action.Should().ThrowAsync<JSException>().WithMessage("Existing database refused.");
         context.JSInterop.Invocations.Should().NotContain(invocation =>
