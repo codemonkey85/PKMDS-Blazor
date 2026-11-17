@@ -73,6 +73,23 @@ jobs:
       - name: Build Functions
         run: dotnet build Pkmds.Functions/Pkmds.Functions.csproj --configuration Release
 
+      - name: Check legalization outcome prototype
+        shell: pwsh
+        run: |
+          $project = 'tools/legalization-outcomes/LegalizationOutcomes.csproj'
+          $probe = dotnet build $project -c Debug -p:DefineConstants=VERIFY_EXHAUSTIVENESS 2>&1 | Out-String
+          if ($LASTEXITCODE -eq 0 -or $probe -notmatch 'error CS8509.*ImportedViaHaX' -or $probe -notmatch 'error CS8509.*ClosedHaX') {
+            throw "Expected missing-case diagnostics for both prototypes: $probe"
+          }
+          dotnet run --project $project -c Release > legalization-outcomes.json
+          if ($LASTEXITCODE -ne 0) { throw 'Legalization outcome prototype failed.' }
+
+      - name: Upload legalization outcome observations
+        uses: actions/upload-artifact@v7
+        with:
+          name: legalization-outcomes
+          path: legalization-outcomes.json
+
       - name: Run tests
         run: dotnet test Pkmds.Tests/Pkmds.Tests.csproj --configuration Release
 

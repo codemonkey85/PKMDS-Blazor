@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <LangVersion>15.0</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="PKHeX.Core"/>
+        <!-- Compare the actual production model without loading the UI. -->
+        <Compile Include="../../Pkmds.Rcl/Models/LegalizationResult.cs" Link="Baseline/LegalizationResult.cs"/>
+        <Compile Include="../../Pkmds.Rcl/Models/LegalizationChanges.cs" Link="Baseline/LegalizationChanges.cs"/>
+        <Using Include="PKHeX.Core"/>
+        <Using Include="Pkmds.Rcl.Models"/>
+    </ItemGroup>
+</Project>
