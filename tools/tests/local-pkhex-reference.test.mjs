@@ -19,23 +19,26 @@ function references(project, local) {
     };
 }
 
-test('local PKHeX replaces the direct package only when enabled', () => {
-    const project = 'Pkmds.Core/Pkmds.Core.csproj';
-    const normal = references(project, false);
-    assert.ok(normal.packages.includes('PKHeX.Core'));
-    assert.ok(!normal.projects.includes(sourcePath));
+for (const project of [
+    'Pkmds.Core/Pkmds.Core.csproj',
+    'tools/legalization-outcomes/LegalizationOutcomes.csproj',
+]) {
+    test(`local PKHeX replaces the direct package only when enabled in ${project}`, () => {
+        const normal = references(project, false);
+        assert.ok(normal.packages.includes('PKHeX.Core'));
+        assert.ok(!normal.projects.includes(sourcePath));
 
-    const local = references(project, true);
-    assert.deepEqual(local.packages, normal.packages.filter(name => name !== 'PKHeX.Core'));
-    assert.deepEqual(local.projects, [...normal.projects, sourcePath].sort());
-});
+        const local = references(project, true);
+        assert.deepEqual(local.packages, normal.packages.filter(name => name !== 'PKHeX.Core'));
+        assert.deepEqual(local.projects, [...normal.projects, sourcePath].sort());
+    });
+}
 
 for (const project of [
     'Pkmds.Rcl/Pkmds.Rcl.csproj',
     'Pkmds.Web/Pkmds.Web.csproj',
     'Pkmds.Tests/Pkmds.Tests.csproj',
     'Pkmds.Functions/Pkmds.Functions.csproj',
-    'tools/legalization-outcomes/LegalizationOutcomes.csproj',
 ]) {
     test(`local PKHeX keeps unrelated references intact in ${project}`, () => {
         const normal = references(project, false);
