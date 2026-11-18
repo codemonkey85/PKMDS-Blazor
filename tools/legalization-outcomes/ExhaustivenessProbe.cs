@@ -13,11 +13,11 @@ internal static class ExhaustivenessProbe
         null => "uninitialized"
     };
 
-    internal static string MissingClosedCase(ClosedOutcome result) => result switch
+    internal static string MissingClosedCase(LegalizationOutcome result) => result switch
     {
-        ClosedSuccess => "success",
-        ClosedFailure => "failure",
-        ClosedTimeout => "timeout"
+        LegalizationSuccess => "success",
+        LegalizationFailure => "failure",
+        LegalizationTimeout => "timeout"
     };
 }
 #endif

@@ -1,7 +1,7 @@
 namespace Pkmds.Rcl.Models;
 
 /// <summary>
-/// Buckets a single field-level change reported by <see cref="LegalizationOutcome.Changes" />.
+/// Buckets a single field-level change reported by <see cref="LegalizationSuccess.Changes" />.
 /// Used to group rows in the change-summary dialog.
 /// </summary>
 public enum LegalizationChangeCategory

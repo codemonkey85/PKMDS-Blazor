@@ -107,7 +107,7 @@ jobs:
         run: |
           $project = 'tools/legalization-outcomes/LegalizationOutcomes.csproj'
           $probe = dotnet build $project -c Debug -p:DefineConstants=VERIFY_EXHAUSTIVENESS 2>&1 | Out-String
-          if ($LASTEXITCODE -eq 0 -or $probe -notmatch 'error CS8509.*ImportedViaHaX' -or $probe -notmatch 'error CS8509.*ClosedHaX') {
+          if ($LASTEXITCODE -eq 0 -or $probe -notmatch 'error CS8509.*ImportedViaHaX' -or $probe -notmatch 'error CS8509.*LegalizationHaX') {
             throw "Expected missing-case diagnostics for both prototypes: $probe"
           }
           dotnet run --project $project -c Release > legalization-outcomes.json

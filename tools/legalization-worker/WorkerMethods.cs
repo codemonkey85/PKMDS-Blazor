@@ -86,8 +86,16 @@ public static partial class WorkerMethods
         }
         var bytes = new byte[outcome.Pokemon.SIZE_STORED];
         outcome.Pokemon.WriteDecryptedDataStored(bytes);
-        var reply = new GenerationReply(bytes, outcome.Status, outcome.FailureReason,
-            new LegalityAnalysis(outcome.Pokemon).Valid);
+        var isLegal = new LegalityAnalysis(outcome.Pokemon).Valid;
+        // Keep the prototype's wire format stable without restoring an independently
+        // assignable status/reason pair to the production outcome model.
+        GenerationReply reply = outcome switch
+        {
+            LegalizationSuccess => new(bytes, GenerationStatus.Success, null, isLegal),
+            LegalizationFailure failure => new(bytes, GenerationStatus.Failed, failure.Reason, isLegal),
+            LegalizationTimeout timeout => new(bytes, GenerationStatus.Timeout, timeout.Reason, isLegal),
+            LegalizationHaX hax => new(bytes, GenerationStatus.SuccessHaX, hax.Warning, isLegal)
+        };
         return JsonSerializer.Serialize(reply, PrototypeJsonContext.Default.GenerationReply);
     }
 
@@ -112,12 +120,12 @@ public static partial class WorkerMethods
         var set = new ShowdownSet(request.Set);
         if (set.Species == 0)
         {
-            if (reply.Status != LegalizationStatus.Failed || reply.FailureReason != "No species specified." || pokemon.Species != 0)
+            if (reply.Status != GenerationStatus.Failed || reply.FailureReason != "No species specified." || pokemon.Species != 0)
             {
                 throw new InvalidOperationException("Empty-set failure semantics changed.");
             }
         }
-        else if (reply.Status != LegalizationStatus.Success || !reply.IsLegal ||
+        else if (reply.Status != GenerationStatus.Success || !reply.IsLegal ||
                  pokemon.Species != set.Species || pokemon.CurrentLevel != set.Level ||
                  pokemon.Nature != set.Nature || pokemon.Move1 != set.Moves[0])
         {
@@ -163,8 +171,9 @@ public static partial class WorkerMethods
 }
 
 internal sealed record GenerationRequest(byte[] SaveBytes, string Set, bool IsHaXEnabled);
-internal sealed record GenerationReply(byte[] PokemonBytes, LegalizationStatus Status, string? FailureReason, bool IsLegal);
-internal sealed record ResultSummary(LegalizationStatus Status, string? FailureReason, ushort Species, byte Level,
+internal enum GenerationStatus { Success = 0, Failed = 1, Timeout = 2, SuccessHaX = 3 }
+internal sealed record GenerationReply(byte[] PokemonBytes, GenerationStatus Status, string? FailureReason, bool IsLegal);
+internal sealed record ResultSummary(GenerationStatus Status, string? FailureReason, ushort Species, byte Level,
     Nature Nature, ushort Move, bool IsLegal);
 internal sealed record MemoryObservation(long ManagedBytes, long AllocatedBytes, string Runtime);
 

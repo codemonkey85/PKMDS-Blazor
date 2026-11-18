@@ -6,7 +6,8 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="PKHeX.Core"/>
-        <!-- Compare the actual production model without loading the UI. -->
+        <!-- Compare the production closed model with the frozen baseline and
+             experimental union, without loading the UI. -->
         <Compile Include="../../Pkmds.Rcl/Models/LegalizationResult.cs" Link="Baseline/LegalizationResult.cs"/>
         <Compile Include="../../Pkmds.Rcl/Models/LegalizationChanges.cs" Link="Baseline/LegalizationChanges.cs"/>
         <Using Include="PKHeX.Core"/>

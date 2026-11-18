@@ -1,49 +1,31 @@
 namespace Pkmds.Rcl.Models;
 
 /// <summary>
-/// Indicates the outcome of a legalization attempt.
+/// The result of a single legalization or generation attempt. Every case retains
+/// its Pokémon: non-success cases can carry a populated best-effort result.
+/// Editor callers may accept HaX results with a warning; batch callers accept only
+/// <see cref="LegalizationSuccess" />.
 /// </summary>
-public enum LegalizationStatus
-{
-    /// <summary>The Pokémon was successfully legalized.</summary>
-    Success,
+public closed record LegalizationOutcome(PKM Pokemon);
 
-    /// <summary>No valid encounter could produce a legal result.</summary>
-    Failed,
-
-    /// <summary>The legalization attempt exceeded the time limit.</summary>
-    Timeout,
-
-    /// <summary>
-    /// The normal pipeline produced no legal result, but a HaX retry (with
-    /// <see cref="PKHeX.Core.EntityConverter.AllowIncompatibleConversion" /> relaxed
-    /// and <c>IsEncounterValid</c>'s level pre-filter skipped) produced a populated
-    /// but illegal Pokémon. Surface this with a warning rather than the green
-    /// "successfully legalized" affordance — the result is intentionally illegal.
-    /// </summary>
-    SuccessHaX,
-}
-
-/// <summary>
-/// The result of a single legalization or generation attempt.
-/// </summary>
-/// <param name="Pokemon">The resulting Pokémon (legal on Success, best-effort otherwise).</param>
-/// <param name="Status">Whether the attempt succeeded, failed, or timed out.</param>
-/// <param name="FailureReason">
-/// Human-readable explanation when <see cref="Status" /> is not
-/// <see cref="LegalizationStatus.Success" />.
-/// </param>
-public record LegalizationOutcome(
-    PKM Pokemon,
-    LegalizationStatus Status,
-    string? FailureReason = null)
+/// <summary>The Pokémon was successfully legalized.</summary>
+public sealed record LegalizationSuccess(PKM Pokemon) : LegalizationOutcome(Pokemon)
 {
     /// <summary>
-    /// Field-level differences between the input PKM and <see cref="Pokemon" />. Populated
-    /// only when <see cref="Status" /> is <see cref="LegalizationStatus.Success" /> and the
-    /// caller supplied a starting PKM (i.e. legalize-existing, not generate-from-set).
-    /// Defaults to <see cref="LegalizationChanges.Empty" /> so non-diffing call sites
-    /// stay source-compatible.
+    /// Field-level differences from the input Pokémon. Empty when generating
+    /// from a set, where there is no starting Pokémon to compare.
     /// </summary>
     public LegalizationChanges Changes { get; init; } = LegalizationChanges.Empty;
 }
+
+/// <summary>No valid encounter could produce a legal result.</summary>
+public sealed record LegalizationFailure(PKM Pokemon, string Reason) : LegalizationOutcome(Pokemon);
+
+/// <summary>The attempt exceeded its time limit.</summary>
+public sealed record LegalizationTimeout(PKM Pokemon, string Reason) : LegalizationOutcome(Pokemon);
+
+/// <summary>
+/// A relaxed HaX retry produced a populated but intentionally illegal Pokémon.
+/// Surface its warning rather than treating it as a legal success.
+/// </summary>
+public sealed record LegalizationHaX(PKM Pokemon, string Warning) : LegalizationOutcome(Pokemon);
