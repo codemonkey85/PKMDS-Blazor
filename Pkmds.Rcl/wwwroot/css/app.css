@@ -756,9 +756,9 @@ body, html {
                 inset 0 -1px 2px rgba(255, 255, 255, 0.12);
 }
 
-/* Target the outer object only so its fallback image isn't shadowed twice. */
-.recessed-slot object.pkm-sprite,
-.recessed-slot .pkm-sprite-hires {
+/* Apply one shadow to the stable sprite layer, outside the images' opacity
+   animation and source swaps. Indicator badges remain outside this layer. */
+.recessed-slot .slot-sprite-layer {
     filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4));
 }
 
