@@ -68,10 +68,15 @@ test('cancellation terminates running work and requires explicit recreation', as
     await assert.rejects(client.invoke('Generate'), /terminated/);
 });
 
-test('timeouts terminate synchronous work, instead of abandoning a live worker', async () => {
+test('timeout before dispatch terminates the worker; a late start cannot restore it', async () => {
     const { client, worker } = await ready();
-    await assert.rejects(client.invoke('Generate', [], { timeoutMs: 5 }), /timed out/);
+    let started = false;
+    await assert.rejects(client.invoke('Generate', [], { timeoutMs: 5,
+        onStarted: () => { started = true; } }), /timed out/);
+    assert.equal(started, false);
     assert.equal(worker.terminated, true);
+    worker.reply({ type: 'started', id: worker.messages.at(-1).id });
+    assert.equal(started, false);
     await assert.rejects(client.invoke('Generate'), /terminated/);
 });
 

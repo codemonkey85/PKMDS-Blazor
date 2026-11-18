@@ -140,7 +140,9 @@ async function run() {
             timeoutMs: 150, onStarted: () => { timeoutStarted = true; },
         }), 'timed out');
         const timeoutObservedMs = clock() - timeoutStart;
-        assert(timeoutStarted, 'Timeout did not reach running CPU work');
+        // The invocation budget includes dispatch. A busy host may time out
+        // before 'started'; that is still correct rejection/termination. The
+        // cancellation probe above separately requires running synchronous work.
         await expectRejection(() => client.invoke('MemorySnapshot'), 'terminated');
 
         client = await WorkerClient.create(dotnetUrl);

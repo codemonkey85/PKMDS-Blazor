@@ -54,7 +54,8 @@ cleanup. Every save/request is synthetic and data stays on the local machine.
 - Use a separate 500 ms synthetic synchronous loop to demonstrate event-loop
   blocking. This is a scheduling/lifecycle control, not a PKHeX speed benchmark.
 - Abort after the worker reports that a bounded synchronous operation started;
-  also time out a running operation. Both terminate the worker and reject future
+  also exercise an invocation timeout, which includes dispatch time and can
+  expire before work starts on a busy host. Both terminate the worker and reject future
   calls until it is explicitly recreated. Normal method errors preserve it.
   Concurrent operations, pre-aborted creation, and recreation are checked too.
 - Run NIST AES-128 ECB/CBC encryption/decryption and RFC 1321 MD5 known answers

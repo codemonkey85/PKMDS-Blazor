@@ -81,6 +81,11 @@ its started message. Abort-to-request-rejection was 0.1–0.2 ms in Chromium; th
 is **not** a measurement of complete runtime/resource teardown. A separately
 started synchronous control timed out at 150.9–152.0 ms with a 150 ms setting.
 Recreation, subsequent generation, pre-aborted creation and error recovery passed.
+The invocation timeout includes dispatch time: on a busy CI host it can correctly
+expire before a started message. Independent review identified that the probe
+must retain `timeoutStarted` as an observation rather than require it for success.
+The regression check also covers a late started message after termination. The
+cancellation probe still requires the synchronous operation to have started.
 Termination can interrupt uncooperative work, but discards its current best
 attempt; it does not turn synchronous PKHeX methods into cooperative async work.
 
