@@ -82,4 +82,10 @@ crypto-dependent encounters, multiple save generations, physical mobile devices,
 offline/PWA updates and worker lifetime/idle policy require further work before
 production adoption. No worker pool or parallel legalization is introduced.
 
+Production integration also needs the agreed cancellable progress UI: an
+indeterminate bar/status/elapsed time for a single Pokémon, completed/total
+progress for batches, protection against conflicting edits and duplicate starts,
+and clear final outcomes. Forward existing engine status messages with request
+IDs. See the [progress UI requirements](../../docs/LEGALIZATION_WORKER_PROTOTYPE.md#progress-ui-for-production-integration).
+
 See [results and decisions](../../docs/LEGALIZATION_WORKER_PROTOTYPE.md).

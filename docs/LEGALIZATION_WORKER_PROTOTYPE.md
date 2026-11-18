@@ -18,6 +18,12 @@ until .NET 12, as requested by the maintainer.
 The production change justified by this investigation is the AES-CBC IV fix
 and repeatable checks of both browser crypto providers. MD5 required no fix.
 
+The worker moves one operation to another thread; this single-flight prototype
+does not parallelize the legalization algorithm. It was slightly slower than the
+main-thread control in the measured fixture. The reason to continue integration
+is a responsive UI and cancellable work, accompanied by visible progress, rather
+than an established calculation speedup.
+
 ## Browser observations
 
 Recorded November 17, 2026, on macOS Arm64, SDK 11.0.100 / Mono WASM 11.0.0,
@@ -92,6 +98,36 @@ attempt; it does not turn synchronous PKHeX methods into cooperative async work.
 One Playwright WebKit 27.2 run also passed generation, crypto and lifecycle
 checks. This is engine coverage, not native Safari, WKWebView or physical iOS
 certification. Its result and environment remain in the raw report.
+
+## Progress UI for production integration
+
+The maintainer agreed that users need visible, cancellable progress while the
+worker runs. Carry these requirements into the #702 integration:
+
+- **Single Pokémon:** show an indeterminate progress bar, elapsed time and the
+  current phase/status, such as "Generating Pokémon..." or "Trying encounter
+  123...". The total encounter-search size is unknown, so do not invent a
+  percentage, completion estimate or smooth simulated progress.
+- **Batches:** show completed/total Pokémon as genuine overall progress, with
+  the current Pokémon and its search status underneath. Keep successes,
+  failures and cancellations distinguishable in the final summary.
+- **Placement and controls:** use a persistent progress panel near the affected
+  operation. Scope an overlay and disabled controls to edits/selections that
+  conflict with that operation, keeping unrelated UI usable. Prevent duplicate
+  submissions and keep Cancel available while computation runs.
+- **Worker messages:** forward the engine's existing `IProgress<string>` status
+  updates from the worker and tag them with the operation/request ID. Ignore
+  late updates from cancelled or replaced jobs. The main thread owns progress
+  rendering and any accepted save changes.
+- **Completion:** replace the busy state with a clear success, failure, timeout
+  or cancellation result. Preserve the distinct HaX warning. Hard cancellation
+  currently discards the worker's best attempt and requires recreation; the UI
+  must not imply that an interrupted attempt or uncommitted batch work was saved.
+
+The elapsed-time indicator and indeterminate animation can continue even while
+one synchronous PKHeX call cannot emit more detailed status. These requirements
+are recorded for the production integration; this PR adds no product progress
+UI or production worker routing.
 
 ## AES and MD5
 
