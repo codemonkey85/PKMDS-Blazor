@@ -6,6 +6,8 @@
        the right-hand MudItem (no max-width like the left side has) lets the grid
        grow tall enough to overflow the viewport on wide screens. *@
     <div class="pinned-box" style="max-width: 480px;">
+        <MudText Typo="@Typo.subtitle2"
+                 Class="pinned-box-label">Pinned box</MudText>
         <div class="pinned-box-navigation flex m-[5px] p-[5px] items-center h-[50px]">
             <MudIconButton OnClick="@GoToPreviousBox"
                            title="Previous Box"

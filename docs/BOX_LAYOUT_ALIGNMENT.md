@@ -4,11 +4,12 @@ Implementation and investigation notes for [issue #769](https://github.com/codem
 
 ## Changes
 
-- At the desktop breakpoint (1280px), pinned boxes share grid rows with the main storage view. The party and export controls occupy the first row; both box selectors share the next row; box actions and legalization progress occupy another row; both box grids start together below them.
+- At the desktop breakpoint (1280px), pinned boxes share grid rows with the main storage view. The party and export controls occupy the first row; selected/pinned labels share the next row; both box selectors share another row; box actions and legalization progress occupy the following row; both box grids start together below them. A 24px gap and divider separate the columns. The stacked view separates the pinned section with a label and top border.
 - Paired Trade panes share rows for the Slot B actions, save titles, parties, box selectors, box grids, and selected-Pokémon summaries. Wrapped save titles can increase the shared title row without moving only one box down.
 - The desktop columns have matching widths. The existing four-column, 20-slot layout for older saves remains smaller than the six-column, 30-slot layout; their top edges still align when paired.
 - Below 1280px, the panes retain a vertical layout without empty alignment rows.
 - Party / Box and Trade use top padding inside their tab content instead of an external top margin. With `height: 100%`, the previous 12px margin placed the bottom of the desktop scroll area below its clipping parent, preventing the last pixels of the bottom row from being reached.
+- Trade also reserves 16px of bottom content padding at every width. Reaching the last card's border is insufficient: fractional layout can spill slightly past the scroll boundary, and elevation shadows extend several pixels beyond the border box. The gutter leaves the complete bottom edge visible for both slot cards and selected-Pokémon summaries.
 
 ## Validation performed
 
@@ -28,12 +29,16 @@ The reviewer independently checked pinned alignment and bottom scrolling at 1280
 
 After the correction, the reviewer rechecked Chromium and WebKit at 320px, 768px, 1100px, 1279px, 1280px, and 1920px. Stacking, desktop alignment and equal sizes, bottom-slot access, and horizontal overflow checks passed. No actionable findings remained.
 
+Subsequent user screenshots exposed a gap in the bottom-edge checks: accepting a border position within 1px of the clipping boundary missed clipped shadows. Independent investigation confirmed zero clearance at full scroll, with approximately 0.06–0.17px of fractional border overflow. In Chromium and WebKit, the 16px bottom gutter left approximately 15.83–15.94px of actual clearance at 1280px by 600px and 390px by 600px, with and without a selected-Pokémon summary. Future checks must verify visible clearance, not just that the last card's border reaches the viewport.
+
+The reviewer checked the final gutter and pinned-box separation in Chromium and WebKit, including dark mode. The 24px desktop gap, divider, aligned labels, equal grid widths, mobile section separation, and bottom-row access passed; no actionable findings remained.
+
 ## Lessons for future layout work
 
 - Use shared, content-sized rows instead of fixed top offsets. Export controls can wrap, legalization adds progress UI, and save filenames can span multiple lines.
 - MudBlazor's `MudItem` renders `.mud-grid-item`. `MudStack` renders utility classes such as `.d-flex`, which can override a normal `display` rule. The Trade wrappers use native divs so desktop `display: contents` and the mobile flex layout can both apply predictably.
 - Define the mobile layout explicitly when replacing a `MudStack`. Newly introduced Tailwind utilities may be absent from the committed stylesheet if the incremental Tailwind target has not regenerated it.
-- Verify the scroll area's bounds against its clipping parent and the viewport, not only against its own last child. A scroll area can extend outside its parent even when its own scroll position reaches the end.
+- Verify the scroll area's bounds against its clipping parent and the viewport, not only against its own last child. A scroll area can extend outside its parent even when its own scroll position reaches the end. Check the last card's shadow and a positive bottom gutter as well; `scroll-padding-bottom` alone does not create scrollable content space.
 
 ## Development-server observations
 

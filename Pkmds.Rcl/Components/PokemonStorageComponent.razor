@@ -24,6 +24,12 @@
     }
     else
     {
+        @if (AppState.PinnedBoxNumber is not null)
+        {
+            <MudText Typo="@Typo.subtitle2"
+                     Class="storage-box-label">Selected box</MudText>
+        }
+
         <div class="box-navigation flex m-[5px] p-[5px] items-center h-[50px]">
             <MudIconButton OnClick="@GoToPreviousBox"
                            title="Previous Box"
