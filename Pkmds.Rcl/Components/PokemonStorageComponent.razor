@@ -1,10 +1,12 @@
-﻿@inherits RefreshAwareComponent
+@inherits RefreshAwareComponent
 
 @if (AppState is { SaveFile: { } saveFile, BoxEdit: { } boxEdit })
 {
     if (saveFile.Version is not GameVersion.RSBOX)
     {
-        <PartyGrid/>
+        <div class="storage-party">
+            <PartyGrid/>
+        </div>
     }
 
     @if (UsesLetsGoStorage(saveFile))
@@ -22,6 +24,12 @@
     }
     else
     {
+        @if (AppState.PinnedBoxNumber is not null)
+        {
+            <MudText Typo="@Typo.subtitle2"
+                     Class="storage-box-label">Selected box</MudText>
+        }
+
         <div class="box-navigation flex m-[5px] p-[5px] items-center h-[50px]">
             <MudIconButton OnClick="@GoToPreviousBox"
                            title="Previous Box"
@@ -61,100 +69,102 @@
             </MudIconButton>
         </div>
 
-        <div class="flex flex-wrap mx-[5px] mb-[5px] px-[5px] items-center">
-            <MudIconButton OnClick="@OpenBoxLayoutDialog"
-                           title="Edit box layout"
-                           ButtonType="@ButtonType.Button"
-                           Icon="@Icons.Material.Filled.GridView"
-                           Variant="@Variant.Filled"
-                           Class="m-1.5 p-1.5">
-            </MudIconButton>
+        <div class="storage-box-actions">
+            <div class="flex flex-wrap mx-[5px] mb-[5px] px-[5px] items-center">
+                <MudIconButton OnClick="@OpenBoxLayoutDialog"
+                               title="Edit box layout"
+                               ButtonType="@ButtonType.Button"
+                               Icon="@Icons.Material.Filled.GridView"
+                               Variant="@Variant.Filled"
+                               Class="m-1.5 p-1.5">
+                </MudIconButton>
 
-            <MudIconButton OnClick="@OpenBoxListDialog"
-                           title="All Boxes"
-                           ButtonType="@ButtonType.Button"
-                           Icon="@Icons.Material.Filled.ViewModule"
-                           Variant="@Variant.Filled"
-                           Class="m-1.5 p-1.5">
-            </MudIconButton>
+                <MudIconButton OnClick="@OpenBoxListDialog"
+                               title="All Boxes"
+                               ButtonType="@ButtonType.Button"
+                               Icon="@Icons.Material.Filled.ViewModule"
+                               Variant="@Variant.Filled"
+                               Class="m-1.5 p-1.5">
+                </MudIconButton>
 
-            @{
-                var illegalCount = GetIllegalCountInBox();
-                var legalizeTitle = illegalCount == 0
-                    ? "No illegal Pokémon in this box"
-                    : $"Legalize {illegalCount} illegal Pokémon in this box";
-            }
+                @{
+                    var illegalCount = GetIllegalCountInBox();
+                    var legalizeTitle = illegalCount == 0
+                        ? "No illegal Pokémon in this box"
+                        : $"Legalize {illegalCount} illegal Pokémon in this box";
+                }
 
-            <MudIconButton OnClick="@LegalizeBoxAsync"
-                           title="@legalizeTitle"
-                           ButtonType="@ButtonType.Button"
-                           Icon="@Icons.Material.Filled.AutoFixHigh"
-                           Variant="@Variant.Filled"
-                           Color="@Color.Secondary"
-                           Disabled="@(isLegalizingBox || illegalCount == 0)"
-                           Class="m-1.5 p-1.5">
-            </MudIconButton>
+                <MudIconButton OnClick="@LegalizeBoxAsync"
+                               title="@legalizeTitle"
+                               ButtonType="@ButtonType.Button"
+                               Icon="@Icons.Material.Filled.AutoFixHigh"
+                               Variant="@Variant.Filled"
+                               Color="@Color.Secondary"
+                               Disabled="@(isLegalizingBox || illegalCount == 0)"
+                               Class="m-1.5 p-1.5">
+                </MudIconButton>
+
+                @if (isLegalizingBox)
+                {
+                    <MudIconButton OnClick="@CancelLegalizeBox"
+                                   title="Cancel legalization"
+                                   ButtonType="@ButtonType.Button"
+                                   Icon="@Icons.Material.Filled.Cancel"
+                                   Variant="@Variant.Outlined"
+                                   Color="@Color.Error"
+                                   Class="m-1.5 p-1.5">
+                    </MudIconButton>
+                }
+
+                <MudIconButton OnClick="@OpenBulkImportDialog"
+                               title="Bulk import .pk* files"
+                               ButtonType="@ButtonType.Button"
+                               Icon="@Icons.Material.Filled.Upload"
+                               Variant="@Variant.Filled"
+                               Class="m-1.5 p-1.5">
+                </MudIconButton>
+
+                <MudIconButton OnClick="@OpenBulkExportDialog"
+                               title="Export party or box(es) as .pk* files"
+                               ButtonType="@ButtonType.Button"
+                               Icon="@Icons.Material.Filled.Download"
+                               Variant="@Variant.Filled"
+                               Disabled="@(!HasAnyExportablePokemon())"
+                               Class="m-1.5 p-1.5">
+                </MudIconButton>
+
+                <MudIconButton OnClick="@TogglePinCurrentBox"
+                               title="@(AppState.PinnedBoxNumber == boxEdit.CurrentBox
+                                          ? "Unpin Box"
+                                          : "Pin Box")"
+                               ButtonType="@ButtonType.Button"
+                               Icon="@(AppState.PinnedBoxNumber == boxEdit.CurrentBox
+                                         ? Icons.Material.Filled.PushPin
+                                         : Icons.Material.Outlined.PushPin)"
+                               Variant="@Variant.Filled"
+                               Class="m-1.5 p-1.5">
+                </MudIconButton>
+
+                <MudIconButton OnClick="@OpenAddToBankDialogAsync"
+                               title="Add to Bank…"
+                               ButtonType="@ButtonType.Button"
+                               Icon="@Icons.Material.Filled.AccountBalanceWallet"
+                               Variant="@Variant.Filled"
+                               Class="m-1.5 p-1.5">
+                </MudIconButton>
+            </div>
 
             @if (isLegalizingBox)
             {
-                <MudIconButton OnClick="@CancelLegalizeBox"
-                               title="Cancel legalization"
-                               ButtonType="@ButtonType.Button"
-                               Icon="@Icons.Material.Filled.Cancel"
-                               Variant="@Variant.Outlined"
-                               Color="@Color.Error"
-                               Class="m-1.5 p-1.5">
-                </MudIconButton>
+                <MudStack Spacing="1"
+                          Class="mx-3">
+                    <MudText Typo="@Typo.body2">@legalizeBoxStatusText</MudText>
+                    <MudProgressLinear Color="@Color.Secondary"
+                                       Value="@legalizeBoxPercent"
+                                       Max="100"/>
+                </MudStack>
             }
-
-            <MudIconButton OnClick="@OpenBulkImportDialog"
-                           title="Bulk import .pk* files"
-                           ButtonType="@ButtonType.Button"
-                           Icon="@Icons.Material.Filled.Upload"
-                           Variant="@Variant.Filled"
-                           Class="m-1.5 p-1.5">
-            </MudIconButton>
-
-            <MudIconButton OnClick="@OpenBulkExportDialog"
-                           title="Export party or box(es) as .pk* files"
-                           ButtonType="@ButtonType.Button"
-                           Icon="@Icons.Material.Filled.Download"
-                           Variant="@Variant.Filled"
-                           Disabled="@(!HasAnyExportablePokemon())"
-                           Class="m-1.5 p-1.5">
-            </MudIconButton>
-
-            <MudIconButton OnClick="@TogglePinCurrentBox"
-                           title="@(AppState.PinnedBoxNumber == boxEdit.CurrentBox
-                                      ? "Unpin Box"
-                                      : "Pin Box")"
-                           ButtonType="@ButtonType.Button"
-                           Icon="@(AppState.PinnedBoxNumber == boxEdit.CurrentBox
-                                     ? Icons.Material.Filled.PushPin
-                                     : Icons.Material.Outlined.PushPin)"
-                           Variant="@Variant.Filled"
-                           Class="m-1.5 p-1.5">
-            </MudIconButton>
-
-            <MudIconButton OnClick="@OpenAddToBankDialogAsync"
-                           title="Add to Bank…"
-                           ButtonType="@ButtonType.Button"
-                           Icon="@Icons.Material.Filled.AccountBalanceWallet"
-                           Variant="@Variant.Filled"
-                           Class="m-1.5 p-1.5">
-            </MudIconButton>
         </div>
-
-        @if (isLegalizingBox)
-        {
-            <MudStack Spacing="1"
-                      Class="mx-3">
-                <MudText Typo="@Typo.body2">@legalizeBoxStatusText</MudText>
-                <MudProgressLinear Color="@Color.Secondary"
-                                   Value="@legalizeBoxPercent"
-                                   Max="100"/>
-            </MudStack>
-        }
 
         <BoxComponent BoxNumber="@boxEdit.CurrentBox"/>
     }

@@ -2,7 +2,7 @@
 
 <MudGrid Spacing="1"
          Justify="@Justify.FlexStart"
-         Class="party-box-grid">
+         Class="@(AppState.PinnedBoxNumber is not null ? "party-box-grid pinned-box-grid" : "party-box-grid")">
     <MudItem xs="12"
              lg="6"
              Style="max-width: 480px;">

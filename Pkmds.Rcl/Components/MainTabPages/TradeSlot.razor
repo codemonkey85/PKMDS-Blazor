@@ -33,7 +33,7 @@
             {
                 @* Establish CORS before src to avoid WebKit's no-CORS image cache race. *@
                 <img @key="spriteUrl"
-                     class="@($"pkm-sprite-hires {(highResLoaded ? "pkm-sprite-hires--loaded" : string.Empty)}")"
+                     class="@($"pkm-sprite-hires {ImageHelper.GetPokemonHighResSpriteSizeClass(AppState.SpriteStyle, OwnerVersion)} {(highResLoaded ? "pkm-sprite-hires--loaded" : string.Empty)}")"
                      crossorigin="anonymous"
                      src="@spriteUrl"
                      title="@title"
