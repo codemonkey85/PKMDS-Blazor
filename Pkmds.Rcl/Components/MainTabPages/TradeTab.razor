@@ -9,7 +9,8 @@
 else
 {
     <MudGrid Spacing="2"
-             Justify="@Justify.FlexStart">
+             Justify="@Justify.FlexStart"
+             Class="@(AppState.SaveFileB is not null ? "trade-grid trade-grid-paired" : "trade-grid")">
 
         @* ── Slot A ── *@
         <MudItem xs="12"
@@ -58,10 +59,11 @@ else
                 }
                 else
                 {
-                    <MudStack Spacing="1">
+                    <div class="trade-secondary-pane">
                         <MudStack Row
                                   AlignItems="@AlignItems.Center"
-                                  Spacing="1">
+                                  Spacing="1"
+                                  Class="trade-actions">
                             <MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
                                            OnClick="@(() => TransferSelectedAsync(fromA: false))"
                                            Disabled="@(!CanTransferFromB())"
@@ -97,7 +99,7 @@ else
                                    SelectedPartySlot="@AppState.SelectedPartySlotNumberB"
                                    SelectedPartySlotChanged="@(s => AppState.SelectedPartySlotNumberB = s)"
                                    OnSlotDrop="@HandleSlotDropAsync"/>
-                    </MudStack>
+                    </div>
                 }
             </MudPaper>
         </MudItem>

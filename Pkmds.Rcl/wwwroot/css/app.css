@@ -319,6 +319,17 @@ body, html {
     background-color: rgba(255, 255, 255, 0.04);
 }
 
+.trade-pane,
+.trade-secondary-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.trade-secondary-pane {
+    gap: 4px;
+}
+
 /* Desktop (lg breakpoint): side-by-side layout with independently scrolling edit form */
 @media (min-width: 1280px) {
     html, body {
@@ -460,6 +471,60 @@ body, html {
         overflow: hidden;
         flex-wrap: nowrap;
     }
+
+    /* Share content-sized rows when boxes are side by side. Party actions can wrap,
+       and legalization can add progress text, so fixed top offsets are insufficient. */
+    .party-box-grid.pinned-box-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 480px));
+        grid-template-rows: repeat(4, auto);
+        column-gap: 4px;
+        align-content: start;
+        align-items: start;
+        overflow: auto;
+        margin: 0;
+        width: 100%;
+    }
+
+    .pinned-box-grid > .mud-grid-item,
+    .pinned-box-grid > .mud-grid-item > .mud-paper,
+    .pinned-box-grid .pinned-box {
+        display: contents;
+    }
+
+    .pinned-box-grid .storage-party { grid-area: 1 / 1; }
+    .pinned-box-grid .box-navigation { grid-area: 2 / 1; }
+    .pinned-box-grid .pinned-box-navigation { grid-area: 2 / 2; }
+    .pinned-box-grid .storage-box-actions { grid-area: 3 / 1; }
+    .pinned-box-grid .storage-box { grid-area: 4 / 1; }
+    .pinned-box-grid .pinned-box-slots { grid-area: 4 / 2; }
+
+    /* Keep titles, party rows, selectors and boxes aligned even with long save
+       names or different generations. The Slot B actions occupy their own row. */
+    .trade-grid-paired {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 472px));
+        gap: 16px 8px;
+        align-items: start;
+        margin: 0;
+        width: 100%;
+    }
+
+    .trade-grid-paired > .mud-grid-item,
+    .trade-grid-paired > .mud-grid-item > .mud-paper,
+    .trade-grid-paired .trade-secondary-pane,
+    .trade-grid-paired .trade-pane {
+        display: contents;
+    }
+
+    .trade-grid-paired > .mud-grid-item:first-child .trade-pane > * { grid-column: 1; }
+    .trade-grid-paired > .mud-grid-item:last-child .trade-pane > * { grid-column: 2; }
+    .trade-grid-paired .trade-actions { grid-area: 1 / 2; }
+    .trade-grid-paired .trade-title { grid-row: 2; }
+    .trade-grid-paired .trade-party { grid-row: 3; }
+    .trade-grid-paired .trade-box-navigation { grid-row: 4; }
+    .trade-grid-paired .trade-box-slots { grid-row: 5; }
+    .trade-grid-paired .trade-summary { grid-row: 6; }
 
     .edit-form-column {
         height: 100%;
