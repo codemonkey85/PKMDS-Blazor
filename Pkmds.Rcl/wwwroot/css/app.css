@@ -330,6 +330,15 @@ body, html {
     gap: 4px;
 }
 
+/* Both capped Trade panes can fit on a tablet even with xs=12. Stack them
+   until the desktop shared-row layout takes over, including fractional widths. */
+@media (width < 1280px) {
+    .trade-grid {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+}
+
 /* Desktop (lg breakpoint): side-by-side layout with independently scrolling edit form */
 @media (min-width: 1280px) {
     html, body {

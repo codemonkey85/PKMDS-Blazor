@@ -20,6 +20,14 @@ Implementation and investigation notes for [issue #769](https://github.com/codem
 - Local screenshots and the temporary renamed fixture are under the gitignored `measurements/769/` directory. They are not required at runtime.
 - Did not run `dotnet test` locally, in accordance with `AGENTS.md`; the PR's GitHub Actions workflow runs the test suite.
 
+## Independent review
+
+The separate review found that Trade panes still fit side by side at 1100px and 1279px: their inline 480px maximum widths let both `MudItem` elements occupy one flex row despite `xs="12"`. Because shared alignment starts at 1280px, Slot B remained 30px lower at those intermediate widths. The narrow-screen rule now explicitly stacks the Trade columns until the desktop shared-row layout applies. It uses `width < 1280px` so fractional CSS viewport widths do not fall into a gap between 1279px and 1280px.
+
+The reviewer independently checked pinned alignment and bottom scrolling at 1280px by 600px, Trade at widths from 320px through 1920px, and closing Slot B in Chromium and WebKit. No other actionable findings were reported. Firefox crashed before page creation in the review environment, so it was not validated.
+
+After the correction, the reviewer rechecked Chromium and WebKit at 320px, 768px, 1100px, 1279px, 1280px, and 1920px. Stacking, desktop alignment and equal sizes, bottom-slot access, and horizontal overflow checks passed. No actionable findings remained.
+
 ## Lessons for future layout work
 
 - Use shared, content-sized rows instead of fixed top offsets. Export controls can wrap, legalization adds progress UI, and save filenames can span multiple lines.
