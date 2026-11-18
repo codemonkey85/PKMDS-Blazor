@@ -88,12 +88,10 @@ jobs:
         run: touch release/wwwroot/.nojekyll
 
       - name: Update version
-        uses: datamonsters/replace-action@v2
-        with:
-          # Publish renames service-worker.published.js to the deployed service-worker.js.
-          files: 'release/wwwroot/service-worker.js'
-          replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
+        run: node tools/stamp-service-worker.mjs release/wwwroot "${{ github.run_id }}"
 
+      - name: Verify stamped service worker assets
+        run: node tools/verify-service-worker-assets.mjs release/wwwroot
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6.0.0

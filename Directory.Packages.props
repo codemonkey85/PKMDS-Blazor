@@ -12,7 +12,6 @@
     <PackageVersion Include="bUnit" Version="2.15.2" />
     <PackageVersion Include="coverlet.collector" Version="10.1.1" />
     <PackageVersion Include="FluentAssertions" Version="8.11.0" />
-    <PackageVersion Include="Humanizer" Version="3.0.10" />
     <PackageVersion Include="KristofferStrube.Blazor.FileSystemAccess" Version="4.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Gateway" Version="11.0.0" />

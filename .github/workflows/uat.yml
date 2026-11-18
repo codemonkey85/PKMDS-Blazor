@@ -56,12 +56,10 @@ jobs:
         run: cp release/wwwroot/index.html release/wwwroot/404.html
 
       - name: Update cache version
-        uses: datamonsters/replace-action@v2
-        with:
-          # Publish renames service-worker.published.js to the deployed service-worker.js.
-          files: 'release/wwwroot/service-worker.js'
-          replacements: '%%CACHE_VERSION%%=${{ github.run_id }}'
+        run: node tools/stamp-service-worker.mjs release/wwwroot "${{ github.run_id }}"
 
+      - name: Verify stamped service worker assets
+        run: node tools/verify-service-worker-assets.mjs release/wwwroot
 
       - name: Deploy to Azure Static Web Apps
         # Repository secrets are not available to Dependabot or fork PRs. Keep

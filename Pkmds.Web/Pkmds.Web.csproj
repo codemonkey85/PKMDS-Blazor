@@ -42,6 +42,11 @@
              were hardened. -->
         <TrimMode>full</TrimMode>
         <PublishTrimmed>true</PublishTrimmed>
+        <!-- .NET 11 enables framework metrics, EventSource, and HTTP activity
+             propagation by default. This static app has no telemetry consumer;
+             trim those paths while retaining Serilog browser logging and stack
+             traces. See docs/PUBLISH_TRIMMING.md for the measured comparison. -->
+        <BlazorWebAssemblyDiagnosticsEnabled>false</BlazorWebAssemblyDiagnosticsEnabled>
         <!-- Evaluate AOT separately from SIMD using matched performance and
              application checks before changing the production default (#883). -->
         <RunAOTCompilation>false</RunAOTCompilation>

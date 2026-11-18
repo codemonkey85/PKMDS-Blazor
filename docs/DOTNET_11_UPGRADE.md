@@ -64,6 +64,9 @@ their existing versions to keep this migration focused.
 The SDK continues to select Mono for browser WASM. SIMD is now enabled following
 the [independent AOT/SIMD evaluation](WASM_AOT_SIMD_EVALUATION.md). AOT remains disabled;
 full trimming and the existing reflection/JS-invokable roots remain enabled.
+The [publish trimming audit](PUBLISH_TRIMMING.md) removes the single-use Humanizer
+dependency, disables unused Release framework diagnostics, and records the
+resolved feature switches and measured size savings.
 No Runtime Async or CoreCLR-specific optimization is enabled in shared projects.
 Mono still requires final WebAssembly exception handling even with both flags
 disabled. See [browser support](BROWSER_SUPPORT.md) for feature floors, startup
