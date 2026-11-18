@@ -6,14 +6,16 @@
     <MudItem xs="12"
              lg="6"
              Style="max-width: 480px;">
-        <MudPaper Elevation="0">
+        <MudPaper Elevation="0"
+                  Style="background-color: transparent;">
             <PokemonStorageComponent/>
         </MudPaper>
     </MudItem>
     <MudItem xs="12"
              lg="6"
              Class="edit-form-column">
-        <MudPaper Elevation="0">
+        <MudPaper Elevation="0"
+                  Style="background-color: transparent;">
             @if (AppState.PinnedBoxNumber is not null)
             {
                 <PinnedBoxComponent/>

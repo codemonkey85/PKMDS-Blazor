@@ -17,6 +17,7 @@ else
                  lg="6"
                  Style="max-width: 480px; min-width: 0;">
             <MudPaper Elevation="0"
+                      Style="background-color: transparent;"
                       Class="min-w-0">
                 <TradePane Title="@SlotATitle"
                            SaveFile="@AppState.SaveFile"
@@ -36,6 +37,7 @@ else
                  lg="6"
                  Style="max-width: 480px; min-width: 0;">
             <MudPaper Elevation="0"
+                      Style="@(AppState.SaveFileB is null ? string.Empty : "background-color: transparent;")"
                       Class="min-w-0">
                 @if (AppState.SaveFileB is null)
                 {
