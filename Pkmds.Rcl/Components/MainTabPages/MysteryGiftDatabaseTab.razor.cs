@@ -215,7 +215,6 @@ public partial class MysteryGiftDatabaseTab
     {
         None,
 
-        [Description("Pokémon")]
         PokemonId
     }
 

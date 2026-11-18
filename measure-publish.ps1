@@ -158,7 +158,17 @@ try {
     $exitCode = $LASTEXITCODE
     $sw.Stop()
     if ($exitCode -eq 0) {
-        $propertyJson = (& $dotnetExecutable msbuild $project -p:Configuration=Release @MSBuildArgs '-getProperty:TargetFramework,UseMonoRuntime,RunAOTCompilation,WasmEnableSIMD,TrimMode,PublishTrimmed,BlazorEnableCompression' | Out-String)
+        # SDK upgrades can change feature defaults without changing our project.
+        $propertyNames = @(
+            'TargetFramework', 'LangVersion', 'UseMonoRuntime', 'RunAOTCompilation',
+            'WasmEnableSIMD', 'TrimMode', 'PublishTrimmed', 'BlazorEnableCompression',
+            'SuppressTrimAnalysisWarnings', 'EnableTrimAnalyzer', 'TrimmerSingleWarn',
+            'DebuggerSupport', 'BlazorWebAssemblyDiagnosticsEnabled', 'MetricsSupport',
+            'EventSourceSupport', 'HttpActivityPropagationSupport',
+            'JsonSerializerIsReflectionEnabledByDefault', 'InvariantGlobalization',
+            'InvariantTimezone', 'UseSizeOptimizedLinq', 'UseSystemResourceKeys'
+        )
+        $propertyJson = (& $dotnetExecutable msbuild $project -p:Configuration=Release @MSBuildArgs "-getProperty:$($propertyNames -join ',')" | Out-String)
         if ($LASTEXITCODE -ne 0) { throw 'Could not collect resolved publish properties.' }
         $publishProperties = ($propertyJson | ConvertFrom-Json).Properties
     }

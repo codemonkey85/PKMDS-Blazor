@@ -45,7 +45,7 @@
             {
                 <MudSelectItem Value="@sortOption"
                                @key="@sortOption">
-                    @sortOption.Humanize()
+                    @(sortOption is SortOptions.PokemonId ? "Pokémon" : "None")
                 </MudSelectItem>
             }
         </MudSelect>

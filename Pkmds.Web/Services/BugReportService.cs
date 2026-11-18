@@ -90,11 +90,11 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
                 content.Add(new ByteArrayContent(saveBytes), "saveFile", "attachment.bin");
             }
 
-            var response = await httpClient.PostAsync($"{functionUrl}/api/SubmitBugReport", content, cancellationToken);
+            using var response = await httpClient.PostAsync($"{functionUrl}/api/SubmitBugReport", content, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: cancellationToken);
+                var json = await response.Content.ReadFromJsonAsync(BugReportJsonContext.Default.JsonElement, cancellationToken);
                 var issueUrl = json.TryGetProperty("issueUrl", out var urlElement)
                     ? urlElement.GetString()
                     : null;
@@ -124,7 +124,7 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
                 return new BugReportResult(true, IssueUrl: issueUrl, WarningMessage: warningMessage);
             }
 
-            var errorJson = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: cancellationToken);
+            var errorJson = await response.Content.ReadFromJsonAsync(BugReportJsonContext.Default.JsonElement, cancellationToken);
             var errorMessage = errorJson.TryGetProperty("error", out var errorElement)
                 ? errorElement.GetString()
                 : $"Submission failed with status {(int)response.StatusCode}.";

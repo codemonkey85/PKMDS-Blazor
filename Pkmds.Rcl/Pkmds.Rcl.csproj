@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Humanizer"/>
         <PackageReference Include="MudBlazor"/>
         <PackageReference Include="KristofferStrube.Blazor.FileSystemAccess"/>
         <PackageReference Include="Serilog.Extensions.Logging"/>
