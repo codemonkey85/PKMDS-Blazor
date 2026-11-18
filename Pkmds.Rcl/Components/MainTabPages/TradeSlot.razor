@@ -2,6 +2,7 @@
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
+          title="@GetSlotTitle()"
           Class="@($"square-slot {(IsSelected ? Constants.SelectedSlotClass : string.Empty)} {GetDragClass()} {(transferIneligibleReason is not null ? "slot-ineligible-transfer" : string.Empty)} {ImageHelper.GetSpriteCssClass(Pokemon)}")">
     <div draggable="@(IsDraggable() ? "true" : "false")"
          @ondragstart="@HandleDragStart"
@@ -10,38 +11,39 @@
          @ondrop="@HandleDrop"
          @ondrop:preventDefault="true"
          @ondrop:stopPropagation="true"
-         title="@transferIneligibleReason"
          aria-label="@transferIneligibleReason"
          class="w-full h-full aspect-square flex items-center justify-center overflow-hidden p-0 box-border border border-transparent relative">
         @if (Pokemon is { Species: > 0 })
         {
             var title = GetSpeciesTitle(Pokemon.Species);
             var isShiny = Pokemon.GetIsShinySafe();
-            <object class="pkm-sprite w-full h-auto object-contain block"
-                    style="@(highResLoaded ? "display:none" : string.Empty)"
-                    type="image/png"
-                    data="@ImageHelper.GetPokemonSpriteFilename(Pokemon)"
-                    title="@title"
-                    draggable="false">
-                <img class="pkm-sprite w-full h-auto object-contain block"
-                     src="@ImageHelper.PokemonFallbackImageFileName"
-                     title="@title"
-                     alt="@title"
-                     draggable="false">
-            </object>
-            @if (highResUrl is { } spriteUrl)
-            {
-                @* Establish CORS before src to avoid WebKit's no-CORS image cache race. *@
-                <img @key="spriteUrl"
-                     class="@($"pkm-sprite-hires {ImageHelper.GetPokemonHighResSpriteSizeClass(AppState.SpriteStyle, OwnerVersion)} {(highResLoaded ? "pkm-sprite-hires--loaded" : string.Empty)}")"
-                     crossorigin="anonymous"
-                     src="@spriteUrl"
-                     title="@title"
-                     alt="@title"
-                     draggable="false"
-                     @onload="@(() => OnHighResSpriteLoaded(spriteUrl))"
-                     @onerror="@(() => OnHighResSpriteError(spriteUrl))"/>
-            }
+            <div class="slot-sprite-layer">
+                <object class="pkm-sprite w-full h-auto object-contain block"
+                        style="@(highResLoaded ? "display:none" : string.Empty)"
+                        type="image/png"
+                        data="@ImageHelper.GetPokemonSpriteFilename(Pokemon)"
+                        title="@title"
+                        draggable="false">
+                    <img class="pkm-sprite w-full h-auto object-contain block"
+                         src="@ImageHelper.PokemonFallbackImageFileName"
+                         title="@title"
+                         alt="@title"
+                         draggable="false">
+                </object>
+                @if (highResUrl is { } spriteUrl)
+                {
+                    @* Establish CORS before src to avoid WebKit's no-CORS image cache race. *@
+                    <img @key="spriteUrl"
+                         class="@($"pkm-sprite-hires {ImageHelper.GetPokemonHighResSpriteSizeClass(AppState.SpriteStyle, OwnerVersion)} {(highResLoaded ? "pkm-sprite-hires--loaded" : string.Empty)}")"
+                         crossorigin="anonymous"
+                         src="@spriteUrl"
+                         title="@title"
+                         alt="@title"
+                         draggable="false"
+                         @onload="@(() => OnHighResSpriteLoaded(spriteUrl))"
+                         @onerror="@(() => OnHighResSpriteError(spriteUrl))"/>
+                }
+            </div>
 
             @if (isShiny)
             {

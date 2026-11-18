@@ -59,9 +59,72 @@ document.addEventListener('drop', function (e) {
     }
 }, true);
 
-// Capture dragstart events globally
+// <object> isn't a CanvasImageSource. Warm an Image from the same bundled URL
+// before a drag so offline/failed-CDN sprites can use the same transparent preview.
+const slotDragImages = new WeakMap();
+
+function pkmdsGetSlotDragSprite(slot) {
+    const highRes = slot.querySelector('.pkm-sprite-hires--loaded');
+    if (highRes?.complete && highRes.naturalWidth > 0) {
+        return { image: highRes, bounds: highRes.getBoundingClientRect() };
+    }
+
+    const bundled = slot.querySelector('object.pkm-sprite');
+    if (!bundled) return null;
+    let image = slotDragImages.get(bundled);
+    if (!image || image.src !== bundled.data) {
+        image = new Image();
+        image.src = bundled.data;
+        slotDragImages.set(bundled, image);
+    }
+    if (image.complete && image.naturalWidth > 0) {
+        return { image, bounds: bundled.getBoundingClientRect() };
+    }
+
+    const fallback = bundled.querySelector('img');
+    return fallback?.complete && fallback.naturalWidth > 0
+        ? { image: fallback, bounds: bundled.getBoundingClientRect() }
+        : null;
+}
+
+function pkmdsWarmSlotDragSprite(e) {
+    const slot = e.target instanceof Element ? e.target.closest('.square-slot') : null;
+    if (slot) pkmdsGetSlotDragSprite(slot);
+}
+
+document.addEventListener('pointerover', pkmdsWarmSlotDragSprite, true);
+document.addEventListener('pointerdown', pkmdsWarmSlotDragSprite, true);
+document.addEventListener('load', function (e) {
+    if (e.target instanceof HTMLObjectElement) pkmdsWarmSlotDragSprite(e);
+}, true);
+
+// Capture dragstart synchronously, before Blazor dims the source slot.
 document.addEventListener('dragstart', function (e) {
     window.lastDragEvent = e;
+
+    const slot = e.target instanceof Element
+        ? e.target.closest('.square-slot > div[draggable="true"]')
+        : null;
+    if (!slot || !e.dataTransfer) return;
+    const sprite = pkmdsGetSlotDragSprite(slot);
+    if (!sprite) return;
+
+    // Rasterize only the source image's RGBA pixels. A DOM drag snapshot can
+    // include the slot's composited background, even when its child is transparent.
+    const bounds = sprite.bounds;
+    if (bounds.width <= 0 || bounds.height <= 0) return;
+    const preview = document.createElement('canvas');
+    preview.width = Math.ceil(bounds.width);
+    preview.height = Math.ceil(bounds.height);
+    const context = preview.getContext('2d');
+    if (!context) return;
+    context.drawImage(sprite.image, 0, 0, bounds.width, bounds.height);
+
+    // Keep the canvas mounted until the browser has captured the native drag image.
+    preview.style.cssText = 'position:fixed;left:-10000px;top:0;pointer-events:none';
+    document.body.appendChild(preview);
+    e.dataTransfer.setDragImage(preview, e.clientX - bounds.left, e.clientY - bounds.top);
+    setTimeout(() => preview.remove(), 0);
 }, true);
 
 // Set drag-out data on the current dragstart event so the PKM file can be dragged to the OS desktop.

@@ -64,6 +64,12 @@ public partial class TradeSlot : RefreshAwareComponent
         return species < names.Length ? names[species] : "Unknown";
     }
 
+    private string GetSlotTitle()
+    {
+        var title = Pokemon is { Species: > 0 } pk ? GetSpeciesTitle(pk.Species) : "Empty slot";
+        return transferIneligibleReason is { } reason ? $"{title} — {reason}" : title;
+    }
+
     protected override void OnParametersSet()
     {
         ComputeLegality();
