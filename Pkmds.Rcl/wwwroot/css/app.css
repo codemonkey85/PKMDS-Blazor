@@ -77,8 +77,14 @@ body, html {
     box-sizing: border-box;
 }
 
-.pkm-sprite {
-
+/* Keep sprite images in their own layer, separate from the indicator badges. */
+.slot-sprite-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
 }
 
 .pkm-sprite-hires {
@@ -741,6 +747,19 @@ body, html {
 
 .slot-selected {
     background-color: var(--pkmds-slot-selected, #7C3AED);
+}
+
+/* Recess the party/box wells; only the Pokémon silhouette casts a raised shadow.
+   Keep the inset shadow independent of backgrounds used by selection and drops. */
+.recessed-slot {
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.24),
+                inset 0 -1px 2px rgba(255, 255, 255, 0.12);
+}
+
+/* Target the outer object only so its fallback image isn't shadowed twice. */
+.recessed-slot object.pkm-sprite,
+.recessed-slot .pkm-sprite-hires {
+    filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4));
 }
 
 .current-tera-type-image {
