@@ -10,16 +10,20 @@ Implementation and investigation notes for [issue #769](https://github.com/codem
 - Below 1280px, the panes retain a vertical layout without empty alignment rows.
 - Party / Box and Trade use top padding inside their tab content instead of an external top margin. With `height: 100%`, the previous 12px margin placed the bottom of the desktop scroll area below its clipping parent, preventing the last pixels of the bottom row from being reached.
 - Trade also reserves 16px of bottom content padding at every width. Reaching the last card's border is insufficient: fractional layout can spill slightly past the scroll boundary, and elevation shadows extend several pixels beyond the border box. The gutter leaves the complete bottom edge visible for both slot cards and selected-Pokémon summaries.
+- Trade uses the same 24px desktop gap and divider as pinned boxes, extending through selected-Pokémon summaries. Stacked Trade panes have a horizontal separator.
+- Game sprite scaling is shared by `PokemonSlotComponent` and `TradeSlot` through `ImageHelper.GetPokemonHighResSpriteSizeClass`. Trade previously omitted the size modifier, so tightly cropped X/Y and OR/AS sprites appeared larger than in Party / Box. Each Trade pane now scales using its owning save's game; Gen I/II sprites fill their slots, Gen VI sprites use half the slot width, and HOME keeps its existing sizing.
 
 ## Validation performed
 
 - `dotnet format --no-restore` completed successfully.
 - `dotnet build Pkmds.Web/Pkmds.Web.csproj -c Debug` passed with zero warnings and zero errors.
+- `dotnet build Pkmds.Tests/Pkmds.Tests.csproj -c Debug` also passed with zero warnings and zero errors after adding sprite-scale coverage; this compiles the tests without running them.
 - Playwright checks against the local Debug app compared rendered bounding rectangles, rather than relying only on screenshots. Same-format Trade grids measured 472px wide by approximately 392.67px high; both pinned grids measured 480px by 400px.
 - Checked desktop widths of 1280px, 1424px, and 1920px, including a 700px-high viewport and scrolling to the bottom row. Checked the stacked layout at 390px by 844px, including the last slot and horizontal overflow.
 - Used `TestFiles/violet_main` and `TestFiles/Test-Save-Scarlet.sav`, a copy of the Scarlet save with a long filename that wrapped, and `TestFiles/POKEMON BLUE-0.sav` for mixed-generation alignment. Also checked the selected-Pokémon summary.
 - Local screenshots and the temporary renamed fixture are under the gitignored `measurements/769/` directory. They are not required at runtime.
 - Did not run `dotnet test` locally, in accordance with `AGENTS.md`; the PR's GitHub Actions workflow runs the test suite.
+- Added bUnit coverage for Trade's owning-game sprite scale (including a different primary-save generation) and resetting the scale when switching to HOME. The tests run in CI.
 
 ## Independent review
 
@@ -32,6 +36,8 @@ After the correction, the reviewer rechecked Chromium and WebKit at 320px, 768px
 Subsequent user screenshots exposed a gap in the bottom-edge checks: accepting a border position within 1px of the clipping boundary missed clipped shadows. Independent investigation confirmed zero clearance at full scroll, with approximately 0.06–0.17px of fractional border overflow. In Chromium and WebKit, the 16px bottom gutter left approximately 15.83–15.94px of actual clearance at 1280px by 600px and 390px by 600px, with and without a selected-Pokémon summary. Future checks must verify visible clearance, not just that the last card's border reaches the viewport.
 
 The reviewer checked the final gutter and pinned-box separation in Chromium and WebKit, including dark mode. The 24px desktop gap, divider, aligned labels, equal grid widths, mobile section separation, and bottom-row access passed; no actionable findings remained.
+
+The Trade-divider and sprite-scale follow-up also passed independent Chromium/WebKit review: X and Alpha Sapphire use the same half-width scale as Party / Box, mixed Blue/X panes independently use their owning games' scales, HOME removes the game-specific modifiers, desktop/mobile separators remain visible, and bottom clearance remains positive. No actionable findings were reported.
 
 ## Lessons for future layout work
 

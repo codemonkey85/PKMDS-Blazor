@@ -345,6 +345,9 @@ body, html {
 
 .trade-secondary-pane {
     gap: 4px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--mud-palette-divider);
 }
 
 /* Both capped Trade panes can fit on a tablet even with xs=12. Stack them
@@ -518,7 +521,8 @@ body, html {
         display: contents;
     }
 
-    .pinned-box-grid::before {
+    .pinned-box-grid::before,
+    .trade-grid-paired::before {
         content: "";
         grid-area: 2 / 2 / 6 / 3;
         align-self: stretch;
@@ -542,7 +546,7 @@ body, html {
     .trade-grid-paired {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 472px));
-        gap: 16px 8px;
+        gap: 16px 24px;
         align-items: start;
         margin: 0;
         width: 100%;
@@ -557,6 +561,7 @@ body, html {
 
     .trade-grid-paired > .mud-grid-item:first-child .trade-pane > * { grid-column: 1; }
     .trade-grid-paired > .mud-grid-item:last-child .trade-pane > * { grid-column: 2; }
+    .trade-grid-paired::before { grid-row: 2 / 7; }
     .trade-grid-paired .trade-actions { grid-area: 1 / 2; }
     .trade-grid-paired .trade-title { grid-row: 2; }
     .trade-grid-paired .trade-party { grid-row: 3; }

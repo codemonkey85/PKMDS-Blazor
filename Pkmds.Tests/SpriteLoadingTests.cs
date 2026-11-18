@@ -96,6 +96,37 @@ public class SpriteLoadingTests
         cut.Find("object.pkm-sprite").GetAttribute("data").Should().StartWith("_content/Pkmds.Rcl/sprites/");
     }
 
+    [Theory]
+    [InlineData(GameVersion.X, "pkm-sprite-hires--sm")]
+    [InlineData(GameVersion.Y, "pkm-sprite-hires--sm")]
+    [InlineData(GameVersion.OR, "pkm-sprite-hires--sm")]
+    [InlineData(GameVersion.AS, "pkm-sprite-hires--sm")]
+    [InlineData(GameVersion.BU, "pkm-sprite-hires--lg")]
+    [InlineData(GameVersion.C, "pkm-sprite-hires--lg")]
+    public async Task TradeSpriteScaleFollowsOwningGameAndResetsForHome(GameVersion ownerVersion, string sizeClass)
+    {
+        // Slot B must use its own game even when Slot A is from another generation.
+        var state = new TestAppState
+        {
+            IsHaXEnabled = true,
+            SpriteStyle = SpriteStyle.Game,
+            SaveFile = new SAV9SV()
+        };
+        var refresh = new TestRefreshService();
+        var service = new AppService(state, refresh, new LegalizationService(state));
+        await using var ctx = BunitTestHelpers.CreateBunitContext(state, refresh, service);
+        var cut = ctx.Render<TradeSlot>(p => p
+            .Add(c => c.Pokemon, new PK9 { Species = (ushort)Species.Pikachu })
+            .Add(c => c.OwnerVersion, ownerVersion));
+
+        cut.Find("img.pkm-sprite-hires").ClassList.Should().Contain(sizeClass);
+
+        state.SpriteStyle = SpriteStyle.Home;
+        cut.Render(p => p.Add(c => c.OwnerVersion, ownerVersion));
+        cut.Find("img.pkm-sprite-hires").ClassList.Should().NotContain("pkm-sprite-hires--sm")
+            .And.NotContain("pkm-sprite-hires--lg");
+    }
+
     private static void AssertCorsPrecedesSource(string imageMarkup)
     {
         // Safari can cache a no-CORS request before Blazor sets a later crossorigin attribute.

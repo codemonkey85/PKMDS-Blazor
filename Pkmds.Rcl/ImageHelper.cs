@@ -52,6 +52,27 @@ public static partial class ImageHelper
                 : PokeApiSpriteUrls.GetPokeApiHomeSpriteUrl(pokemon.Species, pokemon.Form,
                     pokemon.GetFormArgument(0), pokemon.GetIsShinySafe(), pokemon.Gender);
 
+    /// <summary>Gets the shared slot scale for sprites from the owning save's game.</summary>
+    public static string GetPokemonHighResSpriteSizeClass(SpriteStyle style, GameVersion version)
+    {
+        if (style != SpriteStyle.Game)
+        {
+            return string.Empty;
+        }
+
+        // Gen I/II canvases fill the slot; tightly cropped Gen VI sprites use half its width.
+        return version switch
+        {
+            GameVersion.RD or GameVersion.GN or GameVersion.BU
+                or GameVersion.RB or GameVersion.RBY or GameVersion.YW
+                or GameVersion.GD or GameVersion.GS or GameVersion.SI or GameVersion.C
+                => "pkm-sprite-hires--lg",
+            GameVersion.X or GameVersion.Y or GameVersion.OR or GameVersion.AS
+                => "pkm-sprite-hires--sm",
+            _ => string.Empty
+        };
+    }
+
     /// <summary>Gets the game-version sprite URL, using bundled fixes for misaligned CDN sprites.</summary>
     public static string? GetPokemonGameSpriteUrl(PKM pokemon, GameVersion version)
     {
