@@ -10,6 +10,7 @@ Implementation and investigation notes for [issue #769](https://github.com/codem
 - Below 1280px, the panes retain a vertical layout without empty alignment rows.
 - Party / Box and Trade use top padding inside their tab content instead of an external top margin. With `height: 100%`, the previous 12px margin placed the bottom of the desktop scroll area below its clipping parent, preventing the last pixels of the bottom row from being reached.
 - Trade also reserves 16px of bottom content padding at every width. Reaching the last card's border is insufficient: fractional layout can spill slightly past the scroll boundary, and elevation shadows extend several pixels beyond the border box. The gutter leaves the complete bottom edge visible for both slot cards and selected-Pokémon summaries.
+- Both storage layouts reserve 8px of horizontal pane padding so party rows and box slots have room for their left-edge shadows. Party / Box selector text also has 8px of leading padding, separating it from the previous-box button in both selected and pinned boxes. Storage columns can shrink and party export buttons can wrap, preserving the gutter at 320px rather than letting a button's minimum width expand the selected pane.
 - Trade uses the same 24px desktop gap and divider as pinned boxes, extending through selected-Pokémon summaries. Stacked Trade panes have a horizontal separator.
 - Game sprite scaling is shared by `PokemonSlotComponent` and `TradeSlot` through `ImageHelper.GetPokemonHighResSpriteSizeClass`. Trade previously omitted the size modifier, so tightly cropped X/Y and OR/AS sprites appeared larger than in Party / Box. Each Trade pane now scales using its owning save's game; Gen I/II sprites fill their slots, Gen VI sprites use half the slot width, and HOME keeps its existing sizing.
 
@@ -38,6 +39,8 @@ Subsequent user screenshots exposed a gap in the bottom-edge checks: accepting a
 The reviewer checked the final gutter and pinned-box separation in Chromium and WebKit, including dark mode. The 24px desktop gap, divider, aligned labels, equal grid widths, mobile section separation, and bottom-row access passed; no actionable findings remained.
 
 The Trade-divider and sprite-scale follow-up also passed independent Chromium/WebKit review: X and Alpha Sapphire use the same half-width scale as Party / Box, mixed Blue/X panes independently use their owning games' scales, HOME removes the game-specific modifiers, desktop/mobile separators remain visible, and bottom clearance remains positive. No actionable findings were reported.
+
+The horizontal-gutter follow-up passed independent Chromium/WebKit checks at 1280px, 390px, and 320px. Party rows and box grids retain visible edge clearance, paired desktop widths and alignment remain unchanged, selector navigation works, and wrapping export buttons prevents narrow-screen overflow. The sprite-scale tests and full CI suite passed for commit `bc1ec8ff` before this CSS-only follow-up.
 
 ## Lessons for future layout work
 

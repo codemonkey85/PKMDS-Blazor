@@ -323,6 +323,26 @@ body, html {
    last card and its shadow inside the scrollport when scrolled to the end. */
 .trade-tab-content {
     padding-bottom: 16px;
+    padding-inline: 8px;
+}
+
+/* Keep party and box card shadows inside their pane's clipping boundary. */
+.party-box-grid {
+    padding-inline: 8px;
+}
+
+.party-box-grid > .mud-grid-item {
+    min-width: 0;
+}
+
+.storage-party .mud-button-root {
+    max-width: 100%;
+    white-space: normal;
+}
+
+.box-navigation .mud-input-control-input-container,
+.pinned-box-navigation .mud-input-control-input-container {
+    padding-inline-start: 8px;
 }
 
 .pinned-box {
