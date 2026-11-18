@@ -84,8 +84,8 @@ public sealed partial class ServiceWorkerAssetTests
         {
             var workflowContents = RepoFileTestHelper.ReadAllText(".github", "workflows", workflow);
 
-            workflowContents.Should().Contain("files: 'release/wwwroot/service-worker.js'");
-            workflowContents.Should().NotContain("files: 'release/wwwroot/service-worker.published.js'");
+            workflowContents.Should().Contain("node tools/stamp-service-worker.mjs release/wwwroot \"${{ github.run_id }}\"");
+            workflowContents.Should().NotContain("datamonsters/replace-action");
             workflowContents.Should().Contain("node tools/verify-service-worker-assets.mjs release/wwwroot");
             workflowContents.Should().Contain("node tools/sprites/verify-published.mjs");
         }

@@ -104,6 +104,20 @@ warnings/errors. No repository audit setting changed. No `dotnet test` ran
 locally; CI remains responsible for test execution. Bug-report backend submission,
 Safari, and existing-profile update behavior were not exercised by this audit.
 
+## UAT deployment follow-up
+
+Independent review of `ed468803` found no actionable code issues. UAT smoke
+testing then found an unresolved `%%CACHE_VERSION%%` in the active worker and
+its offline-cache name, despite successful deployment stamping logs. The raw
+worker had been stamped, but Azure served its stale precompressed sibling.
+
+Both deployment workflows now use `tools/stamp-service-worker.mjs` to stamp the
+raw worker and regenerate every existing Brotli/gzip sibling from those exact
+bytes. Missing placeholders and unsafe version tokens fail deployment. The
+service-worker asset manifest is unchanged: the worker is outside its inventory.
+Post-stamp manifest verification and regression cases for compressed, raw-only,
+and invalid inputs guard this deployment boundary. No IndexedDB data is removed.
+
 ## References
 
 - [Trimming options and feature switches](https://learn.microsoft.com/en-us/dotnet/core/deploying/trimming/trimming-options)
