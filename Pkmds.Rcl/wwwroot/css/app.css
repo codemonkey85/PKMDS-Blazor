@@ -319,6 +319,66 @@ body, html {
     background-color: rgba(255, 255, 255, 0.04);
 }
 
+/* Elevation shadows extend beyond card bounds. A real content gutter keeps the
+   last card and its shadow inside the scrollport when scrolled to the end. */
+.trade-tab-content {
+    padding-bottom: 16px;
+    padding-inline: 8px;
+}
+
+/* Keep party and box card shadows inside their pane's clipping boundary. */
+.party-box-grid {
+    padding-inline: 8px;
+}
+
+.party-box-grid > .mud-grid-item {
+    min-width: 0;
+}
+
+.storage-party .mud-button-root {
+    max-width: 100%;
+    white-space: normal;
+}
+
+.box-navigation .mud-input-control-input-container,
+.pinned-box-navigation .mud-input-control-input-container {
+    padding-inline-start: 8px;
+}
+
+.pinned-box {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--mud-palette-divider);
+}
+
+.storage-box-label,
+.pinned-box-label {
+    padding-inline: 5px;
+}
+
+.trade-pane,
+.trade-secondary-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.trade-secondary-pane {
+    gap: 4px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--mud-palette-divider);
+}
+
+/* Both capped Trade panes can fit on a tablet even with xs=12. Stack them
+   until the desktop shared-row layout takes over, including fractional widths. */
+@media (width < 1280px) {
+    .trade-grid {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+}
+
 /* Desktop (lg breakpoint): side-by-side layout with independently scrolling edit form */
 @media (min-width: 1280px) {
     html, body {
@@ -460,6 +520,74 @@ body, html {
         overflow: hidden;
         flex-wrap: nowrap;
     }
+
+    /* Share content-sized rows when boxes are side by side. Party actions can wrap,
+       and legalization can add progress text, so fixed top offsets are insufficient. */
+    .party-box-grid.pinned-box-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 480px));
+        grid-template-rows: repeat(5, auto);
+        column-gap: 24px;
+        align-content: start;
+        align-items: start;
+        overflow: auto;
+        margin: 0;
+        width: 100%;
+    }
+
+    .pinned-box-grid > .mud-grid-item,
+    .pinned-box-grid > .mud-grid-item > .mud-paper,
+    .pinned-box-grid .pinned-box {
+        display: contents;
+    }
+
+    .pinned-box-grid::before,
+    .trade-grid-paired::before {
+        content: "";
+        grid-area: 2 / 2 / 6 / 3;
+        align-self: stretch;
+        justify-self: start;
+        margin-inline-start: -12px;
+        border-inline-start: 1px solid var(--mud-palette-divider);
+        pointer-events: none;
+    }
+
+    .pinned-box-grid .storage-party { grid-area: 1 / 1; }
+    .pinned-box-grid .storage-box-label { grid-area: 2 / 1; }
+    .pinned-box-grid .pinned-box-label { grid-area: 2 / 2; }
+    .pinned-box-grid .box-navigation { grid-area: 3 / 1; }
+    .pinned-box-grid .pinned-box-navigation { grid-area: 3 / 2; }
+    .pinned-box-grid .storage-box-actions { grid-area: 4 / 1; }
+    .pinned-box-grid .storage-box { grid-area: 5 / 1; }
+    .pinned-box-grid .pinned-box-slots { grid-area: 5 / 2; }
+
+    /* Keep titles, party rows, selectors and boxes aligned even with long save
+       names or different generations. The Slot B actions occupy their own row. */
+    .trade-grid-paired {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 472px));
+        gap: 16px 24px;
+        align-items: start;
+        margin: 0;
+        width: 100%;
+    }
+
+    .trade-grid-paired > .mud-grid-item,
+    .trade-grid-paired > .mud-grid-item > .mud-paper,
+    .trade-grid-paired .trade-secondary-pane,
+    .trade-grid-paired .trade-pane {
+        display: contents;
+    }
+
+    .trade-grid-paired > .mud-grid-item:first-child .trade-pane > * { grid-column: 1; }
+    .trade-grid-paired > .mud-grid-item:last-child .trade-pane > * { grid-column: 2; }
+    .trade-grid-paired::before { grid-row: 2 / 7; }
+    .trade-grid-paired .trade-actions { grid-area: 1 / 2; }
+    .trade-grid-paired .trade-title { grid-row: 2; }
+    .trade-grid-paired .trade-party { grid-row: 3; }
+    .trade-grid-paired .trade-box-navigation { grid-row: 4; }
+    .trade-grid-paired .trade-box-slots { grid-row: 5; }
+    .trade-grid-paired .trade-summary { grid-row: 6; }
 
     .edit-form-column {
         height: 100%;

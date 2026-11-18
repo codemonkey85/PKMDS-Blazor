@@ -2,13 +2,12 @@
 
 @if (SaveFile is { } saveFile)
 {
-    <MudStack Spacing="2"
-              Class="min-w-0">
+    <div class="trade-pane min-w-0">
 
-        <MudText Typo="@Typo.subtitle1">@Title</MudText>
+        <MudText Typo="@Typo.subtitle1" Class="trade-title">@Title</MudText>
 
         @* Party row *@
-        <div class="grid grid-cols-6 gap-1 w-full min-w-0">
+        <div class="trade-party grid grid-cols-6 gap-1 w-full min-w-0">
             @for (var i = 0; i < 6; i++)
             {
                 var slotNum = i;
@@ -37,7 +36,7 @@
             // Clamp to [0, BoxCount-1] so a stale SelectedBox from a previous save
             // with more boxes (or a corrupted CurrentBox byte) cannot crash GetBoxSlotAtIndex.
             var currentBox = Math.Clamp(SelectedBox ?? saveFile.CurrentBox, 0, saveFile.BoxCount - 1);
-            <div class="flex items-center gap-1">
+            <div class="trade-box-navigation flex items-center gap-1">
                 <MudIconButton OnClick="@(() => SelectBox((currentBox - 1 + saveFile.BoxCount) % saveFile.BoxCount))"
                                title="Previous Box"
                                ButtonType="@ButtonType.Button"
@@ -70,7 +69,7 @@
                                Size="@Size.Small"/>
             </div>
 
-            <div class="@BoxGridClass(saveFile)">
+            <div class="@($"trade-box-slots {BoxGridClass(saveFile)}")">
                 @for (var i = 0; i < saveFile.BoxSlotCount; i++)
                 {
                     var slotNum = i;
@@ -93,7 +92,7 @@
         @if (SelectedPokemon is { Species: > 0 } selected)
         {
             <MudPaper Elevation="1"
-                      Class="pa-2 mt-2">
+                      Class="trade-summary pa-2 mt-2">
                 @{
                     var strings = AppStrings;
                     var speciesName = selected.Species < strings.specieslist.Length
@@ -163,5 +162,5 @@
                 </MudText>
             </MudPaper>
         }
-    </MudStack>
+    </div>
 }
