@@ -21,7 +21,7 @@
     <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
     <PackageVersion Include="MudBlazor" Version="9.14.0" />
     <PackageVersion Include="PKHeX.Core" Version="26.10.18" />
-    <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Extensions.Logging" Version="11.0.0" />
     <PackageVersion Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
     <PackageVersion Include="xunit.v3" Version="4.0.3" />
