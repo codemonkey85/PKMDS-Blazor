@@ -2,6 +2,7 @@
 
 <MudPaper Elevation="3"
           @onclick="@HandleClick"
+          title="@GetSlotTitle()"
           Class="@($"square-slot {(IsSelected ? Constants.SelectedSlotClass : string.Empty)} {GetDragClass()} {(transferIneligibleReason is not null ? "slot-ineligible-transfer" : string.Empty)} {ImageHelper.GetSpriteCssClass(Pokemon)}")">
     <div draggable="@(IsDraggable() ? "true" : "false")"
          @ondragstart="@HandleDragStart"
@@ -10,7 +11,6 @@
          @ondrop="@HandleDrop"
          @ondrop:preventDefault="true"
          @ondrop:stopPropagation="true"
-         title="@transferIneligibleReason"
          aria-label="@transferIneligibleReason"
          class="w-full h-full aspect-square flex items-center justify-center overflow-hidden p-0 box-border border border-transparent relative">
         @if (Pokemon is { Species: > 0 })

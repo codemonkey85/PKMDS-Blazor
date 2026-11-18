@@ -2,6 +2,7 @@
 
 <MudPaper Elevation="0"
           @onclick="@HandleClick"
+          title="@(Pokemon is { Species: > 0 } ? GetPokemonTitle() : "Empty slot")"
           Class="@($"square-slot recessed-slot {GetClass()} {GetDragClass()} {ImageHelper.GetSpriteCssClass(Pokemon)}")">
     <div draggable="@(IsDraggable()
                         ? "true"
