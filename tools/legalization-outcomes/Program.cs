@@ -9,18 +9,18 @@ var pokemon = new PK9 { Species = 25 };
 var changes = new LegalizationChanges([
     new(LegalizationChangeCategory.Battle, "Move 1", "Tackle", "Thunder Shock")
 ]);
-LegalizationOutcome[] fixtures =
+BaselineOutcome[] fixtures =
 [
-    new(pokemon, LegalizationStatus.Success),
-    new(pokemon, LegalizationStatus.Success) { Changes = changes },
-    new(pokemon, LegalizationStatus.Failed, "No legal result found after 12 encounters."),
-    new(pokemon, LegalizationStatus.Failed, "Cancelled."),
-    new(pokemon, LegalizationStatus.Timeout, "Timed out after 3s (12 encounters tried)."),
-    new(pokemon, LegalizationStatus.SuccessHaX, "HaX retry produced an illegal result."),
-    new(pokemon, LegalizationStatus.Failed),
-    new(pokemon, LegalizationStatus.Timeout),
-    new(pokemon, LegalizationStatus.SuccessHaX),
-    new(new PK9(), LegalizationStatus.Failed, "No species specified.")
+    new(pokemon, BaselineStatus.Success),
+    new(pokemon, BaselineStatus.Success) { Changes = changes },
+    new(pokemon, BaselineStatus.Failed, "No legal result found after 12 encounters."),
+    new(pokemon, BaselineStatus.Failed, "Cancelled."),
+    new(pokemon, BaselineStatus.Timeout, "Timed out after 3s (12 encounters tried)."),
+    new(pokemon, BaselineStatus.SuccessHaX, "HaX retry produced an illegal result."),
+    new(pokemon, BaselineStatus.Failed),
+    new(pokemon, BaselineStatus.Timeout),
+    new(pokemon, BaselineStatus.SuccessHaX),
+    new(new PK9(), BaselineStatus.Failed, "No species specified.")
 ];
 
 // Validate outside measurement: identity, warnings, summaries, best-effort and
@@ -101,9 +101,9 @@ internal sealed record AllocationRow(int Repetition, string Status, string? Reas
 
 internal static class Sinks
 {
-    internal static LegalizationOutcome? Baseline;
+    internal static BaselineOutcome? Baseline;
     internal static UnionOutcome Union;
-    internal static ClosedOutcome? Closed;
+    internal static LegalizationOutcome? Closed;
 }
 
 internal static class Factories
@@ -111,26 +111,26 @@ internal static class Factories
     // NoInlining plus escaping static sinks prevents the benchmark from
     // eliminating allocations whose objects would otherwise be unobserved.
     [MethodImpl(MethodImplOptions.NoInlining)]
-    internal static LegalizationOutcome Baseline(LegalizationOutcome fixture) =>
+    internal static BaselineOutcome Baseline(BaselineOutcome fixture) =>
         new(fixture.Pokemon, fixture.Status, fixture.FailureReason) { Changes = fixture.Changes };
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    internal static UnionOutcome Union(LegalizationOutcome fixture) => fixture.Status switch
+    internal static UnionOutcome Union(BaselineOutcome fixture) => fixture.Status switch
     {
-        LegalizationStatus.Success => new Succeeded(fixture.Pokemon, fixture.Changes),
-        LegalizationStatus.Failed => new Failed(fixture.Pokemon, fixture.FailureReason ?? Callers.FailureWarning),
-        LegalizationStatus.Timeout => new TimedOut(fixture.Pokemon, fixture.FailureReason ?? Callers.TimeoutWarning),
-        LegalizationStatus.SuccessHaX => new ImportedViaHaX(fixture.Pokemon, fixture.FailureReason ?? Callers.HaXWarning),
+        BaselineStatus.Success => new Succeeded(fixture.Pokemon, fixture.Changes),
+        BaselineStatus.Failed => new Failed(fixture.Pokemon, fixture.FailureReason ?? Callers.FailureWarning),
+        BaselineStatus.Timeout => new TimedOut(fixture.Pokemon, fixture.FailureReason ?? Callers.TimeoutWarning),
+        BaselineStatus.SuccessHaX => new ImportedViaHaX(fixture.Pokemon, fixture.FailureReason ?? Callers.HaXWarning),
         _ => throw new ArgumentOutOfRangeException(nameof(fixture))
     };
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    internal static ClosedOutcome Closed(LegalizationOutcome fixture) => fixture.Status switch
+    internal static LegalizationOutcome Closed(BaselineOutcome fixture) => fixture.Status switch
     {
-        LegalizationStatus.Success => new ClosedSuccess(fixture.Pokemon, fixture.Changes),
-        LegalizationStatus.Failed => new ClosedFailure(fixture.Pokemon, fixture.FailureReason ?? Callers.FailureWarning),
-        LegalizationStatus.Timeout => new ClosedTimeout(fixture.Pokemon, fixture.FailureReason ?? Callers.TimeoutWarning),
-        LegalizationStatus.SuccessHaX => new ClosedHaX(fixture.Pokemon, fixture.FailureReason ?? Callers.HaXWarning),
+        BaselineStatus.Success => new LegalizationSuccess(fixture.Pokemon) { Changes = fixture.Changes },
+        BaselineStatus.Failed => new LegalizationFailure(fixture.Pokemon, fixture.FailureReason ?? Callers.FailureWarning),
+        BaselineStatus.Timeout => new LegalizationTimeout(fixture.Pokemon, fixture.FailureReason ?? Callers.TimeoutWarning),
+        BaselineStatus.SuccessHaX => new LegalizationHaX(fixture.Pokemon, fixture.FailureReason ?? Callers.HaXWarning),
         _ => throw new ArgumentOutOfRangeException(nameof(fixture))
     };
 }

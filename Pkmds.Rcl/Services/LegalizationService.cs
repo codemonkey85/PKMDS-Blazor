@@ -39,9 +39,9 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         var preserveOutcome = await CoreLegalizeAsync(
             set, pk, sav, progress, ct, preserveBudget, preserveDetails: true);
 
-        if (preserveOutcome.Status == LegalizationStatus.Success)
+        if (preserveOutcome is LegalizationSuccess preserveSuccess)
         {
-            return preserveOutcome with { Changes = PkmDiffer.Diff(original, preserveOutcome.Pokemon) };
+            return preserveSuccess with { Changes = PkmDiffer.Diff(original, preserveSuccess.Pokemon) };
         }
 
         if (ct.IsCancellationRequested)
@@ -55,8 +55,8 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         var rebuildOutcome = await CoreLegalizeAsync(
             set, pk, sav, progress, ct, rebuildBudget, preserveDetails: false);
 
-        return rebuildOutcome.Status == LegalizationStatus.Success
-            ? rebuildOutcome with { Changes = PkmDiffer.Diff(original, rebuildOutcome.Pokemon) }
+        return rebuildOutcome is LegalizationSuccess rebuildSuccess
+            ? rebuildSuccess with { Changes = PkmDiffer.Diff(original, rebuildSuccess.Pokemon) }
             : rebuildOutcome;
     }
 
@@ -109,9 +109,8 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
     {
         if (set.Species == 0)
         {
-            return new LegalizationOutcome(
+            return new LegalizationFailure(
                 sav.BlankPKM,
-                LegalizationStatus.Failed,
                 "No species specified.");
         }
 
@@ -170,9 +169,8 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         {
             if (ct.IsCancellationRequested)
             {
-                return new LegalizationOutcome(
+                return new LegalizationFailure(
                     bestAttempt ?? BuildSetFallback(blank, sav, set),
-                    LegalizationStatus.Failed,
                     "Cancelled.");
             }
 
@@ -182,12 +180,11 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                 // than reporting Timeout when we actually produced a usable PKM.
                 if (bestFishyAttempt is not null)
                 {
-                    return new LegalizationOutcome(bestFishyAttempt, LegalizationStatus.Success);
+                    return new LegalizationSuccess(bestFishyAttempt);
                 }
 
-                return new LegalizationOutcome(
+                return new LegalizationTimeout(
                     bestAttempt ?? BuildSetFallback(blank, sav, set),
-                    LegalizationStatus.Timeout,
                     $"Timed out after {timeoutSeconds}s ({attemptCount} encounters tried).");
             }
 
@@ -278,7 +275,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                     var hasFishy = la.Results.Any(r => r.Judgement == PKHeX.Core.Severity.Fishy);
                     if (!hasFishy)
                     {
-                        return new LegalizationOutcome(pk, LegalizationStatus.Success);
+                        return new LegalizationSuccess(pk);
                     }
 
                     bestFishyAttempt ??= pk;
@@ -302,7 +299,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         // as Success rather than Failed.
         if (bestFishyAttempt is not null)
         {
-            return new LegalizationOutcome(bestFishyAttempt, LegalizationStatus.Success);
+            return new LegalizationSuccess(bestFishyAttempt);
         }
 
         // HaX retry: nothing legal survived. With HaX on, do a relaxed pass that bypasses
@@ -320,9 +317,8 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
             }
         }
 
-        return new LegalizationOutcome(
+        return new LegalizationFailure(
             bestAttempt ?? BuildSetFallback(blank, sav, set),
-            LegalizationStatus.Failed,
             $"No legal result found after {attemptCount} encounters.");
     }
 
@@ -338,7 +334,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
     /// <see cref="EntityConverter.AllowIncompatibleConversion" /> is set to
     /// <see cref="EntityCompatibilitySetting.AllowIncompatibleAll" /> for the duration of
     /// the retry. Returns the first PKM the pipeline produces, marked
-    /// <see cref="LegalizationStatus.SuccessHaX" />. Yields cooperatively per encounter in
+    /// <see cref="LegalizationHaX" />. Yields cooperatively per encounter in
     /// async mode so the WASM main thread stays responsive. Returns a Timeout / Failed-Cancelled
     /// outcome on timer elapse / cancellation, or <c>null</c> when the encounter pool is
     /// exhausted without a survivor (caller falls through to BuildSetFallback).
@@ -359,17 +355,15 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         {
             if (ct.IsCancellationRequested)
             {
-                return new LegalizationOutcome(
+                return new LegalizationFailure(
                     BuildSetFallback(blank, sav, set),
-                    LegalizationStatus.Failed,
                     "Cancelled.");
             }
 
             if (timer.Elapsed.TotalSeconds >= timeoutSeconds)
             {
-                return new LegalizationOutcome(
+                return new LegalizationTimeout(
                     BuildSetFallback(blank, sav, set),
-                    LegalizationStatus.Timeout,
                     $"Timed out after {timeoutSeconds}s during HaX retry.");
             }
 
@@ -427,16 +421,14 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                 ApplyPostGenerationFixes(pk, sav, enc, set, honourEncounterLevelMin: false);
                 pk.RefreshChecksum();
 
-                return new LegalizationOutcome(
+                return new LegalizationHaX(
                     pk,
-                    LegalizationStatus.SuccessHaX,
                     "Imported via HaX retry — illegal but populated.");
             }
             catch (OperationCanceledException)
             {
-                return new LegalizationOutcome(
+                return new LegalizationFailure(
                     BuildSetFallback(blank, sav, set),
-                    LegalizationStatus.Failed,
                     "Cancelled.");
             }
             catch

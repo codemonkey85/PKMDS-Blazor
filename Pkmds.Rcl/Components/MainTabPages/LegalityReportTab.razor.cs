@@ -125,7 +125,7 @@ public partial class LegalityReportTab : RefreshAwareComponent
 
             processed++;
 
-            if (result.Status != LegalizationStatus.Success)
+            if (result is not LegalizationSuccess success)
             {
                 failureCount++;
                 continue;
@@ -138,12 +138,12 @@ public partial class LegalityReportTab : RefreshAwareComponent
             PKM storedPk;
             if (entry.IsParty)
             {
-                saveFile.SetPartySlotAtIndex(result.Pokemon, entry.SlotNumber, EntityImportSettings.None);
+                saveFile.SetPartySlotAtIndex(success.Pokemon, entry.SlotNumber, EntityImportSettings.None);
                 storedPk = saveFile.GetPartySlotAtIndex(entry.SlotNumber);
             }
             else
             {
-                saveFile.SetBoxSlotAtIndex(result.Pokemon, entry.BoxNumber, entry.SlotNumber, EntityImportSettings.None);
+                saveFile.SetBoxSlotAtIndex(success.Pokemon, entry.BoxNumber, entry.SlotNumber, EntityImportSettings.None);
                 storedPk = saveFile.GetBoxSlotAtIndex(entry.BoxNumber, entry.SlotNumber);
             }
 
@@ -171,8 +171,8 @@ public partial class LegalityReportTab : RefreshAwareComponent
                 case LegalityStatus.Legal:
                     successCount++;
                     // Recompute the diff against the bytes actually stored in the save
-                    // rather than reusing result.Changes (which was diffed against the
-                    // in-memory result.Pokemon before SetBoxSlot/SetPartySlot ran). The
+                    // rather than reusing success.Changes (which was diffed against the
+                    // in-memory success.Pokemon before SetBoxSlot/SetPartySlot ran). The
                     // EntityImportSettings.None write path can still serialize/deserialize
                     // and trim trailing fields, so the row's "View changes" must reflect
                     // what the user will see if they re-scan.

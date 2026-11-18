@@ -11,12 +11,12 @@ internal static class Callers
     internal const string TimeoutWarning = "Legalization timed out.";
     internal const string HaXWarning = "Imported via HaX retry — illegal but populated.";
 
-    internal static EditorDecision Editor(LegalizationOutcome result) => result.Status switch
+    internal static EditorDecision Editor(BaselineOutcome result) => result.Status switch
     {
-        LegalizationStatus.Success => new(result.Pokemon, result.Changes, null),
-        LegalizationStatus.Failed => new(null, null, result.FailureReason ?? FailureWarning),
-        LegalizationStatus.Timeout => new(null, null, result.FailureReason ?? TimeoutWarning),
-        LegalizationStatus.SuccessHaX => new(result.Pokemon, null, result.FailureReason ?? HaXWarning),
+        BaselineStatus.Success => new(result.Pokemon, result.Changes, null),
+        BaselineStatus.Failed => new(null, null, result.FailureReason ?? FailureWarning),
+        BaselineStatus.Timeout => new(null, null, result.FailureReason ?? TimeoutWarning),
+        BaselineStatus.SuccessHaX => new(result.Pokemon, null, result.FailureReason ?? HaXWarning),
         _ => throw new ArgumentOutOfRangeException(nameof(result))
     };
 
@@ -31,26 +31,26 @@ internal static class Callers
         null => throw new InvalidOperationException("Uninitialized legalization outcome.")
     };
 
-    internal static EditorDecision Editor(ClosedOutcome result) => result switch
+    internal static EditorDecision Editor(LegalizationOutcome result) => result switch
     {
-        ClosedSuccess success => new(success.Pokemon, success.Changes, null),
-        ClosedFailure failure => new(null, null, failure.Reason),
-        ClosedTimeout timeout => new(null, null, timeout.Reason),
-        ClosedHaX hax => new(hax.Pokemon, null, hax.Warning)
+        LegalizationSuccess success => new(success.Pokemon, success.Changes, null),
+        LegalizationFailure failure => new(null, null, failure.Reason),
+        LegalizationTimeout timeout => new(null, null, timeout.Reason),
+        LegalizationHaX hax => new(hax.Pokemon, null, hax.Warning)
     };
 
     // Storage and report batches accept only legal success. HaX must never be
     // counted as a successful batch write, although the editor accepts its PKM.
-    internal static PKM? Batch(LegalizationOutcome result) =>
-        result.Status == LegalizationStatus.Success ? result.Pokemon : null;
+    internal static PKM? Batch(BaselineOutcome result) =>
+        result.Status == BaselineStatus.Success ? result.Pokemon : null;
 
     internal static PKM? Batch(UnionOutcome result) => result is Succeeded success ? success.Pokemon : null;
 
-    internal static PKM? Batch(ClosedOutcome result) => result is ClosedSuccess success ? success.Pokemon : null;
+    internal static PKM? Batch(LegalizationOutcome result) => result is LegalizationSuccess success ? success.Pokemon : null;
 
     // AppService.ConvertShowdownSetToPkm intentionally accepts populated
     // best-effort results, including failure/timeout. Preserve that distinction.
-    internal static PKM? Generated(LegalizationOutcome result) => Populated(result.Pokemon);
+    internal static PKM? Generated(BaselineOutcome result) => Populated(result.Pokemon);
 
     internal static PKM? Generated(UnionOutcome result) => result switch
     {
@@ -61,7 +61,7 @@ internal static class Callers
         null => throw new InvalidOperationException("Uninitialized legalization outcome.")
     };
 
-    internal static PKM? Generated(ClosedOutcome result) => Populated(result.Pokemon);
+    internal static PKM? Generated(LegalizationOutcome result) => Populated(result.Pokemon);
 
     private static PKM? Populated(PKM pokemon) => pokemon.Species > 0 ? pokemon : null;
 }

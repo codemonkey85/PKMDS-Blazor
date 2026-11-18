@@ -348,7 +348,7 @@ public partial class PokemonStorageComponent : RefreshAwareComponent
 
             processed++;
 
-            if (result.Status != LegalizationStatus.Success)
+            if (result is not LegalizationSuccess success)
             {
                 failureCount++;
                 continue;
@@ -356,7 +356,7 @@ public partial class PokemonStorageComponent : RefreshAwareComponent
 
             // EntityImportSettings.None skips UpdatePKM's "adapt as if traded in" path,
             // which can re-break handler/memory/trainer fields on a PKM we just made legal.
-            saveFile.SetBoxSlotAtIndex(result.Pokemon, box, slot, EntityImportSettings.None);
+            saveFile.SetBoxSlotAtIndex(success.Pokemon, box, slot, EntityImportSettings.None);
 
             // Re-analyse the stored bytes so the counters match what the save actually holds.
             var storedPk = saveFile.GetBoxSlotAtIndex(box, slot);

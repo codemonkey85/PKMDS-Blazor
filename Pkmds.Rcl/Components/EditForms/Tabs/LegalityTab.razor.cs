@@ -14,7 +14,8 @@ public partial class LegalityTab : IDisposable
     public LegalityAnalysis? Analysis { get; set; }
 
     /// <summary>
-    /// Callback invoked when legalization replaces the Pokémon with a new legal clone.
+    /// Callback invoked when legalization replaces the Pokémon with a legal clone
+    /// or a populated HaX result (which is accompanied by a warning).
     /// The parent (PokemonEditForm) should update its EditFormPokemon and recompute analysis.
     /// </summary>
     [Parameter]
@@ -135,31 +136,15 @@ public partial class LegalityTab : IDisposable
 
             var result = await LegalizationService.LegalizeAsync(Pokemon, sav, progress);
 
-            switch (result.Status)
+            // A switch expression over the closed hierarchy makes a new outcome
+            // a compiler diagnostic until its editor behavior is specified.
+            await (result switch
             {
-                case LegalizationStatus.Success:
-                    await OnPokemonLegalized.InvokeAsync(result.Pokemon);
-                    ShowSuccessSnackbar(result.Pokemon, result.Changes);
-                    break;
-
-                case LegalizationStatus.SuccessHaX:
-                    // HaX retry replaced the editor PKM with a populated-but-illegal result.
-                    // Still invoke OnPokemonLegalized so the editor reflects the change; the
-                    // legality alert will repaint as Invalid.
-                    await OnPokemonLegalized.InvokeAsync(result.Pokemon);
-                    Snackbar.Add(
-                        result.FailureReason ?? "Imported via HaX retry — illegal but populated.",
-                        Severity.Warning);
-                    break;
-
-                case LegalizationStatus.Timeout:
-                    Snackbar.Add(result.FailureReason ?? "Legalization timed out.", Severity.Warning);
-                    break;
-
-                case LegalizationStatus.Failed:
-                    Snackbar.Add(result.FailureReason ?? "Could not find a legal encounter.", Severity.Warning);
-                    break;
-            }
+                LegalizationSuccess success => ApplyLegalSuccessAsync(success),
+                LegalizationHaX hax => ApplyHaXResultAsync(hax),
+                LegalizationTimeout timeout => ShowLegalizationWarningAsync(timeout.Reason),
+                LegalizationFailure failure => ShowLegalizationWarningAsync(failure.Reason)
+            });
         }
         finally
         {
@@ -167,6 +152,25 @@ public partial class LegalityTab : IDisposable
             legalizationProgress = null;
             StateHasChanged();
         }
+    }
+
+    private async Task ApplyLegalSuccessAsync(LegalizationSuccess result)
+    {
+        await OnPokemonLegalized.InvokeAsync(result.Pokemon);
+        ShowSuccessSnackbar(result.Pokemon, result.Changes);
+    }
+
+    private async Task ApplyHaXResultAsync(LegalizationHaX result)
+    {
+        // The editor accepts this populated but illegal Pokémon; batch writes do not.
+        await OnPokemonLegalized.InvokeAsync(result.Pokemon);
+        Snackbar.Add(result.Warning, Severity.Warning);
+    }
+
+    private Task ShowLegalizationWarningAsync(string message)
+    {
+        Snackbar.Add(message, Severity.Warning);
+        return Task.CompletedTask;
     }
 
     private static bool IsTrashByteResultCode(LegalityCheckResultCode code) => code is

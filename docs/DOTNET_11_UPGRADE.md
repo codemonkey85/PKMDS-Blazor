@@ -90,7 +90,7 @@ streams are unchanged. IndexedDB schemas and serialization formats are unchanged
 | Gateway | Web, launch profiles, watch scripts | Supported standalone host; direct-route and framework-asset HTTP checks pass. IDE debugger attachment still needs verification. | Adopt |
 | JS interop diagnostics | `JsService`, `App.OnAfterRenderAsync` | Explicit crypto failure and resilient notification setup; no ignored results changed blindly. | Adopt BL0016 handling |
 | ZIP integrity | Generic/Manic readers, Bank import | Reject invalid checksums; malformed archive paths must fail without writing user records. | Adopt runtime behavior; add regression coverage |
-| Union types/closed cases | `LegalizationResult`, legalization call sites | [Stable C# 15 prototype](CSHARP_15_LEGALIZATION_OUTCOMES.md) demonstrates exhaustive cases and matched CoreCLR model allocations; browser/engine effects remain unmeasured. Closed records retain common best-effort Pokémon access. | Prefer closed hierarchy; defer production adoption |
+| Union types/closed cases | `LegalizationResult`, legalization call sites | [C# 15 closed outcomes](CSHARP_15_LEGALIZATION_OUTCOMES.md) give exhaustive editor/worker projections, success-only changes and required failure/timeout/HaX messages while retaining best-effort Pokémon. The original allocation observation is CoreCLR-only. | Adopt closed hierarchy; keep union experimental |
 | Collection expression arguments | `AppService` encounter set, `DescriptionService` index | Existing constructors expose reference-identity/ordinal comparers and capacity clearly; shorter syntax has no measured benefit. | Retain constructors |
 | Labeled break/continue | Nested storage/legalization loops | Existing early returns and loops do not justify new control flow in the migration. | Defer |
 | Extension indexers/other C# 15 syntax | Shared helpers | No concrete use outweighs extra API/call-site review; memory-safety previews are outside scope. | Defer |
@@ -211,14 +211,16 @@ Issue #1374 remains the tracker for the remaining work:
   process-memory samples. Resident/total peak-memory and broader platform gaps remain open.
 - #1388: [C# 15 legalization result prototype](CSHARP_15_LEGALIZATION_OUTCOMES.md)
   compares union/closed-case callers and CoreCLR model allocations, preserving
-  best-effort Pokémon and HaX warnings. Production adoption remains deferred.
+  best-effort Pokémon and HaX warnings. The production follow-up adopts the closed
+  hierarchy across the engine and callers, retaining the historical benchmark model.
 - #1389: [Gateway/watch and file-based tooling evaluation](DOTNET_11_TOOLING.md).
   HTTP/HTTPS and corrected local-PKHeX watch startup pass; IDE breakpoint,
   edit/hot-reload and native checks remain open.
 - #1390: existing-profile deployed-origin update, cached/new frontend backend
   contracts, Safari/native builds, embedded-host/broader save checks, explicit
   .NET crypto vectors, selection, and deployed contained-error reporting.
-- #1391: Runtime Async investigation limited to Functions/CoreCLR tools.
+- #1391: Runtime Async and CoreCLR-on-WASM evaluation/adoption are deferred to
+  .NET 12 by the maintainer's November 17 decision. Keep the .NET 11 Mono runtime.
 - #883: browser runtime alternatives, AOT, and SIMD; #497/#498: Advanced Search
   and Encounter Database virtualization. Existing pagination does not become
   virtualization automatically. Further Bank/batch-preview work needs evidence.
