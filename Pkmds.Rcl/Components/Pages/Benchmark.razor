@@ -49,6 +49,7 @@
                 "bank" => await new ApplicationBenchmarkRunner(Http, JSRuntime).RunAsync(new(BankOnly: true)),
                 "bank-ui" => await new ApplicationBenchmarkRunner(Http, JSRuntime).PrepareBankUiAsync(),
                 "descriptions" => await new ApplicationBenchmarkRunner(Http, JSRuntime).RunDescriptionsAsync(),
+                "crypto" => await new ApplicationBenchmarkRunner(Http, JSRuntime).RunCryptoAsync(),
                 _ => throw new InvalidOperationException("Unknown benchmark suite."),
             };
             // UserAgent is filled in by the Playwright runner via page.evaluate

@@ -69,16 +69,35 @@ jobs:
       - name: Verify published description loading in Chromium
         run: node tools/bench/run-bench.mjs --label ci-descriptions --site release/wwwroot --suite descriptions --runs 1 --compression br --output measurements/ci-descriptions.md
 
+      - name: Verify published .NET browser crypto bridges
+        run: node tools/bench/run-bench.mjs --label ci-crypto --site release/wwwroot --suite crypto --runs 1 --compression br --output measurements/ci-crypto.md
+
       - name: Upload description browser observations
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: description-browser-smoke
-          path: measurements/ci-descriptions*
+          path: |
+            measurements/ci-descriptions*
+            measurements/ci-crypto*
           if-no-files-found: ignore
 
       - name: Verify service worker assets
         run: node tools/verify-service-worker-assets.mjs release/wwwroot
+
+      - name: Publish isolated legalization worker prototype
+        run: dotnet publish tools/legalization-worker/LegalizationWorker.csproj -c Release -o measurements/worker-prototype
+
+      - name: Observe legalization worker in Chromium
+        run: node tools/bench/run-worker-prototype.mjs --site measurements/worker-prototype/wwwroot --runs 1 --output measurements/ci-legalization-worker.json
+
+      - name: Upload legalization worker observations
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: legalization-worker
+          path: measurements/ci-legalization-worker.json
+          if-no-files-found: ignore
 
       - name: Build Functions
         run: dotnet build Pkmds.Functions/Pkmds.Functions.csproj --configuration Release
@@ -104,4 +123,4 @@ jobs:
         run: dotnet test Pkmds.Tests/Pkmds.Tests.csproj --configuration Release
 
       - name: Test JavaScript behavior
-        run: node --test tools/tests/service-worker-sprites.test.mjs tools/tests/sprite-upstream.test.mjs tools/tests/sprite-publication.test.mjs tools/tests/browse-autocomplete.test.mjs tools/tests/razor-control-parser.test.mjs tools/tests/benchmark-isolation.test.mjs tools/tests/browser-support.test.mjs tools/tests/browser-memory.test.mjs
+        run: node --test tools/tests/service-worker-sprites.test.mjs tools/tests/sprite-upstream.test.mjs tools/tests/sprite-publication.test.mjs tools/tests/browse-autocomplete.test.mjs tools/tests/razor-control-parser.test.mjs tools/tests/benchmark-isolation.test.mjs tools/tests/browser-support.test.mjs tools/tests/browser-memory.test.mjs tools/tests/worker-client.test.mjs tools/tests/crypto-bridge.test.mjs

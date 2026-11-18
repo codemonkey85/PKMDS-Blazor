@@ -22,11 +22,25 @@ public class BlazorAesProvider(JsService jsService) : IAesCryptographyProvider
     /// <summary>
     /// Internal class that implements AES encryption/decryption using JavaScript interop.
     /// </summary>
-#pragma warning disable CS9113 // Parameter is unread.
     private class CryptoJsAes(JsService jsService, byte[] key, CipherMode mode, PaddingMode padding, byte[]? iv = null)
-#pragma warning restore CS9113 // Parameter is unread.
         : IAesCryptographyProvider.IAes
     {
+        // CryptoJS currently implements the NoPadding operations used by PKHeX.
+        private readonly byte[]? initializationVector = ValidateParameters(mode, padding, iv);
+
+        private static byte[]? ValidateParameters(CipherMode mode, PaddingMode padding, byte[]? iv)
+        {
+            if (mode is not (CipherMode.ECB or CipherMode.CBC) || padding != PaddingMode.None)
+            {
+                throw new NotSupportedException("The browser AES provider supports ECB/CBC with no padding.");
+            }
+            if (mode == CipherMode.CBC && iv?.Length != 16)
+            {
+                throw new CryptographicException("AES-CBC requires a 16-byte initialization vector.");
+            }
+            return iv?.ToArray();
+        }
+
         /// <summary>
         /// Encrypts data using AES in ECB mode.
         /// </summary>
@@ -43,13 +57,13 @@ public class BlazorAesProvider(JsService jsService) : IAesCryptographyProvider
         /// Encrypts data using AES in CBC mode.
         /// </summary>
         public void EncryptCbc(ReadOnlySpan<byte> plaintext, Span<byte> destination) =>
-            jsService.EncryptAes(plaintext, destination, key, CipherMode.CBC);
+            jsService.EncryptAes(plaintext, destination, key, CipherMode.CBC, initializationVector);
 
         /// <summary>
         /// Decrypts data using AES in CBC mode.
         /// </summary>
         public void DecryptCbc(ReadOnlySpan<byte> ciphertext, Span<byte> destination) =>
-            jsService.DecryptAes(ciphertext, destination, key, CipherMode.CBC);
+            jsService.DecryptAes(ciphertext, destination, key, CipherMode.CBC, initializationVector);
 
         /// <summary>
         /// Disposes the AES instance (no-op for JavaScript-based implementation).

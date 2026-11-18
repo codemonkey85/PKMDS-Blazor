@@ -22,12 +22,15 @@ public class JsService(IJSRuntime js)
     /// <param name="destination">The span to write the encrypted data to.</param>
     /// <param name="key">The encryption key.</param>
     /// <param name="mode">The cipher mode (ECB or CBC).</param>
-    public void EncryptAes(ReadOnlySpan<byte> origin, Span<byte> destination, ReadOnlySpan<byte> key, CipherMode mode)
+    /// <param name="iv">The 16-byte initialization vector required for CBC.</param>
+    public void EncryptAes(ReadOnlySpan<byte> origin, Span<byte> destination, ReadOnlySpan<byte> key, CipherMode mode,
+        byte[]? iv = null)
     {
         var originHex = Convert.ToHexString(origin.ToArray());
         var keyHex = Convert.ToHexString(key.ToArray());
 
-        var encryptedHex = InvokeCrypto("encryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant());
+        var encryptedHex = InvokeCrypto("encryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant(),
+            iv is null ? null : Convert.ToHexString(iv));
 
         var encryptedBytes = ConvertHexStringToByteArray(encryptedHex);
         encryptedBytes.CopyTo(destination);
@@ -40,12 +43,15 @@ public class JsService(IJSRuntime js)
     /// <param name="destination">The span to write the decrypted data to.</param>
     /// <param name="key">The decryption key.</param>
     /// <param name="mode">The cipher mode (ECB or CBC).</param>
-    public void DecryptAes(ReadOnlySpan<byte> origin, Span<byte> destination, ReadOnlySpan<byte> key, CipherMode mode)
+    /// <param name="iv">The 16-byte initialization vector required for CBC.</param>
+    public void DecryptAes(ReadOnlySpan<byte> origin, Span<byte> destination, ReadOnlySpan<byte> key, CipherMode mode,
+        byte[]? iv = null)
     {
         var originHex = Convert.ToHexString(origin.ToArray());
         var keyHex = Convert.ToHexString(key.ToArray());
 
-        var decryptedHex = InvokeCrypto("decryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant());
+        var decryptedHex = InvokeCrypto("decryptAes", keyHex, originHex, mode.ToString().ToLowerInvariant(),
+            iv is null ? null : Convert.ToHexString(iv));
 
         var decryptedBytes = ConvertHexStringToByteArray(decryptedHex);
         decryptedBytes.CopyTo(destination);

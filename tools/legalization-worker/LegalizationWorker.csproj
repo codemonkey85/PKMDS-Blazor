@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+    <PropertyGroup>
+        <AssemblyName>Pkmds.WorkerPrototype</AssemblyName>
+        <RootNamespace>Pkmds.WorkerPrototype</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+        <UseMonoRuntime>true</UseMonoRuntime>
+        <WasmEnableSIMD>true</WasmEnableSIMD>
+        <RunAOTCompilation>false</RunAOTCompilation>
+        <TrimMode>full</TrimMode>
+        <!-- BL0016 also flags generated JS import stubs. This isolated adapter
+             propagates failures through JsService's CryptographicException;
+             adding catches to the generated code isn't possible. -->
+        <NoWarn>$(NoWarn);BL0016</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <SupportedPlatform Include="browser"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly"/>
+        <ProjectReference Include="../../Pkmds.Core/Pkmds.Core.csproj"/>
+        <!-- Compile the real engine and its contracts, without UI/services or a
+             second copy of its algorithm. This experiment does not extract or
+             replace the production engine. -->
+        <Compile Include="../../Pkmds.Rcl/Services/LegalizationService.cs" Link="Production/LegalizationService.cs"/>
+        <Compile Include="../../Pkmds.Rcl/Services/ILegalizationService.cs" Link="Production/ILegalizationService.cs"/>
+        <Compile Include="../../Pkmds.Rcl/Services/PkmDiffer.cs" Link="Production/PkmDiffer.cs"/>
+        <Compile Include="../../Pkmds.Rcl/Models/LegalizationResult.cs" Link="Production/LegalizationResult.cs"/>
+        <Compile Include="../../Pkmds.Rcl/Models/LegalizationChanges.cs" Link="Production/LegalizationChanges.cs"/>
+        <Compile Include="../../Pkmds.Rcl/IAppState.cs" Link="Production/IAppState.cs"/>
+        <Compile Include="../../Pkmds.Rcl/SpriteStyle.cs" Link="Production/SpriteStyle.cs"/>
+        <Compile Include="../../Pkmds.Rcl/Services/CryptoBridgeChecks.cs" Link="Production/CryptoBridgeChecks.cs"/>
+        <Compile Include="../../Pkmds.Web/Services/BlazorAesProvider.cs" Link="Production/BlazorAesProvider.cs"/>
+        <Compile Include="../../Pkmds.Web/Services/BlazorMd5Provider.cs" Link="Production/BlazorMd5Provider.cs"/>
+        <Compile Include="../../Pkmds.Web/Services/JsService.cs" Link="Production/JsService.cs"/>
+        <Content Include="../../Pkmds.Web/wwwroot/js/lib/crypto-js/crypto-js.min.js" Link="wwwroot/crypto-js.min.js"/>
+        <Content Include="../../Pkmds.Rcl/wwwroot/js/crypto.js" Link="wwwroot/crypto.js"/>
+        <TrimmerRootDescriptor Include="../../Pkmds.Web/PreservePkmTypes.xml"/>
+    </ItemGroup>
+</Project>
