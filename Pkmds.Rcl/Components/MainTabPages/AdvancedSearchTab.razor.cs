@@ -407,10 +407,10 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             .DistinctBy(a => a.Value);
 
         IEnumerable<ComboItem> results = string.IsNullOrWhiteSpace(search)
-            ? source.OrderBy(a => a.Text)
+            ? source.OrderBy(a => a.Text, StringComparer.Ordinal)
             : source
                 .Where(a => a.Text.Contains(search, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(a => a.Text);
+                .OrderBy(a => a.Text, StringComparer.Ordinal);
 
         return Task.FromResult(results);
     }
@@ -501,7 +501,7 @@ public partial class AdvancedSearchTab : RefreshAwareComponent
             .Select(r => r.Name)
             .Where(n => !selectedRibbons.Contains(n))
             .Distinct()
-            .OrderBy(RibbonHelper.GetRibbonDisplayName)];
+            .OrderBy(RibbonHelper.GetRibbonDisplayName, StringComparer.Ordinal)];
     }
 
     private async Task<IEnumerable<string>> SearchRibbonNamesAsync(string search, CancellationToken ct)

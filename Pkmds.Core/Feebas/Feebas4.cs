@@ -23,7 +23,7 @@ public static class Feebas4
 
         for (short i = 0; i < tiles.Length; i++)
         {
-            tiles[i] = (ushort)((((seed >> (24 - (8 * i))) & 0xFF) % 0x84) + (0x84 * i));
+            tiles[i] = (ushort)((seed >> 24 - 8 * i & 0xFF) % 0x84 + 0x84 * i);
         }
         return tiles;
     }

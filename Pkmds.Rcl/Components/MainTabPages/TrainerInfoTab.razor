@@ -150,7 +150,7 @@
                                @bind-Value="@sav4Geo.Country"
                                @bind-Value:after="@(() => OnSav4CountryChanged(sav4Geo))"
                                For="@(() => sav4Geo.Country)">
-                        @foreach (var country in Countries.OrderBy(c => c.Text))
+                        @foreach (var country in Countries.OrderBy(c => c.Text, StringComparer.Ordinal))
                         {
                             <MudSelectItem Value="@country.Value"
                                            @key="@country.Value">
@@ -184,7 +184,7 @@
                                @bind-Value="@sav5Geo.Country"
                                @bind-Value:after="@(() => OnSav5CountryChanged(sav5Geo))"
                                For="@(() => sav5Geo.Country)">
-                        @foreach (var country in Countries.OrderBy(c => c.Text))
+                        @foreach (var country in Countries.OrderBy(c => c.Text, StringComparer.Ordinal))
                         {
                             <MudSelectItem Value="@country.Value"
                                            @key="@country.Value">
@@ -219,7 +219,7 @@
                                @bind-Value="@regionSave.Country"
                                @bind-Value:after="@(() => OnRegionOriginCountryChanged(regionSave))"
                                For="@(() => regionSave.Country)">
-                        @foreach (var country in Countries.OrderBy(c => c.Text))
+                        @foreach (var country in Countries.OrderBy(c => c.Text, StringComparer.Ordinal))
                         {
                             <MudSelectItem Value="@((byte)country.Value)"
                                            @key="@country.Value">
@@ -274,7 +274,7 @@
                 </div>
             }
 
-            @if (saveFile is IGameSync gameSync && saveFile is not (SAV7b or SAV6AODemo))
+            @if (saveFile is IGameSync gameSync and not (SAV7b or SAV6AODemo))
             {
                 <div class="form-field">
                     <MudTextField Label="Game Sync ID"

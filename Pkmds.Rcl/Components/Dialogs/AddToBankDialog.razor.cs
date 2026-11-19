@@ -23,7 +23,7 @@ public partial class AddToBankDialog
     private List<CandidateItem> candidates = [];
 
     private int AddCount => skipDuplicates
-        ? candidates.Count(c => c.IsSelected && !c.IsDuplicate)
+        ? candidates.Count(c => c is { IsSelected: true, IsDuplicate: false })
         : candidates.Count(c => c.IsSelected);
 
     protected override async Task OnInitializedAsync()
@@ -54,11 +54,11 @@ public partial class AddToBankDialog
         var (_, duplicates) = await BankService.PartitionDuplicatesAsync(
             pokemon.Select(p => p.Pokemon));
 
-        var duplicateSet = new HashSet<PKM>(ReferenceEqualityComparer.Instance);
-        foreach (var d in duplicates)
-        {
-            duplicateSet.Add(d);
-        }
+        HashSet<PKM> duplicateSet =
+        [
+            with(ReferenceEqualityComparer.Instance),
+            .. duplicates
+        ];
 
         candidates = pokemon.Select(p => new CandidateItem
         {
@@ -166,7 +166,7 @@ public partial class AddToBankDialog
         }
 
         var toAdd = (skipDuplicates
-                ? candidates.Where(c => c.IsSelected && !c.IsDuplicate)
+                ? candidates.Where(c => c is { IsSelected: true, IsDuplicate: false })
                 : candidates.Where(c => c.IsSelected))
             .Select(c => c.Pokemon)
             .ToList();
@@ -190,7 +190,7 @@ public partial class AddToBankDialog
 
             var dupeCount = skipDuplicates
                 ? 0
-                : candidates.Count(c => c.IsSelected && c.IsDuplicate);
+                : candidates.Count(c => c is { IsSelected: true, IsDuplicate: true });
 
             var msg = $"{toAdd.Count} Pokémon added to Bank.";
             if (dupeCount > 0)

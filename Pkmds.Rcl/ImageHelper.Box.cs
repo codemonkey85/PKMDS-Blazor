@@ -15,7 +15,7 @@ public static partial class ImageHelper
     {
         // Emerald's Friends wallpaper is generated from save-specific pattern/palette data.
         // Pokemon Box wallpapers also have no bundled preview assets.
-        if ((gameVersion == GameVersion.E && wallpaperId == 16) || gameVersion == GameVersion.RSBOX)
+        if (gameVersion == GameVersion.E && wallpaperId == 16 || gameVersion == GameVersion.RSBOX)
         {
             return string.Empty;
         }

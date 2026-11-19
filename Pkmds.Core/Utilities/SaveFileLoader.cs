@@ -41,25 +41,28 @@ public static class SaveFileLoader
 
         // Manic EMU detection must run before SaveUtil.TryGetSaveFile because PKHeX's ZipReader
         // would otherwise unwrap the archive invisibly, stripping the context we need for re-export.
-        if (ManicEmuSaveHelper.IsZip(data))
+        if (!ManicEmuSaveHelper.IsZip(data))
         {
-            if (ManicEmuSaveHelper.TryExtractSaveFromZip(data, fileName, out saveFile, out var manicContext))
-            {
-                archiveContext = new SaveArchiveContext(
-                    manicContext.OriginalZipBytes,
-                    manicContext.SaveEntryPath,
-                    SaveArchiveKind.ManicEmu);
-                return true;
-            }
-
-            if (SaveArchiveHelper.TryExtractGenericZip(data, out saveFile, out var genericContext))
-            {
-                archiveContext = genericContext;
-                return true;
-            }
+            return TryLoadRawSave(data, fileName, out saveFile);
         }
 
-        return TryLoadRawSave(data, fileName, out saveFile);
+        if (ManicEmuSaveHelper.TryExtractSaveFromZip(data, fileName, out saveFile, out var manicContext))
+        {
+            archiveContext = new SaveArchiveContext(
+                manicContext.OriginalZipBytes,
+                manicContext.SaveEntryPath,
+                SaveArchiveKind.ManicEmu);
+            return true;
+        }
+
+        if (!SaveArchiveHelper.TryExtractGenericZip(data, out saveFile, out var genericContext))
+        {
+            return TryLoadRawSave(data, fileName, out saveFile);
+        }
+
+        archiveContext = genericContext;
+        return true;
+
     }
 
     internal static bool TryLoadRawSave(
@@ -117,13 +120,13 @@ public static class SaveFileLoader
             return true;
         }
 
-        if (HasValidGen5Footer(data, SaveUtil.SIZE_G5B2W2, 0x94))
+        if (!HasValidGen5Footer(data, SaveUtil.SIZE_G5B2W2, 0x94))
         {
-            saveFile = new SAV5B2W2(data);
-            return true;
+            return false;
         }
 
-        return false;
+        saveFile = new SAV5B2W2(data);
+        return true;
     }
 
     private static bool HasValidGen5Footer(ReadOnlySpan<byte> data, int mainSize, int infoLength)

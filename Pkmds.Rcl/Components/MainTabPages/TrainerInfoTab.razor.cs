@@ -8,19 +8,37 @@ public partial class TrainerInfoTab : IDisposable
     private DateTime? GameStartedDate
     {
         get => AppState.SaveFile is { } save ? TrainerTimestamps.GetGameStart(save) : null;
-        set { if (AppState.SaveFile is { } save) TrainerTimestamps.SetGameStart(save, value); }
+        set
+        {
+            if (AppState.SaveFile is { } save)
+            {
+                TrainerTimestamps.SetGameStart(save, value);
+            }
+        }
     }
 
     private DateTime? HallOfFameDate
     {
         get => AppState.SaveFile is { } save ? TrainerTimestamps.GetHallOfFame(save) : null;
-        set { if (AppState.SaveFile is { } save) TrainerTimestamps.SetHallOfFame(save, value); }
+        set
+        {
+            if (AppState.SaveFile is { } save)
+            {
+                TrainerTimestamps.SetHallOfFame(save, value);
+            }
+        }
     }
 
     private DateTime? LastSavedDate
     {
         get => AppState.SaveFile is { } save ? TrainerTimestamps.GetLastSaved(save) : null;
-        set { if (AppState.SaveFile is { } save) TrainerTimestamps.SetLastSaved(save, value); }
+        set
+        {
+            if (AppState.SaveFile is { } save)
+            {
+                TrainerTimestamps.SetLastSaved(save, value);
+            }
+        }
     }
 
     private InputDateType GameStartType => AppState.SaveFile is { } save && TrainerTimestamps.IsDateOnlyStart(save)
@@ -156,13 +174,18 @@ public partial class TrainerInfoTab : IDisposable
 
         Regions = Util.GetCountryRegionList($"{regionPrefix}sr_{countryId:000}", GameInfo.CurrentLanguage);
         if (Regions.Count == 0 && saveFile is SAV4 or SAV5)
+        {
             Regions = Util.GetCountryRegionList($"{regionPrefix}sr_default", GameInfo.CurrentLanguage);
+        }
     }
 
     private void MarkEdited()
     {
         if (AppState.SaveFile is not { } save)
+        {
             return;
+        }
+
         save.State.Edited = true;
         RefreshService.Refresh();
     }
@@ -194,26 +217,28 @@ public partial class TrainerInfoTab : IDisposable
 
     private Task OnTID16ChangedAsync(SaveFile saveFile, ushort value)
     {
-        if (saveFile is SAV4BR)
+        if (saveFile is not SAV4BR)
         {
-            saveFile.TID16 = value;
-            RefreshService.Refresh();
-            return Task.CompletedTask;
+            return RunSyncAsync("Syncing Trainer ID to matching Pokémon…", () => OnTID16Changed(saveFile, value));
         }
 
-        return RunSyncAsync("Syncing Trainer ID to matching Pokémon…", () => OnTID16Changed(saveFile, value));
+        saveFile.TID16 = value;
+        RefreshService.Refresh();
+        return Task.CompletedTask;
+
     }
 
     private Task OnSID16ChangedAsync(SaveFile saveFile, ushort value)
     {
-        if (saveFile is SAV4BR)
+        if (saveFile is not SAV4BR)
         {
-            saveFile.SID16 = value;
-            RefreshService.Refresh();
-            return Task.CompletedTask;
+            return RunSyncAsync("Syncing Secret ID to matching Pokémon…", () => OnSID16Changed(saveFile, value));
         }
 
-        return RunSyncAsync("Syncing Secret ID to matching Pokémon…", () => OnSID16Changed(saveFile, value));
+        saveFile.SID16 = value;
+        RefreshService.Refresh();
+        return Task.CompletedTask;
+
     }
 
     private Task OnTrainerTID7ChangedAsync(SaveFile saveFile, uint value) =>
@@ -243,7 +268,9 @@ public partial class TrainerInfoTab : IDisposable
         }
 
         if (oldGender == genderByte)
+        {
             return;
+        }
 
         // Several games store gender-specific fashion/appearance data.
         // Changing gender without resetting it causes the player model to become
@@ -277,7 +304,10 @@ public partial class TrainerInfoTab : IDisposable
     {
         var oldName = saveFile.OT;
         if (oldName == value)
+        {
             return;
+        }
+
         saveFile.OT = value;
         if (oldName == saveFile.OT)
         {
@@ -462,9 +492,9 @@ public partial class TrainerInfoTab : IDisposable
     }
 
     private static bool IsHexChar(char c) =>
-        (c is >= '0' and <= '9') ||
-        (c is >= 'a' and <= 'f') ||
-        (c is >= 'A' and <= 'F');
+        c is >= '0' and <= '9' ||
+        c is >= 'a' and <= 'f' ||
+        c is >= 'A' and <= 'F';
 
     private static void SetGameSyncId(IGameSync sync, string value)
     {

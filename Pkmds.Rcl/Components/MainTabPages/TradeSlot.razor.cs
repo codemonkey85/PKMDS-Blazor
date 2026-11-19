@@ -61,13 +61,19 @@ public partial class TradeSlot : RefreshAwareComponent
     private static string GetSpeciesTitle(ushort species)
     {
         var names = GameInfo.GetStrings(GameInfo.CurrentLanguage).specieslist;
-        return species < names.Length ? names[species] : "Unknown";
+        return species < names.Length
+            ? names[species]
+            : "Unknown";
     }
 
     private string GetSlotTitle()
     {
-        var title = Pokemon is { Species: > 0 } pk ? GetSpeciesTitle(pk.Species) : "Empty slot";
-        return transferIneligibleReason is { } reason ? $"{title} — {reason}" : title;
+        var title = Pokemon is { Species: > 0 } pk
+            ? GetSpeciesTitle(pk.Species)
+            : "Empty slot";
+        return transferIneligibleReason is { } reason
+            ? $"{title} — {reason}"
+            : title;
     }
 
     protected override void OnParametersSet()
@@ -133,14 +139,22 @@ public partial class TradeSlot : RefreshAwareComponent
 
     private void OnHighResSpriteLoaded(string url)
     {
-        if (url != highResUrl) return;
+        if (url != highResUrl)
+        {
+            return;
+        }
+
         highResLoaded = true;
         PokemonSlotComponent.MarkHighResLoaded(url);
     }
 
     private void OnHighResSpriteError(string url)
     {
-        if (url != highResUrl) return;
+        if (url != highResUrl)
+        {
+            return;
+        }
+
         highResLoaded = false;
         PokemonSlotComponent.MarkHighResFailed(url);
     }
@@ -208,24 +222,12 @@ public partial class TradeSlot : RefreshAwareComponent
         // Same format-level rule as ComputeTransferEligibility; HaX mode bypasses the block
         // to match the source-side dim behaviour.
         if (!AppState.IsHaXEnabled
-            && DragDropService.DraggedPokemon is { Species: > 0 } dragged
-            && DragDropService.DragSourceSaveFile is { } dragSource
+            && DragDropService is { DraggedPokemon: { Species: > 0 } dragged, DragSourceSaveFile: { } dragSource }
             && !ReferenceEquals(dragSource, OwnerSaveFile))
         {
-            if (dragSource is SAV7b || OwnerSaveFile is SAV7b)
-            {
-                DragDropService.ClearDrag();
-                return;
-            }
-
-            if (dragged.GetType() != OwnerSaveFile.PKMType
-                && !EntityConverter.IsConvertibleToFormat(dragged, OwnerSaveFile.Generation))
-            {
-                DragDropService.ClearDrag();
-                return;
-            }
-
-            if (!OwnerSaveFile.Personal.IsPresentInGame(dragged.Species, dragged.Form))
+            if (dragSource is SAV7b || OwnerSaveFile is SAV7b || dragged.GetType() != OwnerSaveFile.PKMType
+                && !EntityConverter.IsConvertibleToFormat(dragged, OwnerSaveFile.Generation) ||
+                !OwnerSaveFile.Personal.IsPresentInGame(dragged.Species, dragged.Form))
             {
                 DragDropService.ClearDrag();
                 return;
@@ -302,6 +304,7 @@ public partial class TradeSlot : RefreshAwareComponent
         {
             la = new LegalityAnalysis(Pokemon);
         }
+
         var hasInvalid = la.Results.Any(r => r.Judgement == PKHeX.Core.Severity.Invalid)
                          || !MoveResult.AllValid(la.Info.Moves)
                          || !MoveResult.AllValid(la.Info.Relearn);

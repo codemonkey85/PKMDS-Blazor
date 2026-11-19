@@ -110,9 +110,6 @@ public partial class MovesTab
 
     // Human-readable labels for PokeAPI move flag identifiers.
 
-    private int? GetPokemonMove(int moveIndex) =>
-        Pokemon?.Moves[moveIndex];
-
     // ReSharper disable once InconsistentNaming
     private int GetPokemonPP(int moveIndex) =>
         Pokemon?.GetPP()[moveIndex] ?? 0;
@@ -190,18 +187,6 @@ public partial class MovesTab
         mastery.SetMasteredRecordFlag(recordIndex, isMastered);
     }
 
-    private int? GetAlphaMove()
-    {
-        if (Pokemon is not PA8 pa8)
-        {
-            return null;
-        }
-
-        return pa8.AlphaMove == 0
-            ? null
-            : pa8.AlphaMove;
-    }
-
     private void SetAlphaMove(ComboItem? moveComboItem) =>
         SetAlphaMove(moveComboItem?.Value);
 
@@ -220,9 +205,6 @@ public partial class MovesTab
 
     private void SetPokemonRelearnMove(int relearnIndex, int? newMoveId) =>
         Pokemon?.SetRelearnMove(relearnIndex, (ushort)(newMoveId ?? 0));
-
-    private int? GetPokemonRelearnMove(int relearnIndex) =>
-        Pokemon?.GetRelearnMove(relearnIndex);
 
     private async Task OpenRelearnFlagsDialog()
     {

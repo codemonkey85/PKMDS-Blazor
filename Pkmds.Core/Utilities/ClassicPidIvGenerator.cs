@@ -15,7 +15,7 @@ public static class ClassicPidIvGenerator
 
         Span<uint> seeds = stackalloc uint[LCRNG.MaxCountSeedsIV];
         var first = (ivs & 0x7FFF) << 16;
-        var second = ((ivs >> 15) & 0x7FFF) << 16;
+        var second = (ivs >> 15 & 0x7FFF) << 16;
         var count = method == PIDType.Method_4
             ? LCRNGReversalSkip.GetSeedsIVs(seeds, first, second)
             : LCRNGReversal.GetSeedsIVs(seeds, first, second);
@@ -67,9 +67,7 @@ public static class ClassicPidIvGenerator
         candidate.SetIVs(pair.Ivs);
         var analysis = new LegalityAnalysis(candidate);
         return analysis.EncounterMatch is not EncounterInvalid
-               && analysis.Info.PIDParsed
-               && analysis.Info.PIDIVMatches
-               && analysis.Info.FrameMatches
-               && !analysis.Results.Any(r => !r.Valid && r.Identifier == CheckIdentifier.Encounter);
+               && analysis.Info is { PIDParsed: true, PIDIVMatches: true, FrameMatches: true }
+               && !analysis.Results.Any(r => r is { Valid: false, Identifier: CheckIdentifier.Encounter });
     }
 }

@@ -7,7 +7,7 @@ public partial class SaveFileComponent : RefreshAwareComponent
 
     internal static bool HasEditableInventory(SaveFile saveFile) => saveFile.Inventory.Pouches.Count != 0;
 
-    internal static string GetBattleRevolutionProfileLabel(SAV4BR saveFile, int profile)
+    private static string GetBattleRevolutionProfileLabel(SAV4BR saveFile, int profile)
     {
         var name = profile == saveFile.CurrentSlot
             ? saveFile.CurrentOT

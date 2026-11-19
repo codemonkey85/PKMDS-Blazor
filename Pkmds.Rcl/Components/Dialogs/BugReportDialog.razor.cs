@@ -39,7 +39,7 @@ public partial class BugReportDialog
     private string? uploadedFileName;
 
     private bool IsContactEmailValid => !contactOptIn ||
-                                        (!string.IsNullOrWhiteSpace(contactEmail) && EmailValidator.IsValid(contactEmail));
+                                        !string.IsNullOrWhiteSpace(contactEmail) && EmailValidator.IsValid(contactEmail);
 
     // Save attachment only makes sense for bug reports; feature/feedback don't need a save.
     private bool ShowSaveAttach => CapturedException is not null || category == BugReportCategory.Bug;
@@ -83,17 +83,19 @@ public partial class BugReportDialog
 
     protected override void OnInitialized()
     {
-        if (CapturedException is not null)
+        if (CapturedException is null)
         {
-            // Crashes are always bugs, and the structured split doesn't fit a stack dump — route
-            // the pre-filled details through the single "actual" field.
-            category = BugReportCategory.Bug;
-            actual =
-                (string.IsNullOrWhiteSpace(ErrorContext) ? string.Empty : $"Area: {ErrorContext}\n\n") +
-                $"[Crash] {CapturedException.GetType().Name}: {CapturedException.Message}" +
-                $"\n\nStack trace:\n{CapturedException.StackTrace}" +
-                "\n\n--- Additional details ---\nPlease describe what you were doing when this crash occurred:\n\n";
+            return;
         }
+
+        // Crashes are always bugs, and the structured split doesn't fit a stack dump — route
+        // the pre-filled details through the single "actual" field.
+        category = BugReportCategory.Bug;
+        actual =
+            (string.IsNullOrWhiteSpace(ErrorContext) ? string.Empty : $"Area: {ErrorContext}\n\n") +
+            $"[Crash] {CapturedException.GetType().Name}: {CapturedException.Message}" +
+            $"\n\nStack trace:\n{CapturedException.StackTrace}" +
+            "\n\n--- Additional details ---\nPlease describe what you were doing when this crash occurred:\n\n";
     }
 
     private async Task OnUploadFileChangedAsync()
@@ -148,11 +150,13 @@ public partial class BugReportDialog
         // Save attachment only applies to bug reports. When the user switches to a category that
         // hides the attach controls, drop any attached file so it can't be silently uploaded on a
         // non-bug report (and isn't stranded in the UI with no way to remove it).
-        if (!ShowSaveAttach)
+        if (ShowSaveAttach)
         {
-            ClearUploadedFile();
-            attachSaveFile = false;
+            return;
         }
+
+        ClearUploadedFile();
+        attachSaveFile = false;
     }
 
     private void OnContactOptInChanged()

@@ -28,7 +28,7 @@
                               Style="max-height: 380px;">
                         <MudList T="@int"
                                  SelectedValue="@selectedBoxIndex"
-                                 SelectedValueChanged="@(idx => SelectBox(idx))"
+                                 SelectedValueChanged="@SelectBox"
                                  Dense>
                             @for (var i = 0; i < boxNames.Length; i++)
                             {
@@ -48,7 +48,7 @@
                         <MudTextField T="@string"
                                       @key="@($"name-{selectedBoxIndex}")"
                                       Value="@boxNames[selectedBoxIndex]"
-                                      ValueChanged="@(v => OnBoxNameChanged(v))"
+                                      ValueChanged="@OnBoxNameChanged"
                                       Label="Box Name"
                                       Immediate
                                       MaxLength="@GetBoxNameMaxLength()"
@@ -61,7 +61,7 @@
                         <MudSelect T="@int"
                                    @key="@($"wallpaper-{selectedBoxIndex}")"
                                    Value="@wallpaperIds[selectedBoxIndex]"
-                                   ValueChanged="@(id => OnWallpaperChanged(id))"
+                                   ValueChanged="@OnWallpaperChanged"
                                    ToStringFunc="@(id => wallpaperNameList.ElementAtOrDefault(id) ?? id.ToString())"
                                    Label="Wallpaper"
                                    Class="mb-3">
@@ -98,7 +98,7 @@
                     {
                         <MudSelect T="@int"
                                    Value="@boxesUnlocked"
-                                   ValueChanged="@(v => OnBoxesUnlockedChanged(v))"
+                                   ValueChanged="@OnBoxesUnlockedChanged"
                                    Label="Unlocked"
                                    Class="mb-3">
                             @for (var i = 0; i <= saveFile.BoxCount; i++)

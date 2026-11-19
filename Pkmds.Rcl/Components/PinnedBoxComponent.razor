@@ -20,7 +20,7 @@
             <div class="flex-1 min-w-0 m-1.5 p-1.5">
                 <MudSelect T="@int"
                            Value="@pinnedBox"
-                           ValueChanged="@(newBox => OnBoxChanged(newBox))"
+                           ValueChanged="@OnBoxChanged"
                            Class="m-1.5 p-1.5">
                     @for (var boxId = 0; boxId < saveFile.BoxCount; boxId++)
                     {

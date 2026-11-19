@@ -55,28 +55,41 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
                 {
                     var move = await descriptions.GetMoveInfoAsync(33, GameVersion.SL);
                     if (move?.Name != "Tackle" || string.IsNullOrWhiteSpace(move.Description))
+                    {
                         throw new InvalidOperationException("Move description fixture failed.");
+                    }
+
                     signature.Add($"{move.Name}|{move.Description}");
                 }
                 if (workload is "abilities" or "all")
                 {
                     var ability = await descriptions.GetAbilityInfoAsync(65, GameVersion.SL);
                     if (ability?.Name != "Overgrow" || string.IsNullOrWhiteSpace(ability.Description))
+                    {
                         throw new InvalidOperationException("Ability description fixture failed.");
+                    }
+
                     signature.Add($"{ability.Name}|{ability.Description}");
                 }
                 if (workload is "items" or "normalized-items" or "all")
                 {
                     var item = await descriptions.GetItemInfoAsync(workload == "normalized-items" ? "MasterBall" : "Master Ball", GameVersion.SL);
                     if (item?.Name != "Master Ball" || string.IsNullOrWhiteSpace(item.Description))
+                    {
                         throw new InvalidOperationException("Item description fixture failed.");
+                    }
+
                     signature.Add($"{item.Name}|{item.Description}");
                 }
             }, () =>
             {
                 var actual = string.Join("\n", signature);
                 expectedSignature ??= actual;
-                if (actual != expectedSignature) throw new InvalidOperationException("Description output changed.");
+                if (actual != expectedSignature)
+                {
+                    throw new InvalidOperationException("Description output changed.");
+                }
+
                 return Task.CompletedTask;
             }, "Fresh production DescriptionService; complete dataset loading and lookup. Output validation/signature construction are included; equivalence comparison is outside timing."));
             fixtures[$"output-{workload}"] = await bridge.InvokeAsync<string>("fingerprint", Encoding.UTF8.GetBytes(expectedSignature!));
@@ -131,7 +144,11 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
                 }
                 var actualDescriptionSignature = $"{move.Name}|{move.Description}|{ability.Name}|{ability.Description}|{item.Name}|{item.Description}";
                 descriptionSignature ??= actualDescriptionSignature;
-                if (actualDescriptionSignature != descriptionSignature) throw new InvalidOperationException("Descriptions changed between iterations.");
+                if (actualDescriptionSignature != descriptionSignature)
+                {
+                    throw new InvalidOperationException("Descriptions changed between iterations.");
+                }
+
                 return Task.CompletedTask;
             }, "Fresh DescriptionService; three datasets/first queries. HTTP/server caches follow harness policy."));
 
@@ -143,7 +160,11 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
         fixtures["bank-json-sha256"] = await bridge.InvokeAsync<string>("fingerprint", importBytes);
         fixtures["bank-json-bytes"] = importBytes.Length.ToString(CultureInfo.InvariantCulture);
         await using var bank = new BankService(js);
-        if ((await bank.GetAllAsync()).Count != 0) throw new InvalidOperationException("Benchmark Bank must start empty.");
+        if ((await bank.GetAllAsync()).Count != 0)
+        {
+            throw new InvalidOperationException("Benchmark Bank must start empty.");
+        }
+
         var expectedCount = 0;
         results.Add(await measure.RunAsync("bank-add-range", config.Iterations, pokemon.Length, async () =>
         {
@@ -185,8 +206,10 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
                 entry.Meta.Species != expected.Species || entry.Meta.Nickname != expected.Nickname ||
                 entry.Meta.IsShiny != expected.IsShiny || entry.Meta.Ext != expected.Extension ||
                 entry.Meta.Tag != ApplicationBenchmarkFixtures.Tag || entry.Meta.SourceSave != ApplicationBenchmarkFixtures.Source ||
-                (i >= importedStart && DateTimeOffset.Parse(entry.AddedAt) != ApplicationBenchmarkFixtures.ImportedAt))
+                i >= importedStart && DateTimeOffset.Parse(entry.AddedAt) != ApplicationBenchmarkFixtures.ImportedAt)
+            {
                 throw new InvalidOperationException("Bank export changed Pokémon bytes or metadata.");
+            }
         }
 
         if (!config.BankOnly)
@@ -206,13 +229,23 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
                 results.Add(await measure.RunAsync($"{prefix}-load", config.ArchiveIterations, 1, () =>
                 {
                     if (!SaveFileLoader.TryLoad(input, "benchmark.3ds.sav", out loaded, out context))
+                    {
                         throw new InvalidOperationException("Synthetic archive could not be loaded.");
+                    }
+
                     return Task.CompletedTask;
                 }, () =>
                 {
                     if (loaded is not SAV7SM || loaded.Money != 12345 || context?.Kind != kind)
+                    {
                         throw new InvalidOperationException("Archive load lost its save or wrapper context.");
-                    if (!input.AsSpan().SequenceEqual(inputSnapshot)) throw new InvalidOperationException("Archive input mutated.");
+                    }
+
+                    if (!input.AsSpan().SequenceEqual(inputSnapshot))
+                    {
+                        throw new InvalidOperationException("Archive input mutated.");
+                    }
+
                     return Task.CompletedTask;
                 }, $"{input.Length}-byte archive, {originalSave.Length}-byte synthetic Gen 7 save; production loader includes wrapper detection."));
 
@@ -224,7 +257,11 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
                 }, () =>
                 {
                     ApplicationBenchmarkFixtures.VerifyArchive(rebuilt, editedSave, kind, 23456);
-                    if (!input.AsSpan().SequenceEqual(inputSnapshot)) throw new InvalidOperationException("Archive export mutated its original buffer.");
+                    if (!input.AsSpan().SequenceEqual(inputSnapshot))
+                    {
+                        throw new InvalidOperationException("Archive export mutated its original buffer.");
+                    }
+
                     return Task.CompletedTask;
                 }, "Production archive rebuild; edited save bytes, metadata, paths, timestamps, wrapper kind and reload validated outside timing."));
             }
@@ -275,7 +312,10 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
     internal static void VerifyBankEntries(IReadOnlyList<BankEntry> entries, byte[][] bytes, int count, int importedStart)
     {
         if (entries.Count != count || entries.Select(entry => entry.Id).Distinct().Count() != count)
+        {
             throw new InvalidOperationException("Bank row count or IDs changed.");
+        }
+
         for (var i = 0; i < entries.Count; i++)
         {
             var entry = entries[i];
@@ -283,8 +323,10 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
             entry.Pokemon.WriteDecryptedDataStored(actual);
             if (!actual.AsSpan().SequenceEqual(bytes[i % bytes.Length]) ||
                 entry.Tag != ApplicationBenchmarkFixtures.Tag || entry.SourceSave != ApplicationBenchmarkFixtures.Source ||
-                entry.AddedAt == default || (i >= importedStart && entry.AddedAt != ApplicationBenchmarkFixtures.ImportedAt))
+                entry.AddedAt == default || i >= importedStart && entry.AddedAt != ApplicationBenchmarkFixtures.ImportedAt)
+            {
                 throw new InvalidOperationException("Bank Pokémon bytes or metadata changed.");
+            }
         }
     }
 
@@ -318,9 +360,16 @@ public sealed class ApplicationBenchmarkRunner(HttpClient http, IJSRuntime js)
                     await operation();
                     stopwatch.Stop();
                     timings[i] = stopwatch.Elapsed.TotalMilliseconds;
-                    if (allocationsAvailable) allocated += GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore;
+                    if (allocationsAvailable)
+                    {
+                        allocated += GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore;
+                    }
+
                     for (var generation = 0; generation < collections.Length; generation++)
+                    {
                         collections[generation] += GC.CollectionCount(generation) - gcBefore[generation];
+                    }
+
                     await verify();
                 }
             }

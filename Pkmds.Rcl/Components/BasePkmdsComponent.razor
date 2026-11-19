@@ -31,7 +31,7 @@
     protected static RenderFragment TypeSummary((byte Type1, byte Type2) types) =>
         TypeSummary(types.Type1, types.Type2);
 
-    protected static RenderFragment MoveTypeSummary(byte type) =>
+    private static RenderFragment MoveTypeSummary(byte type) =>
         @<MudImage Src="@ImageHelper.GetTypeSquareSpriteFileName(type)"
                    Alt="@GetTypeName(type)"
                    title="@GetTypeName(type)"
@@ -39,7 +39,7 @@
                    ObjectPosition="@ObjectPosition.Center"
                    Width="30"/>;
 
-    protected static RenderFragment MoveCategorySummary(MoveCategory moveCategory) =>
+    private static RenderFragment MoveCategorySummary(MoveCategory moveCategory) =>
         @<MudImage Src="@ImageHelper.GetMoveCategorySpriteFileName(moveCategory)"
                    Alt="@GetCategoryName(moveCategory)"
                    title="@GetCategoryName(moveCategory)"

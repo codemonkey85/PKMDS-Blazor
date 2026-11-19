@@ -93,14 +93,22 @@ public partial class PokemonSlotComponent : IDisposable
 
     private void OnHighResSpriteLoaded(string url)
     {
-        if (url != highResUrl) return;
+        if (url != highResUrl)
+        {
+            return;
+        }
+
         highResLoaded = true;
         MarkHighResLoaded(url);
     }
 
     private void OnHighResSpriteError(string url)
     {
-        if (url != highResUrl) return;
+        if (url != highResUrl)
+        {
+            return;
+        }
+
         highResLoaded = false;
         MarkHighResFailed(url);
     }

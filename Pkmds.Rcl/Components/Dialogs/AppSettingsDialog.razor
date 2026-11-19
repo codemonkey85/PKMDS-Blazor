@@ -94,7 +94,7 @@
                                    Size="@Size.Small"
                                    Color="@Color.Default"
                                    title="Forces all high-res sprites to reload from the CDN"
-                                   OnClick="@(() => PokemonSlotComponent.ClearSpriteCache())">
+                                   OnClick="@PokemonSlotComponent.ClearSpriteCache">
                             Clear Sprite Cache
                         </MudButton>
 
@@ -158,7 +158,7 @@
                                Color="@Color.Warning"
                                Label="PKHaX Mode"
                                title="Enables unrestricted editing. May create illegal/untradable Pokémon. Use at your own risk."
-                               ValueChanged="@(value => OnHaXEnabledChanged(value))"/>
+                               ValueChanged="@OnHaXEnabledChanged"/>
                     <MudSwitch T="@bool"
                                Value="@isVerboseLogging"
                                Color="@Color.Primary"

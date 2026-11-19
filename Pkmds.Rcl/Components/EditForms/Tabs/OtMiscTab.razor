@@ -128,7 +128,7 @@
                                          Min="0U"
                                          Max="@uint.MaxValue"
                                          @bind-Value:get="@Pokemon.EncryptionConstant"
-                                         @bind-Value:set="@(newEc => SetPokemonEc(newEc))"
+                                         @bind-Value:set="@SetPokemonEc"
                                          For="@(() => Pokemon.EncryptionConstant)"/>
                     </div>
                     <LegalityPopover Result="@LegalityHelpers.GetCheckResult(Analysis, CheckIdentifier.EC)"
@@ -345,7 +345,7 @@
                                     Label="Current Handler"
                                     Value="@Pokemon.CurrentHandler"
                                     ValueChanged="@(v => Pokemon.CurrentHandler = v)"
-                                    Items="@(new byte[] { 0, 1 })"
+                                    Items="@([0, 1])"
                                     ToStringFunc="@(v => v == 0 ? "OT" : "HT")"/>
             </MudItem>
         }

@@ -3,6 +3,28 @@ namespace Pkmds.Tests;
 [Collection("Sequential")]
 public class LegalizationServiceTests
 {
+    [Theory]
+    [InlineData("Pikachu", 0, true)]
+    [InlineData("Pikachu", 1, true)]
+    [InlineData("Pikachu", 2, true)]
+    [InlineData("Pikachu (M)", 0, true)]
+    [InlineData("Pikachu (M)", 1, false)]
+    [InlineData("Pikachu (F)", 0, false)]
+    [InlineData("Pikachu (F)", 1, true)]
+    [InlineData("Pikachu (M)", 255, true)]
+    [InlineData("Pikachu (F)", 255, true)]
+    public void EncounterGenderFilterHonorsOnlyExplicitGenderRequests(string text, byte gender, bool expected)
+    {
+        var encounter = new EncounterStatic7(GameVersion.SN)
+        {
+            Species = (ushort)Species.Pikachu,
+            Level = 5,
+            Gender = gender
+        };
+
+        LegalizationService.IsEncounterValid(new ShowdownSet(text), encounter).Should().Be(expected);
+    }
+
     [Fact]
     public async Task EmptySetReturnsExplainedFailureInBothGenerationPaths()
     {
@@ -50,11 +72,36 @@ public class LegalizationServiceTests
         using var cancellation = new CancellationTokenSource();
         var progress = new CancelOnProgress(cancellation);
 
-        var act = () => service.GenerateFromSetAsync(new ShowdownSet("Pikachu\nLevel: 100\n- Thunderbolt"),
-            save, progress, cancellation.Token);
+        var originalPriority = EncounterMovesetGenerator.PriorityList;
+        try
+        {
+            // The first egg encounter reports progress and cancels. Eagerly collecting
+            // the search results would reach the guard before processing that encounter.
+            EncounterMovesetGenerator.PriorityList = new StopAfterEggGroup();
+            var act = () => service.GenerateFromSetAsync(new ShowdownSet("Pikachu\nLevel: 100"),
+                save, progress, cancellation.Token);
 
-        await act.Should().ThrowAsync<OperationCanceledException>();
+            await act.Should().ThrowAsync<OperationCanceledException>();
+        }
+        finally
+        {
+            EncounterMovesetGenerator.PriorityList = originalPriority;
+        }
+
         save.Data.ToArray().Should().Equal(original);
+    }
+
+    private sealed class StopAfterEggGroup : IReadOnlyCollection<EncounterTypeGroup>
+    {
+        public int Count => 1;
+
+        public IEnumerator<EncounterTypeGroup> GetEnumerator()
+        {
+            yield return EncounterTypeGroup.Egg;
+            throw new InvalidOperationException("Encounter search continued past the cancellation point.");
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     private sealed class CancelOnProgress(CancellationTokenSource cancellation) : IProgress<string>

@@ -169,7 +169,7 @@
                                                         <MudText Typo="@Typo.caption"><b>High critical hit ratio</b>
                                                         </MudText>
                                                     }
-                                                    @{ var partialStatChance = fx.StatChance > 0 && fx.StatChance < 100; }
+                                                    @{ var partialStatChance = fx.StatChance is > 0 and < 100; }
                                                     @foreach (var sc in fx.StatChanges)
                                                     {
                                                         var verbFull = sc.Change > 0
@@ -539,7 +539,7 @@
                                                         Label="Alpha Move"
                                                         Margin="@Margin.Dense"
                                                         @bind-Value:get="@(AppService.GetMoveComboItem(alphaMoveId))"
-                                                        @bind-Value:set="@(newMove => SetAlphaMove(newMove))"
+                                                        @bind-Value:set="@SetAlphaMove"
                                                         Items="@AppService.GetMoves()"
                                                         ToStringFunc="@(move => move?.Text)">
                                         <ItemTemplate Context="move">

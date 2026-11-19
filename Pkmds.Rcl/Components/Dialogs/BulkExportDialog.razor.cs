@@ -139,7 +139,6 @@ public partial class BulkExportDialog : IDisposable
                 BulkExportScope.CurrentBox =>
                     $"pokemon_export_box{(AppState.BoxEdit?.CurrentBox ?? sav.CurrentBox) + 1}.zip",
                 BulkExportScope.AllBoxes => "pokemon_export_boxes.zip",
-                BulkExportScope.Everything => "pokemon_export.zip",
                 _ => "pokemon_export.zip"
             };
 
@@ -213,7 +212,7 @@ public partial class BulkExportDialog : IDisposable
     private async Task<byte[]> BuildZipAsync(IReadOnlyList<PKM> pokemon, CancellationToken ct)
     {
         using var ms = new MemoryStream();
-        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        await using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
         {
             var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < pokemon.Count; i++)
@@ -227,7 +226,7 @@ public partial class BulkExportDialog : IDisposable
 
                 var entryName = GetUniqueEntryName(usedNames, AppService.GetCleanFileName(pkm));
                 var entry = zip.CreateEntry(entryName, CompressionLevel.Fastest);
-                using (var es = entry.Open())
+                await using (var es = await entry.OpenAsync(ct))
                 {
                     es.Write(bytes);
                 }
@@ -236,11 +235,13 @@ public partial class BulkExportDialog : IDisposable
                 progressPercent = (double)(i + 1) / pokemon.Count * 95;
                 statusText = $"Adding {i + 1}/{pokemon.Count}: {entryName}";
 
-                if ((i + 1) % YieldEveryN == 0 || i == pokemon.Count - 1)
+                if ((i + 1) % YieldEveryN != 0 && i != pokemon.Count - 1)
                 {
-                    StateHasChanged();
-                    await Task.Delay(1, ct);
+                    continue;
                 }
+
+                StateHasChanged();
+                await Task.Delay(1, ct);
             }
         }
 
@@ -274,7 +275,7 @@ public partial class BulkExportDialog : IDisposable
         // "Saving…" phase (e.g. while the File System Access picker is open).
         try
         {
-            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
+            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker", ct))
             {
                 await JSRuntime.InvokeVoidAsync(
                     "showFilePickerAndWrite",

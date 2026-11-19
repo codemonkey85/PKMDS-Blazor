@@ -83,8 +83,8 @@
                             <MudText Typo="@Typo.body2">@FormatSize(context.SizeBytes)</MudText>
                         </MudTd>
                         <MudTd DataLabel="Date">
-                            <MudTooltip Text="@context.CreatedAt.ToString("F")">
-                                <MudText Typo="@Typo.body2">@context.CreatedAt.LocalDateTime.ToString("g")</MudText>
+                            <MudTooltip Text="@context.CreatedAt.ToString("F", CultureInfo.InvariantCulture)">
+                                <MudText Typo="@Typo.body2">@context.CreatedAt.LocalDateTime.ToString("g", CultureInfo.InvariantCulture)</MudText>
                             </MudTooltip>
                         </MudTd>
                         <MudTd DataLabel="Source">

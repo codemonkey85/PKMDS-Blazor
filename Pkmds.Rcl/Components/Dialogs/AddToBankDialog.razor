@@ -7,22 +7,22 @@
 
             @if (!isLetsGo)
             {
-                <MudRadioGroup T="AddToBankDialog.AddToBankScope"
+                <MudRadioGroup T="AddToBankScope"
                                @bind-Value="scope"
                                @bind-Value:after="LoadCandidatesAsync"
                                Disabled="@(isAdding || isLoading)">
-                    <MudRadio T="AddToBankDialog.AddToBankScope"
-                              Value="@AddToBankDialog.AddToBankScope.Party"
+                    <MudRadio T="AddToBankScope"
+                              Value="@AddToBankScope.Party"
                               Color="@Color.Primary">
                         Party
                     </MudRadio>
-                    <MudRadio T="AddToBankDialog.AddToBankScope"
-                              Value="@AddToBankDialog.AddToBankScope.CurrentBox"
+                    <MudRadio T="AddToBankScope"
+                              Value="@AddToBankScope.CurrentBox"
                               Color="@Color.Primary">
                         Current Box
                     </MudRadio>
-                    <MudRadio T="AddToBankDialog.AddToBankScope"
-                              Value="@AddToBankDialog.AddToBankScope.AllBoxes"
+                    <MudRadio T="AddToBankScope"
+                              Value="@AddToBankScope.AllBoxes"
                               Color="@Color.Primary">
                         All Boxes
                     </MudRadio>
@@ -72,7 +72,7 @@
                                   Class="py-0">
                             <MudCheckBox T="bool"
                                          @bind-Value="c.IsSelected"
-                                         Disabled="@(isAdding || (skipDuplicates && c.IsDuplicate))"/>
+                                         Disabled="@(isAdding || skipDuplicates && c.IsDuplicate)"/>
                             @if (c.Pokemon.IsShiny)
                             {
                                 <MudText Typo="@Typo.body2">✨</MudText>

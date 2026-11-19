@@ -117,11 +117,13 @@ public partial class BulkImportDialog : IDisposable
                 sav.AdaptToSaveFile(converted);
                 parsed.Add(converted);
 
-                if ((i + 1) % YieldEveryN == 0)
+                if ((i + 1) % YieldEveryN != 0)
                 {
-                    StateHasChanged();
-                    await Task.Delay(1, ct);
+                    continue;
                 }
+
+                StateHasChanged();
+                await Task.Delay(1, ct);
             }
 
             // Placement phase: write each PKM, then re-read the stored bytes so legality
@@ -223,18 +225,22 @@ public partial class BulkImportDialog : IDisposable
 
         var converted = EntityConverter.ConvertToType(pkm, sav.PKMType, out var result);
 
-        if ((!result.IsSuccess || converted is null) && isHaXEnabled)
+        if (result.IsSuccess && converted is not null || !isHaXEnabled)
         {
-            var previous = EntityConverter.AllowIncompatibleConversion;
-            EntityConverter.AllowIncompatibleConversion = EntityCompatibilitySetting.AllowIncompatibleAll;
-            try
-            {
-                converted = EntityConverter.ConvertToType(pkm, sav.PKMType, out result);
-            }
-            finally
-            {
-                EntityConverter.AllowIncompatibleConversion = previous;
-            }
+            return result.IsSuccess
+                ? converted
+                : null;
+        }
+
+        var previous = EntityConverter.AllowIncompatibleConversion;
+        EntityConverter.AllowIncompatibleConversion = EntityCompatibilitySetting.AllowIncompatibleAll;
+        try
+        {
+            converted = EntityConverter.ConvertToType(pkm, sav.PKMType, out result);
+        }
+        finally
+        {
+            EntityConverter.AllowIncompatibleConversion = previous;
         }
 
         return result.IsSuccess ? converted : null;
@@ -280,14 +286,16 @@ public partial class BulkImportDialog : IDisposable
             }
 
             // Reserve 50→70% for placement.
-            progressPercent = 50 + ((double)(i + 1) / total * 20);
+            progressPercent = 50 + (double)(i + 1) / total * 20;
             statusText = $"Placing {i + 1}/{total}…";
 
-            if ((i + 1) % YieldEveryN == 0 || i == total - 1)
+            if ((i + 1) % YieldEveryN != 0 && i != total - 1)
             {
-                StateHasChanged();
-                await Task.Delay(1, ct);
+                continue;
             }
+
+            StateHasChanged();
+            await Task.Delay(1, ct);
         }
     }
 
@@ -314,14 +322,16 @@ public partial class BulkImportDialog : IDisposable
             updateCount(illegal);
 
             // Reserve 70→85% for legality scan.
-            progressPercent = 70 + ((double)(i + 1) / placed.Count * 15);
+            progressPercent = 70 + (double)(i + 1) / placed.Count * 15;
             statusText = $"Checking legality {i + 1}/{placed.Count}…";
 
-            if ((i + 1) % YieldEveryN == 0 || i == placed.Count - 1)
+            if ((i + 1) % YieldEveryN != 0 && i != placed.Count - 1)
             {
-                StateHasChanged();
-                await Task.Delay(1, ct);
+                continue;
             }
+
+            StateHasChanged();
+            await Task.Delay(1, ct);
         }
     }
 

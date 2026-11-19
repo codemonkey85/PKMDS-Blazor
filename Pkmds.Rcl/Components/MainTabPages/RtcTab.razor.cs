@@ -8,7 +8,7 @@ public partial class RtcTab
 
     // Emerald's berry program triggers a 366-day reset; the WinForms editor advances
     // ClockElapsed past two full years to bypass it after a dead-battery period.
-    private const int BerryFixMinDays = (2 * 366) + 2;
+    private const int BerryFixMinDays = 2 * 366 + 2;
 
     [Parameter]
     [EditorRequired]

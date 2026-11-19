@@ -40,24 +40,26 @@ public static class UnsavedChangesGuard
             return false;
         }
 
-        if (result is true)
+        if (result is not true)
         {
-            // SavePokemon ultimately calls PKHeX's SetPartySlotAtIndex / SetBoxSlotAtIndex,
-            // which throw ArgumentException when the runtime PKM type doesn't match the
-            // save's PKMType (see #843). Surface a friendly error and cancel the action
-            // so the user's edits aren't discarded by the navigation/export that would
-            // have followed a successful save.
-            try
-            {
-                appService.SavePokemon(appService.EditFormPokemon);
-            }
-            catch (ArgumentException ex)
-            {
-                snackbar?.Add(
-                    $"Could not save Pokémon to slot: {ex.Message}",
-                    Severity.Error);
-                return false;
-            }
+            return true;
+        }
+
+        // SavePokemon ultimately calls PKHeX's SetPartySlotAtIndex / SetBoxSlotAtIndex,
+        // which throw ArgumentException when the runtime PKM type doesn't match the
+        // save's PKMType (see #843). Surface a friendly error and cancel the action
+        // so the user's edits aren't discarded by the navigation/export that would
+        // have followed a successful save.
+        try
+        {
+            appService.SavePokemon(appService.EditFormPokemon);
+        }
+        catch (ArgumentException ex)
+        {
+            snackbar?.Add(
+                $"Could not save Pokémon to slot: {ex.Message}",
+                Severity.Error);
+            return false;
         }
 
         return true;

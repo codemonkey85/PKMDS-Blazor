@@ -514,7 +514,7 @@ public class AppServiceTests
         var appService = new AppService(appState, new TestRefreshService(), new LegalizationService(appState));
 
         appService.HasWonderCardSlots().Should().BeFalse();
-        Pkmds.Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
+        Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
             .SupportsCardImport(swordShield, gift).Should().BeFalse();
 
         var received = appService.ReceiveMysteryGiftPokemon(gift, out var message);
@@ -536,9 +536,9 @@ public class AppServiceTests
         var pokemonGift = new WB8 { CardType = WB8.GiftType.Pokemon };
         var nonPokemonGift = new WB8 { CardType = WB8.GiftType.Item };
 
-        Pkmds.Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
+        Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
             .SupportsCardImport(bdsp, pokemonGift).Should().BeFalse();
-        Pkmds.Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
+        Rcl.Components.MainTabPages.MysteryGiftDatabaseTab
             .SupportsCardImport(bdsp, nonPokemonGift).Should().BeTrue();
     }
 

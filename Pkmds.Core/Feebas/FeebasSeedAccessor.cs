@@ -71,7 +71,9 @@ public static class FeebasSeedAccessor
     {
         var seed = TryReadSeed(sav);
         if (seed is null)
+        {
             return null;
+        }
 
         return sav.Generation == 3
             ? Feebas3.GetTiles(seed.Value)

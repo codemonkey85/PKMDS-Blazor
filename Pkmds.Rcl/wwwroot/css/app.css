@@ -1305,6 +1305,22 @@ body, html {
     width: 100%;
 }
 
+/* Keep the species ID inside the outline without putting it in the editable value
+   or using MudAutocomplete's single adornment slot, which holds the browse arrow.
+   The input also exposes the number through aria-description. */
+.species-autocomplete .mud-input-outlined::before {
+    content: var(--species-id);
+    color: var(--mud-palette-text-secondary);
+    margin-inline-start: 14px;
+    margin-inline-end: 8px;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.species-autocomplete .mud-input.mud-input-outlined > input.mud-input-root {
+    padding-inline-start: 0;
+}
+
 .browse-autocomplete .mud-input-adornment-end {
     /* Let the divider use the positioned input as its containing block. */
     position: static;

@@ -9,29 +9,29 @@
                 Downloads a single zip containing a .pk* file for each non-empty slot.
             </MudText>
 
-            <MudRadioGroup T="BulkExportDialog.BulkExportScope"
+            <MudRadioGroup T="BulkExportScope"
                            @bind-Value="scope"
                            Disabled="@isExporting">
-                <MudRadio T="BulkExportDialog.BulkExportScope"
-                          Value="@BulkExportDialog.BulkExportScope.Party"
+                <MudRadio T="BulkExportScope"
+                          Value="@BulkExportScope.Party"
                           Color="@Color.Primary"
                           Disabled="@(partyCount == 0)">
                     Party (@partyCount Pokémon)
                 </MudRadio>
-                <MudRadio T="BulkExportDialog.BulkExportScope"
-                          Value="@BulkExportDialog.BulkExportScope.CurrentBox"
+                <MudRadio T="BulkExportScope"
+                          Value="@BulkExportScope.CurrentBox"
                           Color="@Color.Primary"
                           Disabled="@(currentBoxCount == 0)">
                     Current box (@currentBoxCount Pokémon)
                 </MudRadio>
-                <MudRadio T="BulkExportDialog.BulkExportScope"
-                          Value="@BulkExportDialog.BulkExportScope.AllBoxes"
+                <MudRadio T="BulkExportScope"
+                          Value="@BulkExportScope.AllBoxes"
                           Color="@Color.Primary"
                           Disabled="@(totalBoxCount == 0)">
                     All boxes (@totalBoxCount Pokémon)
                 </MudRadio>
-                <MudRadio T="BulkExportDialog.BulkExportScope"
-                          Value="@BulkExportDialog.BulkExportScope.Everything"
+                <MudRadio T="BulkExportScope"
+                          Value="@BulkExportScope.Everything"
                           Color="@Color.Primary"
                           Disabled="@(partyCount + totalBoxCount == 0)">
                     Party and all boxes (@(partyCount + totalBoxCount) Pokémon)

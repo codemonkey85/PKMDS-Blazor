@@ -12,8 +12,6 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
 
     private const uint SvRentalTeamsKey = 0x19CB0339;
 
-    private const int TeamCount = 6;
-
     private const int SlotsPerTeam = 6;
 
     // Team name: 10 char16 + null terminator = 22 bytes
@@ -50,7 +48,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             //   so party stats including current HP and status condition persist in
             //   the box and should not be reset
             var hasPersistedPartyStats = field is PB7 { PartyStatsPresent: true }
-                                         || AppState.IsHaXEnabled && AppState.SelectedPartySlotNumber is not null;
+                                         || AppState is { IsHaXEnabled: true, SelectedPartySlotNumber: not null };
             if (!hasPersistedPartyStats)
             {
                 LoadPokemonStats(field);
@@ -118,10 +116,10 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(species => species.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(species => species.Text)
+            ? source.OrderBy(species => species.Text, StringComparer.Ordinal)
             : source
                 .Where(species => species.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(species => species.Text);
+                .OrderBy(species => species.Text, StringComparer.Ordinal);
     }
 
     public ComboItem GetSpeciesComboItem(ushort speciesId) => GameInfo.FilteredSources.Species
@@ -139,10 +137,10 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(item => item.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(item => item.Text)
+            ? source.OrderBy(item => item.Text, StringComparer.Ordinal)
             : source
                 .Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(item => item.Text);
+                .OrderBy(item => item.Text, StringComparer.Ordinal);
     }
 
     public ComboItem GetItemComboItem(int itemId) => GameInfo.FilteredSources.Items
@@ -193,10 +191,10 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(l => l.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(l => l.Text)
+            ? source.OrderBy(l => l.Text, StringComparer.Ordinal)
             : source
                 .Where(l => l.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(l => l.Text);
+                .OrderBy(l => l.Text, StringComparer.Ordinal);
     }
 
     public ComboItem GetMetLocationComboItem(ushort metLocationId, GameVersion gameVersion, EntityContext entityContext,
@@ -217,17 +215,17 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             .DistinctBy(move => move.Value);
 
         return string.IsNullOrEmpty(searchString)
-            ? source.OrderBy(move => move.Text)
+            ? source.OrderBy(move => move.Text, StringComparer.Ordinal)
             : source
                 .Where(move => move.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(move => move.Text);
+                .OrderBy(move => move.Text, StringComparer.Ordinal);
     }
 
     public IEnumerable<ComboItem> GetMoves() => AppState.SaveFile is null
         ? []
         : GameInfo.FilteredSources.Moves
             .DistinctBy(move => move.Value)
-            .OrderBy(move => move.Text);
+            .OrderBy(move => move.Text, StringComparer.Ordinal);
 
     public ComboItem GetMoveComboItem(int moveId)
     {
@@ -692,11 +690,13 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                 // gifts fill the album from the beginning.
                 for (var i = 0; i < album.Length; i++)
                 {
-                    if (album[i] is PGT { IsEmpty: true })
+                    if (album[i] is not PGT { IsEmpty: true })
                     {
-                        storedGift = pcd.Gift;
-                        return i;
+                        continue;
                     }
+
+                    storedGift = pcd.Gift;
+                    return i;
                 }
             }
 
@@ -828,7 +828,10 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                         var itemId = (ushort)gift.GetItem(i);
                         var quantity = gift.GetQuantity(i);
                         if (itemId == 0)
+                        {
                             break;
+                        }
+
                         items.SetItemQuantity(itemId, items.GetItemQuantity(itemId) + quantity);
                         addedAny = true;
                     }
@@ -847,11 +850,13 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                     var emptySlot = -1;
                     for (var i = 0; i < MysteryBlock8b.RecvDataMax; i++)
                     {
-                        if (records.GetReceived(i).Ticks == 0)
+                        if (records.GetReceived(i).Ticks != 0)
                         {
-                            emptySlot = i;
-                            break;
+                            continue;
                         }
+
+                        emptySlot = i;
+                        break;
                     }
                     if (emptySlot == -1)
                     {
@@ -964,7 +969,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         }
 
         var cardSize = sav.Japanese ? WonderCard3.SIZE_JAP : WonderCard3.SIZE;
-        var scriptOffset = cardSize + (WonderCard3Extra.SIZE * 2);
+        var scriptOffset = cardSize + WonderCard3Extra.SIZE * 2;
         var expectedSize = scriptOffset + MysteryEvent3.SIZE;
 
         if (data.Length != expectedSize)
@@ -973,7 +978,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             // .wc3 loaded into an International save) and surface a clearer error than a raw
             // byte-count mismatch.
             var otherCardSize = sav.Japanese ? WonderCard3.SIZE : WonderCard3.SIZE_JAP;
-            var otherExpectedSize = otherCardSize + (WonderCard3Extra.SIZE * 2) + MysteryEvent3.SIZE;
+            var otherExpectedSize = otherCardSize + WonderCard3Extra.SIZE * 2 + MysteryEvent3.SIZE;
 
             isSuccessful = false;
             resultsMessage = data.Length == otherExpectedSize
@@ -1038,17 +1043,12 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             return [];
         }
 
-        if (saveFile is SAV3 sav3 && sav3.LargeBlock is ISaveBlock3LargeExpansion expansion)
+        return saveFile switch
         {
-            return BuildGen3Slots(sav3, expansion);
-        }
-
-        if (saveFile is IMysteryGiftStorageProvider provider)
-        {
-            return BuildModernSlots(saveFile, provider);
-        }
-
-        return [];
+            SAV3 { LargeBlock: ISaveBlock3LargeExpansion expansion } sav3 => BuildGen3Slots(sav3, expansion),
+            IMysteryGiftStorageProvider provider => BuildModernSlots(saveFile, provider),
+            _ => []
+        };
 
         static IReadOnlyList<WonderCardSlotInfo> BuildGen3Slots(SAV3 sav, ISaveBlock3LargeExpansion expansion)
         {
@@ -1062,7 +1062,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             // The Mystery Event script lives in a separate slot; surface its presence as an
             // info note so users can confirm the script was written alongside the card.
             var scriptPresent = expansion.MysteryData.Data.ContainsAnyExcept<byte>(0, 0xFF);
-            string? extra = (card.Type, scriptPresent) switch
+            var extra = (card.Type, scriptPresent) switch
             {
                 (2, true) => "Link card; Mystery Event script present",
                 (2, false) => "Link card",
@@ -1075,7 +1075,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
                 new WonderCardSlotInfo
                 {
                     Index = 0,
-                    Title = isEmpty ? "(empty)" : (string.IsNullOrEmpty(title) ? "(no title)" : title),
+                    Title = isEmpty ? "(empty)" : string.IsNullOrEmpty(title) ? "(no title)" : title,
                     CardType = nameof(WonderCard3),
                     CardId = isEmpty ? null : card.CardID,
                     Species = null,
@@ -1129,7 +1129,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             return new WonderCardSlotInfo
             {
                 Index = index,
-                Title = string.IsNullOrEmpty(title) ? (isEmpty ? "(empty)" : "(no title)") : title,
+                Title = string.IsNullOrEmpty(title) ? isEmpty ? "(empty)" : "(no title)" : title,
                 CardType = gift.GetType().Name,
                 CardId = cardId,
                 Species = species,
@@ -1445,14 +1445,15 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         // that will silently disappear the next time anything writes the slot.
         // Mirror the adapt-on-write behaviour by analysing a cloned-and-adapted
         // copy so the displayed status matches what the save will actually hold.
-        if (AppState.SaveFile is { } sav && pkm.GetType() == sav.PKMType)
+        if (AppState.SaveFile is not { } sav || pkm.GetType() != sav.PKMType)
         {
-            var clone = pkm.Clone();
-            sav.AdaptToSaveFile(clone, isParty);
-            return new LegalityAnalysis(clone);
+            return new LegalityAnalysis(pkm);
         }
 
-        return new LegalityAnalysis(pkm);
+        var clone = pkm.Clone();
+        sav.AdaptToSaveFile(clone, isParty);
+        return new LegalityAnalysis(clone);
+
     }
 
     public IEnumerable<AdvancedSearchResult> SearchPokemon(AdvancedSearchFilter filter)
@@ -2191,11 +2192,11 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         {
             var (t1, t2) = pkm.GetGenerationTypes();
 
-            if (f.Type1.HasValue && f.Type2.HasValue)
+            if (f is { Type1: not null, Type2: not null })
             {
                 var a = f.Type1.Value;
                 var b = f.Type2.Value;
-                var pairMatches = (a == t1 && b == t2) || (a == t2 && b == t1);
+                var pairMatches = a == t1 && b == t2 || a == t2 && b == t1;
                 if (!pairMatches)
                 {
                     return false;
@@ -2443,7 +2444,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
         {
             var pkmType = pkm.GetType();
             if (f.RequiredRibbons
-                .Select(ribbonName => pkmType.GetProperty(ribbonName))
+                .Select(pkmType.GetProperty)
                 .Any(prop => prop?.GetValue(pkm) is not true))
             {
                 return false;

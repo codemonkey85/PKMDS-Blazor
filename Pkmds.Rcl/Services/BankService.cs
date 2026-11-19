@@ -137,7 +137,7 @@ public partial class BankService(IJSRuntime js) : IBankService, IAsyncDisposable
                 ? GameInfo.Strings.Species[pkm.Species]
                 : string.Empty;
 
-            if (!DateTimeOffset.TryParse(r.AddedAt, out var addedAt))
+            if (!DateTimeOffset.TryParse(r.AddedAt, CultureInfo.InvariantCulture, out var addedAt))
             {
                 addedAt = DateTimeOffset.UtcNow;
             }

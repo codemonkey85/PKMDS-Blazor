@@ -24,7 +24,7 @@
                                 @bind-Value="@Pokemon.Version"
                                 @bind-Value:after="@OriginGameChanged"
                                 Items="@OriginGameItems"
-                                ToStringFunc="@(version => GameInfo.GetVersionName(version))"
+                                ToStringFunc="@GameInfo.GetVersionName"
                                 Disabled="@(saveGeneration <= 2)"
                                 For="@(() => Pokemon.Version)"/>
         </MudStack>

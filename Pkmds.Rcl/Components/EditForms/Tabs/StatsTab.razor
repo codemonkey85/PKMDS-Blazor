@@ -549,7 +549,7 @@
                                  Min="0"
                                  Max="@(ushort.MaxValue)"
                                  Value="@Pokemon.Stat_HPMax"
-                                 ValueChanged="@(v => OnHaXStatHpSet(v))"
+                                 ValueChanged="@OnHaXStatHpSet"
                                  ReadOnly="@(AppState?.IsHaXEnabled is not true)"
                                  HideSpinButtons="@(AppState?.IsHaXEnabled is not true)"/>
 

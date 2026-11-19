@@ -336,28 +336,27 @@ public partial class StatsTab : IDisposable
             return 0;
         }
 
-        if (Pokemon.Format <= 4)
+        if (Pokemon.Format > 4)
         {
-            var condition = (StatusCondition)(Pokemon.Status_Condition & 0xFF);
-            if (condition == StatusCondition.None)
-            {
-                return 0;
-            }
-
-            if (condition <= StatusCondition.Sleep7)
-            {
-                return (int)StatusCondition.Sleep1;
-            }
-
-            if ((condition & StatusCondition.PoisonBad) != 0)
-            {
-                return (int)StatusCondition.PoisonBad;
-            }
-
-            return (int)condition;
+            return Pokemon.Status_Condition & 0xFF;
         }
 
-        return Pokemon.Status_Condition & 0xFF;
+        var condition = (StatusCondition)(Pokemon.Status_Condition & 0xFF);
+        switch (condition)
+        {
+            case StatusCondition.None:
+                return 0;
+            case <= StatusCondition.Sleep7:
+                return (int)StatusCondition.Sleep1;
+        }
+
+        if ((condition & StatusCondition.PoisonBad) != 0)
+        {
+            return (int)StatusCondition.PoisonBad;
+        }
+
+        return (int)condition;
+
     }
 
     private void OnStatusChanged(int value)
@@ -419,6 +418,7 @@ public partial class StatsTab : IDisposable
     private List<StatusOption> GetStatusOptions()
     {
         var options = new List<StatusOption>();
+        // ReSharper disable once InconsistentNaming
         var isGen8a = Pokemon?.Context == EntityContext.Gen8a;
 
         if (Pokemon is null)
@@ -479,13 +479,14 @@ public partial class StatsTab : IDisposable
             return false;
         }
 
-        if (Pokemon.Format <= 4)
+        if (Pokemon.Format > 4)
         {
-            var condition = (StatusCondition)(Pokemon.Status_Condition & 0xFF);
-            return condition is >= StatusCondition.Sleep1 and <= StatusCondition.Sleep7;
+            return false;
         }
 
-        return false;
+        var condition = (StatusCondition)(Pokemon.Status_Condition & 0xFF);
+        return condition is >= StatusCondition.Sleep1 and <= StatusCondition.Sleep7;
+
     }
 
     private record StatusOption(int Value, string Label, string? SpriteFileName);

@@ -38,7 +38,7 @@ public partial class App : IDisposable
         {
             await JsRuntime.InvokeVoidAsync("addUpdateListener");
         }
-        catch (Microsoft.JSInterop.JSException exception)
+        catch (JSException exception)
         {
             // Update notifications are optional; a stale script must not prevent startup.
             Log.Warning(exception, "Could not register the app update listener.");

@@ -85,9 +85,6 @@ public partial class TradeTab : RefreshAwareComponent
         isLoading = true;
         StateHasChanged();
 
-        SaveFile? loadedSave = null;
-        SaveArchiveContext? archiveContext = null;
-
         try
         {
             await using var fileStream = selectedFile.OpenReadStream(Constants.MaxFileSize);
@@ -95,7 +92,8 @@ public partial class TradeTab : RefreshAwareComponent
             await fileStream.CopyToAsync(memoryStream);
             var data = memoryStream.ToArray();
 
-            if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out archiveContext))
+            SaveFile? loadedSave;
+            if (SaveFileLoader.TryLoad(data, selectedFile.Name, out var saveFile, out var archiveContext))
             {
                 if (!await SaveVersionResolver.ResolveAmbiguousVersionAsync(saveFile, DialogService))
                 {
@@ -277,9 +275,15 @@ public partial class TradeTab : RefreshAwareComponent
     private bool CanTransferFromA()
     {
         if (AppState.SaveFile is not { } srcSave || AppState.SaveFileB is not { } destSave)
+        {
             return false;
+        }
+
         if (!TryGetSelectedSource(fromA: true, out _, out var isParty, out var boxNum, out var slotNum))
+        {
             return false;
+        }
+
         var pkm = isParty
             ? srcSave.TryGetPartySlot(slotNum)
             : boxNum.HasValue ? srcSave.GetBoxSlotAtIndex(boxNum.Value, slotNum) : null;
@@ -289,9 +293,15 @@ public partial class TradeTab : RefreshAwareComponent
     private bool CanTransferFromB()
     {
         if (AppState.SaveFileB is not { } srcSave || AppState.SaveFile is not { } destSave)
+        {
             return false;
+        }
+
         if (!TryGetSelectedSource(fromA: false, out _, out var isParty, out var boxNum, out var slotNum))
+        {
             return false;
+        }
+
         var pkm = isParty
             ? srcSave.TryGetPartySlot(slotNum)
             : boxNum.HasValue ? srcSave.GetBoxSlotAtIndex(boxNum.Value, slotNum) : null;
@@ -303,14 +313,26 @@ public partial class TradeTab : RefreshAwareComponent
     private static bool IsCrossTransferEligible(PKM? pkm, SaveFile srcSave, SaveFile destSave, bool haxEnabled)
     {
         if (pkm is not { Species: > 0 })
+        {
             return false;
+        }
+
         if (haxEnabled)
+        {
             return true;
+        }
+
         if (srcSave is SAV7b || destSave is SAV7b)
+        {
             return false;
+        }
+
         if (pkm.GetType() != destSave.PKMType
             && !EntityConverter.IsConvertibleToFormat(pkm, destSave.Generation))
+        {
             return false;
+        }
+
         return destSave.Personal.IsPresentInGame(pkm.Species, pkm.Form);
     }
 
@@ -343,20 +365,25 @@ public partial class TradeTab : RefreshAwareComponent
 
         var boxSel = fromA ? AppState.SelectedBoxNumber : AppState.SelectedBoxNumberB;
         var boxSlotSel = fromA ? AppState.SelectedBoxSlotNumber : AppState.SelectedBoxSlotNumberB;
-        if (boxSel is { } selBox && boxSlotSel is { } selSlot && sav.BoxCount > 0)
+        if (boxSel is not { } selBox || boxSlotSel is not { } selSlot || sav.BoxCount <= 0)
         {
-            var pkm = sav.GetBoxSlotAtIndex(selBox, selSlot);
-            if (pkm is { Species: > 0 })
-            {
-                source = sav;
-                isParty = false;
-                boxNumber = selBox;
-                slotNumber = selSlot;
-                return true;
-            }
+            return false;
         }
 
-        return false;
+        {
+            var pkm = sav.GetBoxSlotAtIndex(selBox, selSlot);
+            if (pkm is not { Species: > 0 })
+            {
+                return false;
+            }
+
+            source = sav;
+            isParty = false;
+            boxNumber = selBox;
+            slotNumber = selSlot;
+            return true;
+        }
+
     }
 
     private async Task TransferSelectedAsync(bool fromA)
@@ -416,14 +443,15 @@ public partial class TradeTab : RefreshAwareComponent
 
         var boxSel = fromA ? AppState.SelectedBoxNumber : AppState.SelectedBoxNumberB;
         var boxSlotSel = fromA ? AppState.SelectedBoxSlotNumber : AppState.SelectedBoxSlotNumberB;
-        if (boxSel is { } selBox && boxSlotSel is { } selSlot && destSave.BoxCount > 0)
+        if (boxSel is not { } selBox || boxSlotSel is not { } selSlot || destSave.BoxCount <= 0)
         {
-            boxNumber = selBox;
-            slotNumber = selSlot;
-            return true;
+            return false;
         }
 
-        return false;
+        boxNumber = selBox;
+        slotNumber = selSlot;
+        return true;
+
     }
 
     private static bool TryFindFirstEmptyDest(SaveFile destSave, bool srcIsParty, bool fromA,
@@ -447,25 +475,28 @@ public partial class TradeTab : RefreshAwareComponent
         {
             for (var slot = 0; slot < destSave.BoxSlotCount; slot++)
             {
-                if (destSave.GetBoxSlotAtIndex(box, slot) is { Species: 0 })
+                if (destSave.GetBoxSlotAtIndex(box, slot) is not { Species: 0 })
                 {
-                    isParty = false;
-                    boxNumber = box;
-                    slotNumber = slot;
-                    return true;
+                    continue;
                 }
+
+                isParty = false;
+                boxNumber = box;
+                slotNumber = slot;
+                return true;
             }
         }
 
         // Fall back to appending to the party if no box slot is available.
-        if (destSave.PartyCount < 6)
+        if (destSave.PartyCount >= 6)
         {
-            isParty = true;
-            slotNumber = destSave.PartyCount;
-            return true;
+            return false;
         }
 
-        return false;
+        isParty = true;
+        slotNumber = destSave.PartyCount;
+        return true;
+
     }
 
     private async Task HandleSlotDropAsync(TradeSlotTarget dest)

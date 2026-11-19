@@ -89,28 +89,46 @@ public partial class BagTab
         for (var i = 0; i < ItemList.Length; i++)
         {
             var name = ItemList[i];
-            if (string.IsNullOrEmpty(name) || name[0] == '(') continue;
+            if (string.IsNullOrEmpty(name) || name[0] == '(')
+            {
+                continue;
+            }
 
             var prefix = name.Split(' ')[0];
-            if (prefix.Length < 3) continue;
+            if (prefix.Length < 3)
+            {
+                continue;
+            }
 
             string? moveName = null;
             if (prefix.StartsWith("HM", StringComparison.OrdinalIgnoreCase))
             {
                 var hmNumber = prefix[2..];
-                if (!hmNumber.All(char.IsDigit)) continue;
+                if (!hmNumber.All(char.IsDigit))
+                {
+                    continue;
+                }
+
                 moveName = await DescriptionService.GetHmMoveNameAsync($"HM{hmNumber}", version);
             }
             else if (prefix.StartsWith("TR", StringComparison.OrdinalIgnoreCase))
             {
                 var trNumber = prefix[2..];
-                if (!trNumber.All(char.IsDigit)) continue;
+                if (!trNumber.All(char.IsDigit))
+                {
+                    continue;
+                }
+
                 moveName = await DescriptionService.GetTmMoveNameAsync($"TR{trNumber}", version);
             }
             else if (prefix.StartsWith("TM", StringComparison.OrdinalIgnoreCase))
             {
                 var tmNumber = prefix[2..];
-                if (!tmNumber.All(char.IsDigit)) continue;
+                if (!tmNumber.All(char.IsDigit))
+                {
+                    continue;
+                }
+
                 moveName = await DescriptionService.GetTmMoveNameAsync(tmNumber, version);
                 if (moveName is null && tmNumber.Length < 3)
                 {
@@ -138,7 +156,7 @@ public partial class BagTab
             .ToList();
 
         ItemComboCache = items.ToDictionary(item => item.Value, item => item);
-        SortedItemComboList = [.. items.OrderBy(item => item.Text)];
+        SortedItemComboList = [.. items.OrderBy(item => item.Text, StringComparer.Ordinal)];
     }
 
     private void BuildPouchValidItemsCache()

@@ -124,6 +124,7 @@ public static class BoxWallpaperNames
         SpikyPika, KimonoGirl, Revival,
         Reshiram, Zekrom, Monochrome, TeamPlasma,
         Munna, Zoroark, Subway, Musical,
+        // ReSharper disable once InconsistentNaming
         Movie, PWT, Kyurem1, Kyurem2
     }
 }

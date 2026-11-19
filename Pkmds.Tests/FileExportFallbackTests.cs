@@ -53,6 +53,6 @@ public sealed class FileExportFallbackTests
     [InlineData("SecurityError:\nMust be handling a user gesture", "SecurityError: Must be handling a user gesture")]
     public void ExportErrorDetail_IsCompactAndActionable(string? message, string expected)
     {
-        Pkmds.Rcl.Components.Layout.MainLayout.GetExportErrorDetail(message).Should().Be(expected);
+        Rcl.Components.Layout.MainLayout.GetExportErrorDetail(message).Should().Be(expected);
     }
 }

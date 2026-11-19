@@ -282,7 +282,7 @@ public class AutocompleteSelectTests
 
         var pokeBall = new ComboItem("Poké Ball", 4);
         var masterBall = new ComboItem("Master Ball", 1);
-        ComboItem? selected = pokeBall;
+        var selected = pokeBall;
         var cut = ctx.Render<AutocompleteSelect<ComboItem>>(parameters => parameters
             .Add(component => component.Items, [pokeBall, masterBall])
             .Add(component => component.Value, selected)
@@ -305,7 +305,7 @@ public class AutocompleteSelectTests
 
         var pokeBall = new ComboItem("Poké Ball", 4);
         var masterBall = new ComboItem("Master Ball", 1);
-        ComboItem? selected = pokeBall;
+        var selected = pokeBall;
         var cut = ctx.Render<AutocompleteSelect<ComboItem>>(parameters => parameters
             .Add(component => component.Items, [pokeBall, masterBall])
             .Add(component => component.Value, selected)

@@ -56,10 +56,16 @@ public partial class TrainerCardDialog
         }
 
         if (card.TrainerID != trainerId)
+        {
             card.TrainerID = trainerId;
+        }
+
         // Setter auto-mirrors to the KRotoRally record block.
         if (card.RotoRallyScore != rotoRallyScore)
+        {
             card.RotoRallyScore = rotoRallyScore;
+        }
+
         Save.State.Edited = true;
 
         Haptics.Confirm();

@@ -100,10 +100,10 @@ public partial class PlusFlagsDialog
 
     public class PlusMoveInfo
     {
-        public int Index { get; set; }
-        public ushort MoveId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public byte Type { get; set; }
+        public int Index { get; init; }
+        public ushort MoveId { get; init; }
+        public string Name { get; init; } = string.Empty;
+        public byte Type { get; init; }
         public bool IsPlus { get; set; }
     }
 }

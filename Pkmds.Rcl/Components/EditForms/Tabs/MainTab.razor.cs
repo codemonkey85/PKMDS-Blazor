@@ -273,9 +273,9 @@ public partial class MainTab : IDisposable
         var source = names
             .Select((name, i) => new ComboItem(name, i))
             .Where(item => !string.IsNullOrEmpty(item.Text))
-            .OrderBy(item => item.Text);
+            .OrderBy(item => item.Text, StringComparer.Ordinal);
 
-        IEnumerable<ComboItem> results = string.IsNullOrWhiteSpace(searchString)
+        var results = string.IsNullOrWhiteSpace(searchString)
             ? source
             : source.Where(item => item.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase));
 
@@ -797,4 +797,9 @@ public partial class MainTab : IDisposable
 
         Snackbar.Add("Shedinja placed in the first available slot.", Severity.Success);
     }
+
+    private static string SpeciesDisplayText(ComboItem? species) => species?.Text ?? string.Empty;
+
+    private string SpeciesIdDisplayText => Pokemon?.Species.ToString(
+        AppState.SaveFile is { MaxSpeciesID: > 999 } ? "D4" : "D3", CultureInfo.InvariantCulture) ?? string.Empty;
 }

@@ -29,7 +29,7 @@ public partial class BatchEditorTab : RefreshAwareComponent
     private bool showUnchanged = true;
 
     [Inject]
-    private IBatchEditorService BatchEditorService { get; set; } = default!;
+    private IBatchEditorService BatchEditorService { get; set; } = null!;
 
     private IEnumerable<BatchEditorPreviewEntry> FilteredPreview =>
         showUnchanged
@@ -70,7 +70,7 @@ public partial class BatchEditorTab : RefreshAwareComponent
             }
         }
 
-        allProperties = [.. rows.OrderBy(r => r.Name)];
+        allProperties = [.. rows.OrderBy(r => r.Name, StringComparer.Ordinal)];
     }
 
     private async Task RunPreviewAsync()
