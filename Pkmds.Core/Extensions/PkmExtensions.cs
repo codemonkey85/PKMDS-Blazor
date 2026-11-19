@@ -69,27 +69,18 @@ public static class PkmExtensions
         /// <returns>The marking value (0 for unmarked/false, 1+ for marked/color value).</returns>
         /// <exception cref="Exception">Thrown if the Pokémon doesn't implement IAppliedMarkings.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the index is out of range.</exception>
-        public int GetMarking(int index)
-        {
-            if (pkm is not IAppliedMarkings appliedMarkings)
-            {
-                throw new Exception("Pokémon does not implement IAppliedMarkings");
-            }
-
-            if ((uint)index >= appliedMarkings.MarkingCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            return pkm switch
-            {
-                IAppliedMarkings<bool> b => b.GetMarking(index)
-                    ? 1
-                    : 0,
-                IAppliedMarkings<MarkingColor> c => (int)c.GetMarking(index),
-                _ => throw new Exception("Pokémon does not implement IAppliedMarkings")
-            };
-        }
+        public int GetMarking(int index) => pkm is not IAppliedMarkings appliedMarkings
+                ? throw new Exception("Pokémon does not implement IAppliedMarkings")
+                : (uint)index >= appliedMarkings.MarkingCount
+                ? throw new ArgumentOutOfRangeException(nameof(index))
+                : pkm switch
+                {
+                    IAppliedMarkings<bool> b => b.GetMarking(index)
+                        ? 1
+                        : 0,
+                    IAppliedMarkings<MarkingColor> c => (int)c.GetMarking(index),
+                    _ => throw new Exception("Pokémon does not implement IAppliedMarkings")
+                };
 
         /// <summary>
         /// Gets the current PP (Power Points) for all four move slots.

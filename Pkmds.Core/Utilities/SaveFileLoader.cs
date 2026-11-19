@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace Pkmds.Core.Utilities;

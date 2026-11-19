@@ -1,6 +1,3 @@
-using System.Text;
-using Pkmds.Core.Extensions;
-
 namespace Pkmds.Core.Utilities;
 
 /// <summary>
@@ -121,16 +118,14 @@ public static class SpritePaths
         // Like PKHeX's PK3.SpriteItem, use modern IDs for the shared sprite set.
         // Normalize before detecting TMs, whose Gen III IDs also differ.
         item = ItemConverter.GetItemDisplay(item, context);
-        if (!ItemConverter.IsItemTransferable34((ushort)item))
-        {
-            return "unk";
-        }
 
-        return HeldItemLumpUtil.GetIsLump(item, context) switch
-        {
-            HeldItemLumpImage.TechnicalMachine => "tm",
-            HeldItemLumpImage.TechnicalRecord => "tr",
-            _ => item.ToString()
-        };
+        return !ItemConverter.IsItemTransferable34((ushort)item)
+            ? "unk"
+            : HeldItemLumpUtil.GetIsLump(item, context) switch
+            {
+                HeldItemLumpImage.TechnicalMachine => "tm",
+                HeldItemLumpImage.TechnicalRecord => "tr",
+                _ => item.ToString()
+            };
     }
 }

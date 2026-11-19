@@ -1,6 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.IO.Compression;
-
 namespace Pkmds.Core.Utilities;
 
 public enum SaveArchiveKind

@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using Pkmds.Rcl.Components.Dialogs;
-
 namespace Pkmds.Web;
 
-public partial class App : IDisposable
+public partial class App(
+    IJSRuntime JsRuntime,
+    IDialogService DialogService,
+    ISnackbar Snackbar,
+    IAppState AppState) : IDisposable
 {
     private ErrorBoundary? errorBoundary;
     private MudThemeProvider? mudThemeProvider;
