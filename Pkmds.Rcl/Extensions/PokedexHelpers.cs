@@ -93,6 +93,7 @@ internal static class PokedexHelpers
         var galar = pi.PokeDexIndex;
         var armor = pi.ArmorDexIndex;
         var crown = pi.CrownDexIndex;
+
         return swsh.SaveRevision switch
         {
             >= 2 => [galar, armor, crown],
@@ -148,9 +149,11 @@ internal static class PokedexHelpers
         var lumiose = pi.IsLumioseNative
             ? pi.DexIndex
             : (ushort)0;
+
         var hyperspace = pi.IsHyperspaceNative
             ? (ushort)(pi.DexIndex - 232)
             : (ushort)0;
+
         return [lumiose, hyperspace];
     }
 

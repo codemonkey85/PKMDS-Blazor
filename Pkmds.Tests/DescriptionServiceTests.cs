@@ -1,6 +1,3 @@
-using System.Net;
-using Microsoft.Extensions.Logging.Abstractions;
-
 namespace Pkmds.Tests;
 
 public class DescriptionServiceTests

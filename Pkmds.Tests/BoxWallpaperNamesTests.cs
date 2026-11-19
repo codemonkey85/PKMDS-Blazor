@@ -1,8 +1,3 @@
-using Bunit;
-using MudBlazor;
-using MudBlazor.Extensions;
-using Pkmds.Rcl.Components.Dialogs;
-
 namespace Pkmds.Tests;
 
 public sealed class BoxWallpaperNamesTests : IDisposable

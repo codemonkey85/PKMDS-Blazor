@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Pkmds.Core.Extensions;
 
 /// <summary>
@@ -160,7 +158,7 @@ public static class SaveFileExtensions
     /// </summary>
     public static bool TrySetPartySlot(this SaveFile sav, PKM pokemon, int index)
     {
-        if (index < 0 || index >= PartySize)
+        if (index is < 0 or >= PartySize)
         {
             return false;
         }

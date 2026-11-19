@@ -70,12 +70,10 @@ public static class FeebasSeedAccessor
     public static ushort[]? GetTiles(SaveFile sav)
     {
         var seed = TryReadSeed(sav);
-        if (seed is null)
-        {
-            return null;
-        }
 
-        return sav.Generation == 3
+        return seed is null
+            ? null
+            : sav.Generation == 3
             ? Feebas3.GetTiles(seed.Value)
             : Feebas4.GetTiles(seed.Value);
     }

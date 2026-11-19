@@ -1,5 +1,3 @@
-using System.IO.Compression;
-
 namespace Pkmds.Rcl.Components.MainTabPages;
 
 public partial class PokemonBankTab : RefreshAwareComponent

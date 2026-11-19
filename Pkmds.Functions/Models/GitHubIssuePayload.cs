@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Pkmds.Functions.Models;
 
 public sealed record GitHubIssuePayload(

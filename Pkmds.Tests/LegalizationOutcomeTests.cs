@@ -1,9 +1,3 @@
-using Bunit;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor;
-using Pkmds.Rcl.Components.MainTabPages;
-
 namespace Pkmds.Tests;
 
 [Collection("Sequential")]

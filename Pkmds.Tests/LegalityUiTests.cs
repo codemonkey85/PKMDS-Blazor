@@ -11,7 +11,7 @@ public class LegalityUiTests
 
     [Fact]
     public void GetSeverityLabel_FishyResult_IsPresentedAsWarning() =>
-        LegalityHelpers.GetSeverityLabel(Severity.Fishy).Should().Be("Warning");
+        LegalityHelpers.GetSeverityLabel(PKHexSeverity.Fishy).Should().Be("Warning");
 
     [Fact]
     public void GetDisplayMessage_FishyResult_ReplacesTechnicalSeverityLabel()
@@ -19,7 +19,7 @@ public class LegalityUiTests
         var (saveFile, _, _, appService) = BunitTestHelpers.LoadSave("Black - Full Completion.sav");
         var analysis = appService.GetLegalityAnalysis(saveFile.GetPartySlotAtIndex(0));
         var result = CheckResult.Get(
-            Severity.Fishy,
+            PKHexSeverity.Fishy,
             CheckIdentifier.EVs,
             LegalityCheckResultCode.EffortEXPIncreased);
 

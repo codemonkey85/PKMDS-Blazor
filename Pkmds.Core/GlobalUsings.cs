@@ -1,2 +1,10 @@
 global using System.Collections.ObjectModel;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Globalization;
+global using System.IO.Compression;
+global using System.Reflection;
+global using System.Text;
+global using System.Text.RegularExpressions;
 global using PKHeX.Core;
+global using Pkmds.Core.Extensions;
+global using static System.Buffers.Binary.BinaryPrimitives;

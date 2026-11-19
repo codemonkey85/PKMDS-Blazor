@@ -103,7 +103,7 @@ public class LegalityCheckerTests
 
         var la = service.GetLegalityAnalysis(pkm);
         la.Results.Should().AllSatisfy(r =>
-            r.Judgement.Should().Be(Severity.Valid,
+            r.Judgement.Should().Be(PKHexSeverity.Valid,
                 "all check results for a known-legal Pokémon should carry Valid judgement"));
 
         // Introduce a violation and confirm at least one Invalid judgement appears
@@ -111,7 +111,7 @@ public class LegalityCheckerTests
         pkm.RefreshChecksum();
 
         var laInvalid = service.GetLegalityAnalysis(pkm);
-        laInvalid.Results.Any(r => r.Judgement == Severity.Invalid)
+        laInvalid.Results.Any(r => r.Judgement == PKHexSeverity.Invalid)
             .Should().BeTrue("mutating the Pokémon should produce at least one Invalid judgement");
     }
 

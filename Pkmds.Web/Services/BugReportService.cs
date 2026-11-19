@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace Pkmds.Web.Services;
 
 public class BugReportService(IConfiguration configuration, HttpClient httpClient) : IBugReportService

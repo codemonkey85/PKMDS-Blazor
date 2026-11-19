@@ -1,5 +1,3 @@
-using Pkmds.Rcl.Extensions;
-
 namespace Pkmds.Tests;
 
 public class VersionExtensionsTests

@@ -1,5 +1,3 @@
-using System.Text.Encodings.Web;
-
 namespace Pkmds.Rcl.Services;
 
 public static class BugReportResultExtensions

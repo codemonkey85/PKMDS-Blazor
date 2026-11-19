@@ -1,5 +1,3 @@
-using Pkmds.Rcl.Components.MainTabPages;
-
 namespace Pkmds.Tests;
 
 /// <summary>

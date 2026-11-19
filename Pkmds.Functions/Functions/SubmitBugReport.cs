@@ -244,12 +244,9 @@ public class SubmitBugReport(IGitHubService gitHubService, IBlobService blobServ
             extension = fileNameOrExtension;
         }
 
-        if (extension.Length is < 2 or > 12 || extension[1..].Any(c => !char.IsAsciiLetterOrDigit(c)))
-        {
-            return string.Empty;
-        }
-
-        return extension.ToLowerInvariant();
+        return extension.Length is < 2 or > 12 || extension[1..].Any(c => !char.IsAsciiLetterOrDigit(c))
+            ? string.Empty
+            : extension.ToLowerInvariant();
     }
 
     private static string GetSafeReportedSaveSource(string source) => source switch

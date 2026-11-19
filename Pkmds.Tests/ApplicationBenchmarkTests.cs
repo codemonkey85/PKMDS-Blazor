@@ -1,9 +1,3 @@
-using System.IO.Compression;
-using System.Text.Json;
-using Bunit;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
-
 namespace Pkmds.Tests;
 
 public class ApplicationBenchmarkTests

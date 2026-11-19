@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Pkmds.Rcl.Components.Dialogs;
 
 public partial class BugReportDialog

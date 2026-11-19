@@ -32,6 +32,7 @@ public static class RibbonHelper
         var indexName = name.StartsWith("Ribbon", StringComparison.Ordinal)
             ? name["Ribbon".Length..]
             : name;
+
         if (!Enum.TryParse<RibbonIndex>(indexName, out var index))
         {
             return false;
@@ -48,6 +49,7 @@ public static class RibbonHelper
     /// </summary>
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026",
         Justification = "All PKM types and their members are preserved via PreservePkmTypes.xml.")]
+
     public static List<RibbonInfo> GetAllRibbonInfo(PKM? pokemon) =>
         pokemon is not null
             ? RibbonInfo.GetRibbonInfo(pokemon)

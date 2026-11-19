@@ -5,11 +5,7 @@ builder.ConfigureFunctionsWebApplication();
 builder.Services
     .AddSingleton<IGitHubService, GitHubService>()
     .AddSingleton<IBlobService, BlobService>()
-    .AddCors(options =>
-    {
-        options.AddDefaultPolicy(policy =>
-        {
-            policy
+    .AddCors(options => options.AddDefaultPolicy(policy => policy
                 .SetIsOriginAllowed(origin =>
                 {
                     var host = new Uri(origin).Host;
@@ -21,8 +17,6 @@ builder.Services
                            || host == "localhost";
                 })
                 .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-    });
+                .AllowAnyHeader()));
 
 builder.Build().Run();
