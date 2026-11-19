@@ -198,7 +198,7 @@ public partial class AutocompleteSelect<T>
         }
 
         var toString = EffectiveToStringFunc;
-        IEnumerable<T> filtered = source.Where(item =>
+        var filtered = source.Where(item =>
             toString(item)?.Contains(query, StringComparison.OrdinalIgnoreCase) == true);
         return Task.FromResult(filtered);
     }

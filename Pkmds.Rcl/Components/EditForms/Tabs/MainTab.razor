@@ -25,7 +25,7 @@
                                  Min="0U"
                                  Max="@uint.MaxValue"
                                  @bind-Value:get="@Pokemon.PID"
-                                 @bind-Value:set="@(newPid => SetPokemonPid(newPid))"
+                                 @bind-Value:set="@SetPokemonPid"
                                  For="@(() => Pokemon.PID)"/>
             </MudStack>
             <LegalityPopover Result="@LegalityHelpers.GetCheckResult(Analysis, CheckIdentifier.PID)"
@@ -59,19 +59,19 @@
     }
 
     @* ReSharper disable once CSharpWarnings::CS8603 *@
-    <MudStack Row AlignItems="@AlignItems.Center" Spacing="2">
-        <BrowseAutocomplete T="@ComboItem"
-                         Strict="false"
-                         MaxItems="10"
-                         Label="Species"
-                         Variant="@Variant.Outlined"
-                         Class="flex-grow-1"
-                         @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
-                         @bind-Value:set="@(species => SetSpecies((ushort)species.Value))"
-                         SearchFunc="@SearchPokemonNames"
-                         ToStringFunc="@(species => species?.Text)"/>
-        <MudText Typo="@Typo.body2" Style="white-space: nowrap;" title="National Pokédex number">#@Pokemon.Species</MudText>
-    </MudStack>
+    <BrowseAutocomplete T="@ComboItem"
+                     Strict="@false"
+                     MaxItems="10"
+                     Label="Species"
+                     ShrinkLabel
+                     Variant="@Variant.Outlined"
+                     Class="flex-grow-1 species-autocomplete"
+                     Style="@($"--species-id: '#{SpeciesIdDisplayText}';")"
+                     aria-description="@($"National Pokédex number {Pokemon.Species}")"
+                     @bind-Value:get="@(AppService.GetSpeciesComboItem(Pokemon.Species))"
+                     @bind-Value:set="@(species => SetSpecies((ushort)species.Value))"
+                     SearchFunc="@SearchPokemonNames"
+                     ToStringFunc="@SpeciesDisplayText"/>
 
     if (Pokemon != saveFile.BlankPKM && Pokemon.Species.IsValidSpecies())
     {
@@ -170,7 +170,7 @@
         Size="@Size.Medium"
         Rounded
         Class="mt-2"
-        title="@(levelProgress.ToString("P0"))"/>
+        title="@levelProgress.ToString("P0", CultureInfo.InvariantCulture)"/>
 
     @if (saveGeneration >= 3)
     {
@@ -526,7 +526,7 @@
             <HapticCheckBox T="@bool"
                             Label="Shiny"
                             @bind-Value:get="@Pokemon.GetIsShinySafe()"
-                            @bind-Value:set="@(isShiny => OnShinySet(isShiny))"
+                            @bind-Value:set="@OnShinySet"
                             For="@(() => Pokemon.IsShiny)"/>
             <LegalityPopover Result="@LegalityHelpers.GetCheckResult(Analysis, CheckIdentifier.Shiny)"
                              Analysis="@Analysis"

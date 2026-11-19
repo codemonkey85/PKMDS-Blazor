@@ -58,7 +58,7 @@ public class LgpePartySafetyTests
     {
         var sav = CreateLgpeWithOverReportedParty(6);
 
-        Action act = sav.CompactParty;
+        var act = sav.CompactParty;
 
         act.Should().NotThrow();
     }

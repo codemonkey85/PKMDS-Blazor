@@ -214,7 +214,7 @@ public partial class PokemonStorageComponent : RefreshAwareComponent
         var selectedPokemonType =
             AppService.GetSelectedPokemonSlot(out var partySlot, out var boxNumber, out var boxSlot);
 
-        PKM? slotPokemon = selectedPokemonType switch
+        var slotPokemon = selectedPokemonType switch
         {
             SelectedPokemonType.Party => saveFile.GetPartySlotAtIndex(partySlot),
             SelectedPokemonType.Box => saveFile.GetBoxSlotAtIndex(boxNumber, boxSlot),

@@ -1062,7 +1062,7 @@ public class AppService(IAppState appState, IRefreshService refreshService, ILeg
             // The Mystery Event script lives in a separate slot; surface its presence as an
             // info note so users can confirm the script was written alongside the card.
             var scriptPresent = expansion.MysteryData.Data.ContainsAnyExcept<byte>(0, 0xFF);
-            string? extra = (card.Type, scriptPresent) switch
+            var extra = (card.Type, scriptPresent) switch
             {
                 (2, true) => "Link card; Mystery Event script present",
                 (2, false) => "Link card",
