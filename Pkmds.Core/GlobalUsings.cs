@@ -7,3 +7,4 @@ global using System.Text;
 global using System.Text.RegularExpressions;
 global using PKHeX.Core;
 global using Pkmds.Core.Extensions;
+global using static System.Buffers.Binary.BinaryPrimitives;

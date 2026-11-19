@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Components;
-
 namespace Pkmds.Tests;
 
 public class HostServiceTests

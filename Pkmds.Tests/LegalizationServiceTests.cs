@@ -1,3 +1,5 @@
+using TestContext = Xunit.TestContext;
+
 namespace Pkmds.Tests;
 
 [Collection("Sequential")]

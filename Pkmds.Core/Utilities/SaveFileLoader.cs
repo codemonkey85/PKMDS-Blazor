@@ -1,5 +1,3 @@
-using static System.Buffers.Binary.BinaryPrimitives;
-
 namespace Pkmds.Core.Utilities;
 
 /// <summary>

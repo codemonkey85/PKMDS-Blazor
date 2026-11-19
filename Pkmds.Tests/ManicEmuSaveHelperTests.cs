@@ -1,5 +1,3 @@
-using System.IO.Compression;
-
 namespace Pkmds.Tests;
 
 /// <summary>

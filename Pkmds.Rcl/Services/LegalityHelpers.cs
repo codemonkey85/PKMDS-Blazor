@@ -1,5 +1,3 @@
-using PKHexSeverity = PKHeX.Core.Severity;
-
 namespace Pkmds.Rcl.Services;
 
 public static class LegalityHelpers
