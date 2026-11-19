@@ -80,7 +80,9 @@ public partial class TrainerInfoSav9SvSection
         foreach (var name in SvFlyLocationBlockNames)
         {
             if (accessor.TryGetBlock(name, out var block))
+            {
                 block.ChangeBooleanType(SCTypeCode.Bool2);
+            }
         }
         SaveFile.State.Edited = true;
         RefreshService.Refresh();
@@ -96,7 +98,10 @@ public partial class TrainerInfoSav9SvSection
         accessor.GetBlock("FSYS_RIDE_GLIDE_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
         accessor.GetBlock("FSYS_RIDE_CLIMB_ENABLE").ChangeBooleanType(SCTypeCode.Bool2);
         if (accessor.TryGetBlock("FSYS_RIDE_FLIGHT_ENABLE", out var fly))
+        {
             fly.ChangeBooleanType(SCTypeCode.Bool2);
+        }
+
         SaveFile.State.Edited = true;
         RefreshService.Refresh();
         Snackbar.Add("Unlocked all ride upgrades.", Severity.Success);

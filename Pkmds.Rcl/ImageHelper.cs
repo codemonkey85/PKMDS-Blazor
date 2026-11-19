@@ -81,20 +81,23 @@ public static partial class ImageHelper
         // The CDN's Gen II shiny Celebi sprites are cropped to 40×40, while the
         // regular sprites use 56×56 canvases. These padded copies keep both
         // colors at the same scale and position in box, party, and Trade slots.
-        if (pokemon.Species == (ushort)Species.Celebi && isShiny)
+        if (pokemon.Species != (ushort)Species.Celebi || !isShiny)
         {
-            var game = version switch
-            {
-                GameVersion.GD or GameVersion.GS => "gold",
-                GameVersion.SI => "silver",
-                GameVersion.C => "crystal",
-                _ => null
-            };
+            return PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl(pokemon.Species, pokemon.Form,
+                pokemon.GetFormArgument(0), isShiny, pokemon.Gender, version);
+        }
 
-            if (game is not null)
-            {
-                return $"{SpritesRoot}overrides/gen2/shiny-celebi-{game}.png";
-            }
+        var game = version switch
+        {
+            GameVersion.GD or GameVersion.GS => "gold",
+            GameVersion.SI => "silver",
+            GameVersion.C => "crystal",
+            _ => null
+        };
+
+        if (game is not null)
+        {
+            return $"{SpritesRoot}overrides/gen2/shiny-celebi-{game}.png";
         }
 
         return PokeApiSpriteUrls.GetPokeApiVersionSpriteUrl(pokemon.Species, pokemon.Form,

@@ -6,11 +6,11 @@
     </TitleContent>
     <DialogContent>
         <MudTabs Elevation="0"
-                 ActivePanelIndex="@_activePanelIndex"
+                 ActivePanelIndex="@activePanelIndex"
                  ActivePanelIndexChanged="@OnActivePanelChanged">
             @if (SaveFile is SAV9SV)
             {
-                @foreach (var section in _svSections)
+                @foreach (var section in svSections)
                 {
                     <MudTabPanel Text="@section.Label">
                         @if (section.Items is null)
@@ -53,7 +53,7 @@
             }
             else if (SaveFile is SAV9ZA)
             {
-                @foreach (var section in _zaClothingSections)
+                @foreach (var section in zaClothingSections)
                 {
                     var clothingSection = section;
                     <MudTabPanel Text="@clothingSection.Label">
@@ -138,7 +138,7 @@
                         }
                     </MudTabPanel>
                 }
-                @foreach (var section in _zaHairSections)
+                @foreach (var section in zaHairSections)
                 {
                     <MudTabPanel Text="@section.Label">
                         @if (section.Items is null)

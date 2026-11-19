@@ -12,25 +12,27 @@ public partial class Donut9Dialog : IDisposable
     public void Dispose()
     {
         if (!committed)
+        {
             RestoreSnapshot();
+        }
     }
 
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
 
     // Raw slot indices (0–998) for slots where MillisecondsSince1970 != 0
-    private List<int> _activeIndices = [];
+    private readonly List<int> activeIndices = [];
 
     // Currently-displayed slot (0–998, may be empty if navigated there manually)
-    private int _selectedRawIndex;
+    private int selectedRawIndex;
 
     // Berry options built once per save load (includes item names)
-    private List<(ushort Item, string Label)> _berryOptions = [];
+    private List<(ushort Item, string Label)> berryOptions = [];
 
     // Donut9a wrappers (and bulk operations on DonutPocket9a) write directly through
     // Memory<byte> slices of the underlying SCBlock. To make Save / Cancel meaningful,
     // we snapshot the raw block bytes on open and restore them on Cancel.
-    private byte[]? _donutsSnapshot;
+    private byte[]? donutsSnapshot;
 
     // Flavor perk options — constant across all saves
     private static IReadOnlyList<(ulong Hash, string Name)> FlavorOptions { get; } =
@@ -40,10 +42,16 @@ public partial class Donut9Dialog : IDisposable
     {
         base.OnParametersSet();
         if (ReferenceEquals(loadedSave, SaveFile))
+        {
             return;
+        }
+
         if (!committed)
+        {
             RestoreSnapshot();
-        _donutsSnapshot = null;
+        }
+
+        donutsSnapshot = null;
         committed = false;
         loadedSave = SaveFile;
         LoadData();
@@ -52,24 +60,30 @@ public partial class Donut9Dialog : IDisposable
     private void LoadData()
     {
         if (SaveFile is null)
+        {
             return;
+        }
 
-        _donutsSnapshot ??= SaveFile.Donuts.Data.ToArray();
+        donutsSnapshot ??= SaveFile.Donuts.Data.ToArray();
 
-        _activeIndices.Clear();
+        activeIndices.Clear();
         var donuts = SaveFile.Donuts;
         for (var i = 0; i < DonutPocket9a.MaxCount; i++)
         {
             if (donuts.GetDonut(i).MillisecondsSince1970 != 0)
-                _activeIndices.Add(i);
+            {
+                activeIndices.Add(i);
+            }
         }
 
-        if (!_activeIndices.Contains(_selectedRawIndex))
-            _selectedRawIndex = _activeIndices.Count > 0 ? _activeIndices[0] : 0;
+        if (!activeIndices.Contains(selectedRawIndex))
+        {
+            selectedRawIndex = activeIndices.Count > 0 ? activeIndices[0] : 0;
+        }
 
         // Build berry option list with item names
         var itemList = GameInfo.Strings.itemlist;
-        _berryOptions = [(0, "None"), ..
+        berryOptions = [(0, "None"), ..
             DonutInfo.Berries.Select(b =>
             {
                 var name = b.Item < itemList.Length ? itemList[b.Item] : b.Item.ToString();
@@ -83,27 +97,49 @@ public partial class Donut9Dialog : IDisposable
     // _activeIndices is built in ascending order, so a linear scan is sufficient.
     private int FindPrevActiveIndex()
     {
-        var idx = _activeIndices.IndexOf(_selectedRawIndex);
+        var idx = activeIndices.IndexOf(selectedRawIndex);
         if (idx > 0)
+        {
             return idx - 1;
+        }
+
         if (idx == 0)
+        {
             return -1;
-        for (var i = _activeIndices.Count - 1; i >= 0; i--)
-            if (_activeIndices[i] < _selectedRawIndex)
+        }
+
+        for (var i = activeIndices.Count - 1; i >= 0; i--)
+        {
+            if (activeIndices[i] < selectedRawIndex)
+            {
                 return i;
+            }
+        }
+
         return -1;
     }
 
     private int FindNextActiveIndex()
     {
-        var idx = _activeIndices.IndexOf(_selectedRawIndex);
-        if (idx >= 0 && idx < _activeIndices.Count - 1)
+        var idx = activeIndices.IndexOf(selectedRawIndex);
+        if (idx >= 0 && idx < activeIndices.Count - 1)
+        {
             return idx + 1;
-        if (idx == _activeIndices.Count - 1)
+        }
+
+        if (idx == activeIndices.Count - 1)
+        {
             return -1;
-        for (var i = 0; i < _activeIndices.Count; i++)
-            if (_activeIndices[i] > _selectedRawIndex)
+        }
+
+        for (var i = 0; i < activeIndices.Count; i++)
+        {
+            if (activeIndices[i] > selectedRawIndex)
+            {
                 return i;
+            }
+        }
+
         return -1;
     }
 
@@ -114,28 +150,32 @@ public partial class Donut9Dialog : IDisposable
     {
         var i = FindPrevActiveIndex();
         if (i >= 0)
-            _selectedRawIndex = _activeIndices[i];
+        {
+            selectedRawIndex = activeIndices[i];
+        }
     }
 
     private void GotoNext()
     {
         var i = FindNextActiveIndex();
         if (i >= 0)
-            _selectedRawIndex = _activeIndices[i];
+        {
+            selectedRawIndex = activeIndices[i];
+        }
     }
 
     // Returns the donut at the currently selected raw slot.
     // Donut9a wraps Memory<byte> — property setters write through to the save block.
     private Donut9a? CurrentDonut =>
-        SaveFile is not null && _selectedRawIndex < DonutPocket9a.MaxCount
-            ? SaveFile.Donuts.GetDonut(_selectedRawIndex)
+        SaveFile is not null && selectedRawIndex < DonutPocket9a.MaxCount
+            ? SaveFile.Donuts.GetDonut(selectedRawIndex)
             : null;
 
     private bool IsCurrentSlotOccupied =>
         CurrentDonut is { } d && d.MillisecondsSince1970 != 0;
 
     private static string FormatTimestamp(ulong ms) =>
-        ms == 0 ? "—" : Donut9a.Epoch.AddMilliseconds(ms).ToString("yyyy-MM-dd HH:mm:ss");
+        ms == 0 ? "—" : Donut9a.Epoch.AddMilliseconds(ms).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
     private static ushort GetBerry(Donut9a d, int slot) => slot switch
     {
@@ -184,8 +224,11 @@ public partial class Donut9Dialog : IDisposable
     private void Recalculate()
     {
         if (CurrentDonut is not { } d)
+        {
             return;
-        DonutInfo.RecalculateDonutStats(d);
+        }
+
+        d.RecalculateDonutStats();
         StateHasChanged();
     }
 
@@ -205,9 +248,12 @@ public partial class Donut9Dialog : IDisposable
 
     private void CloneSelected()
     {
-        if (SaveFile is null || _activeIndices.Count == 0)
+        if (SaveFile is null || activeIndices.Count == 0)
+        {
             return;
-        SaveFile.Donuts.CloneAllFromIndex(_selectedRawIndex);
+        }
+
+        SaveFile.Donuts.CloneAllFromIndex(selectedRawIndex);
         LoadData();
         StateHasChanged();
     }
@@ -216,7 +262,10 @@ public partial class Donut9Dialog : IDisposable
     {
         committed = true;
         if (SaveFile is { } save)
+        {
             save.State.Edited = true;
+        }
+
         RefreshService.Refresh();
         Haptics.Confirm();
         MudDialog?.Close(DialogResult.Ok(true));
@@ -224,9 +273,9 @@ public partial class Donut9Dialog : IDisposable
 
     private void RestoreSnapshot()
     {
-        if (loadedSave is not null && _donutsSnapshot is not null)
+        if (loadedSave is not null && donutsSnapshot is not null)
         {
-            _donutsSnapshot.CopyTo(loadedSave.Donuts.Data);
+            donutsSnapshot.CopyTo(loadedSave.Donuts.Data);
         }
     }
 

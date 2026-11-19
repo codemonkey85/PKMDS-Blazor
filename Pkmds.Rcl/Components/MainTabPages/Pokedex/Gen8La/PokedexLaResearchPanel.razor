@@ -14,7 +14,7 @@
             <MudSelect T="ushort"
                        Label="Species"
                        Value="@selectedSpecies"
-                       ValueChanged="@(v => OnSpeciesSelected(v))"
+                       ValueChanged="@OnSpeciesSelected"
                        Dense
                        Style="max-width:260px;">
                 @foreach (var (hisuiIdx, species) in GetFilteredSpeciesList(dex))

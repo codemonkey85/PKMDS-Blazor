@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Pkmds.Rcl.Models;
 
 namespace Pkmds.Rcl.Services;
 
@@ -34,7 +33,7 @@ public sealed class BenchmarkRunner
     {
         config ??= new BenchmarkConfig();
 
-        var sav = BlankSaveFile.Get(GameVersion.SL, "BENCH", LanguageID.English);
+        var sav = BlankSaveFile.Get(GameVersion.SL, "BENCH");
         var pkms = BuildBenchPkms(sav);
         PopulateBox(sav, pkms);
 
@@ -73,7 +72,7 @@ public sealed class BenchmarkRunner
             var pkm = (PK9)enc.ConvertToPKM(sav);
             for (var i = 0; i < CopiesPerSpecies; i++)
             {
-                list.Add((PK9)pkm.Clone());
+                list.Add(pkm.Clone());
             }
         }
         return [.. list];
@@ -176,7 +175,7 @@ public sealed class BenchmarkRunner
             for (var slot = 0; slot < sav.BoxSlotCount; slot++)
             {
                 var pkm = sav.GetBoxSlotAtIndex(box, slot);
-                if (pkm.Species == targetSpecies && pkm.IV_HP >= 0 && pkm.CurrentLevel > 0)
+                if (pkm.Species == targetSpecies && pkm is { IV_HP: >= 0, CurrentLevel: > 0 })
                 {
                     count++;
                 }
@@ -254,7 +253,7 @@ public sealed class BenchmarkRunner
 
         foreach (var name in BatchLookupProperties)
         {
-            if (!editor.TryGetHasProperty(pkm, name.AsSpan(), out var pi) || pi is null)
+            if (!editor.TryGetHasProperty(pkm, name.AsSpan(), out _))
             {
                 throw new InvalidOperationException(
                     $"BatchEditor reflection check failed: TryGetHasProperty returned no PropertyInfo for PK9.{name}. " +
@@ -294,8 +293,15 @@ public sealed class BenchmarkRunner
         foreach (var t in timings)
         {
             total += t;
-            if (t < min) min = t;
-            if (t > max) max = t;
+            if (t < min)
+            {
+                min = t;
+            }
+
+            if (t > max)
+            {
+                max = t;
+            }
         }
         var mean = total / timings.Length;
 

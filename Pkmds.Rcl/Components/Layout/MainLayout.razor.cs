@@ -217,7 +217,7 @@ public partial class MainLayout : IDisposable
                 // Pass null rather than `new { }` so Blazor's IJS marshaler doesn't
                 // reflect over an anonymous type — keeps this site trim-safe under
                 // TrimMode=full alongside the other PKMDS.host._sendMessage call sites.
-                await JSRuntime.InvokeVoidAsync("PKMDS.host._sendMessage", "ready", default(string));
+                await JSRuntime.InvokeVoidAsync("PKMDS.host._sendMessage", "ready", null);
             }
             catch (JSException ex)
             {
@@ -228,21 +228,26 @@ public partial class MainLayout : IDisposable
 
     private async void OnSystemPreferenceChanged(bool newValue)
     {
-        systemIsDarkMode = newValue;
-
-        // Until persisted settings have loaded, `themeMode` is still the default `System`,
-        // so a transient OS-dark signal would incorrectly flip `isDarkMode` to true even when
-        // the user's persisted preference is explicitly Light (or Dark). That intermediate
-        // flip leaves MudMainContent stranded in dark mode on first load — see issue #755.
-        // Gating here preserves the cached `systemIsDarkMode` for later use once settings
-        // load and the user's real preference is known.
-        if (!settingsLoaded)
+        try
         {
-            return;
-        }
+            systemIsDarkMode = newValue;
 
-        if (themeMode == ThemeMode.System)
-        {
+            // Until persisted settings have loaded, `themeMode` is still the default `System`,
+            // so a transient OS-dark signal would incorrectly flip `isDarkMode` to true even when
+            // the user's persisted preference is explicitly Light (or Dark). That intermediate
+            // flip leaves MudMainContent stranded in dark mode on first load — see issue #755.
+            // Gating here preserves the cached `systemIsDarkMode` for later use once settings
+            // load and the user's real preference is known.
+            if (!settingsLoaded)
+            {
+                return;
+            }
+
+            if (themeMode != ThemeMode.System)
+            {
+                return;
+            }
+
             isDarkMode = newValue;
             RefreshService.RefreshTheme(isDarkMode);
             var themeStr = newValue
@@ -262,6 +267,10 @@ public partial class MainLayout : IDisposable
             }
 
             StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error handling system theme change");
         }
     }
 
@@ -316,7 +325,7 @@ public partial class MainLayout : IDisposable
         {
             Snackbar.Add(submission.ToSubmissionMarkup("Report submitted!"),
                 submission.WarningMessage is null ? Severity.Success : Severity.Warning,
-                options => options.RequireInteraction = true);
+                opt => opt.RequireInteraction = true);
         }
     }
 

@@ -87,7 +87,7 @@ public partial class TradePane : RefreshAwareComponent
         return count;
     }
 
-    internal PKM? SelectedPokemon
+    private PKM? SelectedPokemon
     {
         get
         {

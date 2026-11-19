@@ -94,7 +94,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         PKM? template,
         SaveFile sav,
         int timeoutSeconds) =>
-        RunLegalizationLoop(set, template, sav, progress: null, ct: default, async: false, timeoutSeconds, preserveDetails: false)
+        RunLegalizationLoop(set, template, sav, progress: null, ct: CancellationToken.None, async: false, timeoutSeconds, preserveDetails: false)
             .GetAwaiter().GetResult();
 
     private async Task<LegalizationOutcome> RunLegalizationLoop(
@@ -151,6 +151,8 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         var searchMoves = existingPkm is not null
             ? ReadOnlyMemory<ushort>.Empty
             : set.Moves.AsMemory();
+        // Keep this lazy so successful attempts and cancellation can stop the search
+        // without enumerating every version and alternate form before the timer starts.
         var encounters = GetAllEncounters(probe, searchMoves, versions);
 
         var timer = Stopwatch.StartNew();
@@ -222,14 +224,14 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                         continue;
                     }
 
-                    ApplyPreserveModeFixes(pk, sav, enc);
+                    ApplyPreserveModeFixes(pk, enc);
                 }
                 else
                 {
                     // Rebuild mode: generate a fresh PKM from the encounter and overlay
                     // the Showdown set. Authoritative for generate-from-set; lossy for
                     // legalize-existing (used only as a fallback after preserve-mode fails).
-                    var adjustedCriteria = AdjustCriteriaForEncounter(criteria, enc, set);
+                    var adjustedCriteria = AdjustCriteriaForEncounter(criteria, enc);
                     var raw = enc.ConvertToPKM(sav, adjustedCriteria);
 
                     // Restore OT if blank.
@@ -242,7 +244,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
                     // Handle egg encounters.
                     if (raw.IsEgg)
                     {
-                        HatchEgg(raw, sav);
+                        HatchEgg(raw);
                     }
 
                     // Apply RNG-correlated PID/IV for encounter types that require it.
@@ -307,14 +309,18 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         // where every encounter has LevelMin > 15) and AllowIncompatibleConversion, and
         // returns the first non-null produced PKM as SuccessHaX. Mirrors the existing HaX
         // bypass at PokemonSlotComponent.razor.cs:485.
-        if (AppState.IsHaXEnabled)
+        if (!AppState.IsHaXEnabled)
         {
-            var haxResult = await TryHaXRetry(
-                set, sav, destType, criteria, encounters, timer, timeoutSeconds, async, ct);
-            if (haxResult is not null)
-            {
-                return haxResult;
-            }
+            return new LegalizationFailure(
+                bestAttempt ?? BuildSetFallback(blank, sav, set),
+                $"No legal result found after {attemptCount} encounters.");
+        }
+
+        var haxResult = await TryHaXRetry(
+            set, sav, destType, criteria, encounters, timer, timeoutSeconds, async, ct);
+        if (haxResult is not null)
+        {
+            return haxResult;
         }
 
         return new LegalizationFailure(
@@ -377,7 +383,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
 
             try
             {
-                var adjustedCriteria = AdjustCriteriaForEncounter(criteria, enc, set);
+                var adjustedCriteria = AdjustCriteriaForEncounter(criteria, enc);
                 var raw = enc.ConvertToPKM(sav, adjustedCriteria);
 
                 if (raw.OriginalTrainerName.Length == 0)
@@ -388,7 +394,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
 
                 if (raw.IsEgg)
                 {
-                    HatchEgg(raw, sav);
+                    HatchEgg(raw);
                 }
 
                 // EntityConverter.AllowIncompatibleConversion is a global static. Scope
@@ -551,7 +557,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
     /// Quick pre-filter to skip encounters that cannot possibly match the request.
     /// Ported from ALM's IsEncounterValid.
     /// </summary>
-    private static bool IsEncounterValid(ShowdownSet set, IEncounterable enc)
+    internal static bool IsEncounterValid(ShowdownSet set, IEncounterable enc)
     {
         // Level check: encounter minimum must not exceed requested level (Gen 3+).
         if (enc.Generation > 2 && enc.LevelMin > set.Level)
@@ -570,13 +576,8 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
             return false;
         }
 
-        // Gender lock.
-        if (set.Gender != -1 && enc is IFixedGender { IsFixedGender: true } fg && fg.Gender != set.Gender)
-        {
-            return false;
-        }
-
-        return true;
+        // An omitted Showdown gender is null, meaning either gender is acceptable.
+        return set.Gender is null || enc is not IFixedGender { IsFixedGender: true } fg || fg.Gender == set.Gender;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -585,8 +586,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
 
     private static EncounterCriteria AdjustCriteriaForEncounter(
         EncounterCriteria criteria,
-        IEncounterable enc,
-        ShowdownSet set)
+        IEncounterable enc)
     {
         // Fixed-nature encounters: let the encounter decide the nature.
         if (enc is IFixedNature { IsFixedNature: true })
@@ -612,45 +612,48 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         EncounterCriteria criteria,
         CancellationToken ct)
     {
-        // Gen 9 Tera Raids: use PKHeX.Core's built-in TryApply.
-        if (enc is ITeraRaid9)
+        switch (enc)
         {
-            ApplyTeraRaidPidIv(pk, enc, set, criteria, ct);
-            return;
-        }
+            // Gen 9 Tera Raids: use PKHeX.Core's built-in TryApply.
+            case ITeraRaid9:
+                ApplyTeraRaidPidIv(pk, enc, set, criteria, ct);
+                return;
+            // Gen 8 SwSh overworld correlation.
+            case IOverworldCorrelation8 ow when pk is PK8 pk8:
+                {
+                    if (ow.GetRequirement(pk8) != OverworldCorrelation8Requirement.MustHave)
+                    {
+                        return;
+                    }
 
-        // Gen 8 SwSh overworld correlation.
-        if (enc is IOverworldCorrelation8 ow && pk is PK8 pk8)
-        {
-            if (ow.GetRequirement(pk8) == OverworldCorrelation8Requirement.MustHave)
-            {
-                var flawless = enc is IFlawlessIVCount f
-                    ? f.FlawlessIVCount
-                    : 0;
-                var shiny = set.Shiny
-                    ? Shiny.Always
-                    : Shiny.Never;
-                FindWildPidIv8(pk8, shiny, flawless, ct);
-            }
+                    var flawless = enc is IFlawlessIVCount f
+                        ? f.FlawlessIVCount
+                        : 0;
+                    var shiny = set.Shiny
+                        ? Shiny.Always
+                        : Shiny.Never;
+                    FindWildPidIv8(pk8, shiny, flawless, ct);
 
-            return;
-        }
+                    return;
+                }
+            // Gen 8b BDSP static correlation.
+            case IStaticCorrelation8b sc when pk is PB8 pb8:
+                {
+                    if (sc.GetRequirement(pb8) != StaticCorrelation8bRequirement.MustHave)
+                    {
+                        return;
+                    }
 
-        // Gen 8b BDSP static correlation.
-        if (enc is IStaticCorrelation8b sc && pk is PB8 pb8)
-        {
-            if (sc.GetRequirement(pb8) == StaticCorrelation8bRequirement.MustHave)
-            {
-                var flawless = enc is IFlawlessIVCount f
-                    ? f.FlawlessIVCount
-                    : 0;
-                var shiny = set.Shiny
-                    ? Shiny.Always
-                    : Shiny.Never;
-                Roaming8bRNG.ApplyDetails(pb8, EncounterCriteria.Unrestricted, shiny, flawless);
-            }
+                    var flawless = enc is IFlawlessIVCount f
+                        ? f.FlawlessIVCount
+                        : 0;
+                    var shiny = set.Shiny
+                        ? Shiny.Always
+                        : Shiny.Never;
+                    Roaming8bRNG.ApplyDetails(pb8, EncounterCriteria.Unrestricted, shiny, flawless);
 
-            return;
+                    return;
+                }
         }
 
         // Gen 3-5: PID↔IV↔Nature correlation via LCRNG.
@@ -913,12 +916,16 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
     /// Applies fixes after <see cref="CommonEdits.ApplySetDetails" /> to ensure legality.
     /// Mirrors AppService.ApplyPostImportFixes + ALM's ApplySetDetails final tweaks.
     /// </summary>
+    /// <param name="set"></param>
     /// <param name="honourEncounterLevelMin">
     /// When <c>true</c> (the default), <c>CurrentLevel</c> is bumped up to
     /// <see cref="IEncounterTemplate.LevelMin" /> if it sits below — required for vanilla
     /// legality. The HaX retry passes <c>false</c> so the user's requested level is
     /// preserved (Garchomp@15 stays at 15, accepted as illegal).
     /// </param>
+    /// <param name="pk"></param>
+    /// <param name="sav"></param>
+    /// <param name="enc"></param>
     private static void ApplyPostGenerationFixes(
         PKM pk,
         SaveFile sav,
@@ -1063,7 +1070,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         }
 
         // Average height/weight if unset.
-        if (pk is IScaledSize ss && ss.HeightScalar == 0 && ss.WeightScalar == 0)
+        if (pk is IScaledSize { HeightScalar: 0, WeightScalar: 0 } ss)
         {
             ss.HeightScalar = 0x80;
             ss.WeightScalar = 0x80;
@@ -1083,7 +1090,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         if (pk is IHomeTrack { HasTracker: false } ht)
         {
             ht.Tracker = 1;
-            if (pk is IScaledSize3 ss3 && pk is IScaledSize ss2)
+            if (pk is IScaledSize3 ss3 and IScaledSize ss2)
             {
                 ss3.Scale = ss2.HeightScalar;
             }
@@ -1124,29 +1131,32 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
     /// ShowdownSet (EC, PID, memories, height/weight, ribbons, contest stats,
     /// fullness/enjoyment, HOME tracker, met date, affixed ribbon) are left alone.
     /// </summary>
-    private static void ApplyPreserveModeFixes(PKM pk, SaveFile sav, IEncounterable enc)
+    private static void ApplyPreserveModeFixes(PKM pk, IEncounterable enc)
     {
-        // Encounter-forced properties: these must match the encounter regardless of
-        // what the user had. Keep the allow-list tight.
-        if (enc is MysteryGift mg)
+        switch (enc)
         {
-            if (mg.FatefulEncounter)
-            {
-                pk.FatefulEncounter = true;
-            }
+            // Encounter-forced properties: these must match the encounter regardless of
+            // what the user had. Keep the allow-list tight.
+            case MysteryGift mg:
+                {
+                    if (mg.FatefulEncounter)
+                    {
+                        pk.FatefulEncounter = true;
+                    }
 
-            if (!string.IsNullOrEmpty(mg.OriginalTrainerName))
-            {
-                pk.OriginalTrainerName = mg.OriginalTrainerName;
-                pk.TID16 = mg.TID16;
-                pk.SID16 = mg.SID16;
-            }
-        }
+                    if (!string.IsNullOrEmpty(mg.OriginalTrainerName))
+                    {
+                        pk.OriginalTrainerName = mg.OriginalTrainerName;
+                        pk.TID16 = mg.TID16;
+                        pk.SID16 = mg.SID16;
+                    }
 
-        if (enc is IFixedNature { IsFixedNature: true } fn)
-        {
-            pk.Nature = fn.Nature;
-            pk.StatAlignment = fn.Nature;
+                    break;
+                }
+            case IFixedNature { IsFixedNature: true } fn:
+                pk.Nature = fn.Nature;
+                pk.StatAlignment = fn.Nature;
+                break;
         }
 
         // Clamp level bounds to the encounter — these are safe to enforce because
@@ -1268,12 +1278,15 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
         // Plus flags (Legends: Z-A mastery flags). LegendsZAVerifier reports these under
         // CheckIdentifier.RelearnMove. Re-set after moves/relearn are fixed so the flags
         // reflect the final moveset and level.
-        if (pk is PA9 pa9Preserve && pk.PersonalInfo is IPermitPlus plusPermitPreserve &&
-            la.Results.Any(r => r.Judgement == PKHeX.Core.Severity.Invalid && r.Identifier == CheckIdentifier.RelearnMove))
+        if (pk is not PA9 pa9Preserve || pk.PersonalInfo is not IPermitPlus plusPermitPreserve ||
+            !la.Results.Any(r =>
+                r is { Judgement: PKHeX.Core.Severity.Invalid, Identifier: CheckIdentifier.RelearnMove }))
         {
-            pa9Preserve.SetPlusFlags(plusPermitPreserve, PlusRecordApplicatorOption.LegalSeedTM);
-            changed = true;
+            return changed;
         }
+
+        pa9Preserve.SetPlusFlags(plusPermitPreserve, PlusRecordApplicatorOption.LegalSeedTM);
+        changed = true;
 
         return changed;
     }
@@ -1318,7 +1331,7 @@ public sealed class LegalizationService(IAppState appState) : ILegalizationServi
     //  Egg handling
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void HatchEgg(PKM pk, SaveFile sav)
+    private static void HatchEgg(PKM pk)
     {
         pk.IsEgg = false;
         pk.EggMetDate = pk.MetDate;

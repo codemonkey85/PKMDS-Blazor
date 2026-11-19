@@ -82,7 +82,10 @@ public class ApplicationBenchmarkTests
         output.Write(rebuilt);
         output.Position = 0;
         using (var archive = new ZipArchive(output, ZipArchiveMode.Update, leaveOpen: true))
+        {
             archive.GetEntry("metadata.txt")!.Delete();
+        }
+
         var verify = () => ApplicationBenchmarkFixtures.VerifyArchive(output.ToArray(), edited, kind, 23456);
         verify.Should().Throw<InvalidOperationException>();
     }

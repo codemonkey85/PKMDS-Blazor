@@ -33,37 +33,38 @@ public static partial class ImageHelper
     public static string GetToxicStatusSpriteFileName() =>
         $"{SpritesRoot}status/sicktoxic.png";
 
-    public static StatusKind GetStatusKind(PKM pokemon)
+    private static StatusKind GetStatusKind(PKM pokemon)
     {
-        if (pokemon.Format <= 4)
+        if (pokemon.Format > 4)
         {
-            var condition = (StatusCondition)(pokemon.Status_Condition & 0xFF);
-            return condition switch
+            return (StatusType)(pokemon.Status_Condition & 0xFF) switch
             {
-                StatusCondition.None => StatusKind.None,
-                <= StatusCondition.Sleep7 => StatusKind.Sleep,
-                _ when (condition & StatusCondition.PoisonBad) != 0 => StatusKind.Toxic,
-                _ when (condition & StatusCondition.Poison) != 0 => StatusKind.Poison,
-                _ when (condition & StatusCondition.Burn) != 0 => StatusKind.Burn,
-                _ when (condition & StatusCondition.Freeze) != 0 => StatusKind.Freeze,
-                _ when (condition & StatusCondition.Paralysis) != 0 => StatusKind.Paralysis,
+                StatusType.None => StatusKind.None,
+                StatusType.Sleep => StatusKind.Sleep,
+                StatusType.Poison => StatusKind.Poison,
+                StatusType.Burn => StatusKind.Burn,
+                StatusType.Freeze => StatusKind.Freeze,
+                StatusType.Paralysis => StatusKind.Paralysis,
                 _ => StatusKind.None
             };
         }
 
-        return (StatusType)(pokemon.Status_Condition & 0xFF) switch
+        var condition = (StatusCondition)(pokemon.Status_Condition & 0xFF);
+        return condition switch
         {
-            StatusType.None => StatusKind.None,
-            StatusType.Sleep => StatusKind.Sleep,
-            StatusType.Poison => StatusKind.Poison,
-            StatusType.Burn => StatusKind.Burn,
-            StatusType.Freeze => StatusKind.Freeze,
-            StatusType.Paralysis => StatusKind.Paralysis,
+            StatusCondition.None => StatusKind.None,
+            <= StatusCondition.Sleep7 => StatusKind.Sleep,
+            _ when (condition & StatusCondition.PoisonBad) != 0 => StatusKind.Toxic,
+            _ when (condition & StatusCondition.Poison) != 0 => StatusKind.Poison,
+            _ when (condition & StatusCondition.Burn) != 0 => StatusKind.Burn,
+            _ when (condition & StatusCondition.Freeze) != 0 => StatusKind.Freeze,
+            _ when (condition & StatusCondition.Paralysis) != 0 => StatusKind.Paralysis,
             _ => StatusKind.None
         };
+
     }
 
-    public static string? GetStatusSpriteFileName(StatusKind kind) => kind switch
+    private static string? GetStatusSpriteFileName(StatusKind kind) => kind switch
     {
         StatusKind.None => null,
         StatusKind.Faint => GetFaintStatusSpriteFileName(),

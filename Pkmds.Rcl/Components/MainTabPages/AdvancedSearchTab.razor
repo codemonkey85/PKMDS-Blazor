@@ -908,7 +908,7 @@
                                              style="width:20px;height:20px;object-fit:contain;"
                                              title="@(ballName ?? "Ball")"
                                              alt="@(ballName ?? "Ball")"/>
-                                        <InfoButton Title="@(loadedBalls.TryGetValue(context.Pokemon.Ball, out var titleBall) && titleBall is not null ? titleBall.Name : (ballName ?? "Ball"))">
+                                        <InfoButton Title="@(loadedBalls.TryGetValue(context.Pokemon.Ball, out var titleBall) && titleBall is not null ? titleBall.Name : ballName ?? "Ball")">
                                             @if (loadedBalls.TryGetValue(context.Pokemon.Ball, out var ballInfo))
                                             {
                                                 @if (ballInfo is not null)
@@ -934,7 +934,7 @@
                                 @{
                                     var rowItemNames = AppState.SaveFile is { } rowSf
                                         ? GameInfo.Strings.GetItemStrings(context.Pokemon.Context, rowSf.Version)
-                                        : System.Array.Empty<string>();
+                                        : Array.Empty<string>();
                                 }
                                 @if (context.Pokemon.HeldItem > 0
                                      && AppState.SaveFile is { } sf

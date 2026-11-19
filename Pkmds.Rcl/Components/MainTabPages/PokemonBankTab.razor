@@ -223,7 +223,7 @@
                                 }
                                 <MudText Typo="@Typo.caption"
                                          Class="d-block">
-                                    Added: @entry.AddedAt.LocalDateTime.ToString("yyyy-MM-dd")
+                                    Added: @entry.AddedAt.LocalDateTime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                                 </MudText>
                             </MudCardContent>
                             <MudCardActions>

@@ -26,11 +26,13 @@ public static class Feebas3
 
         while (i < tiles.Length)
         {
-            seed = (0x41C64E6D * seed) + 0x3039;
+            seed = 0x41C64E6D * seed + 0x3039;
             tile = (ushort)((seed >> 16) % 0x1BF);
 
             if (tile == 0)
+            {
                 tile = 447;
+            }
 
             if (tile >= 4)
             {

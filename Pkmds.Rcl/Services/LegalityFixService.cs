@@ -8,12 +8,15 @@ public sealed class LegalityFixService(IAppService appService) : ILegalityFixSer
 
         // Update Technical Records (Gen 8+ SwSh / SV / ZA) to reflect the new moves,
         // mirroring PKMEditor's SetSuggestedMoves behaviour.
-        if (pokemon is ITechRecord tr)
+        if (pokemon is not ITechRecord tr)
         {
-            tr.ClearRecordFlags();
-            var freshLa = appService.GetLegalityAnalysis(pokemon);
-            tr.SetRecordFlags(pokemon, TechnicalRecordApplicatorOption.LegalCurrent, freshLa);
+            return new FixOutcome(Changed: true, Severity.Success,
+                "Moves updated with a legal move set. Click Save to apply changes.");
         }
+
+        tr.ClearRecordFlags();
+        var freshLa = appService.GetLegalityAnalysis(pokemon);
+        tr.SetRecordFlags(pokemon, TechnicalRecordApplicatorOption.LegalCurrent, freshLa);
 
         return new FixOutcome(Changed: true, Severity.Success, "Moves updated with a legal move set. Click Save to apply changes.");
     }
@@ -59,11 +62,14 @@ public sealed class LegalityFixService(IAppService appService) : ILegalityFixSer
 
         // A Pokémon's current level must be at least its met level.
         // For freshly-created Pokémon the level defaults to 1, so raise it now.
-        if (pokemon.CurrentLevel < metLevel)
+        if (pokemon.CurrentLevel >= metLevel)
         {
-            pokemon.CurrentLevel = metLevel;
-            appService.LoadPokemonStats(pokemon);
+            return new FixOutcome(Changed: true, Severity.Success,
+                "Met location and level updated. Click Save to apply changes.");
         }
+
+        pokemon.CurrentLevel = metLevel;
+        appService.LoadPokemonStats(pokemon);
 
         return new FixOutcome(Changed: true, Severity.Success, "Met location and level updated. Click Save to apply changes.");
     }

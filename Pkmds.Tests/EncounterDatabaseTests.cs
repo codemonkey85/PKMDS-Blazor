@@ -1,5 +1,3 @@
-using Pkmds.Rcl.Models;
-
 namespace Pkmds.Tests;
 
 /// <summary>

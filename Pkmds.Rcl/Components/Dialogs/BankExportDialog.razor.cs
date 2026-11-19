@@ -92,7 +92,7 @@ public partial class BankExportDialog : IDisposable
     private async Task<byte[]> BuildZipAsync(IReadOnlyList<BankEntry> entries, CancellationToken ct)
     {
         using var ms = new MemoryStream();
-        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        await using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
         {
             var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < entries.Count; i++)
@@ -106,7 +106,7 @@ public partial class BankExportDialog : IDisposable
 
                 var entryName = GetUniqueEntryName(usedNames, AppService.GetCleanFileName(pkm));
                 var entry = zip.CreateEntry(entryName, CompressionLevel.Fastest);
-                using (var es = entry.Open())
+                await using (var es = await entry.OpenAsync(ct))
                 {
                     es.Write(bytes);
                 }
@@ -115,11 +115,13 @@ public partial class BankExportDialog : IDisposable
                 progressPercent = (double)(i + 1) / entries.Count * 95;
                 statusText = $"Adding {i + 1}/{entries.Count}: {entryName}";
 
-                if ((i + 1) % YieldEveryN == 0 || i == entries.Count - 1)
+                if ((i + 1) % YieldEveryN != 0 && i != entries.Count - 1)
                 {
-                    StateHasChanged();
-                    await Task.Delay(1, ct);
+                    continue;
                 }
+
+                StateHasChanged();
+                await Task.Delay(1, ct);
             }
         }
 
@@ -151,7 +153,7 @@ public partial class BankExportDialog : IDisposable
         // download flow. Either path can report user cancellation as AbortError.
         try
         {
-            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker"))
+            if (await JSRuntime.InvokeAsync<bool>("pkmdsSupportsSaveFilePicker", ct))
             {
                 await JSRuntime.InvokeVoidAsync(
                     "showFilePickerAndWrite",

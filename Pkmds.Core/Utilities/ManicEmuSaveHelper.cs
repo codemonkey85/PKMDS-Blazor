@@ -344,13 +344,13 @@ public static class ManicEmuSaveHelper
         var current = BitConverter.ToUInt16(zipBytes, flagsOffset);
         var updated = (ushort)(current | mask);
         zipBytes[flagsOffset] = (byte)(updated & 0xFF);
-        zipBytes[flagsOffset + 1] = (byte)((updated >> 8) & 0xFF);
+        zipBytes[flagsOffset + 1] = (byte)(updated >> 8 & 0xFF);
     }
 
     private static void WriteUInt16(byte[] zipBytes, int offset, ushort value)
     {
         zipBytes[offset] = (byte)(value & 0xFF);
-        zipBytes[offset + 1] = (byte)((value >> 8) & 0xFF);
+        zipBytes[offset + 1] = (byte)(value >> 8 & 0xFF);
     }
 
     /// <summary>

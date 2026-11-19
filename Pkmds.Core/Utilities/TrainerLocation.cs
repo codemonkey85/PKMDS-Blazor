@@ -5,7 +5,9 @@ public static class TrainerLocation
     public static void SetRotation(SAV9ZA save, double degrees)
     {
         if (!double.IsFinite(degrees))
+        {
             return;
+        }
 
         // PKHeX.Core 26.10.18's SetPlayerRotation(double) puts sin(angle) in RY,
         // while Rotation reads RZ. Use the backing components so edits round-trip (#1376).

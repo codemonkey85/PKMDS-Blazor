@@ -77,14 +77,14 @@ public partial class FeebasLocatorTab
 
         if (!FeebasSeedAccessor.TryWriteSeed(saveFile, parsed))
         {
-            Snackbar.Add("Could not write Feebas seed: unsupported save type.", MudBlazor.Severity.Error);
+            Snackbar.Add("Could not write Feebas seed: unsupported save type.", Severity.Error);
             return;
         }
 
         seed = parsed;
         seedHex = seed.ToString(seedFormat, CultureInfo.InvariantCulture);
         editedSeedHex = seedHex;
-        Snackbar.Add($"Feebas seed updated to 0x{seedHex}.", MudBlazor.Severity.Success);
+        Snackbar.Add($"Feebas seed updated to 0x{seedHex}.", Severity.Success);
         RefreshService.Refresh();
     }
 
@@ -142,8 +142,8 @@ public partial class FeebasLocatorTab
 
     private string MarkerLabelStyle(TileMarker marker)
     {
-        var centerX = (marker.X + (marker.Width / 2.0)) / mapWidth * 100;
-        var centerY = (marker.Y + (marker.Height / 2.0)) / mapHeight * 100;
+        var centerX = (marker.X + marker.Width / 2.0) / mapWidth * 100;
+        var centerY = (marker.Y + marker.Height / 2.0) / mapHeight * 100;
         return string.Create(CultureInfo.InvariantCulture,
             $"{BadgeBaseStyle} position: absolute; left: {centerX:F4}%; top: {centerY:F4}%; transform: translate(-50%, -50%); pointer-events: none; z-index: 2;");
     }

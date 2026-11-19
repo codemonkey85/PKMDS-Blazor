@@ -62,7 +62,6 @@ public partial class AutocompleteSelect<T>
     // flowing through our ToStringFunc / ItemTemplate unchanged.
     private sealed record Option(T? Value);
 
-    private Option? wrappedValue;
     private MudAutocomplete<Option>? autocomplete;
     private T? previousValue;
     private bool hasParameters;
@@ -71,17 +70,14 @@ public partial class AutocompleteSelect<T>
     {
         if (!hasParameters || !EqualityComparer<T>.Default.Equals(Value!, previousValue!))
         {
-            wrappedValue = new Option(Value);
+            WrappedValue = new Option(Value);
         }
 
         previousValue = Value;
         hasParameters = true;
     }
 
-    private Option? WrappedValue => wrappedValue;
-
-    private IEnumerable<Option> WrappedItems =>
-        (Items ?? []).Select(v => new Option(v));
+    private Option? WrappedValue { get; set; }
 
     private Func<Option?, string?> WrappedToStringFunc =>
         opt => opt is null ? string.Empty : EffectiveToStringFunc(opt.Value);
@@ -102,7 +98,7 @@ public partial class AutocompleteSelect<T>
         var valueChanged = !EqualityComparer<T>.Default.Equals(Value!, newValue!);
         // A cleared input is different from selecting a real default-valued option
         // (e.g. Normal form, Hardy nature, or a wrapped null sentinel such as "Any").
-        wrappedValue = opt;
+        WrappedValue = opt;
         Value = newValue;
         previousValue = newValue;
         if (valueChanged)
@@ -117,8 +113,8 @@ public partial class AutocompleteSelect<T>
         // only after that completes, and only if the reset value is an actual option.
         if (autocomplete is not null && (Items ?? []).Any(item => EqualityComparer<T>.Default.Equals(item, Value!)))
         {
-            wrappedValue = new Option(Value);
-            await autocomplete.SelectOptionAsync(wrappedValue);
+            WrappedValue = new Option(Value);
+            await autocomplete.SelectOptionAsync(WrappedValue);
         }
     }
 
@@ -135,11 +131,11 @@ public partial class AutocompleteSelect<T>
         // Keyboard deletion must stay empty while typing. Once editing ends, show
         // the reset value if it is a real option. Updating the bound wrapper keeps
         // suggestion clicks intact instead of closing the menu during input blur.
-        if (ResetValueOnEmptyText && wrappedValue is null &&
+        if (ResetValueOnEmptyText && WrappedValue is null &&
             string.IsNullOrEmpty(autocomplete?.GetState(component => component.Text)) &&
             (Items ?? []).Any(item => EqualityComparer<T>.Default.Equals(item, Value!)))
         {
-            wrappedValue = new Option(Value);
+            WrappedValue = new Option(Value);
         }
     }
 
@@ -169,7 +165,7 @@ public partial class AutocompleteSelect<T>
             foundMatch = true;
         }
 
-        if (!foundMatch || wrappedValue is not null && EqualityComparer<T>.Default.Equals(Value!, match!))
+        if (!foundMatch || WrappedValue is not null && EqualityComparer<T>.Default.Equals(Value!, match!))
         {
             return;
         }

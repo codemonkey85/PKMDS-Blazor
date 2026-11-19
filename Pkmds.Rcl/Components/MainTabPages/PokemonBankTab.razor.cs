@@ -28,7 +28,7 @@ public partial class PokemonBankTab : RefreshAwareComponent
     private int TotalPages => Math.Max(1, (int)Math.Ceiling((double)filteredEntries.Count / pageSize));
 
     [Inject]
-    private IBankService BankService { get; set; } = default!;
+    private IBankService BankService { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -510,47 +510,55 @@ public partial class PokemonBankTab : RefreshAwareComponent
         StateHasChanged();
     }
 
-    private async Task SendSelectedToSaveAsync()
+    private Task SendSelectedToSaveAsync()
     {
-        if (AppState.SaveFile is not { } saveFile)
+        try
         {
-            return;
-        }
-
-        var toSend = entries.Where(e => selectedIds.Contains(e.Id)).ToList();
-        if (toSend.Count == 0)
-        {
-            return;
-        }
-
-        // Set isBusy once around the whole batch to keep the operation atomic
-        // from the UI's perspective — no mid-loop UI flicker or re-enabled actions.
-        isBusy = true;
-        StateHasChanged();
-
-        var sent = 0;
-        foreach (var entry in toSend)
-        {
-            var (success, message) = TrySendToSaveCore(entry, saveFile);
-            if (success)
+            if (AppState.SaveFile is not { } saveFile)
             {
-                sent++;
+                return Task.CompletedTask;
             }
-            else
+
+            var toSend = entries.Where(e => selectedIds.Contains(e.Id)).ToList();
+            if (toSend.Count == 0)
             {
-                Snackbar.Add(message, Severity.Error);
+                return Task.CompletedTask;
             }
+
+            // Set isBusy once around the whole batch to keep the operation atomic
+            // from the UI's perspective — no mid-loop UI flicker or re-enabled actions.
+            isBusy = true;
+            StateHasChanged();
+
+            var sent = 0;
+            foreach (var entry in toSend)
+            {
+                var (success, message) = TrySendToSaveCore(entry, saveFile);
+                if (success)
+                {
+                    sent++;
+                }
+                else
+                {
+                    Snackbar.Add(message, Severity.Error);
+                }
+            }
+
+            selectedIds.Clear();
+            isBusy = false;
+
+            if (sent > 0)
+            {
+                Snackbar.Add($"{sent} Pokémon sent to save.", Severity.Success);
+            }
+
+            StateHasChanged();
+            return Task.CompletedTask;
         }
-
-        selectedIds.Clear();
-        isBusy = false;
-
-        if (sent > 0)
+        catch (Exception exception)
         {
-            Snackbar.Add($"{sent} Pokémon sent to save.", Severity.Success);
+            return Task.FromException(exception);
         }
-
-        StateHasChanged();
     }
 
     // ── Delete ────────────────────────────────────────────────────────────

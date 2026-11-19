@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Pkmds.Rcl.Models;
-
 namespace Pkmds.Rcl.Services.Json;
 
 [JsonSerializable(typeof(AppSettings))]

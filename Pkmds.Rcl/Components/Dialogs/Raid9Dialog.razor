@@ -16,13 +16,13 @@
                               Spacing="2"
                               Class="mb-3">
                         <MudTextField Label="Today's Seed (hex)"
-                                      Value="@_currentSeedHex"
+                                      Value="@currentSeedHex"
                                       ValueChanged="@((string v) => SetCurrentSeed(v))"
                                       Variant="@Variant.Outlined"
                                       MaxLength="16"
                                       Style="max-width:210px;"/>
                         <MudTextField Label="Tomorrow's Seed (hex)"
-                                      Value="@_tomorrowSeedHex"
+                                      Value="@tomorrowSeedHex"
                                       ValueChanged="@((string v) => SetTomorrowSeed(v))"
                                       Variant="@Variant.Outlined"
                                       MaxLength="16"
@@ -32,13 +32,13 @@
                     @* Raid selector *@
                     <MudSelect T="@int"
                                Label="Raid"
-                               Value="@_paldeaIndex"
-                               ValueChanged="@((int i) => _paldeaIndex = i)"
+                               Value="@paldeaIndex"
+                               ValueChanged="@((int i) => paldeaIndex = i)"
                                Variant="@Variant.Outlined"
                                Dense
                                Style="max-width:160px;"
                                Class="mb-3">
-                        @for (var i = 0; i < _paldeaRaids.Length; i++)
+                        @for (var i = 0; i < paldeaRaids.Length; i++)
                         {
                             var idx = i;
                             <MudSelectItem Value="@idx">@($"Raid {idx + 1:D3}")</MudSelectItem>
@@ -46,9 +46,9 @@
                     </MudSelect>
 
                     @* Per-raid editor *@
-                    @if (_paldeaRaids.Length > 0 && _paldeaIndex < _paldeaRaids.Length)
+                    @if (paldeaRaids.Length > 0 && paldeaIndex < paldeaRaids.Length)
                     {
-                        var raid = _paldeaRaids[_paldeaIndex];
+                        var raid = paldeaRaids[paldeaIndex];
                         <MudStack Row
                                   Wrap="@Wrap.Wrap"
                                   Spacing="2"
@@ -120,13 +120,13 @@
                         <MudButton Size="@Size.Small"
                                    Variant="@Variant.Filled"
                                    Color="@Color.Primary"
-                                   OnClick="@(() => Propagate(SaveFile.RaidPaldea, _paldeaIndex, false))">
+                                   OnClick="@(() => Propagate(SaveFile.RaidPaldea, paldeaIndex, false))">
                             Copy to All Raids
                         </MudButton>
                         <MudButton Size="@Size.Small"
                                    Variant="@Variant.Filled"
                                    Color="@Color.Secondary"
-                                   OnClick="@(() => Propagate(SaveFile.RaidPaldea, _paldeaIndex, true))">
+                                   OnClick="@(() => Propagate(SaveFile.RaidPaldea, paldeaIndex, true))">
                             Copy to All Raids (incl. Seed)
                         </MudButton>
                     </MudStack>
@@ -138,22 +138,22 @@
                     <MudTabPanel Text="Kitakami">
                         <MudSelect T="@int"
                                    Label="Raid"
-                                   Value="@_kitakamiIndex"
-                                   ValueChanged="@((int i) => _kitakamiIndex = i)"
+                                   Value="@kitakamiIndex"
+                                   ValueChanged="@((int i) => kitakamiIndex = i)"
                                    Variant="@Variant.Outlined"
                                    Dense
                                    Style="max-width:160px;"
                                    Class="mb-3">
-                            @for (var i = 0; i < _kitakamiRaids.Length; i++)
+                            @for (var i = 0; i < kitakamiRaids.Length; i++)
                             {
                                 var idx = i;
                                 <MudSelectItem Value="@idx">@($"Raid {idx + 1:D3}")</MudSelectItem>
                             }
                         </MudSelect>
 
-                        @if (_kitakamiRaids.Length > 0 && _kitakamiIndex < _kitakamiRaids.Length)
+                        @if (kitakamiRaids.Length > 0 && kitakamiIndex < kitakamiRaids.Length)
                         {
-                            var raid = _kitakamiRaids[_kitakamiIndex];
+                            var raid = kitakamiRaids[kitakamiIndex];
                             <MudStack Row
                                       Wrap="@Wrap.Wrap"
                                       Spacing="2"
@@ -224,13 +224,13 @@
                             <MudButton Size="@Size.Small"
                                        Variant="@Variant.Filled"
                                        Color="@Color.Primary"
-                                       OnClick="@(() => Propagate(SaveFile.RaidKitakami, _kitakamiIndex, false))">
+                                       OnClick="@(() => Propagate(SaveFile.RaidKitakami, kitakamiIndex, false))">
                                 Copy to All Raids
                             </MudButton>
                             <MudButton Size="@Size.Small"
                                        Variant="@Variant.Filled"
                                        Color="@Color.Secondary"
-                                       OnClick="@(() => Propagate(SaveFile.RaidKitakami, _kitakamiIndex, true))">
+                                       OnClick="@(() => Propagate(SaveFile.RaidKitakami, kitakamiIndex, true))">
                                 Copy to All Raids (incl. Seed)
                             </MudButton>
                         </MudStack>
@@ -243,22 +243,22 @@
                     <MudTabPanel Text="Blueberry">
                         <MudSelect T="@int"
                                    Label="Raid"
-                                   Value="@_blueberryIndex"
-                                   ValueChanged="@((int i) => _blueberryIndex = i)"
+                                   Value="@blueberryIndex"
+                                   ValueChanged="@((int i) => blueberryIndex = i)"
                                    Variant="@Variant.Outlined"
                                    Dense
                                    Style="max-width:160px;"
                                    Class="mb-3">
-                            @for (var i = 0; i < _blueberryRaids.Length; i++)
+                            @for (var i = 0; i < blueberryRaids.Length; i++)
                             {
                                 var idx = i;
                                 <MudSelectItem Value="@idx">@($"Raid {idx + 1:D3}")</MudSelectItem>
                             }
                         </MudSelect>
 
-                        @if (_blueberryRaids.Length > 0 && _blueberryIndex < _blueberryRaids.Length)
+                        @if (blueberryRaids.Length > 0 && blueberryIndex < blueberryRaids.Length)
                         {
-                            var raid = _blueberryRaids[_blueberryIndex];
+                            var raid = blueberryRaids[blueberryIndex];
                             <MudStack Row
                                       Wrap="@Wrap.Wrap"
                                       Spacing="2"
@@ -329,13 +329,13 @@
                             <MudButton Size="@Size.Small"
                                        Variant="@Variant.Filled"
                                        Color="@Color.Primary"
-                                       OnClick="@(() => Propagate(SaveFile.RaidBlueberry, _blueberryIndex, false))">
+                                       OnClick="@(() => Propagate(SaveFile.RaidBlueberry, blueberryIndex, false))">
                                 Copy to All Raids
                             </MudButton>
                             <MudButton Size="@Size.Small"
                                        Variant="@Variant.Filled"
                                        Color="@Color.Secondary"
-                                       OnClick="@(() => Propagate(SaveFile.RaidBlueberry, _blueberryIndex, true))">
+                                       OnClick="@(() => Propagate(SaveFile.RaidBlueberry, blueberryIndex, true))">
                                 Copy to All Raids (incl. Seed)
                             </MudButton>
                         </MudStack>
@@ -344,7 +344,7 @@
 
                 @* ── 7-Star ── *@
                 <MudTabPanel Text="7-Star">
-                    @if (_activeSevenStarRaids.Count == 0)
+                    @if (activeSevenStarRaids.Count == 0)
                     {
                         <MudText>No 7-Star raid entries found.</MudText>
                     }
@@ -362,7 +362,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach (var (index, sevenRaid) in _activeSevenStarRaids)
+                            @foreach (var (index, sevenRaid) in activeSevenStarRaids)
                             {
                                 var r = sevenRaid;
                                 <tr>

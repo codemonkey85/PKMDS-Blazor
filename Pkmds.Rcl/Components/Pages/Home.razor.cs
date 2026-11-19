@@ -22,10 +22,6 @@ public partial class Home : IDisposable
     private async Task OnTestFilePicked(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        if (file is null)
-        {
-            return;
-        }
 
         if (file.Size > MaxTestPickerFileSize)
         {

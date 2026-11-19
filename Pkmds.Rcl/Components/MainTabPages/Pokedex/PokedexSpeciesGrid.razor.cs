@@ -120,8 +120,8 @@ public partial class PokedexSpeciesGrid
     // BuildRows via PokedexHelpers.IsSpeciesInDex, so a filter would be a no-op).
     private bool ShowRegionalDexToggle =>
         regionalDexDefinitions.Count > 1
-        || (regionalDexDefinitions.Count == 1
-            && rows.Any(r => r.RegionalIds.Count > 0 && r.RegionalIds[0] == 0));
+        || regionalDexDefinitions.Count == 1
+        && rows.Any(r => r.RegionalIds.Count > 0 && r.RegionalIds[0] == 0);
 
     // Delegates to the shared PokedexHelpers.IsSpeciesInDex so the grid and the
     // PokedexTab header counts always filter against the same species set.

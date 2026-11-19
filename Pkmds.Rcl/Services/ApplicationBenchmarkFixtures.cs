@@ -8,7 +8,7 @@ internal static class ApplicationBenchmarkFixtures
     internal const string Tag = "BENCH";
     internal const string Source = "synthetic-benchmark";
     internal static readonly DateTimeOffset ImportedAt = new(2000, 1, 1, 0, 0, 0, TimeSpan.Zero);
-    internal static readonly byte[] Metadata = Encoding.UTF8.GetBytes("PKMDS synthetic archive fixture\n");
+    private static readonly byte[] Metadata = "PKMDS synthetic archive fixture\n"u8.ToArray();
 
     internal static PKM[] CreatePokemon(int count)
     {
@@ -106,14 +106,18 @@ internal static class ApplicationBenchmarkFixtures
         }
         using var input = new MemoryStream(bytes);
         using var archive = new ZipArchive(input, ZipArchiveMode.Read);
-        if (archive.Entries.Count != 2) throw new InvalidOperationException("Archive entries changed.");
+        if (archive.Entries.Count != 2)
+        {
+            throw new InvalidOperationException("Archive entries changed.");
+        }
+
         foreach (var entry in archive.Entries)
         {
             using var stream = entry.Open();
             using var copy = new MemoryStream();
             stream.CopyTo(copy);
             var expected = entry.FullName == context.SaveEntryPath ? expectedSave : Metadata;
-            if ((entry.FullName != context.SaveEntryPath && entry.FullName != "metadata.txt") ||
+            if (entry.FullName != context.SaveEntryPath && entry.FullName != "metadata.txt" ||
                 entry.LastWriteTime.DateTime != ImportedAt.DateTime || !copy.ToArray().AsSpan().SequenceEqual(expected))
             {
                 // ZIP stores a local clock value, without a timezone/UTC offset.

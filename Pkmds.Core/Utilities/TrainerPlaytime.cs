@@ -7,7 +7,9 @@ public static class TrainerPlaytime
     public static void SetHours(SaveFile save, int hours)
     {
         if (!TrainerCapabilities.HasPlaytime(save) || hours < 0 || hours > TrainerCapabilities.MaxPlayedHours(save))
+        {
             return;
+        }
 
         // PKHeX.Core 26.10.18's XD/PBR/Ranch PlayedHours setters subtract TotalHours,
         // erasing minutes, seconds and fractions. Update the same backing value by a
@@ -29,9 +31,14 @@ public static class TrainerPlaytime
                 var japanese = ReadUInt16BigEndian(xd.Data[0x2E..]) == 0x1E00;
                 var xdTime = xd.Data[(config + (japanese ? 0x20 : 0x30))..];
                 if (japanese)
+                {
                     WriteSingleBigEndian(xdTime, (float)(ReadSingleBigEndian(xdTime) + delta));
+                }
                 else
+                {
                     WriteDoubleBigEndian(xdTime, ReadDoubleBigEndian(xdTime) + delta);
+                }
+
                 break;
             default:
                 save.PlayedHours = hours;
@@ -39,7 +46,10 @@ public static class TrainerPlaytime
         }
 
         if (save is SAV1 gen1 && hours < byte.MaxValue)
+        {
             gen1.PlayedMaximum = false;
+        }
+
         save.State.Edited = true;
     }
 
@@ -54,6 +64,8 @@ public static class TrainerPlaytime
             gen1.PlayedFrames = 0;
         }
         if (save is SAV9ZA za)
+        {
             za.Played.RawSeconds = 0;
+        }
     }
 }

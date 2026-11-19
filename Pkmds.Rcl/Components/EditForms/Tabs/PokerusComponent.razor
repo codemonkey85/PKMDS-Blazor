@@ -3,13 +3,13 @@
     <HapticCheckBox T="@bool"
                     Label="Infected"
                     @bind-Value:get="@pokemon.IsPokerusInfected"
-                    @bind-Value:set="@(infected => SetPokerusInfected(infected))"
+                    @bind-Value:set="@SetPokerusInfected"
                     For="@(() => pokemon.IsPokerusInfected)"/>
 
     <HapticCheckBox T="@bool"
                     Label="Cured"
                     @bind-Value:get="@pokemon.IsPokerusCured"
-                    @bind-Value:set="@(cured => SetPokerusCured(cured))"
+                    @bind-Value:set="@SetPokerusCured"
                     For="@(() => pokemon.IsPokerusCured)"/>
 
     @if (pokemon.IsPokerusInfected)

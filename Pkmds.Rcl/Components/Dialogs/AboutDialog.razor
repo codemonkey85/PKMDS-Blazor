@@ -19,7 +19,7 @@
                 </MudLink>
             </MudText>
             <MudText Typo="@Typo.subtitle2">
-                Built: @AppState.AppBuildDate?.ToLocalTime().ToString("MMM dd, yyyy hh:mm:ss tt")
+                Built: @AppState.AppBuildDate?.ToLocalTime().ToString("MMM dd, yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)
             </MudText>
             <MudText Typo="@Typo.subtitle2">
                 Created by

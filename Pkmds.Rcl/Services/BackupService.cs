@@ -19,7 +19,7 @@ public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDispos
         var meta = new BackupMeta(
             fileName ?? string.Empty,
             saveFile.GetType().Name,
-            (int)saveFile.Generation,
+            saveFile.Generation,
             saveFile.Version.ToString(),
             saveFile.OT,
             saveBytes.Length,
@@ -64,7 +64,7 @@ public partial class BackupService(IJSRuntime js) : IBackupService, IAsyncDispos
         var results = new List<BackupEntry>(raw.Length);
         foreach (var r in raw)
         {
-            if (!DateTimeOffset.TryParse(r.CreatedAt, out var createdAt))
+            if (!DateTimeOffset.TryParse(r.CreatedAt, CultureInfo.InvariantCulture, out var createdAt))
             {
                 createdAt = DateTimeOffset.UtcNow;
             }

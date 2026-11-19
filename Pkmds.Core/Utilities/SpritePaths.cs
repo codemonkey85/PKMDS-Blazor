@@ -103,20 +103,27 @@ public static class SpritePaths
             return "unk";
         }
 
-        if (context == EntityContext.Gen3)
+        if (context != EntityContext.Gen3)
         {
-            if ((uint)item > ushort.MaxValue)
+            return HeldItemLumpUtil.GetIsLump(item, context) switch
             {
-                return "unk";
-            }
+                HeldItemLumpImage.TechnicalMachine => "tm",
+                HeldItemLumpImage.TechnicalRecord => "tr",
+                _ => item.ToString()
+            };
+        }
 
-            // Like PKHeX's PK3.SpriteItem, use modern IDs for the shared sprite set.
-            // Normalize before detecting TMs, whose Gen III IDs also differ.
-            item = ItemConverter.GetItemDisplay(item, context);
-            if (!ItemConverter.IsItemTransferable34((ushort)item))
-            {
-                return "unk";
-            }
+        if ((uint)item > ushort.MaxValue)
+        {
+            return "unk";
+        }
+
+        // Like PKHeX's PK3.SpriteItem, use modern IDs for the shared sprite set.
+        // Normalize before detecting TMs, whose Gen III IDs also differ.
+        item = ItemConverter.GetItemDisplay(item, context);
+        if (!ItemConverter.IsItemTransferable34((ushort)item))
+        {
+            return "unk";
         }
 
         return HeldItemLumpUtil.GetIsLump(item, context) switch

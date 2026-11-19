@@ -15,11 +15,11 @@ namespace Pkmds.Rcl.Services;
 /// </remarks>
 public sealed partial class EmbeddedHostBridge
 {
-    private readonly IAppState _appState;
-    private readonly IAppService _appService;
-    private readonly IRefreshService _refreshService;
-    private readonly IJSRuntime _jsRuntime;
-    private readonly ILogger<EmbeddedHostBridge> _logger;
+    private readonly IAppState appState;
+    private readonly IAppService appService;
+    private readonly IRefreshService refreshService;
+    private readonly IJSRuntime jsRuntime;
+    private readonly ILogger<EmbeddedHostBridge> logger;
 
     // [JSInvokable] static methods are discovered by name from JS, so the
     // trimmer can't see references to them and strips them under TrimMode=full.
@@ -33,11 +33,11 @@ public sealed partial class EmbeddedHostBridge
         IJSRuntime jsRuntime,
         ILogger<EmbeddedHostBridge> logger)
     {
-        _appState = appState;
-        _appService = appService;
-        _refreshService = refreshService;
-        _jsRuntime = jsRuntime;
-        _logger = logger;
+        this.appState = appState;
+        this.appService = appService;
+        this.refreshService = refreshService;
+        this.jsRuntime = jsRuntime;
+        this.logger = logger;
         Instance = this;
     }
 
@@ -73,7 +73,7 @@ public sealed partial class EmbeddedHostBridge
         }
         catch (FormatException ex)
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 ex,
                 "Host sent malformed base64 save data ({FileName}). " +
                 "loadSave() expects base64-encoded raw save bytes — not a file path or filename. " +
@@ -82,59 +82,59 @@ public sealed partial class EmbeddedHostBridge
             return false;
         }
 
-        _appService.ClearSelection();
+        appService.ClearSelection();
         ParseSettings.ClearActiveTrainer();
-        _appState.SaveFile = null;
-        _appState.SaveArchiveContext = null;
-        _appState.ShowProgressIndicator = true;
+        appState.SaveFile = null;
+        appState.SaveArchiveContext = null;
+        appState.ShowProgressIndicator = true;
 
         try
         {
             var originalData = data.ToArray();
             if (!SaveFileLoader.TryLoad(data, fileName, out var saveFile, out var archiveContext))
             {
-                _logger.LogError("Host save load failed: invalid format ({FileName})", fileName);
+                logger.LogError("Host save load failed: invalid format ({FileName})", fileName);
                 return false;
             }
 
             if (!saveFile.IsSupportedForEditing(out var unsupportedReason))
             {
-                _logger.LogWarning("Host save load rejected ({FileName}): {Reason}", fileName, unsupportedReason);
+                logger.LogWarning("Host save load rejected ({FileName}): {Reason}", fileName, unsupportedReason);
                 return false;
             }
 
-            _appState.OriginalSaveFileBytes = originalData;
-            _appState.SaveArchiveContext = archiveContext;
+            appState.OriginalSaveFileBytes = originalData;
+            appState.SaveArchiveContext = archiveContext;
             // Mirror the standalone load path: InitFromSaveFileData populates
             // ParseSettings.ActiveTrainer and AllowGBCartEra for legality
             // checks (see notes on FinishLoadingSaveFile in MainLayout).
             ParseSettings.InitFromSaveFileData(saveFile);
-            _appState.SaveFile = saveFile;
-            _appState.SaveFileName = fileName;
-            _appState.BoxEdit?.LoadBox(saveFile.CurrentBox);
+            appState.SaveFile = saveFile;
+            appState.SaveFileName = fileName;
+            appState.BoxEdit?.LoadBox(saveFile.CurrentBox);
 
-            _refreshService.RefreshBoxAndPartyState();
-            _logger.LogInformation(
+            refreshService.RefreshBoxAndPartyState();
+            logger.LogInformation(
                 "Host loaded save: {SaveType} gen {Generation} ({FileName})",
                 saveFile.GetType().Name, saveFile.Generation, fileName);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Host save load threw ({FileName})", fileName);
+            logger.LogError(ex, "Host save load threw ({FileName})", fileName);
             return false;
         }
         finally
         {
-            _appState.ShowProgressIndicator = false;
+            appState.ShowProgressIndicator = false;
         }
     }
 
     private async Task<bool> RequestExportFromHostInternal()
     {
-        if (_appState.SaveFile is not { } saveFile)
+        if (appState.SaveFile is not { } saveFile)
         {
-            _logger.LogWarning("Host requested export but no save file is loaded");
+            logger.LogWarning("Host requested export but no save file is loaded");
             return false;
         }
 
@@ -146,7 +146,7 @@ public sealed partial class EmbeddedHostBridge
             saveFile.PrepareForExport();
             var bytes = saveFile.Write().ToArray();
             var base64 = Convert.ToBase64String(bytes);
-            var fileName = _appState.SaveFileName ?? "save.sav";
+            var fileName = appState.SaveFileName ?? "save.sav";
 
             // Serialize via source-gen and pass JsonDocument.RootElement (trim-safe
             // primitive) so Blazor's IJS marshaler writes the underlying JSON object
@@ -157,18 +157,18 @@ public sealed partial class EmbeddedHostBridge
                 new SaveExportPayload(base64, fileName),
                 EmbeddedHostJsonContext.Default.SaveExportPayload);
 
-            await _jsRuntime.InvokeVoidAsync(
+            await jsRuntime.InvokeVoidAsync(
                 "PKMDS.host._sendMessage",
                 "saveExport",
                 payloadDoc.RootElement);
 
-            _logger.LogInformation("Host export emitted: {ByteCount} bytes ({FileName})",
+            logger.LogInformation("Host export emitted: {ByteCount} bytes ({FileName})",
                 bytes.Length, fileName);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Host export failed");
+            logger.LogError(ex, "Host export failed");
             return false;
         }
     }

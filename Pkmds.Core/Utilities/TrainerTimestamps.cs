@@ -54,7 +54,9 @@ public static class TrainerTimestamps
     public static bool SetGameStart(SaveFile save, DateTime? value)
     {
         if (value is not { } date || !HasGameStart(save) || !IsValid(date))
+        {
             return false;
+        }
 
         switch (save)
         {
@@ -87,7 +89,9 @@ public static class TrainerTimestamps
     public static bool SetHallOfFame(SaveFile save, DateTime? value)
     {
         if (value is not { } date || !HasHallOfFame(save) || !IsValid(date))
+        {
             return false;
+        }
 
         save.SecondsToFame = To2000(date);
         save.State.Edited = true;
@@ -97,7 +101,9 @@ public static class TrainerTimestamps
     public static bool SetLastSaved(SaveFile save, DateTime? value)
     {
         if (value is not { } date || !HasLastSaved(save) || !IsValid(date))
+        {
             return false;
+        }
 
         switch (save)
         {

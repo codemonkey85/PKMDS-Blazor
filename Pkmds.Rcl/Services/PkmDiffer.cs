@@ -219,21 +219,23 @@ public static class PkmDiffer
                 FormatAbilitySlot(b.AbilityNumber), FormatAbilitySlot(a.AbilityNumber)));
         }
 
-        if (b is ITeraType bt && a is ITeraType at)
+        if (b is not ITeraType bt || a is not ITeraType at)
         {
-            if (bt.TeraTypeOriginal != at.TeraTypeOriginal)
-            {
-                changes.Add(new LegalizationChange(
-                    LegalizationChangeCategory.Battle, "Tera Type (Original)",
-                    bt.TeraTypeOriginal.ToString(), at.TeraTypeOriginal.ToString()));
-            }
+            return;
+        }
 
-            if (bt.TeraTypeOverride != at.TeraTypeOverride)
-            {
-                changes.Add(new LegalizationChange(
-                    LegalizationChangeCategory.Battle, "Tera Type (Override)",
-                    bt.TeraTypeOverride.ToString(), at.TeraTypeOverride.ToString()));
-            }
+        if (bt.TeraTypeOriginal != at.TeraTypeOriginal)
+        {
+            changes.Add(new LegalizationChange(
+                LegalizationChangeCategory.Battle, "Tera Type (Original)",
+                bt.TeraTypeOriginal.ToString(), at.TeraTypeOriginal.ToString()));
+        }
+
+        if (bt.TeraTypeOverride != at.TeraTypeOverride)
+        {
+            changes.Add(new LegalizationChange(
+                LegalizationChangeCategory.Battle, "Tera Type (Override)",
+                bt.TeraTypeOverride.ToString(), at.TeraTypeOverride.ToString()));
         }
     }
 
@@ -323,15 +325,17 @@ public static class PkmDiffer
             AddIntDiff(changes, LegalizationChangeCategory.Stats, "Spe AV", bav.AV_SPE, aav.AV_SPE);
         }
 
-        if (b is IGanbaru bgv && a is IGanbaru agv)
+        if (b is not IGanbaru bgv || a is not IGanbaru agv)
         {
-            AddIntDiff(changes, LegalizationChangeCategory.Stats, "HP GV", bgv.GV_HP, agv.GV_HP);
-            AddIntDiff(changes, LegalizationChangeCategory.Stats, "Atk GV", bgv.GV_ATK, agv.GV_ATK);
-            AddIntDiff(changes, LegalizationChangeCategory.Stats, "Def GV", bgv.GV_DEF, agv.GV_DEF);
-            AddIntDiff(changes, LegalizationChangeCategory.Stats, "SpA GV", bgv.GV_SPA, agv.GV_SPA);
-            AddIntDiff(changes, LegalizationChangeCategory.Stats, "SpD GV", bgv.GV_SPD, agv.GV_SPD);
-            AddIntDiff(changes, LegalizationChangeCategory.Stats, "Spe GV", bgv.GV_SPE, agv.GV_SPE);
+            return;
         }
+
+        AddIntDiff(changes, LegalizationChangeCategory.Stats, "HP GV", bgv.GV_HP, agv.GV_HP);
+        AddIntDiff(changes, LegalizationChangeCategory.Stats, "Atk GV", bgv.GV_ATK, agv.GV_ATK);
+        AddIntDiff(changes, LegalizationChangeCategory.Stats, "Def GV", bgv.GV_DEF, agv.GV_DEF);
+        AddIntDiff(changes, LegalizationChangeCategory.Stats, "SpA GV", bgv.GV_SPA, agv.GV_SPA);
+        AddIntDiff(changes, LegalizationChangeCategory.Stats, "SpD GV", bgv.GV_SPD, agv.GV_SPD);
+        AddIntDiff(changes, LegalizationChangeCategory.Stats, "Spe GV", bgv.GV_SPE, agv.GV_SPE);
     }
 
     // ──────────────────────────────────────────────────────────────────────

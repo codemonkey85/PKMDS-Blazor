@@ -72,7 +72,7 @@ public partial class BadgesComponent : IDisposable
             case EntityContext.Gen4 when saveFile is SAV4HGSS sav4hgss:
                 // HGSS stores 16 badges across two bytes: Johto in Badges (bits 0-7),
                 // Kanto in Badges16 (read into bits 8-15). Mirrors PKHeX SAV_SimpleTrainer.
-                badgeFlagInt = sav4hgss.Badges | (sav4hgss.Badges16 << 8);
+                badgeFlagInt = sav4hgss.Badges | sav4hgss.Badges16 << 8;
                 badgeTotal = 16;
                 break;
 
@@ -160,9 +160,9 @@ public partial class BadgesComponent : IDisposable
             case EntityContext.Gen4 when saveFile is SAV4HGSS sav4hgss:
                 // HGSS stores 16 badges across two bytes: Johto in Badges, Kanto in
                 // Badges16. Toggle on the combined 16-bit value, then split back out.
-                var hgssBadges = ToggleBadge(sav4hgss.Badges | (sav4hgss.Badges16 << 8), badgeIndex);
+                var hgssBadges = ToggleBadge(sav4hgss.Badges | sav4hgss.Badges16 << 8, badgeIndex);
                 sav4hgss.Badges = (byte)(hgssBadges & 0xFF);
-                sav4hgss.Badges16 = (hgssBadges >> 8) & 0xFF;
+                sav4hgss.Badges16 = hgssBadges >> 8 & 0xFF;
                 break;
 
             case EntityContext.Gen5 when saveFile is SAV5BW sav5bw:
@@ -206,6 +206,6 @@ public partial class BadgesComponent : IDisposable
         // badge toggles silently doing nothing. The caller assigns into the correct
         // width (SAV2.Badges is a 16-bit int; HGSS splits the result across two bytes).
         static int ToggleBadge(int badges, int badgeIndex) =>
-            badges ^ (1 << badgeIndex);
+            badges ^ 1 << badgeIndex;
     }
 }

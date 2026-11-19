@@ -14,8 +14,8 @@
                       Class="mb-3">
                 <MudNumericField T="@int"
                                  Label="Slot"
-                                 Value="@_selectedRawIndex"
-                                 ValueChanged="@((int i) => _selectedRawIndex = i)"
+                                 Value="@selectedRawIndex"
+                                 ValueChanged="@((int i) => selectedRawIndex = i)"
                                  Min="0"
                                  Max="@(DonutPocket9a.MaxCount - 1)"
                                  Style="max-width:90px;"
@@ -32,7 +32,7 @@
                                Disabled="@(!CanGoNext)"
                                aria-label="Next donut"
                                title="Next donut"/>
-                <MudText Typo="@Typo.body2">@_activeIndices.Count active donut@(_activeIndices.Count != 1 ? "s" : string.Empty)</MudText>
+                <MudText Typo="@Typo.body2">@activeIndices.Count active donut@(activeIndices.Count != 1 ? "s" : string.Empty)</MudText>
             </MudStack>
 
             @if (IsCurrentSlotOccupied && CurrentDonut is { } d)
@@ -54,7 +54,7 @@
                                        Dense
                                        Variant="@Variant.Outlined"
                                        Class="mb-1">
-                                @foreach (var (item, label) in _berryOptions)
+                                @foreach (var (item, label) in berryOptions)
                                 {
                                     <MudSelectItem Value="@item">@label</MudSelectItem>
                                 }
@@ -155,7 +155,7 @@
             else
             {
                 <MudText Typo="@Typo.body2"
-                         Class="my-4">Slot @_selectedRawIndex is empty.</MudText>
+                         Class="my-4">Slot @selectedRawIndex is empty.</MudText>
             }
 
             <MudDivider Class="mt-4 mb-3"/>

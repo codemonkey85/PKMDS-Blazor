@@ -7,11 +7,13 @@ public sealed class HostService : IHostService
     {
         var uri = new Uri(navigationManager.Uri);
         HostName = ParseHostFromQuery(uri.Query);
-        if (!string.IsNullOrWhiteSpace(HostName))
+        if (string.IsNullOrWhiteSpace(HostName))
         {
-            IsEmbedded = true;
-            HostKind = HostKind.Generic;
+            return;
         }
+
+        IsEmbedded = true;
+        HostKind = HostKind.Generic;
     }
 
     public bool IsEmbedded { get; }

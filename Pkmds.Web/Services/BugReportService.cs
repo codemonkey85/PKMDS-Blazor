@@ -1,4 +1,3 @@
-using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace Pkmds.Web.Services;
@@ -99,12 +98,12 @@ public class BugReportService(IConfiguration configuration, HttpClient httpClien
                     ? urlElement.GetString()
                     : null;
                 var contactStored = !request.ContactOptIn ||
-                                    (json.TryGetProperty("contactStored", out var contactStoredElement) &&
-                                     contactStoredElement.ValueKind is JsonValueKind.True);
+                                    json.TryGetProperty("contactStored", out var contactStoredElement) &&
+                                    contactStoredElement.ValueKind is JsonValueKind.True;
                 var attachmentRequested = request.SaveFileBytes is { Length: > 0 };
                 var attachmentStored = !attachmentRequested ||
-                                       (json.TryGetProperty("attachmentStored", out var attachmentStoredElement) &&
-                                        attachmentStoredElement.ValueKind is JsonValueKind.True);
+                                       json.TryGetProperty("attachmentStored", out var attachmentStoredElement) &&
+                                       attachmentStoredElement.ValueKind is JsonValueKind.True;
                 var warnings = new List<string>();
                 if (!contactStored)
                 {

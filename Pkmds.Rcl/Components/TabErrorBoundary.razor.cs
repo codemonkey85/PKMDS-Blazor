@@ -30,7 +30,7 @@ public partial class TabErrorBoundary
         {
             Snackbar.Add(submission.ToSubmissionMarkup("Report submitted!"),
                 submission.WarningMessage is null ? Severity.Success : Severity.Warning,
-                options => options.RequireInteraction = true);
+                opt => opt.RequireInteraction = true);
         }
     }
 }

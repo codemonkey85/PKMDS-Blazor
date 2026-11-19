@@ -24,12 +24,26 @@ public static class CryptoBridgeChecks
             var iv = mode == CipherMode.CBC ? Convert.FromHexString("000102030405060708090a0b0c0d0e0f") : null;
             using var aes = RuntimeCryptographyProvider.Aes.Create(Convert.FromHexString(key), mode, PaddingMode.None, iv);
             var output = new byte[input.Length];
-            if (mode == CipherMode.ECB) aes.EncryptEcb(input, output);
-            else aes.EncryptCbc(input, output);
+            if (mode == CipherMode.ECB)
+            {
+                aes.EncryptEcb(input, output);
+            }
+            else
+            {
+                aes.EncryptCbc(input, output);
+            }
+
             RequireEqual(output, expected, $"AES-{mode} encryption");
             results[$"aes-{mode}-encrypt"] = Convert.ToHexString(output);
-            if (mode == CipherMode.ECB) aes.DecryptEcb(expected, output);
-            else aes.DecryptCbc(expected, output);
+            if (mode == CipherMode.ECB)
+            {
+                aes.DecryptEcb(expected, output);
+            }
+            else
+            {
+                aes.DecryptCbc(expected, output);
+            }
+
             RequireEqual(output, input, $"AES-{mode} decryption");
             results[$"aes-{mode}-decrypt"] = Convert.ToHexString(output);
         }
