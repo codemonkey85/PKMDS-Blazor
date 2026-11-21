@@ -400,6 +400,11 @@
             </div>
         }
 
+        @if (saveFile is SAV5B2W2 sav5Keys)
+        {
+            <TrainerInfoSav5B2W2Section SaveFile="@sav5Keys"/>
+        }
+
         @if (saveFile is SAV9SV sv9Gen9)
         {
             <TrainerInfoSav9SvSection SaveFile="@sv9Gen9"/>

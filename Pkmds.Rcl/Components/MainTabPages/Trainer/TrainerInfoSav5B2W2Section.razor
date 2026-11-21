@@ -1,0 +1,31 @@
+@inherits RefreshAwareComponent
+
+<div class="form-section-header">Key System</div>
+
+<div class="form-field">
+    <MudButton Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               StartIcon="@Icons.Material.Filled.Key"
+               Disabled="@SaveFile.Keys.GetIsKeyUnlocked(KeyType5.Challenge)"
+               OnClick="@UnlockChallengeMode">
+        @(SaveFile.Keys.GetIsKeyUnlocked(KeyType5.Challenge) ? "Challenge Mode Unlocked" : "Unlock Challenge Mode")
+    </MudButton>
+    <MudText Typo="@Typo.caption">
+        Unlock the Challenge Key, then select Challenge below or use Unova Link → Key System on the game's title screen.
+        Export your save to use the changes in-game.
+    </MudText>
+</div>
+
+<div class="form-field">
+    <MudSelect T="Difficulty5"
+               Label="Difficulty"
+               Variant="@Variant.Outlined"
+               Value="@SaveFile.Keys.ActiveDifficulty"
+               ValueChanged="@SetDifficulty">
+        <MudSelectItem Value="@Difficulty5.Normal">Normal</MudSelectItem>
+        <MudSelectItem Value="@Difficulty5.Easy"
+                       Disabled="@(!SaveFile.Keys.GetIsKeyUnlocked(KeyType5.Easy))">Easy</MudSelectItem>
+        <MudSelectItem Value="@Difficulty5.Challenge"
+                       Disabled="@(!SaveFile.Keys.GetIsKeyUnlocked(KeyType5.Challenge))">Challenge</MudSelectItem>
+    </MudSelect>
+</div>
