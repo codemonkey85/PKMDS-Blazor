@@ -562,6 +562,11 @@
             </div>
         }
 
+        @if (saveFile is SAV5B2W2 sav5Keys)
+        {
+            <TrainerInfoSav5B2W2Section SaveFile="@sav5Keys"/>
+        }
+
         @if (saveFile is SAV3FRLG sav3FrLgTrainerCard)
         {
             @for (var i = 0; i < 6; i++)

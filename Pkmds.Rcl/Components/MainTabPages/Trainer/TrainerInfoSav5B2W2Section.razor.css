@@ -1,0 +1,46 @@
+.key-system {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+.key-system-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.key-system-description {
+    max-width: 75ch;
+}
+
+.key-system-keys {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.key-system-keys th {
+    font-weight: 500;
+    text-align: left;
+}
+
+.key-system-keys th,
+.key-system-keys td {
+    padding: 0.25rem 0.375rem;
+    border-bottom: 1px solid var(--mud-palette-divider);
+}
+
+.key-system-keys th:first-child {
+    padding-left: 0;
+}
+
+.key-system-keys thead th {
+    font-size: 0.875rem;
+    color: var(--mud-palette-text-secondary);
+}
+
+.key-system-difficulty {
+    flex: 1 1 12rem;
+    max-width: 16rem;
+    padding-top: 0.5rem;
+}

@@ -1,0 +1,68 @@
+﻿@inherits RefreshAwareComponent
+
+<section class="key-system" aria-labelledby="key-system-heading">
+    <div class="form-section-header" id="key-system-heading">Key System</div>
+    <div class="key-system-description">
+        <MudText Typo="@Typo.body2" Class="my-3">
+            Obtained records ownership of a key; Unlocked enables its mode or area.
+            Choose a mode with Difficulty, or use Unova Link → Key System on the game's title screen.
+            Export your save to use the changes in-game.
+        </MudText>
+    </div>
+
+    <div class="key-system-controls">
+        <div>
+            <table class="key-system-keys">
+                <thead>
+                    <tr>
+                        <th scope="col">Key</th>
+                        <th scope="col">Obtained</th>
+                        <th scope="col">Unlocked</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var key in KeyEntries)
+                    {
+                        <tr @key="@key.Type">
+                            <th scope="row">@key.Name</th>
+                            <td>
+                                <MudCheckBox T="bool" Dense="true"
+                                             AriaLabel="@($"{key.Name} obtained")"
+                                             Value="@SaveFile.Keys.GetIsKeyObtained(key.Type)"
+                                             ValueChanged="@((bool value) => SetObtained(key.Type, value))"/>
+                            </td>
+                            <td>
+                                <MudCheckBox T="bool" Dense="true"
+                                             AriaLabel="@($"{key.UnlockName} unlocked")"
+                                             Value="@SaveFile.Keys.GetIsKeyUnlocked(key.Type)"
+                                             ValueChanged="@((bool value) => SetUnlocked(key.Type, value))"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <MudButton Variant="@Variant.Outlined"
+                       Color="@Color.Primary"
+                       Class="mt-3"
+                       StartIcon="@Icons.Material.Filled.Key"
+                       Disabled="@AllKeysUnlocked"
+                       OnClick="@UnlockAllKeys">
+                Unlock All Keys
+            </MudButton>
+        </div>
+
+        <div class="key-system-difficulty">
+            <MudSelect T="Difficulty5"
+                       Label="Difficulty"
+                       Variant="@Variant.Outlined"
+                       Value="@SaveFile.Keys.ActiveDifficulty"
+                       ValueChanged="@SetDifficulty">
+                <MudSelectItem Value="@Difficulty5.Normal">Normal</MudSelectItem>
+                <MudSelectItem Value="@Difficulty5.Easy"
+                               Disabled="@(!SaveFile.Keys.GetIsKeyUnlocked(KeyType5.Easy))">Easy</MudSelectItem>
+                <MudSelectItem Value="@Difficulty5.Challenge"
+                               Disabled="@(!SaveFile.Keys.GetIsKeyUnlocked(KeyType5.Challenge))">Challenge</MudSelectItem>
+            </MudSelect>
+        </div>
+    </div>
+</section>
